@@ -11,7 +11,7 @@ let lastFetchHeight = 0;
 const searchQuery = urlParams.get("q") || "";
 
 function positionItems() { 
-    const items = Array.from(container.querySelectorAll(".img-tb")); 
+    const items = Array.from(container.querySelectorAll(".image-item")); 
     if (items.length === 0) return; 
     const containerWidth = container.clientWidth; 
     let cols = Math.floor(containerWidth / (minWidth + gap)); 
@@ -19,7 +19,7 @@ function positionItems() {
     let itemWidth = Math.floor((containerWidth - (cols - 1) * gap) / cols); 
     let columnHeights = new Array(cols).fill(0); 
     items.forEach((item) => { 
-        let imgThumb = item.querySelector(".img-thumb"); 
+        let imgThumb = item.querySelector(".image-item__thumb"); 
         item.style.width = `${itemWidth}px`; 
         if (imgThumb) imgThumb.style.width = `${itemWidth - 8}px`; 
         let colIndex = columnHeights.indexOf(Math.min(...columnHeights)); 
@@ -76,10 +76,9 @@ function renderResults(res) {
         imgElement.alt = item.title || "Image"; 
         
         let imgContainer = document.createElement("div"); 
-        imgContainer.classList.add("img-tb"); 
+        imgContainer.classList.add("image-item"); 
         imgContainer.setAttribute("tabindex", `tab-${i}`); 
         
-        // Handling URL aman dari crash
         let hostname = "";
         if (item.pageUrl) {
             try {
@@ -93,12 +92,12 @@ function renderResults(res) {
         const siteName = item.siteName || hostname || "Web";
 
         imgContainer.innerHTML = ` 
-            <div class="img-th"> 
-                <div class="img-dt"> 
-                    <div class="img-thumb"> </div> 
-                    <a class="info" href="${item.pageUrl || '#'}" target="_blank"> 
+            <div class="image-item__box"> 
+                <div class="image-item__dt"> 
+                    <div class="image-item__thumb"></div> 
+                    <a class="image-item__info" href="${item.pageUrl || '#'}" target="_blank"> 
                         <p class="title" name="t">${item.title || ''}</p> 
-                        <p class="i-desc"> 
+                        <p class="image-item__desc"> 
                             ${faviconSrc ? `<img src="${faviconSrc}">` : ''} 
                             <span>${siteName}</span> 
                         </p> 
@@ -107,14 +106,14 @@ function renderResults(res) {
             </div>`; 
         
         loadImage(imgElement, item.thumbnail || item.image, item.image); 
-        imgContainer.querySelector(".img-thumb").appendChild(imgElement); 
+        imgContainer.querySelector(".image-item__thumb").appendChild(imgElement); 
         
         imgElement.onload = function() { 
             positionItems(); 
         }; 
         
         imgElement.onerror = function() { 
-            let parent = imgElement.closest(".img-tb"); 
+            let parent = imgElement.closest(".image-item"); 
             if (parent) parent.remove(); 
             positionItems(); 
         }; 
@@ -166,14 +165,14 @@ function isMobile() {
 
 if (isMobile() && document.querySelector(".cbKRN")) { 
     document.querySelector(".cbKRN").insertAdjacentHTML("beforeend", ` 
-        <div class="preview"> 
-            <div class="p-header"> 
+        <div class="image-preview"> 
+            <div class="image-preview__header"> 
                 <div class="left"> 
-                    <div class="p-fav"><img src=""></div> 
+                    <div class="image-preview__favicon"><img src=""></div> 
                     <div class="title"></div> 
                 </div> 
                 <div class="right"> 
-                    <div class="p-fav close-preview"> 
+                    <div class="image-preview__favicon close-preview"> 
                         <svg viewBox="0 0 24 24" focusable="false" height="24" width="24"> 
                             <path d="M0 0h24v24H0z" fill="none"></path> 
                             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path> 
@@ -181,11 +180,11 @@ if (isMobile() && document.querySelector(".cbKRN")) {
                     </div> 
                 </div> 
             </div> 
-            <div class="thumbnail"><img src="" alt="Preview"></div> 
-            <div class="jtext-p"> 
+            <div class="image-preview__thumbnail"><img src="" alt="Preview"></div> 
+            <div class="image-preview__footer"> 
                 <div class="left"> 
                     <div class="title"></div> 
-                    <div class="d"></div> 
+                    <div class="site"></div> 
                 </div> 
                 <div class="right"> 
                     <button><a href="" target="_blank">Kunjungi</a></button> 
@@ -194,7 +193,7 @@ if (isMobile() && document.querySelector(".cbKRN")) {
         </div> 
     `); 
     
-    const preview = document.querySelector(".preview"); 
+    const preview = document.querySelector(".image-preview"); 
     if (preview) preview.style.display = "none"; 
     
     function hidePreview() { 
@@ -206,7 +205,7 @@ if (isMobile() && document.querySelector(".cbKRN")) {
     if (closeBtn) closeBtn.addEventListener("click", hidePreview); 
     
     document.body.addEventListener("click", (event) => { 
-        const img = event.target.closest(".img-thumb img"); 
+        const img = event.target.closest(".image-item__thumb img"); 
         if (!img) return; 
         event.preventDefault(); 
         showPreview(img); 
@@ -216,23 +215,23 @@ if (isMobile() && document.querySelector(".cbKRN")) {
         if (!preview) return; 
         preview.style.display = "block"; 
         document.documentElement.style.overflow = "hidden"; 
-        const parent = img.closest(".img-tb"); 
+        const parent = img.closest(".image-item"); 
         if (parent) { 
-            const titleElement = parent.querySelector(".info .title"); 
-            const descElement = parent.querySelector(".i-desc span"); 
-            const infoLinkElement = parent.querySelector(".info"); 
-            const descImgElement = parent.querySelector(".i-desc img"); 
+            const titleElement = parent.querySelector(".image-item__info .title"); 
+            const descElement = parent.querySelector(".image-item__desc span"); 
+            const infoLinkElement = parent.querySelector(".image-item__info"); 
+            const descImgElement = parent.querySelector(".image-item__desc img"); 
             
-            if (titleElement) preview.querySelector(".jtext-p .left .title").innerText = titleElement.innerText; 
+            if (titleElement) preview.querySelector(".image-preview__footer .left .title").innerText = titleElement.innerText; 
             if (descElement) { 
-                preview.querySelector(".jtext-p .left .d").innerText = "Gambar mungkin memiliki hak cipta."; 
-                preview.querySelector(".p-header .title").innerText = descElement.innerText; 
+                preview.querySelector(".image-preview__footer .left .site").innerText = "Gambar mungkin memiliki hak cipta."; 
+                preview.querySelector(".image-preview__header .title").innerText = descElement.innerText; 
             } 
-            if (infoLinkElement) preview.querySelector(".jtext-p .right a").href = infoLinkElement.href; 
-            if (descImgElement) preview.querySelector(".p-fav img").src = descImgElement.src; 
+            if (infoLinkElement) preview.querySelector(".image-preview__footer .right a").href = infoLinkElement.href; 
+            if (descImgElement) preview.querySelector(".image-preview__favicon img").src = descImgElement.src; 
             
-            preview.querySelector(".thumbnail img").src = img.src; 
-            preview.querySelector(".thumbnail img").alt = img.alt; 
+            preview.querySelector(".image-preview__thumbnail img").src = img.src; 
+            preview.querySelector(".image-preview__thumbnail img").alt = img.alt; 
         } 
     } 
 }
