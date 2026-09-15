@@ -8,7 +8,6 @@ const maxStart = 30;
 let isLoading = false; 
 let lastFetchHeight = 0; 
 
-const urlParams = new URLSearchParams(window.location.search);
 const searchQuery = urlParams.get("q") || "";
 
 function positionItems() { 
