@@ -106,9 +106,7 @@ export async function onRequestGet(context) {
   };
 
   const createTab = (tbmVal, icon, labelIndex, isSelected) =>
-    `<div class="search-item"><a href="/search?q=${encodeURIComponent(q).replace(/%20/g, "+")}${tbmVal}${searchLangParam}${searchParam}" class="tab-wrapper${
-      isSelected ? " selected" : ""
-    }"><div class="label">${svgIcons[icon]}<span>${getText(isIdLang, "tab", labelIndex)}</span></div></a></div>`;
+    `<div class="search-item${isSelected ? " selected" : ""}"><a href="/search?q=${encodeURIComponent(q).replace(/%20/g, "+")}${tbmVal}${searchLangParam}${searchParam}" class="tab-wrapper"><div class="label">${svgIcons[icon]}<span>${getText(isIdLang, "tab", labelIndex)}</span></div></a></div>`;
 
   const selectedTabIndex = { vid: 2, isch: 1, nws: 3 }[tbm] ?? 0;
   const tabs = [
