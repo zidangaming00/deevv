@@ -4,6 +4,7 @@
 // "DB" (nggak butuh Worker/API terpisah). Struktur dibuat identik dengan
 // functions/search.js supaya HTML yang dihasilkan sama persis.
 
+
 import { getText, escapeHTML, buildResultCardHtml, buildPageShell } from "./_lib/shared.js";
 
 const PAGE_SIZE = 10;
