@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>Pengaturan — Deevv Search</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="images/search.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --bg: #f8fafd;
+      --surface: #ffffff;
+      --text-main: #1f1f1f;
+      --text-muted: #70757a;
+      --border-color: rgba(0, 0, 0, 0.06);
+      --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.04);
+      --radius-card: 18px;
+      --radius-btn: 12px;
+    }
+
+    /* Mode Gelap (Dark Mode) */
+    body.dark {
+      --primary: #8ab4f8;        /* Biru terang lembut agar tidak sakit di mata */
+      --bg: #121316;             /* Latar belakang utama (Muted Dark) */
+      --surface: #1e1e1e;        /* Warna permukaan kartu / header */
+      --text-main: #e8eaed;      /* Teks putih terang */
+      --text-muted: #9aa0a6;     /* Teks sekunder abu-abu */
+      --border-color: rgba(255, 255, 255, 0.08); /* Garis tepi subtle */
+      --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Penyesuaian kecil untuk elemen form di dark mode */
+    html.dark select option {
+      background-color: var(--surface);
+      color: var(--text-main);
+    }
+
+    .back-btn:hover {
+      background: var(--border-color); /* Agar hover tombol back fleksibel di light/dark */
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px 20px 40px;
+    }
+
+    header {
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding: 0;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.2s ease;
+      /* Box shadow diperhalus agar sesuai standar privasi */
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+
+    .back-btn:hover {
+      transform: translateX(-2px);
+      background: #f1f3f4;
+    }
+
+    .page-title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    main {
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .settings-group {
+      background: var(--surface);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-soft);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+
+    .group-header {
+      padding: 16px 20px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--primary);
+    }
+
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      gap: 16px;
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+
+    .setting-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .setting-label {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .setting-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    select {
+      background: var(--bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: var(--radius-btn);
+      font-size: 13.5px;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    /* Switch Custom */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 46px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+
+    .switch input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #e0e0e0;
+      transition: .25s ease;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .25s ease;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    .btn-action {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: #d93025;
+      padding: 8px 14px;
+      border-radius: var(--radius-btn);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-action:hover { background: rgba(217, 48, 37, 0.06); }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      background: #323232;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 24px;
+      font-size: 13px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    footer {
+      margin-top: auto;
+      padding: 24px 0 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+@media (max-width: 480px) {
+      body {
+        padding: 20px 16px 32px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+    <header>
+    <a href="index.html" class="back-btn" title="Kembali ke Beranda">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    </a>
+    <h1 class="page-title">Pengaturan</h1>
+  </header>
+
+  <main>
+    <!-- Group: Tampilan -->
+    <div class="settings-group">
+      <div class="group-header">Tampilan</div>
+      
+      <div class="setting-item">
+        <div class="setting-info">
+          <span class="setting-label">Tema Tampilan</span>
+          <span class="setting-desc">Pilih warna antarmuka Deevv Search</span>
+        </div>
+        <select id="theme_select">
+          <option value="light">Terang</option>
+          <option value="dark">Gelap (Beta)</option>
+          <option value="system">Sistem</option>
+        </select>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <span class="setting-label">Favicon Situs</span>
+          <span class="setting-desc">Tampilkan logo situs web pada hasil pencarian</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="favicon_toggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Group: Bahasa -->
+    <div class="settings-group">
+      <div class="group-header">Bahasa</div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <span class="setting-label">Bahasa Antarmuka</span>
+          <span class="setting-desc">Bahasa yang digunakan dalam layanan</span>
+        </div>
+        <select id="lang_select">
+          <option value="id">Bahasa Indonesia</option>
+          <option value="en">English (US)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Group: Pencarian -->
+    <div class="settings-group">
+      <div class="group-header">Pencarian</div>
+      
+      <div class="setting-item">
+        <div class="setting-info">
+          <span class="setting-label">Buka di Tab Baru</span>
+          <span class="setting-desc">Membuka tautan hasil pencarian di tab terpisah</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="newtab_toggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <span class="setting-label">Navigasi Langsung URL</span>
+          <span class="setting-desc">Buka situs langsung jika input berupa URL valid</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="newurl_toggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <span class="setting-label">Saran Pencarian</span>
+          <span class="setting-desc">Tampilkan rekomendasi kata kunci saat mengetik</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="suggest_toggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Group: Privasi & Cookie -->
+    <div class="settings-group">
+      <div class="group-header">Privasi & Cookie</div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <span class="setting-label">Reset Cookie Pengaturan</span>
+          <span class="setting-desc">Kembalikan seluruh konfigurasimu ke bawaan</span>
+        </div>
+        <button class="btn-action" id="reset_cookie_btn">Reset Cookie</button>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast" class="toast">Pengaturan tersimpan</div>
+
+  <footer>
+    &copy; Deevv Search &bull; Versi 1.3.0
+  </footer>
+
+  <!-- File External Cookie JS -->
+  <script src="cookie.js"></script>
+
+  <script>
+    // Elements DOM
+    const themeSelect = document.getElementById('theme_select');
+    const faviconToggle = document.getElementById('favicon_toggle');
+    const langSelect = document.getElementById('lang_select');
+    const newtabToggle = document.getElementById('newtab_toggle');
+    const newurlToggle = document.getElementById('newurl_toggle');
+    const suggestToggle = document.getElementById('suggest_toggle');
+    const resetCookieBtn = document.getElementById('reset_cookie_btn');
+    const toast = document.getElementById('toast');
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    // Load preferensi dari cookie.js
+    document.addEventListener('DOMContentLoaded', () => {
+      const config = getData(); // Mengambil data dari cookie.js
+
+          themeSelect.value = config.theme || 'light';
+    
+    // Sinkronisasi untuk halaman pengaturan saat dimuat
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (config.theme === 'dark' || (config.theme === 'system' && prefersDark)) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+
+
+      themeSelect.value = config.theme || 'light';
+      langSelect.value = config.lang || 'id';
+      faviconToggle.checked = config.favicon;
+      newtabToggle.checked = config.newtab;
+      newurlToggle.checked = config.newurl;
+      suggestToggle.checked = config.suggest;
+    });
+
+    // Event Listener Update Opsi
+      themeSelect.addEventListener('change', (e) => {
+    const selectedTheme = e.target.value;
+    updateSetting('theme', selectedTheme);
+    
+    // Terapkan perubahan tema secara langsung (real-time)
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (selectedTheme === 'dark' || (selectedTheme === 'system' && prefersDark)) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+    
+    showToast('Tema diperbarui');
+  });
+
+    langSelect.addEventListener('change', (e) => {
+      updateSetting('lang', e.target.value);
+      showToast('Bahasa diperbarui');
+    });
+
+    faviconToggle.addEventListener('change', (e) => {
+      updateSetting('favicon', e.target.checked);
+      showToast('Pengaturan Favicon disimpan');
+    });
+
+    newtabToggle.addEventListener('change', (e) => {
+      updateSetting('newtab', e.target.checked);
+      showToast('Pengaturan tab disimpan');
+    });
+
+    newurlToggle.addEventListener('change', (e) => {
+      updateSetting('newurl', e.target.checked);
+      showToast('Pengaturan URL disimpan');
+    });
+
+    suggestToggle.addEventListener('change', (e) => {
+      updateSetting('suggest', e.target.checked);
+      showToast('Pengaturan saran disimpan');
+    });
+
+    resetCookieBtn.addEventListener('click', () => {
+      clearData(); // Menghapus cookie dari cookie.js
+      showToast('Cookie berhasil di-reset');
+      setTimeout(() => location.reload(), 1200);
+    });
+  </script>
+</body>
+</html>

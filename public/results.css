@@ -1,0 +1,712 @@
+/* ==========================================================================
+   RESULTS.CSS
+   Satu sistem kartu hasil untuk SEMUA jenis hasil pencarian teks:
+   web result, berita, widget video-di-tab-web, instant answer,
+   related search, empty state, kalkulator & translator.
+   Base class: .result-card (dulu .tab-result). Modifier pakai --flat dll.
+   Gambar (grid foto) & daftar video ada di media.css.
+   ========================================================================== */
+
+.results-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --------------------------------------------------------------------
+   Result card (base) — dulu .tab-result, dipakai web/news/video-widget
+   -------------------------------------------------------------------- */
+
+.result-card {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-style: solid none;
+  margin-bottom: 8px;
+  background: var(--color-white);
+}
+   
+.results-list > .result-card:not(:first-child) { border-top: 1px solid var(--color-border, #e0e0e0); }
+
+/* Varian "flat": tanpa border, shadow tipis di mobile — dulu class eb8xCva */
+.result-card--flat {
+   border: none;
+   border-bottom: 1px solid var(--color-border, #e0e0e0);
+   margin-bottom: 8px;
+}
+/*
+@media (max-width: 480px) {
+  .result-card--flat { box-shadow: var(--card-shadow); }
+}*/
+
+.result-card .title,
+.result-card .title-black {
+  color: var(--color-title);
+  font-size: 20px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+}
+.result-card .title-black { color: black; }
+
+.big-title { font-size: 25px; margin-bottom: 5px; }
+.snippet-info {
+  color: var(--color-text);
+  font-size: 17px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.result-card .top {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 0 11px;
+}
+
+.result-card .favicon {
+  width: 28px;
+  height: 28px;
+  background: var(--color-bg-alt);
+  border-radius: 50%;
+  padding: 4px;
+  position: relative;
+  display: inline-block;
+}
+.result-card .favicon img { width: 100%; height: 100%; mix-blend-mode: multiply; border-radius: 30%; }
+
+.result-card a { text-decoration: none; -webkit-tap-highlight-color: transparent; }
+
+.result-card .link {
+  color: #222222;
+  font-size: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.result-card .link.link--meta { font-size: 12px; margin-top: 1px; }
+
+.result-card .snippet {
+  color: #474747;
+  font-size: 14px;
+  line-height: 20px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.result-card .snippet span { font-weight: 400; word-break: break-word; }
+
+.snippet .thumbnail {
+  min-width: 100px;
+  height: 100px;
+  display: flex;
+  margin: 6px 0 0 8px;
+  border-radius: 12px;
+}
+.snippet .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
+
+.result-card .tab-link { cursor: pointer; -webkit-tap-highlight-color: rgba(0,0,0,.10); padding: 16px 16px 6px; }
+.result-card .btm-snpt { padding: 2px 16px 12px; }
+
+.ads {
+  font-size: 10px;
+  border: 1px solid gray;
+  border-radius: 6px;
+  margin-left: auto;
+  padding: 2px 4px;
+  text-decoration: none;
+  color: #444;
+}
+
+/* Sitelinks — CSS siap pakai, tapi belum ada fungsi render di script.js
+   (Config.sitelinksData masih kosong). Hubungkan kalau fitur ini dipakai lagi. */
+.result-card .sitelinks { display: flex; padding-top: 10px; }
+.result-card .btm-snpt:has(.sitelinks) { padding: 0 16px; }
+.sitelinks .link {
+  color: #363636;
+  font-size: 18px;
+  text-decoration: none;
+  padding: 16px 0;
+  cursor: pointer;
+  border-top: 1px solid var(--color-border-alt);
+}
+@media (max-width: 780px) { .sitelinks { flex-direction: column; } }
+@media (min-width: 780px) {
+  .sitelinks { display: flex; flex-wrap: wrap; padding: 0 10px; }
+  .sitelinks .wrlink { width: 48%; margin: 5px; }
+  .sitelinks .wrlink:nth-child(3),
+  .sitelinks .wrlink:nth-child(4) { margin-top: 15px; }
+  .sitelinks .link { border: none; padding: 2px 0; }
+  .wrlink .snippet { -webkit-line-clamp: 2; }
+  .result-card .title, .sitelinks .link { display: inline-block; color: var(--color-title); }
+  .result-card .title:hover, .sitelinks .link:hover { text-decoration: underline; }
+  .result-card .tab-link { display: inline-block; padding: 16px 16px 0; }
+  .result-card .btm-snpt { padding: 0 15px 5px; }
+}
+
+/* --------------------------------------------------------------------
+   Empty state / koreksi ejaan (dulu .Nrltf / .corrected-word)
+   -------------------------------------------------------------------- */
+
+.result-card--empty,
+.corrected-word { padding: 16px; }
+.corrected-word .spelling { color: var(--color-title); -webkit-tap-highlight-color: rgba(0,0,0,.10); }
+
+/* --------------------------------------------------------------------
+   Instant answer (Mobile: Sharp Edge-to-Edge | Desktop: Rounded Card)
+   -------------------------------------------------------------------- */
+
+.instant-answer {
+  border-radius: 0 !important;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  border-left: none !important;
+  border-right: none !important;
+  padding: 16px; /* Padding utama disederhanakan */
+  margin-bottom: 8px;
+  background: var(--color-white);
+  box-shadow: none !important;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.instant-answer .title {
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--color-text-dark);
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
+
+.instant-answer__subtitle {
+  font-size: 14px;
+  color: #4d5156;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+/* Dukungan Dark Mode */
+body.dark .instant-answer__subtitle {
+  color: #BDC1C4;
+}
+
+.instant-answer .logo {
+  width: 100%;
+  height: 140px;
+  object-fit: contain;
+  background: var(--color-bg-alt);
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+
+.instant-answer .summary-box {
+  background: var(--color-bg-alt);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.instant-answer__section-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.instant-answer .summary-text {
+  font-size: 14px;
+  color: var(--color-text);
+  line-height: 1.5;
+  /* -webkit-line-clamp DIHAPUS agar teks link Wikipedia tidak tertelan/hilang */
+}
+
+.instant-answer .wikipedia {
+  color: var(--color-title);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.instant-answer .infobox {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.instant-answer .infobox-item {
+  background: var(--color-bg-alt);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.instant-answer .infobox-item__label {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.instant-answer .infobox-item__value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-dark);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Khusus Tampilan Desktop (Sidebar) tetap bergaya kartu rounded */
+@media (min-width: 780px) {
+  .instant-answer { 
+    width: 310px !important; 
+    border: 1px solid var(--color-border) !important;
+    border-radius: 16px !important; 
+    margin-left: 20px !important; 
+    box-shadow: none !important; 
+  }
+  .results-list .instant-answer { display: none; }
+}
+@media (min-width: 992px) {
+  .instant-answer { width: 380px !important; }
+}
+
+/* Dark mode */
+body.dark .instant-answer {
+  background: #202125;
+  border-color: #3c4043;
+}
+body.dark .instant-answer .summary-box,
+body.dark .instant-answer .infobox-item {
+  background: #303135;
+}
+body.dark .instant-answer .logo {
+  background: #191a1d;
+}
+
+
+/* --------------------------------------------------------------------
+   Related search
+   -------------------------------------------------------------------- */
+
+.suggestion { margin: 5px 0 8px; }
+
+.related-search {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-width: 1px 0;
+  padding: 16px 16px 0;
+  position: relative;
+  background: var(--color-white);
+  font-family: 'Verio Sans', Roboto-Medium, sans-serif;
+  font-weight: 500;
+   margin-bottom: 8px;
+}
+.related-search .title { font-size: 20px; margin: 5px 0; }
+
+.search-list { width: 100%; margin-top: 10px; font-size: 16px; display: flex; flex-wrap: wrap; }
+.search-list .related {
+  display: flex;
+  padding: 14px 0;
+  padding-right: 40px;
+  text-decoration: none;
+  position: relative;
+  color: #3f3f3f;
+  border-top: 1px solid var(--color-border);
+  -webkit-tap-highlight-color: rgba(0,0,0,.10);
+}
+.related:after {
+  content: "";
+  width: 35px;
+  height: 35px;
+  background-color: #F4F4F4;
+  border-radius: 100%;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background-image: url("images/search.png");
+  background-size: 18px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+@media (max-width: 780px) { .search-list { flex-direction: column; } }
+@media (min-width: 780px) {
+  .related-search { border: none; max-width: 600px; }
+  .related:after { background-color: transparent; }
+  .search-list { gap: 10px 12px; }
+  .search-list .related { width: calc(50% - 10px); border-radius: 8px; padding: 10px; border: none; background: #ececec; }
+}
+
+/* --------------------------------------------------------------------
+   AI Overview (Widget)
+   -------------------------------------------------------------------- */
+
+.ai-overview-card {
+  transition: opacity 0.25s ease-in-out;
+  opacity: 1;
+  padding: 16px;
+}
+
+.ai-overview-card.is-updating {
+  opacity: 0;
+}
+
+.ai-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-title, #1a73e8);
+  margin-bottom: 12px;
+}
+.ai-header svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.ai-overview-card .section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 16px 0 8px;
+}
+
+.ai-sub-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-dark, #202124);
+  margin: 14px 0 8px 0;
+}
+body.dark .ai-sub-title {
+  color: #e8eaed;
+}
+
+/* Memperbaiki Bullet List & Sistem Toggle Show More/Less */
+.ai-overview-card ul.dynamic-list {
+  list-style-type: disc !important;
+  padding-left: 20px !important;
+  margin: 0;
+}
+
+/* Hapus !important pada display agar item bisa disembunyikan oleh JS/class */
+.ai-overview-card ul.dynamic-list li {
+  display: list-item; 
+  margin-bottom: 8px;
+  color: var(--color-text, #4d5156);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Berikan !important pada hidden-item agar pasti tersembunyi */
+.ai-overview-card ul.dynamic-list li.hidden-item {
+  display: none !important;
+}
+
+/* Style khusus teks AI agar tidak dibatasi 3 baris */
+.ai-overview-card .ai-summary-text {
+  font-size: 14px;
+  color: var(--color-text, #4d5156);
+  line-height: 1.5;
+  display: block;
+  word-break: break-word;
+}
+
+.ai-overview-card ul.dynamic-list li strong {
+  display: inline !important;
+  color: var(--color-text-dark, #202124);
+  font-weight: 600;
+}
+body.dark .ai-overview-card ul.dynamic-list li strong {
+  color: #e8eaed;
+}
+
+/* Container pembungkus teks */
+.ai-content-wrapper {
+  position: relative;
+  max-height: 120px; /* Batas tinggi sebelum di-expand */
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%);
+}
+
+.ai-content-wrapper.expanded {
+  max-height: 2000px;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+
+
+/* Menonaktifkan pemotongan teks kaku ellipsis (...) */
+.ai-summary-text.clamped {
+  display: block;
+}
+
+.ai-collapsible-body {
+  margin-top: 10px;
+}
+
+
+.btn-show-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 8px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-dark, #202124);
+  background-color: var(--color-bg-alt, #f1f3f4);
+  border: 1px solid var(--color-border, #d2d2d7);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+body.dark .btn-show-more {
+  color: #E9EAEE;
+  background-color: #303135;
+  border-color: #3c4043;
+}
+.btn-show-more svg {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.3s ease;
+}
+.btn-show-more.expanded svg {
+  transform: rotate(180deg);
+}
+
+/* Skeleton Loading Shimmer */
+.bone-container { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.bone-line {
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--color-bg-alt, #f0f0f0) 25%, var(--color-border, #e0e0e0) 50%, var(--color-bg-alt, #f0f0f0) 75%);
+  background-size: 400px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+.bone-line.short { width: 50%; }
+.bone-line.medium { width: 80%; }
+@keyframes shimmer { 0% { background-position: -200px 0; } 100% { background-position: 200px 0; } }
+
+
+/* --------------------------------------------------------------------
+   Berita (dulu .nwst / .snwt)
+   -------------------------------------------------------------------- */
+
+.news-card { padding: 16px; cursor: pointer; -webkit-tap-highlight-color: rgba(0,0,0,.10); }
+.news-card__body { min-height: 90px; }
+.news-card .title { font-size: 16px; margin-bottom: 8px; }
+.news-card a { color: black; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+.news-card .top { width: auto; }
+.news-card .publishtime { margin-top: 5px; color: #6e7780; font-size: 13px; }
+.news-card .thumb { width: 90px; height: 90px; object-fit: cover; border-radius: 8px; margin-left: 8px; float: right; }
+.news-card:after { content: ""; display: table; clear: both; }
+
+@media (min-width: 780px) { .news-card .title { margin-bottom: 2px; } }
+
+/* --------------------------------------------------------------------
+   Widget video di dalam hasil web (dulu Dxcgd/Jhtm/vidbung/viditem/...)
+   -------------------------------------------------------------------- */
+
+.video-widget { padding: 0; }
+.video-widget__title { color: black; margin: 0; padding: 16px 16px 0; }
+
+.video-widget__list { display: block; }
+
+.video-widget-item {
+  border-top: 1px solid var(--color-border);
+  padding: 12px 16px 8px;
+  position: relative;
+  overflow: hidden;
+}
+.video-widget-item:first-child { border: none; }
+.video-widget-item:active { animation: hoverAnim .8s; }
+
+.video-widget-item__row { display: flex; align-items: flex-start; gap: 12px; }
+
+.video-widget-item .thumbnail { position: relative; width: 130px; display: flex; align-items: center; }
+.video-widget-item .thumbnail img { width: 130px; object-fit: cover; border-radius: 6px; }
+
+.video-widget-item__play {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+.video-widget-item__play .play-icon { width: 35px; position: absolute; opacity: .7; }
+.video-widget-item__play svg { fill: #000; }
+
+.video-widget-item__title {
+  color: var(--color-title);
+  font-size: 16px;
+  margin-bottom: 5px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.video-widget-item__meta { color: #000; display: flex; font-size: 12px; }
+.video-widget-item__meta .dot:before { content: "•"; margin: 0 3px; }
+.video-widget-item__date,
+.video-widget-item__channel { color: #474747; font-size: 12px; }
+.video-widget-item__channel {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --------------------------------------------------------------------
+   Info label kecil (badge)
+   -------------------------------------------------------------------- */
+
+.info-label { color: #000; font-size: 12px; border-radius: 5px; margin-left: 5px; padding: 0 2px; border: 1px solid #ccc; }
+
+/* --------------------------------------------------------------------
+   Kalkulator
+   -------------------------------------------------------------------- */
+
+.calculator {
+  max-width: 400px;
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-style: solid none;
+  padding: 10px 15px 20px;
+  background: var(--color-white);
+}
+.calculator .display {
+  height: 80px; width: 100%; outline: none; border: 1px solid #ccc;
+  text-align: right; margin-bottom: 10px; font-size: 25px; color: #000e1a;
+  pointer-events: none; border-radius: 5px; padding: 0 8px;
+}
+.calculator .buttons { display: grid; grid-gap: 10px; grid-template-columns: repeat(4, 1fr); }
+.calculator .buttons button {
+  padding: 8px; border-radius: 6px; border: none; font-size: 16px;
+  cursor: pointer; user-select: none; background-color: #f2f3f5;
+}
+.calculator .buttons button:active { transform: scale(0.99); }
+.calculator .buttons button.operator { background-color: #DBDCE0; }
+.calculator .buttons button.operator[th="true"] { color: #fff; background-color: #4286F5; }
+
+/* --------------------------------------------------------------------
+   Translator
+   -------------------------------------------------------------------- */
+
+.trnsl { width: 100%; border: 1px solid var(--color-border); border-style: solid none; margin: 4px 0; background: var(--color-white); }
+.wrpl { width: 100%; box-shadow: 0 10px 20px rgba(0,0,0,0.01); }
+.wrpl .text-input { display: flex; flex-direction: column; }
+.text-input .to-text { border-radius: 0; border-left: 0; border-top: 1px solid var(--color-border); }
+.text-input textarea {
+  height: 100px; width: 100%; border: none; outline: none; resize: none;
+  background: none; font-size: 18px; padding: 10px 15px; border-radius: 5px; font-family: arial;
+}
+.text-input textarea::placeholder { color: #b7b6b6; }
+
+.controls, li, .icons, .icons i { display: flex; align-items: center; justify-content: space-between; }
+.controls { width: 100%; list-style: none; padding: 12px 15px; border-bottom: 1px solid var(--color-border); }
+.controls .row .icons { width: 38%; display: none; }
+.controls .row .icons i { width: 50px; color: #adadad; font-size: 14px; cursor: pointer; transition: transform 0.2s ease; justify-content: center; }
+.controls .row.from .icons { padding-right: 15px; border-right: 1px solid #ccc; }
+.controls .row.to .icons { padding-left: 15px; border-left: 1px solid #ccc; }
+.controls .row select { color: #333; border: none; outline: none; font-size: 16px; background: none; padding-left: 5px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
+.controls .exchange { color: #adadad; cursor: pointer; font-size: 14px; transition: transform 0.2s ease; }
+.controls .exchange.off { opacity: 0.6; pointer-events: none; }
+
+@media (min-width: 780px) {
+  .wrpl { border: 1px solid var(--color-border); }
+  .trnsl { border: none; padding: 16px; }
+  .wrpl .text-input { flex-direction: row; }
+  .text-input .to-text { border-left: 1px solid #ccc; border-top: 0; }
+  .text-input textarea { height: 200px; }
+  .controls .row .icons { display: flex; }
+  .controls .row select { font-size: 18px; }
+  .controls .exchange { font-size: 16px; }
+}
+
+/* --------------------------------------------------------------------
+   Dark mode — komponen di file ini
+   -------------------------------------------------------------------- */
+
+body.dark .result-card,
+body.dark .instant-answer,
+body.dark .news-card,
+body.dark .related-search,
+body.dark .video-widget {
+  border-color: var(--color-border);
+  background: #202125;
+}
+body.dark .result-card .title { color: #8BB4F4; }
+body.dark .instant-answer .title,
+body.dark .news-card .title,
+body.dark .video-widget__title { color: #E9EAEE; }
+body.dark .result-card .snippet, body.dark .result-card .link,
+body.dark .instant-answer .infobox, body.dark .instant-answer .snippet,
+body.dark .info-label, body.dark .video-widget-item__channel,
+body.dark .news-card .publishtime { color: #BDC1C4; }
+body.dark .related-search .title { color: #E9EAEE; }
+body.dark .sitelinks .link { color: #8BB4F4; border-color: #9BA0A6; }
+body.dark .search-list .related { border-color: #9BA0A6; color: #BDC1C4; }
+body.dark .instant-answer .infobox span { border-color: #24282B; }
+
+@media (min-width: 780px) {
+  body.dark .result-card, body.dark .news-card, body.dark .trnsl, body.dark .calculator {
+    background: transparent;
+    border: none;
+  }
+  body.dark .video-widget { border: none; background: #202125; }
+}
+
+/* --------------------------------------------------------------------
+   Legacy / belum terverifikasi dipakai
+   Class di bawah ini ADA di CSS lama (u3086.css) tapi TIDAK ditemukan
+   dipanggil dari script.js yang kamu upload (book-result, quotes-tab,
+   install-wrapper). Kemungkinan: (a) sisa fitur lama yang sudah dicabut,
+   atau (b) dipakai halaman lain yang tidak ikut di-upload.
+   Dipindah ke sini (bukan dihapus) supaya aman. Cek dulu sebelum dibuang.
+   -------------------------------------------------------------------- */
+
+.book-result { width: 100%; border: 1px solid var(--color-border); padding: 13px; margin: 4px 0; background: white; }
+.book-result a, .book-result .title { color: var(--color-title); font-size: 18px; margin-bottom: 5px; text-decoration: none; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.book-result .thumbnail { width: 100px; margin-right: 10px; }
+.book-result .thumbnail img { width: 100px; }
+.book-result .tab-link { width: 100%; display: flex; position: relative; text-decoration: none; }
+.book-result .snippet, .book-result .infobook { color: var(--color-text); font-size: 15px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 780px) { .book-result .infobook { max-width: 230px; } }
+
+.quotes-tab { position: relative; }
+.quotes-tab .refresh { position: absolute; cursor: pointer; right: 15px; top: 15px; width: 20px; height: 20px; background-image: url("images/refresh.svg"); background-size: 20px; background-repeat: no-repeat; background-position: center; }
+
+.install-wrapper { width: 100%; padding: 3px; display: flex; align-items: center; justify-content: right; }
+.install { border: 1px solid #ccc; padding: 4px; color: var(--color-title); border-radius: 5px; font-size: 15px; cursor: pointer; background: transparent; }
+
+.information { display: flex; margin: 8px 0; }
+.information img { width: 70px; }
+.information .label { margin: 0 10px; font-size: 14px; display: flex; flex-direction: column; }
