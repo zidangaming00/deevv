@@ -456,20 +456,30 @@ export async function onRequestGet(context) {
       }
 
     } catch (err) {
-      /*
-       * Kalau Turso gagal, jangan membuat
-       * seluruh halaman error.
-       *
-       * Client-side tetap mendapat shell.
-       */
-      console.error(
-        "Search V2 Turso error:",
-        err
-      );
+  console.error("Search V2 Turso error:", err);
 
-      ssrData = null;
-      resultsListInner = "";
-    }
+  ssrData = null;
+
+  const errorMessage =
+    err instanceof Error
+      ? err.message
+      : String(err);
+
+  resultsListInner = `
+    <div class="result-card result-card--flat">
+      <div class="snippet">
+        <strong>Search database error</strong><br>
+        ${escapeHTML(errorMessage)}
+      </div>
+    </div>
+  `;
+
+  resultStatsHtml = `
+    <div class="result-stats">
+      Turso search gagal dijalankan
+    </div>
+  `;
+}
   }
 
   const svgIcons = {
