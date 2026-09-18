@@ -1,274 +1,252 @@
 // functions/searchV2.js
-// Route: GET /searchV2
-// SSR shell + hasil web halaman pertama
-// Database: Turso/libSQL langsung via HTTP API
-//
-// Cloudflare Pages Environment Variables / Secrets:
-// TURSO_DATABASE_URL = libsql://deevv-zidangaming00.aws-ap-northeast-1.turso.io
-// TURSO_AUTH_TOKEN  = token Turso kamu
-
-import {
-  getText,
-  escapeHTML,
-  buildResultCardHtml,
-  buildPageShell
-} from "./_lib/shared.js";
 
 const PAGE_SIZE = 10;
 
 /* =========================================================
-   TURSO
+   TURSO / LIBSQL
 ========================================================= */
 
 function getTursoHttpUrl(env) {
-  const raw = (env.TURSO_DATABASE_URL || "").trim();
+  const raw = String(env.TURSO_DATABASE_URL || "").trim();
 
   if (!raw) {
-    throw new Error(
-      "TURSO_DATABASE_URL belum diset di Cloudflare Pages."
-    );
+    throw new Error("Environment variable TURSO_DATABASE_URL belum diatur.");
   }
 
   if (raw.startsWith("libsql://")) {
     return raw.replace(/^libsql:\/\//, "https://");
   }
 
-  if (raw.startsWith("https://")) {
+  if (raw.startsWith("https://") || raw.startsWith("http://")) {
     return raw;
   }
 
-  if (raw.startsWith("http://")) {
-    return raw.replace(/^http:\/\//, "https://");
-  }
-
   throw new Error(
-    "Format TURSO_DATABASE_URL tidak valid."
+    `Format TURSO_DATABASE_URL tidak dikenali: ${raw}`
   );
 }
 
-
-/**
- * Menjalankan SQL ke Turso menggunakan HTTP Pipeline API.
- */
-async function tursoExecute(env, sql, args = []) {
-  const baseUrl = getTursoHttpUrl(env);
-
-  const token = (
-    env.TURSO_AUTH_TOKEN || ""
-  ).trim();
-
-  if (!token) {
-    throw new Error(
-      "TURSO_AUTH_TOKEN belum diset di Cloudflare Pages."
-    );
+function makeArg(value) {
+  if (value === null || value === undefined) {
+    return {
+      type: "null"
+    };
   }
 
-  const endpoint = `${baseUrl}/v3/pipeline`;
-
-  const stmtArgs = args.map((value) => {
-    if (
-      value === null ||
-      value === undefined
-    ) {
-      return {
-        type: "null"
-      };
-    }
-
-    if (typeof value === "number") {
-      if (Number.isInteger(value)) {
-        return {
-          type: "integer",
-          value: String(value)
-        };
-      }
-
-      return {
-        type: "float",
-        value
-      };
-    }
-
-    if (typeof value === "boolean") {
+  if (typeof value === "number") {
+    if (Number.isInteger(value)) {
       return {
         type: "integer",
-        value: value ? "1" : "0"
+        value: String(value)
       };
     }
 
     return {
-      type: "text",
+      type: "float",
       value: String(value)
     };
+  }
+
+  if (typeof value === "boolean") {
+    return {
+      type: "integer",
+      value: value ? "1" : "0"
+    };
+  }
+
+  return {
+    type: "text",
+    value: String(value)
+  };
+}
+
+async function tursoExecute(env, sql, args = []) {
+  const url = getTursoHttpUrl(env);
+  const token = String(env.TURSO_AUTH_TOKEN || "").trim();
+
+  if (!token) {
+    throw new Error("Environment variable TURSO_AUTH_TOKEN belum diatur.");
+  }
+
+  const response = await fetch(`${url}/v3/pipeline`, {
+    method: "POST",
+
+    headers: {
+      "content-type": "application/json",
+      "authorization": `Bearer ${token}`
+    },
+
+    body: JSON.stringify({
+      requests: [
+        {
+          type: "execute",
+
+          stmt: {
+            sql,
+            args: args.map(makeArg)
+          }
+        },
+
+        {
+          type: "close"
+        }
+      ]
+    })
   });
 
-  const response = await fetch(
-    endpoint,
-    {
-      method: "POST",
-
-      headers: {
-        "Authorization":
-          `Bearer ${token}`,
-
-        "Content-Type":
-          "application/json"
-      },
-
-      body: JSON.stringify({
-        baton: null,
-
-        requests: [
-          {
-            type: "execute",
-
-            stmt: {
-              sql,
-              args: stmtArgs
-            }
-          },
-
-          {
-            type: "close"
-          }
-        ]
-      })
-    }
-  );
+  const text = await response.text();
 
   if (!response.ok) {
-    const errorText =
-      await response
-        .text()
-        .catch(() => "");
-
     throw new Error(
-      `Turso HTTP ${response.status}: ${
-        errorText.slice(0, 500)
-      }`
+      `Turso HTTP ${response.status}: ${text}`
     );
   }
 
-  const data =
-    await response.json();
+  let data;
 
-  const firstResult =
-    data?.results?.[0];
-
-  if (!firstResult) {
+  try {
+    data = JSON.parse(text);
+  } catch {
     throw new Error(
-      "Respons Turso tidak memiliki result."
+      `Response Turso bukan JSON: ${text.slice(0, 1000)}`
     );
   }
 
-  if (
-    firstResult.type === "error"
-  ) {
+  if (!data.results || !data.results[0]) {
     throw new Error(
-      firstResult.error?.message ||
-      "Turso query error."
+      `Response Turso tidak memiliki results: ${JSON.stringify(data).slice(0, 2000)}`
     );
   }
 
-  return (
-    firstResult.response?.result ||
-    null
-  );
+  const result = data.results[0];
+
+  if (result.type === "error") {
+    throw new Error(
+      result.error?.message ||
+      JSON.stringify(result.error) ||
+      "Turso mengembalikan error."
+    );
+  }
+
+  if (result.type !== "ok") {
+    throw new Error(
+      `Tipe response Turso tidak dikenali: ${JSON.stringify(result).slice(0, 2000)}`
+    );
+  }
+
+  return result;
 }
 
 
 /* =========================================================
-   TURSO VALUE / ROW CONVERTER
+   TURSO RESULT HELPERS
 ========================================================= */
 
 function tursoValue(value) {
-  if (
-    value === null ||
-    value === undefined
-  ) {
+  if (value === null || value === undefined) {
     return null;
   }
 
-  switch (value.type) {
-    case "null":
-      return null;
-
-    case "integer":
-      return Number(value.value);
-
-    case "float":
-      return Number(value.value);
-
-    case "text":
+  if (typeof value === "object" && value !== null) {
+    if ("value" in value) {
       return value.value;
-
-    case "blob":
-      return value.value;
-
-    default:
-      return value.value ?? null;
+    }
   }
+
+  return value;
 }
 
-
 function tursoRows(result) {
-  if (!result) {
-    return [];
-  }
+  const cols = result?.result?.cols || [];
+  const rows = result?.result?.rows || [];
 
-  const cols =
-    result.cols || [];
+  const names = cols.map((col, index) => {
+    if (typeof col === "string") {
+      return col;
+    }
 
-  const rows =
-    result.rows || [];
+    return col?.name || `column_${index}`;
+  });
 
-  return rows.map((row) => {
+  return rows.map(row => {
     const obj = {};
 
-    cols.forEach(
-      (col, index) => {
-        const name =
-          typeof col === "string"
-            ? col
-            : col?.name;
-
-        if (name) {
-          obj[name] =
-            tursoValue(row[index]);
-        }
-      }
-    );
+    names.forEach((name, index) => {
+      obj[name] = tursoValue(row[index]);
+    });
 
     return obj;
   });
 }
 
+function firstNumber(result, fallback = 0) {
+  const rows = tursoRows(result);
+
+  if (!rows.length) {
+    return fallback;
+  }
+
+  const first = rows[0];
+
+  const value =
+    first.total ??
+    first.count ??
+    first["COUNT(*)"];
+
+  const number = Number(value);
+
+  return Number.isFinite(number)
+    ? number
+    : fallback;
+}
+
 
 /* =========================================================
-   FTS5
+   HTML HELPERS
 ========================================================= */
 
-/**
- * Membuat query FTS5 prefix.
- *
- * Contoh:
- *
- * Google
- * -> "Google"*
- *
- * Google Search
- * -> "Google"* "Search"*
- */
-function escapeFtsQuery(q) {
-  return q
+function escapeHTML(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function escapeAttribute(value) {
+  return escapeHTML(value);
+}
+
+function getText(value) {
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  return String(value);
+}
+
+
+/* =========================================================
+   FTS QUERY
+========================================================= */
+
+function makeFtsQuery(query) {
+  const words = String(query || "")
     .trim()
     .split(/\s+/)
-    .filter(Boolean)
-    .map((word) => {
-      const clean =
-        word
-          .replace(/"/g, "")
-          .trim();
+    .map(word => word.trim())
+    .filter(Boolean);
+
+  if (!words.length) {
+    return "";
+  }
+
+  return words
+    .map(word => {
+      const clean = word
+        .replace(/"/g, "")
+        .replace(/\*/g, "");
 
       if (!clean) {
         return "";
@@ -282,251 +260,678 @@ function escapeFtsQuery(q) {
 
 
 /* =========================================================
+   RESULT CARD
+========================================================= */
+
+function buildResultCard(item) {
+  const url = getText(item.url);
+  const title = getText(item.title) || url || "Untitled";
+  const snippet = getText(item.snippet);
+  const domain = getText(item.domain);
+
+  let favicon = getText(item.favicon);
+
+  if (!favicon && url) {
+    try {
+      const parsed = new URL(url);
+
+      favicon =
+        `${parsed.protocol}//${parsed.hostname}/favicon.ico`;
+    } catch {
+      favicon = "";
+    }
+  }
+
+  return `
+    <article class="result-card">
+      <div class="result-source">
+
+        ${
+          favicon
+            ? `
+              <img
+                class="result-favicon"
+                src="${escapeAttribute(favicon)}"
+                alt=""
+                width="20"
+                height="20"
+                loading="lazy"
+                onerror="this.style.display='none'"
+              >
+            `
+            : ""
+        }
+
+        <div class="result-domain">
+          ${escapeHTML(domain || url)}
+        </div>
+      </div>
+
+      <a
+        class="result-title"
+        href="${escapeAttribute(url)}"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        ${escapeHTML(title)}
+      </a>
+
+      ${
+        snippet
+          ? `
+            <div class="result-snippet">
+              ${escapeHTML(snippet)}
+            </div>
+          `
+          : ""
+      }
+    </article>
+  `;
+}
+
+
+/* =========================================================
+   PAGE SHELL
+========================================================= */
+
+function buildPageShell({
+  query,
+  content,
+  initialData
+}) {
+  const initialDataJson = JSON.stringify(initialData)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026");
+
+  return `<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>
+    ${escapeHTML(query || "Deevv Search")}
+  </title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+      background: #fff;
+      color: #202124;
+    }
+
+    .search-page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 20px 60px;
+    }
+
+    .search-header {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .search-input {
+      flex: 1;
+      height: 46px;
+      border: 1px solid #dfe1e5;
+      border-radius: 24px;
+      padding: 0 18px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: #aaa;
+    }
+
+    .search-button {
+      height: 46px;
+      padding: 0 20px;
+      border: 0;
+      border-radius: 23px;
+      background: #111;
+      color: #fff;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .result-card {
+      padding: 16px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .result-source {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+      color: #5f6368;
+      font-size: 13px;
+    }
+
+    .result-favicon {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+
+    .result-title {
+      display: block;
+      color: #1a0dab;
+      text-decoration: none;
+      font-size: 20px;
+      line-height: 1.35;
+      margin-bottom: 5px;
+      word-break: break-word;
+    }
+
+    .result-title:hover {
+      text-decoration: underline;
+    }
+
+    .result-snippet {
+      color: #4d5156;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .result-count {
+      color: #70757a;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .debug-box {
+      margin-top: 30px;
+      padding: 18px;
+      border: 1px solid #f0b400;
+      background: #fff8df;
+      border-radius: 12px;
+      overflow-x: auto;
+    }
+
+    .debug-title {
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    .debug-line {
+      margin: 7px 0;
+      font-size: 14px;
+    }
+
+    .debug-label {
+      font-weight: 700;
+    }
+
+    .debug-error {
+      margin-top: 14px;
+      padding: 12px;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #b00020;
+      font-family: monospace;
+      font-size: 13px;
+    }
+
+    .debug-sample {
+      margin-top: 14px;
+      padding: 12px;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: monospace;
+      font-size: 12px;
+    }
+
+    .no-result {
+      padding: 30px 0;
+      color: #555;
+    }
+
+    @media (max-width: 600px) {
+      .search-page {
+        padding: 18px 14px 40px;
+      }
+
+      .search-header {
+        margin-bottom: 20px;
+      }
+
+      .search-button {
+        padding: 0 15px;
+      }
+
+      .result-title {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="search-page">
+
+    <form
+      class="search-header"
+      method="GET"
+      action="/searchV2"
+    >
+
+      <input
+        class="search-input"
+        name="q"
+        value="${escapeAttribute(query)}"
+        placeholder="Search..."
+        autocomplete="off"
+      >
+
+      <button
+        class="search-button"
+        type="submit"
+      >
+        Search
+      </button>
+
+    </form>
+
+    ${content}
+
+  </main>
+
+  <script>
+    window.__DEEVV_INITIAL_DATA__ =
+      ${initialDataJson};
+  </script>
+
+  <script src="./script-v2.js"></script>
+
+</body>
+</html>`;
+}
+
+
+/* =========================================================
+   DEBUG HTML
+========================================================= */
+
+function buildDebugBox(debug) {
+  const sample = debug.sample || [];
+
+  return `
+    <section class="debug-box">
+
+      <div class="debug-title">
+        ⚠️ Debug: kenapa hasil pencarian kosong?
+      </div>
+
+      <div class="debug-line">
+        <span class="debug-label">Query:</span>
+        ${escapeHTML(debug.query)}
+      </div>
+
+      <div class="debug-line">
+        <span class="debug-label">FTS Query:</span>
+        ${escapeHTML(debug.ftsQuery)}
+      </div>
+
+      <div class="debug-line">
+        <span class="debug-label">Page:</span>
+        ${escapeHTML(debug.page)}
+      </div>
+
+      <div class="debug-line">
+        <span class="debug-label">documents:</span>
+        ${escapeHTML(debug.documentsCount)}
+      </div>
+
+      <div class="debug-line">
+        <span class="debug-label">documents_fts:</span>
+        ${escapeHTML(debug.ftsCount)}
+      </div>
+
+      <div class="debug-line">
+        <span class="debug-label">FTS MATCH:</span>
+        ${escapeHTML(debug.matchCount)}
+      </div>
+
+      <div class="debug-line">
+        <span class="debug-label">JOIN documents ↔ documents_fts:</span>
+        ${escapeHTML(debug.joinCount)}
+      </div>
+
+      ${
+        debug.error
+          ? `
+            <div class="debug-error">
+              ${escapeHTML(debug.error)}
+            </div>
+          `
+          : ""
+      }
+
+      ${
+        sample.length
+          ? `
+            <div class="debug-sample">
+              <strong>Contoh data documents_fts:</strong>
+
+${escapeHTML(
+  JSON.stringify(sample, null, 2)
+)}
+            </div>
+          `
+          : `
+            <div class="debug-sample">
+              <strong>Contoh data documents_fts:</strong>
+
+TIDAK ADA DATA.
+            </div>
+          `
+      }
+
+    </section>
+  `;
+}
+
+
+/* =========================================================
    MAIN REQUEST
 ========================================================= */
 
-export async function onRequestGet(
-  context
-) {
-  const {
-    request,
-    env
-  } = context;
+export async function onRequestGet(context) {
+  const { request, env } = context;
 
-  const url =
-    new URL(request.url);
+  const requestUrl = new URL(request.url);
 
-  const q =
-    (
-      url.searchParams.get("q") ||
-      ""
-    ).trim();
+  const query =
+    requestUrl.searchParams.get("q")?.trim() || "";
 
+  const pageParam =
+    requestUrl.searchParams.get("p") ||
+    requestUrl.searchParams.get("page") ||
+    "1";
 
-  /*
-   * Support:
-   *
-   * ?p=1
-   * ?page=1
-   *
-   * supaya frontend lama maupun baru
-   * tetap kompatibel.
-   */
-  const p =
-    url.searchParams.get("p") ||
-    url.searchParams.get("page");
+  let page = Number.parseInt(pageParam, 10);
 
+  if (!Number.isFinite(page) || page < 1) {
+    page = 1;
+  }
 
-  const hl =
-    url.searchParams.get("hl");
-
-  const fv =
-    url.searchParams.get("fv");
-
-  const th =
-    url.searchParams.get("th");
-
-  const uf =
-    url.searchParams.get("uf");
-
-  const sf =
-    url.searchParams.get("sf");
-
-  const tbm =
-    url.searchParams.get("tbm");
-
+  const offset =
+    (page - 1) * PAGE_SIZE;
 
   /* =======================================================
      EMPTY QUERY
   ======================================================= */
 
-  if (!q) {
-    return Response.redirect(
-      new URL(
-        "/",
-        request.url
-      ).toString(),
-      302
+  if (!query) {
+    const initialData = {
+      searchInformation: {
+        totalResults: 0
+      },
+
+      items: [],
+
+      queries: {
+        request: [
+          {
+            searchTerms: "",
+            startIndex: 1
+          }
+        ]
+      }
+    };
+
+    return new Response(
+      buildPageShell({
+        query: "",
+        content: `
+          <div class="no-result">
+            Masukkan kata pencarian terlebih dahulu.
+          </div>
+        `,
+        initialData
+      }),
+      {
+        headers: {
+          "content-type": "text/html; charset=UTF-8"
+        }
+      }
     );
   }
 
 
   /* =======================================================
-     LANGUAGE / OPTIONS
+     BUILD FTS QUERY
   ======================================================= */
 
-  const isIdLang =
-    hl === "id";
-
-  const isFaviconDisabled =
-    fv === "0";
+  const ftsQuery =
+    makeFtsQuery(query);
 
 
   /* =======================================================
-     PAGE
+     DEBUG VARIABLES
   ======================================================= */
 
-  const parsedPage =
-    parseInt(p, 10);
+  let documentsCount = "ERROR";
+  let ftsCount = "ERROR";
+  let matchCount = "ERROR";
+  let joinCount = "ERROR";
 
-  const startIndex =
-    Number.isFinite(parsedPage) &&
-    parsedPage > 1
-      ? parsedPage
-      : 1;
+  let sample = [];
 
-
-  const offset =
-    (startIndex - 1) *
-    PAGE_SIZE;
+  let debugError = "";
 
 
   /* =======================================================
-     SEARCH PARAMS
+     DATABASE DEBUG
   ======================================================= */
 
-  const searchLangParam =
-    isIdLang
-      ? `&hl=${hl}`
-      : "";
+  try {
 
+    /* -------------------------------------------------------
+       1. TEST DOCUMENTS
+    ------------------------------------------------------- */
 
-  let searchParam = "";
-
-  searchParam +=
-    uf === "1"
-      ? "&uf=1"
-      : "";
-
-  searchParam +=
-    isFaviconDisabled
-      ? "&fv=0"
-      : "";
-
-  searchParam +=
-    sf === "1"
-      ? "&sf=1"
-      : "";
-
-  searchParam +=
-    th === "1"
-      ? "&th=1"
-      : "";
-
-
-  /* =======================================================
-     SSR ONLY FOR WEB RESULT
-  ======================================================= */
-
-  const isDefaultFirstPage =
-    ![
-      "vid",
-      "isch",
-      "nws"
-    ].includes(tbm);
-
-
-  let resultsListInner = "";
-
-  let resultStatsHtml = "";
-
-  let paginationHtml = "";
-
-  let ssrData = null;
-
-
-  /* =======================================================
-     DATABASE SEARCH
-  ======================================================= */
-
-  if (isDefaultFirstPage) {
     try {
-      const t0 =
-        Date.now();
-
-
-      /*
-       * FTS QUERY
-       */
-      const ftsQuery =
-        escapeFtsQuery(q);
-
-
-      if (!ftsQuery) {
-        throw new Error(
-          "Query pencarian kosong setelah diproses FTS5."
-        );
-      }
-
-
-      /* =====================================================
-         COUNT
-      ===================================================== */
-
-      const countResult =
+      const result =
         await tursoExecute(
           env,
-
           `
-          SELECT
-            COUNT(*) AS total
+            SELECT COUNT(*) AS total
+            FROM documents
+          `
+        );
+
+      documentsCount =
+        firstNumber(result);
+    } catch (error) {
+      debugError +=
+        `[documents COUNT]\n${error.message}\n\n`;
+    }
+
+
+    /* -------------------------------------------------------
+       2. TEST DOCUMENTS_FTS
+    ------------------------------------------------------- */
+
+    try {
+      const result =
+        await tursoExecute(
+          env,
+          `
+            SELECT COUNT(*) AS total
+            FROM documents_fts
+          `
+        );
+
+      ftsCount =
+        firstNumber(result);
+    } catch (error) {
+      debugError +=
+        `[documents_fts COUNT]\n${error.message}\n\n`;
+    }
+
+
+    /* -------------------------------------------------------
+       3. GET SAMPLE FTS ROWS
+    ------------------------------------------------------- */
+
+    try {
+      const result =
+        await tursoExecute(
+          env,
+          `
+            SELECT
+              rowid,
+              title,
+              snippet
+            FROM documents_fts
+            LIMIT 5
+          `
+        );
+
+      sample =
+        tursoRows(result);
+    } catch (error) {
+      debugError +=
+        `[documents_fts SAMPLE]\n${error.message}\n\n`;
+    }
+
+
+    /* -------------------------------------------------------
+       4. TEST FTS MATCH
+    ------------------------------------------------------- */
+
+    try {
+      const result =
+        await tursoExecute(
+          env,
+          `
+            SELECT COUNT(*) AS total
+            FROM documents_fts
+            WHERE documents_fts MATCH ?
+          `,
+          [ftsQuery]
+        );
+
+      matchCount =
+        firstNumber(result);
+    } catch (error) {
+      debugError +=
+        `[FTS MATCH]\n${error.message}\n\n`;
+    }
+
+
+    /* -------------------------------------------------------
+       5. TEST JOIN
+    ------------------------------------------------------- */
+
+    try {
+      const result =
+        await tursoExecute(
+          env,
+          `
+            SELECT COUNT(*) AS total
+            FROM documents_fts AS f
+            JOIN documents AS d
+              ON d.rowid = f.rowid
+          `
+        );
+
+      joinCount =
+        firstNumber(result);
+    } catch (error) {
+      debugError +=
+        `[JOIN]\n${error.message}\n\n`;
+    }
+
+  } catch (error) {
+
+    debugError +=
+      `[GENERAL DATABASE ERROR]\n${error.message}\n\n`;
+  }
+
+
+  /* =======================================================
+     REAL SEARCH
+  ======================================================= */
+
+  let items = [];
+  let total = 0;
+
+  try {
+
+    /* -------------------------------------------------------
+       COUNT SEARCH RESULT
+    ------------------------------------------------------- */
+
+    const countResult =
+      await tursoExecute(
+        env,
+        `
+          SELECT COUNT(*) AS total
           FROM documents_fts
           WHERE documents_fts MATCH ?
-          `,
+        `,
+        [ftsQuery]
+      );
 
-          [
-            ftsQuery
-          ]
-        );
-
-
-      const countRows =
-        tursoRows(
-          countResult
-        );
+    total =
+      firstNumber(countResult);
 
 
-      const total =
-        Number(
-          countRows[0]?.total || 0
-        );
+    /* -------------------------------------------------------
+       GET SEARCH RESULTS
+    ------------------------------------------------------- */
 
+    if (total > 0) {
 
-      /* =====================================================
-         SEARCH RESULT
-
-         PENTING:
-         documents_fts menggunakan rowid
-         yang mengacu ke documents.rowid.
-
-         Jadi JOIN:
-         d.rowid = f.rowid
-
-         BUKAN:
-         d.url = f.url
-      ===================================================== */
-
-      const itemsResult =
+      const result =
         await tursoExecute(
           env,
-
           `
-          SELECT
-            d.rowid AS rowid,
-            d.url AS url,
-            d.domain AS domain,
-            d.title AS title,
-            d.snippet AS snippet,
-            d.favicon AS favicon,
-            d.thumbnail AS thumbnail
-          FROM documents_fts AS f
-          JOIN documents AS d
-            ON d.rowid = f.rowid
-          WHERE documents_fts MATCH ?
-          ORDER BY d.pagerank DESC
-          LIMIT ? OFFSET ?
+            SELECT
+              d.rowid AS rowid,
+              d.url AS url,
+              d.domain AS domain,
+              d.title AS title,
+              d.snippet AS snippet,
+              d.favicon AS favicon,
+              d.thumbnail AS thumbnail
+            FROM documents_fts AS f
+            JOIN documents AS d
+              ON d.rowid = f.rowid
+            WHERE documents_fts MATCH ?
+            ORDER BY d.pagerank DESC
+            LIMIT ?
+            OFFSET ?
           `,
-
           [
             ftsQuery,
             PAGE_SIZE,
@@ -534,679 +939,127 @@ export async function onRequestGet(
           ]
         );
 
-
-      const rows =
-        tursoRows(
-          itemsResult
-        );
-
-
-      const searchTimeSec =
-        (
-          (Date.now() - t0) /
-          1000
-        ).toFixed(2);
-
-
-      /* =====================================================
-         CONVERT TO SEARCH DATA
-      ===================================================== */
-
-      ssrData = {
-        searchInformation: {
-          formattedTotalResults:
-            total.toLocaleString(
-              "id-ID"
-            ),
-
-          formattedSearchTime:
-            searchTimeSec
-        },
-
-        items:
-          rows.length
-            ? rows.map((row) => ({
-                title:
-                  row.title ||
-                  row.url ||
-                  "Untitled",
-
-                link:
-                  row.url || "",
-
-                displayLink:
-                  row.domain ||
-                  "",
-
-                snippet:
-                  row.snippet ||
-                  "",
-
-                pagemap: {
-                  metatags: [
-                    {
-                      "og:site_name":
-                        row.domain ||
-                        ""
-                    }
-                  ]
-                },
-
-                favicon:
-                  row.favicon ||
-                  null,
-
-                thumbnail:
-                  row.thumbnail ||
-                  null
-              }))
-            : null,
-
-        queries:
-          offset + PAGE_SIZE < total
-            ? {
-                nextPage: [
-                  {
-                    startIndex:
-                      startIndex + 1
-                  }
-                ]
-              }
-            : null
-      };
-
-
-      /* =====================================================
-         RESULT STATS
-      ===================================================== */
-
-      resultStatsHtml =
-        total > 0
-          ? `
-            <div class="result-stats">
-              ${
-                isIdLang
-                  ? `Sekitar ${escapeHTML(
-                      ssrData
-                        .searchInformation
-                        .formattedTotalResults
-                    )} hasil (${escapeHTML(
-                      ssrData
-                        .searchInformation
-                        .formattedSearchTime
-                    )} detik)`
-                  : `Approximately ${escapeHTML(
-                      ssrData
-                        .searchInformation
-                        .formattedTotalResults
-                    )} results (${escapeHTML(
-                      ssrData
-                        .searchInformation
-                        .formattedSearchTime
-                    )} seconds)`
-              }
-            </div>
-          `
-          : `
-            <div class="result-stats">
-              ${
-                isIdLang
-                  ? "Tidak ditemukan hasil dalam index Deevv."
-                  : "No results found in the Deevv index."
-              }
-            </div>
-          `;
-
-
-      /* =====================================================
-         HASIL ADA
-      ===================================================== */
-
-      if (
-        ssrData.items?.length
-      ) {
-        const correctedHtml =
-          ssrData.spelling
-            ? `
-              <div class="corrected-word result-card result-card--flat">
-                <div class="snippet">
-                  ${getText(
-                    isIdLang,
-                    "correct"
-                  )}
-
-                  <a href="/searchV2?q=${encodeURIComponent(
-                    ssrData
-                      .spelling
-                      .correctedQuery
-                  )}${searchLangParam}">
-                    ${escapeHTML(
-                      ssrData
-                        .spelling
-                        .correctedQuery
-                    )}
-                  </a>
-
-                  <span>?</span>
-                </div>
-              </div>
-            `
-            : "";
-
-
-        const itemsHtml =
-          ssrData.items
-            .map(
-              (item, i) => {
-                const card =
-                  buildResultCardHtml(
-                    item,
-                    isFaviconDisabled
-                  );
-
-
-                const videoSlot =
-                  i === 1
-                    ? `
-                      <div id="dynamic-video-widget-slot"></div>
-                    `
-                    : "";
-
-
-                return (
-                  card +
-                  videoSlot
-                );
-              }
-            )
-            .join("");
-
-
-        const trailingVideoSlot =
-          ssrData.items.length < 2
-            ? `
-              <div id="dynamic-video-widget-slot"></div>
-            `
-            : "";
-
-
-        resultsListInner =
-          correctedHtml +
-          itemsHtml +
-          trailingVideoSlot;
-
-
-        /* ===================================================
-           MORE BUTTON
-        =================================================== */
-
-        if (
-          ssrData
-            .queries
-            ?.nextPage
-        ) {
-          paginationHtml =
-            `
-            <div class="show-wrapper">
-              <button class="more">
-                ${getText(
-                  isIdLang,
-                  "more"
-                )}
-              </button>
-            </div>
-            `;
-        }
-      }
-
-      /* =====================================================
-         TIDAK ADA HASIL
-      ===================================================== */
-
-      else {
-        resultsListInner =
-          `
-          <div class="result-card result-card--flat">
-            <div class="snippet">
-              <strong>
-                ${
-                  isIdLang
-                    ? "Tidak ada hasil"
-                    : "No results"
-                }
-              </strong>
-
-              <br>
-
-              ${
-                isIdLang
-                  ? `Tidak ada halaman yang cocok dengan <strong>${escapeHTML(
-                      q
-                    )}</strong> di index Deevv.`
-                  : `No indexed pages matched <strong>${escapeHTML(
-                      q
-                    )}</strong>.`
-              }
-            </div>
-          </div>
-          `;
-      }
+      items =
+        tursoRows(result);
     }
 
+  } catch (error) {
 
-    /* =======================================================
-       TURSO ERROR
-    ======================================================= */
+    debugError +=
+      `[REAL SEARCH]\n${error.message}\n\n`;
 
-    catch (err) {
-      console.error(
-        "Search V2 Turso error:",
-        err
-      );
-
-
-      ssrData = null;
-
-
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : String(err);
-
-
-      resultsListInner =
-        `
-        <div class="result-card result-card--flat">
-          <div class="snippet">
-
-            <strong>
-              ${
-                isIdLang
-                  ? "Database search error"
-                  : "Search database error"
-              }
-            </strong>
-
-            <br><br>
-
-            <span>
-              ${escapeHTML(
-                errorMessage
-              )}
-            </span>
-
-            <br><br>
-
-            <small>
-              ${
-                isIdLang
-                  ? "Periksa TURSO_DATABASE_URL, TURSO_AUTH_TOKEN, struktur tabel, dan query FTS5."
-                  : "Check TURSO_DATABASE_URL, TURSO_AUTH_TOKEN, table structure, and FTS5 query."
-              }
-            </small>
-
-          </div>
-        </div>
-        `;
-
-
-      resultStatsHtml =
-        `
-        <div class="result-stats">
-          ${
-            isIdLang
-              ? "Turso gagal menjalankan pencarian."
-              : "Turso search failed."
-          }
-        </div>
-        `;
-    }
+    total = 0;
+    items = [];
   }
 
 
-  /* =========================================================
-     SVG ICONS
-  ========================================================= */
+  /* =======================================================
+     BUILD HTML
+  ======================================================= */
 
-  const svgIcons = {
+  let content = "";
 
-    all:
-      `
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-        fill="#6e7780"
-        aria-hidden="true"
-      >
-        <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
-          d="M7 1C3.686 1 1 3.686 1 7C1 10.314 3.686 13 7 13C8.127 13 9.182 12.689 10.083 12.149L13.47 15.536C13.763 15.829 14.237 15.829 14.53 15.536C14.823 15.243 14.823 14.769 14.53 14.476L11.149 11.095C11.689 10.194 12 9.127 12 8C12 4.686 9.314 2 6 2C2.686 2 0 4.686 0 8C0 11.314 2.686 14 6 14C7.127 14 8.182 13.689 9.083 13.149L12.47 16.536C12.763 16.829 13.237 16.829 13.53 16.536C13.823 16.243 13.823 15.769 13.53 15.476L10.149 12.095C10.689 11.194 11 10.127 11 9C11 5.686 8.314 3 5 3C1.686 3 -1 5.686 -1 9C-1 12.314 1.686 15 5 15"
-        ></path>
-      </svg>
-      `,
 
-    images:
-      `
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-        fill="#6e7780"
-        aria-hidden="true"
-      >
-        <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
-          d="M3.25 1C1.455 1 0 2.455 0 4.25V11.75C0 13.545 1.455 15 3.25 15H12.75C14.545 15 16 13.545 16 11.75V4.25C16 2.455 14.545 1 12.75 1H3.25ZM14.5 8.439V4.25C14.5 3.284 13.716 2.5 12.75 2.5H3.25C2.284 2.5 1.5 3.284 1.5 4.25V11.75C1.5 11.956 1.536 12.154 1.601 12.338L5.97 7.97C6.263 7.677 6.737 7.677 7.03 7.97L8 8.939L10.97 5.97C11.263 5.677 11.737 5.677 12.03 5.97L14.5 8.439ZM9.061 10L10.03 10.97C10.323 11.263 10.323 11.737 10.03 12.03C9.737 12.323 9.263 12.323 8.97 12.03L6.5 9.561L2.662 13.399C2.846 13.464 3.044 13.5 3.25 13.5C13.716 13.5 14.5 12.716 14.5 11.75V10.561L11.5 7.561L9.061 10Z"
-        ></path>
-      </svg>
-      `,
+  if (items.length > 0) {
 
-    videos:
-      `
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-        fill="#6e7780"
-        aria-hidden="true"
-      >
-        <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
-          d="M13.489 5.55C15.38 6.636 15.38 9.364 13.489 10.45L6.231 14.616C4.348 15.698 2 14.338 2 12.166V3.834C2 1.662 4.348 0.303 6.231 1.384L13.489 5.55ZM12.742 9.149C13.629 8.64 13.629 7.36 12.742 6.851L5.485 2.685C4.601 2.178 3.5 2.816 3.5 3.834V12.166C3.5 13.185 4.601 13.823 5.485 13.316L12.742 9.149Z"
-        ></path>
-      </svg>
-      `,
+    content += `
+      <div class="result-count">
+        Sekitar ${escapeHTML(total)} hasil
+        untuk
+        <strong>${escapeHTML(query)}</strong>
+      </div>
+    `;
 
-    news:
-      `
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 22 22"
-        fill="#6e7780"
-        aria-hidden="true"
-      >
-        <path
-          d="M12 11h6v2h-6v-2zm-6 6h12v-2H6v2zm0-4h4V7H6v6zm16-7.22v12.44c0 1.54-1.34 2.78-3 2.78H5c-1.64 0-3-1.25-3-2.78V5.78C2 4.26 3.36 3 5 3h14c1.64 0 3 1.25 3 2.78zM19.99 12V5.78c0-.42-.46-.78-1-.78H5c-.54 0-.99.36-.99.78v12.44c0 .42.45.78.99.78h14c.54 0 1-.36 1-.78V12zM12 9h6V7h-6v2"
-        ></path>
-      </svg>
-      `,
+    content += items
+      .map(buildResultCard)
+      .join("");
 
-    maps:
-      `
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-        fill="#6e7780"
-        aria-hidden="true"
-      >
-        <path
-          d="M8 8C9.105 8 10 7.105 10 6C10 4.895 9.105 4 8 4C6.895 4 6 4.895 6 6C6 7.105 6.895 8 8 8Z"
-        ></path>
-      </svg>
-      `
+  } else {
+
+    content += `
+      <div class="no-result">
+
+        Tidak ada hasil untuk:
+        <strong>${escapeHTML(query)}</strong>
+
+      </div>
+    `;
+
+    /*
+      Tampilkan informasi debug hanya ketika
+      pencarian menghasilkan 0.
+    */
+
+    content += buildDebugBox({
+      query,
+      ftsQuery,
+      page,
+      documentsCount,
+      ftsCount,
+      matchCount,
+      joinCount,
+      sample,
+      error:
+        debugError.trim() ||
+        "Tidak ada error SQL. Kemungkinan FTS MATCH memang menghasilkan 0."
+    });
+  }
+
+
+  /* =======================================================
+     DATA UNTUK CLIENT
+  ======================================================= */
+
+  const initialData = {
+    searchInformation: {
+      totalResults: total
+    },
+
+    items,
+
+    queries: {
+      request: [
+        {
+          searchTerms: query,
+          startIndex: offset + 1
+        }
+      ]
+    },
+
+    debug: {
+      query,
+      ftsQuery,
+      page,
+      pageSize: PAGE_SIZE,
+      offset,
+      documentsCount,
+      ftsCount,
+      matchCount,
+      joinCount,
+      error: debugError.trim()
+    }
   };
 
 
-  /* =========================================================
-     TAB
-  ========================================================= */
-
-  const createTab = (
-    tbmVal,
-    icon,
-    labelIndex,
-    isSelected
-  ) =>
-    `
-    <div class="search-item${
-      isSelected
-        ? " selected"
-        : ""
-    }">
-
-      <a
-        href="/searchV2?q=${encodeURIComponent(
-          q
-        ).replace(
-          /%20/g,
-          "+"
-        )}${tbmVal}${searchLangParam}${searchParam}"
-        class="tab-wrapper"
-      >
-
-        <div class="label">
-          ${svgIcons[icon]}
-
-          <span>
-            ${getText(
-              isIdLang,
-              "tab",
-              labelIndex
-            )}
-          </span>
-        </div>
-
-      </a>
-    </div>
-    `;
-
-
-  const selectedTabIndex = {
-    vid: 2,
-    isch: 1,
-    nws: 3
-  }[tbm] ?? 0;
-
-
-  const tabs = [
-    createTab(
-      "",
-      "all",
-      0,
-      selectedTabIndex === 0
-    ),
-
-    createTab(
-      "&tbm=isch",
-      "images",
-      1,
-      selectedTabIndex === 1
-    ),
-
-    createTab(
-      "&tbm=vid",
-      "videos",
-      2,
-      selectedTabIndex === 2
-    ),
-
-    createTab(
-      "&tbm=nws",
-      "news",
-      3,
-      selectedTabIndex === 3
-    ),
-
-    createTab(
-      "",
-      "maps",
-      4,
-      false
-    )
-  ].join("");
-
-
-  /* =========================================================
-     MAIN RESULTS
-  ========================================================= */
-
-  const mainResultInner =
-    isDefaultFirstPage
-      ? `
-        ${resultStatsHtml}
-
-        <div class="results-list">
-          ${resultsListInner}
-        </div>
-
-        ${paginationHtml}
-      `
-      : "";
-
-
-  /* =========================================================
-     BODY
-  ========================================================= */
-
-  const bodyHtml =
-    `
-    <div
-      class="app"
-      id="main-bx"
-    >
-
-      <div class="page-header">
-
-        <div class="page-header__inner">
-
-          <div class="logo-slot">
-
-            <a
-              title="Kembali"
-              href="/"
-            >
-
-              <img
-                alt="Logo"
-                src="/images/logo.png"
-              >
-
-            </a>
-
-          </div>
-
-
-          <div class="header">
-
-            <div class="search-box">
-
-              <div class="search-field">
-
-                <input
-                  type="search"
-                  id="sear_21829_input"
-                  value="${escapeHTML(q)}"
-                  name="q"
-                  class="search-input"
-                  autocomplete="off"
-                  placeholder="${getText(
-                    isIdLang,
-                    "placeholder"
-                  )}"
-                >
-
-
-                <div
-                  role="button"
-                  class="search-toggle inpbtun"
-                  id="xclarGh"
-                  title="Cari"
-                ></div>
-
-
-                <div
-                  role="button"
-                  class="cleartext inpbtun"
-                  style="display:${
-                    q
-                      ? "block"
-                      : "none"
-                  }"
-                  id="Chasprn"
-                  title="Hapus"
-                ></div>
-
-              </div>
-
-            </div>
-
-
-            <div class="search-menu">
-              ${tabs}
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div class="results-section">
-
-        <div class="result-wrapper">
-
-          <div class="main-result">
-            ${mainResultInner}
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-    `;
-
-
-  /* =========================================================
-     BUILD SHELL
-  ========================================================= */
-
-  let html =
-    buildPageShell({
-      q,
-      isIdLang,
-      bodyHtml,
-
-      initialDataJson:
-        ssrData
-          ? JSON.stringify(
-              ssrData
-            )
-          : "null"
-    });
-
-
-  /* =========================================================
-     SCRIPT V2
-  ========================================================= */
-
-  html =
-    html.replace(
-      'src="./script.js"',
-      'src="./script-v2.js"'
-    );
-
-
-  /* =========================================================
+  /* =======================================================
      RESPONSE
-  ========================================================= */
+  ======================================================= */
 
   return new Response(
-    html,
+    buildPageShell({
+      query,
+      content,
+      initialData
+    }),
     {
+      status: 200,
+
       headers: {
-        "Content-Type":
+        "content-type":
           "text/html; charset=UTF-8",
 
-        "Cache-Control":
-          "no-store"
+        "cache-control":
+          "no-store, no-cache, must-revalidate"
       }
     }
   );
