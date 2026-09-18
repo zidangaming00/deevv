@@ -70,13 +70,13 @@ export async function onRequestGet(context) {
       ).bind(ftsQuery);
 
       const itemsStmt = env.DB.prepare(
-        `SELECT d.url, d.domain, d.title, d.snippet, d.favicon, d.thumbnail
-         FROM documents_fts f
-         JOIN documents d ON d.id = f.rowid
-         WHERE documents_fts MATCH ?
-         ORDER BY d.pagerank DESC
-         LIMIT ? OFFSET ?`
-      ).bind(ftsQuery, PAGE_SIZE, offset);
+  `SELECT d.url, d.domain, d.title, d.snippet, d.favicon, d.thumbnail
+   FROM documents_fts f
+   JOIN documents d ON d.url = f.url
+   WHERE documents_fts MATCH ?
+   ORDER BY d.pagerank DESC
+   LIMIT ? OFFSET ?`
+).bind(ftsQuery, PAGE_SIZE, offset);
 
       const [countResult, itemsResult] = await Promise.all([
         countStmt.first(),
