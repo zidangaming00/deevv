@@ -38,7 +38,7 @@ jobs:
             -DSQLITE_OMIT_LOAD_EXTENSION \
             -O3
 
-          # 2. Link sqlite3.o dan search_wasm.cxx (Export objek FS secara eksplisit)
+          # 2. Link sqlite3.o dan search_wasm.cxx (Menggunakan EXPORTED_RUNTIME_METHODS)
           em++ search_wasm.cxx sqlite3.o -o functions/api/search_engine.js \
             -s WASM=1 \
             -s EXPORT_ES6=1 \
@@ -47,7 +47,7 @@ jobs:
             -s DYNAMIC_EXECUTION=0 \
             -s FORCE_FILESYSTEM=1 \
             -s ALLOW_MEMORY_GROWTH=1 \
-            -s EXTRA_EXPORTED_RUNTIME_METHODS=['FS'] \
+            -s EXPORTED_RUNTIME_METHODS=['FS'] \
             -DSQLITE_THREADSAFE=0 \
             -DSQLITE_OMIT_LOAD_EXTENSION \
             --bind \
