@@ -1,11 +1,21 @@
 import createSearchModule from './search_engine.js';
-import searchWasmModule from './search_engine.wasm'; // Di-load sebagai WebAssembly.Module oleh Cloudflare
+import searchWasmModule from './search_engine.wasm';
 
 let loadedModule = null;
 
 export async function onRequestGet(context) {
-  const { request } = context;
-  const url = new URL(request.url);
+  const { request, env } = context;
+
+  // 1. Parsing URL secara aman
+  let url;
+  try {
+    url = new URL(request.url);
+  } catch (e) {
+    return new Response(
+      JSON.stringify({ error: "URL Request tidak valid." }), 
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
 
   const query = url.searchParams.get('q') || '';
   const hl = url.searchParams.get('hl') || 'en-US';
@@ -20,23 +30,33 @@ export async function onRequestGet(context) {
 
   try {
     if (!loadedModule) {
-      // Pass langsung objek WebAssembly.Module ke Emscripten
+      // Inisialisasi modul WASM
       loadedModule = await createSearchModule({
         wasmModule: searchWasmModule
       });
 
-      // Load database ke virtual filesystem Emscripten (MEMFS)
-      const dbUrl = new URL('/search_engine.db', request.url);
-      const dbResponse = await fetch(dbUrl);
-      if (!dbResponse.ok) {
-        throw new Error("Gagal mengunduh file search_engine.db dari folder public");
+      // 2. Buat URL bersih hanya memakai origin (mencegah error Invalid URL dari query string)
+      const dbUrl = new URL('/search_engine.db', url.origin);
+      
+      // 3. Fetch file database menggunakan env.ASSETS (Fitur bawaan Cloudflare Pages)
+      let dbResponse;
+      if (env.ASSETS) {
+        dbResponse = await env.ASSETS.fetch(dbUrl.toString());
+      } else {
+        dbResponse = await fetch(dbUrl.toString());
       }
+
+      if (!dbResponse.ok) {
+        throw new Error(`Gagal mengambil search_engine.db dari folder public (Status: ${dbResponse.status})`);
+      }
+
       const dbBuffer = await dbResponse.arrayBuffer();
 
+      // 4. Simpan DB ke virtual filesystem Emscripten (MEMFS)
       loadedModule.FS.writeFile('/search_engine.db', new Uint8Array(dbBuffer));
     }
 
-    // Panggil fungsi C++ searchJson
+    // 5. Eksekusi pencarian C++
     const jsonResultString = loadedModule.searchJson(query, hl, timeFilter);
 
     return new Response(jsonResultString, {
