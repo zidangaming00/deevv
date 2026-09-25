@@ -1,0 +1,65 @@
+name: Compile C++ to WASM
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'search_wasm.cxx'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Emscripten toolchain
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 'latest'
+
+      - name: Download SQLite Amalgamation
+        run: |
+          wget https://www.sqlite.org/2023/sqlite-amalgamation-3420000.zip
+          unzip -o sqlite-amalgamation-3420000.zip
+          cp sqlite-amalgamation-3420000/sqlite3.c .
+          cp sqlite-amalgamation-3420000/sqlite3.h .
+
+      - name: Compile C++ to WASM
+        run: |
+          mkdir -p functions/api
+
+          # 1. Compile sqlite3.c
+          emcc -c sqlite3.c -o sqlite3.o \
+            -DSQLITE_THREADSAFE=0 \
+            -DSQLITE_OMIT_LOAD_EXTENSION \
+            -O3
+
+          # 2. Link sqlite3.o dan search_wasm.cxx (Export objek FS secara eksplisit)
+          em++ search_wasm.cxx sqlite3.o -o functions/api/search_engine.js \
+            -s WASM=1 \
+            -s EXPORT_ES6=1 \
+            -s MODULARIZE=1 \
+            -s ENVIRONMENT='worker' \
+            -s DYNAMIC_EXECUTION=0 \
+            -s FORCE_FILESYSTEM=1 \
+            -s ALLOW_MEMORY_GROWTH=1 \
+            -s EXTRA_EXPORTED_RUNTIME_METHODS=['FS'] \
+            -DSQLITE_THREADSAFE=0 \
+            -DSQLITE_OMIT_LOAD_EXTENSION \
+            --bind \
+            -O3
+
+      - name: Force Commit & Push WASM Output
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Stage file .js dan .wasm
+          git add -f functions/api/search_engine.js functions/api/search_engine.wasm
+          
+          git commit --allow-empty -m "Re-compile search_wasm.cxx to WASM [skip ci]"
+          git push
