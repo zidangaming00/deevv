@@ -20,13 +20,17 @@ export async function onRequestGet(context) {
 
   try {
     if (!loadedModule) {
-      // Inisialisasi WASM
+      // Inisialisasi WASM khusus Cloudflare Workers
       loadedModule = await createSearchModule({
-        wasmModule: searchWasmModule,
-        locateFile: (path) => path
+        instantiateWasm(imports, successCallback) {
+          // Buat instance langsung dari modul WASM yang di-import statis
+          const instance = new WebAssembly.Instance(searchWasmModule, imports);
+          successCallback(instance);
+          return instance.exports;
+        }
       });
 
-      // Fetch search_engine.db dari folder public
+      // Fetch search_engine.db dari asset publik
       const dbUrl = `${reqUrl.origin}/search_engine.db`;
       
       let dbResponse;
@@ -42,11 +46,11 @@ export async function onRequestGet(context) {
 
       const dbBuffer = await dbResponse.arrayBuffer();
 
-      // Simpan ke virtual filesystem Emscripten (MEMFS)
+      // Simpan file DB ke virtual filesystem Emscripten (MEMFS)
       loadedModule.FS.writeFile('/search_engine.db', new Uint8Array(dbBuffer));
     }
 
-    // Eksekusi fungsi C++
+    // Eksekusi fungsi C++ (C++ side: searchJson(std::string q, std::string hl, std::string tbs))
     const jsonResultString = loadedModule.searchJson(query, hl, timeFilter);
 
     return new Response(jsonResultString, {
