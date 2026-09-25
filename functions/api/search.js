@@ -20,13 +20,13 @@ export async function onRequestGet(context) {
 
   try {
     if (!loadedModule) {
-      // 1. Inisialisasi Modul WASM dengan locateFile dummy untuk mencegah Emscripten memicu "Invalid URL"
+      // Inisialisasi WASM
       loadedModule = await createSearchModule({
         wasmModule: searchWasmModule,
-        locateFile: (path) => path // Mencegah Emscripten melakukan resolving URL otomatis
+        locateFile: (path) => path
       });
 
-      // 2. Fetch file database secara manual dari origin
+      // Fetch search_engine.db dari folder public
       const dbUrl = `${reqUrl.origin}/search_engine.db`;
       
       let dbResponse;
@@ -42,11 +42,11 @@ export async function onRequestGet(context) {
 
       const dbBuffer = await dbResponse.arrayBuffer();
 
-      // 3. Simpan ke virtual filesystem (MEMFS)
+      // Simpan ke virtual filesystem Emscripten (MEMFS)
       loadedModule.FS.writeFile('/search_engine.db', new Uint8Array(dbBuffer));
     }
 
-    // 4. Eksekusi C++ searchJson
+    // Eksekusi fungsi C++
     const jsonResultString = loadedModule.searchJson(query, hl, timeFilter);
 
     return new Response(jsonResultString, {
