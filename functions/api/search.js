@@ -6,7 +6,6 @@ let loadedModule = null;
 export async function onRequestGet(context) {
   const { request, env } = context;
 
-  // 1. Ambil query parameter dengan aman
   const reqUrl = new URL(request.url);
   const query = reqUrl.searchParams.get('q') || '';
   const hl = reqUrl.searchParams.get('hl') || 'en-US';
@@ -21,20 +20,20 @@ export async function onRequestGet(context) {
 
   try {
     if (!loadedModule) {
-      // Inisialisasi modul WASM
+      // 1. Inisialisasi Modul WASM dengan locateFile dummy untuk mencegah Emscripten memicu "Invalid URL"
       loadedModule = await createSearchModule({
-        wasmModule: searchWasmModule
+        wasmModule: searchWasmModule,
+        locateFile: (path) => path // Mencegah Emscripten melakukan resolving URL otomatis
       });
 
-      // 2. Buat URL absolut untuk search_engine.db di folder public
-      const dbTargetUrl = new URL('/search_engine.db', request.url);
-
-      // 3. Fetch file database dari static asset Cloudflare Pages
+      // 2. Fetch file database secara manual dari origin
+      const dbUrl = `${reqUrl.origin}/search_engine.db`;
+      
       let dbResponse;
       if (env.ASSETS) {
-        dbResponse = await env.ASSETS.fetch(dbTargetUrl);
+        dbResponse = await env.ASSETS.fetch(new Request(dbUrl));
       } else {
-        dbResponse = await fetch(dbTargetUrl.href);
+        dbResponse = await fetch(dbUrl);
       }
 
       if (!dbResponse.ok) {
@@ -43,11 +42,11 @@ export async function onRequestGet(context) {
 
       const dbBuffer = await dbResponse.arrayBuffer();
 
-      // 4. Simpan DB ke virtual filesystem Emscripten (MEMFS)
+      // 3. Simpan ke virtual filesystem (MEMFS)
       loadedModule.FS.writeFile('/search_engine.db', new Uint8Array(dbBuffer));
     }
 
-    // 5. Eksekusi pencarian C++
+    // 4. Eksekusi C++ searchJson
     const jsonResultString = loadedModule.searchJson(query, hl, timeFilter);
 
     return new Response(jsonResultString, {
@@ -60,7 +59,10 @@ export async function onRequestGet(context) {
 
   } catch (err) {
     return new Response(
-      JSON.stringify({ error: err.message || "Terjadi kesalahan pada server WASM." }), 
+      JSON.stringify({ 
+        error: err.message || "Terjadi kesalahan pada server WASM.",
+        stack: err.stack || null 
+      }), 
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
