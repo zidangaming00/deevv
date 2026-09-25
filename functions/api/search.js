@@ -6,20 +6,11 @@ let loadedModule = null;
 export async function onRequestGet(context) {
   const { request, env } = context;
 
-  // 1. Parsing URL secara aman
-  let url;
-  try {
-    url = new URL(request.url);
-  } catch (e) {
-    return new Response(
-      JSON.stringify({ error: "URL Request tidak valid." }), 
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
-    );
-  }
-
-  const query = url.searchParams.get('q') || '';
-  const hl = url.searchParams.get('hl') || 'en-US';
-  const timeFilter = url.searchParams.get('tbs') || '';
+  // 1. Ambil query parameter dengan aman
+  const reqUrl = new URL(request.url);
+  const query = reqUrl.searchParams.get('q') || '';
+  const hl = reqUrl.searchParams.get('hl') || 'en-US';
+  const timeFilter = reqUrl.searchParams.get('tbs') || '';
 
   if (!query.trim()) {
     return new Response(
@@ -35,19 +26,19 @@ export async function onRequestGet(context) {
         wasmModule: searchWasmModule
       });
 
-      // 2. Buat URL bersih hanya memakai origin (mencegah error Invalid URL dari query string)
-      const dbUrl = new URL('/search_engine.db', url.origin);
-      
-      // 3. Fetch file database menggunakan env.ASSETS (Fitur bawaan Cloudflare Pages)
+      // 2. Buat URL absolut untuk search_engine.db di folder public
+      const dbTargetUrl = new URL('/search_engine.db', request.url);
+
+      // 3. Fetch file database dari static asset Cloudflare Pages
       let dbResponse;
       if (env.ASSETS) {
-        dbResponse = await env.ASSETS.fetch(dbUrl.toString());
+        dbResponse = await env.ASSETS.fetch(dbTargetUrl);
       } else {
-        dbResponse = await fetch(dbUrl.toString());
+        dbResponse = await fetch(dbTargetUrl.href);
       }
 
       if (!dbResponse.ok) {
-        throw new Error(`Gagal mengambil search_engine.db dari folder public (Status: ${dbResponse.status})`);
+        throw new Error(`Gagal mengambil search_engine.db (Status: ${dbResponse.status})`);
       }
 
       const dbBuffer = await dbResponse.arrayBuffer();
