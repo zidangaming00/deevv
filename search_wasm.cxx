@@ -318,7 +318,7 @@ std::string searchJson(std::string query, std::string hl, std::string time_filte
         }
     }
 
-    const int PAGE_SIZE = 10;
+    const int RESULTS_PER_PAGE = 10;
     if (start < 1) start = 1;
     int offset = start - 1;
 
@@ -345,7 +345,7 @@ std::string searchJson(std::string query, std::string hl, std::string time_filte
     json += "},";
 
     json += "\"items\":[";
-    int end = std::min(static_cast<int>(allResults.size()), offset + PAGE_SIZE);
+    int end = std::min(static_cast<int>(allResults.size()), offset + RESULTS_PER_PAGE);
     bool first = true;
     for (int i = offset; i < end; ++i) {
         if (!first) json += ",";
