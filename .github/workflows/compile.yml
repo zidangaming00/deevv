@@ -62,4 +62,6 @@ jobs:
           git add -f functions/api/search_engine.js functions/api/search_engine.wasm
           
           git commit --allow-empty -m "Re-compile search_wasm.cxx to WASM [skip ci]"
+          
+          git pull --rebase origin main
           git push
