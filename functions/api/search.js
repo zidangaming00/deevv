@@ -30,7 +30,7 @@ export async function onRequestGet(context) {
         }
       });
 
-      const dbUrl = `${reqUrl.origin}/search_engine.db`;
+      const dbUrl = `https://github.com/zidangaming00/deevv/releases/download/db-latest/search_engine.db`;
 
       let dbResponse;
       if (env.ASSETS) {
