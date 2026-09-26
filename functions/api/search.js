@@ -4,7 +4,7 @@ import searchWasmModule from './search_engine.wasm';
 let loadedModule = null;
 
 export async function onRequestGet(context) {
-  const { request, env } = context;
+  const { request } = context;
 
   const reqUrl = new URL(request.url);
   const query = reqUrl.searchParams.get('q') || '';
@@ -30,39 +30,29 @@ export async function onRequestGet(context) {
         }
       });
 
-      const dbUrl = `https://github.com/zidangaming00/deevv/releases/download/db-latest/search_engine.db`;
-
-      let dbResponse;
-      if (env.ASSETS) {
-        dbResponse = await env.ASSETS.fetch(new Request(dbUrl));
-      } else {
-        dbResponse = await fetch(dbUrl);
-      }
+      const dbUrl = 'https://github.com/zidangaming00/deevv/releases/download/db-latest/search_engine.db';
+      const dbResponse = await fetch(dbUrl);
 
       if (!dbResponse.ok) {
-        throw new Error(`Gagal mengambil search_engine.db (Status: ${dbResponse.status})`);
+        throw new Error(`Gagal mengambil search_engine.db dari GitHub Release (Status: ${dbResponse.status})`);
       }
 
       const dbBuffer = await dbResponse.arrayBuffer();
 
-      // --- DEBUG: rekam info fetch db, ditempel ke tiap response ---
       debugInfo.dbByteLength = dbBuffer.byteLength;
       debugInfo.dbByteLengthMB = (dbBuffer.byteLength / 1024 / 1024).toFixed(2);
       debugInfo.dbContentType = dbResponse.headers.get('content-type');
       debugInfo.dbUrl = dbUrl;
-      debugInfo.viaAssetsBinding = !!env.ASSETS;
 
-      // Deteksi kalau yang ke-fetch itu HTML (fallback 404), bukan file .db asli
       const firstBytes = new Uint8Array(dbBuffer.slice(0, 16));
       const asText = new TextDecoder().decode(firstBytes);
       debugInfo.looksLikeHTML = asText.trim().toLowerCase().startsWith('<!doctype') || asText.trim().toLowerCase().startsWith('<html');
       debugInfo.sqliteMagicOK = asText.startsWith('SQLite format 3');
 
       loadedModule.FS.writeFile('/search_engine.db', new Uint8Array(dbBuffer));
-      loadedModule._debugInfo = debugInfo; // simpan biar kepakai di request berikutnya juga (module cache)
+      loadedModule._debugInfo = debugInfo;
     }
 
-    // Endpoint diagnostic khusus: /api/search?q=__debug__
     if (query === '__debug__') {
       return new Response(JSON.stringify({
         debug: loadedModule._debugInfo || { note: 'module sudah pernah di-load sebelumnya, tidak fetch ulang db' }
@@ -74,7 +64,6 @@ export async function onRequestGet(context) {
 
     const jsonResultString = loadedModule.searchJson(query, hl, timeFilter);
 
-    // Tempel debug info kalau ?debug=1 ditambahkan ke query manapun
     if (reqUrl.searchParams.get('debug') === '1') {
       const parsed = JSON.parse(jsonResultString);
       parsed.__debug = loadedModule._debugInfo || null;
