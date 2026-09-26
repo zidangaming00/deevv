@@ -10,6 +10,7 @@ export async function onRequestGet(context) {
   const query = reqUrl.searchParams.get('q') || '';
   const hl = reqUrl.searchParams.get('hl') || 'en-US';
   const timeFilter = reqUrl.searchParams.get('tbs') || '';
+  const start = parseInt(reqUrl.searchParams.get('start') || '1', 10);
 
   if (!query.trim()) {
     return new Response(
@@ -62,7 +63,7 @@ export async function onRequestGet(context) {
       });
     }
 
-    const jsonResultString = loadedModule.searchJson(query, hl, timeFilter);
+    const jsonResultString = loadedModule.searchJson(query, hl, timeFilter, start);
 
     if (reqUrl.searchParams.get('debug') === '1') {
       const parsed = JSON.parse(jsonResultString);
