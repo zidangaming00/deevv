@@ -194,10 +194,11 @@ std::string normalizedHost(const std::string& domain) {
     return d;
 }
 
-std::vector<Document> searchInDatabase(sqlite3* db, const std::string& keyword, const std::string& hl = "", const std::string& time_filter = "") {
+// Ditambah parameter outTotalMatched (dikirim balik lewat reference) buat isi totalResults
+std::vector<Document> searchInDatabase(sqlite3* db, const std::string& keyword, const std::string& hl, const std::string& time_filter, long long& outTotalMatched) {
     std::vector<Document> results;
     std::vector<std::string> tokens = tokenize(keyword);
-    if (tokens.empty()) return results;
+    if (tokens.empty()) { outTotalMatched = 0; return results; }
 
     std::vector<std::string> uniqueTokens;
     std::unordered_set<std::string> seenTokens;
@@ -205,10 +206,10 @@ std::vector<Document> searchInDatabase(sqlite3* db, const std::string& keyword, 
         std::string clean = toLower(sanitizeFtsToken(token));
         if (!clean.empty() && seenTokens.insert(clean).second) uniqueTokens.push_back(clean);
     }
-    if (uniqueTokens.empty()) return results;
+    if (uniqueTokens.empty()) { outTotalMatched = 0; return results; }
 
     std::string sql =
-        "SELECT d.url, d.domain, d.title, d.snippet, d.favicon, d.lang, d.updated_at, d.pagerank, "
+        "SELECT d.url, d.domain, d.title, SUBSTR(d.snippet, 1, 600), d.favicon, d.lang, d.updated_at, d.pagerank, "
         "SUM(5.0 * ii.tf_title + 1.0 * ii.tf_body + 0.7 * ii.tf_anchor) AS raw_term_score, "
         "COUNT(DISTINCT ii.term) AS matched_terms "
         "FROM inverted_index ii JOIN documents d ON d.id = ii.doc_id WHERE ii.term IN (";
@@ -222,10 +223,13 @@ std::vector<Document> searchInDatabase(sqlite3* db, const std::string& keyword, 
     if (time_filter == "30m") sql += " AND d.updated_at >= datetime('now','-30 minutes')";
     else if (time_filter == "1h") sql += " AND d.updated_at >= datetime('now','-1 hour')";
 
-    sql += " GROUP BY d.id HAVING COUNT(DISTINCT ii.term) = ? LIMIT 1500;";
+    // LIMIT diturunin dari 1500 -> 300, dan SUBSTR di snippet biar nggak narik full HTML/content
+    // per baris ke memori — ini yang paling mungkin jadi penyebab "Memory limit exceeded" kemarin
+    sql += " GROUP BY d.id HAVING COUNT(DISTINCT ii.term) = ? LIMIT 300;";
 
     sqlite3_stmt* stmt = nullptr;
     if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        outTotalMatched = 0;
         return results;
     }
 
@@ -298,11 +302,13 @@ std::vector<Document> searchInDatabase(sqlite3* db, const std::string& keyword, 
         return a.final_score > b.final_score;
     });
 
+    outTotalMatched = static_cast<long long>(results.size());
     return results;
 }
 
 // Fungsi utama yang dipanggil oleh JavaScript via WebAssembly
-std::string searchJson(std::string query, std::string hl, std::string time_filter) {
+// 'start' pakai konvensi Google CSE: 1-based, start=1 -> hasil pertama, start=11 -> halaman 2, dst
+std::string searchJson(std::string query, std::string hl, std::string time_filter, int start) {
     auto startTime = std::chrono::high_resolution_clock::now();
 
     static sqlite3* db = nullptr;
@@ -312,7 +318,12 @@ std::string searchJson(std::string query, std::string hl, std::string time_filte
         }
     }
 
-    std::vector<Document> results = searchInDatabase(db, query, hl, time_filter);
+    const int PAGE_SIZE = 10;
+    if (start < 1) start = 1;
+    int offset = start - 1;
+
+    long long totalResults = 0;
+    std::vector<Document> allResults = searchInDatabase(db, query, hl, time_filter, totalResults);
 
     auto endTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = endTime - startTime;
@@ -320,49 +331,49 @@ std::string searchJson(std::string query, std::string hl, std::string time_filte
 
     std::ostringstream timeStream;
     timeStream << std::fixed << std::setprecision(6) << searchTime;
-    std::string formattedSearchTimeStr = timeStream.str();
-    
     std::ostringstream timeShortStream;
     timeShortStream << std::fixed << std::setprecision(2) << searchTime;
-    std::string formattedSearchTimeShort = timeShortStream.str();
 
-    long long totalResults = static_cast<long long>(results.size());
-
-    // Membangun JSON persis dengan skema Google Custom Search API
     std::string json = "{";
     json += "\"engine\":\"web\",";
     json += "\"query\":\"" + escapeJson(query) + "\",";
     json += "\"searchInformation\":{";
-    json += "\"searchTime\":" + formattedSearchTimeStr + ",";
-    json += "\"formattedSearchTime\":\"" + formattedSearchTimeShort + "\",";
+    json += "\"searchTime\":" + timeStream.str() + ",";
+    json += "\"formattedSearchTime\":\"" + timeShortStream.str() + "\",";
     json += "\"totalResults\":\"" + std::to_string(totalResults) + "\",";
     json += "\"formattedTotalResults\":\"" + formatWithCommas(totalResults) + "\"";
     json += "},";
 
     json += "\"items\":[";
-    for (size_t i = 0; i < results.size(); ++i) {
-        if (i > 0) json += ",";
+    int end = std::min(static_cast<int>(allResults.size()), offset + PAGE_SIZE);
+    bool first = true;
+    for (int i = offset; i < end; ++i) {
+        if (!first) json += ",";
+        first = false;
         json += "{";
-        json += "\"position\":" + std::to_string(i) + ",";
-        json += "\"title\":\"" + escapeJson(stripHTMLTags(results[i].title)) + "\",";
-        json += "\"link\":\"" + escapeJson(results[i].url) + "\",";
-        json += "\"displayLink\":\"" + escapeJson(results[i].domain) + "\",";
-        json += "\"snippet\":\"" + escapeJson(results[i].snippet) + "\",";
-        
-        // Pagemap untuk metatags/thumbnail jika tersedia dari database
+        json += "\"position\":" + std::to_string(i + 1) + ",";
+        json += "\"title\":\"" + escapeJson(stripHTMLTags(allResults[i].title)) + "\",";
+        json += "\"link\":\"" + escapeJson(allResults[i].url) + "\",";
+        json += "\"displayLink\":\"" + escapeJson(allResults[i].domain) + "\",";
+        json += "\"snippet\":\"" + escapeJson(allResults[i].snippet) + "\",";
         json += "\"pagemap\":{";
         json += "\"metatags\":[{";
         json += "\"viewport\":\"width=device-width, initial-scale=1.0\"";
-        if (!results[i].favicon.empty()) {
-            json += ",\"og:image\":\"" + escapeJson(results[i].favicon) + "\"";
+        if (!allResults[i].favicon.empty()) {
+            json += ",\"og:image\":\"" + escapeJson(allResults[i].favicon) + "\"";
         }
         json += "}]";
         json += "}";
-
         json += "}";
     }
     json += "],";
-    json += "\"queries\":{\"nextPage\":[]}";
+
+    // queries.nextPage ala Google CSE, biar front-end tau start berikutnya
+    json += "\"queries\":{\"nextPage\":[";
+    if (end < static_cast<int>(allResults.size())) {
+        json += "{\"startIndex\":" + std::to_string(end + 1) + "}";
+    }
+    json += "]}";
     json += "}";
 
     return json;
