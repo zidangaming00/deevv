@@ -11,17 +11,9 @@ export async function onRequestGet(context) {
   const hl = reqUrl.searchParams.get('hl') || 'en-US';
   const timeFilter = reqUrl.searchParams.get('tbs') || '';
   const start = parseInt(reqUrl.searchParams.get('start') || '1', 10);
-
-  if (!query.trim()) {
-    return new Response(
-      JSON.stringify({ error: "Parameter 'q' wajib diisi." }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
-    );
-  }
+  const wantDebug = reqUrl.searchParams.get('debug') === '1';
 
   try {
-    let debugInfo = {};
-
     if (!loadedModule) {
       loadedModule = await createSearchModule({
         instantiateWasm(imports, successCallback) {
@@ -39,47 +31,88 @@ export async function onRequestGet(context) {
       }
 
       const dbBuffer = await dbResponse.arrayBuffer();
-
-      debugInfo.dbByteLength = dbBuffer.byteLength;
-      debugInfo.dbByteLengthMB = (dbBuffer.byteLength / 1024 / 1024).toFixed(2);
-      debugInfo.dbContentType = dbResponse.headers.get('content-type');
-      debugInfo.dbUrl = dbUrl;
-
-      const firstBytes = new Uint8Array(dbBuffer.slice(0, 16));
-      const asText = new TextDecoder().decode(firstBytes);
-      debugInfo.looksLikeHTML = asText.trim().toLowerCase().startsWith('<!doctype') || asText.trim().toLowerCase().startsWith('<html');
-      debugInfo.sqliteMagicOK = asText.startsWith('SQLite format 3');
-
       loadedModule.FS.writeFile('/search_engine.db', new Uint8Array(dbBuffer));
-      loadedModule._debugInfo = debugInfo;
     }
 
+    // Endpoint diagnostic murni info file db, dihitung ulang tiap request via FS.stat
+    // (jadi selalu akurat, nggak tergantung apakah ini cold start atau warm)
     if (query === '__debug__') {
+      const stat = loadedModule.FS.stat('/search_engine.db');
+      const bytes = loadedModule.FS.readFile('/search_engine.db', { count: 16 });
+      const magicText = new TextDecoder().decode(bytes.slice(0, 16));
+
       return new Response(JSON.stringify({
-        debug: loadedModule._debugInfo || { note: 'module sudah pernah di-load sebelumnya, tidak fetch ulang db' }
+        debug: {
+          dbByteLength: stat.size,
+          dbByteLengthMB: (stat.size / 1024 / 1024).toFixed(2),
+          sqliteMagicOK: magicText.startsWith('SQLite format 3'),
+          firstBytesPreview: magicText
+        }
       }, null, 2), {
         status: 200,
         headers: { 'Content-Type': 'application/json; charset=utf-8' }
       });
     }
 
+    if (!query.trim()) {
+      return new Response(
+        JSON.stringify({ error: "Parameter 'q' wajib diisi." }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Search normal, pakai hl sesuai request (atau default en-US)
     const jsonResultString = loadedModule.searchJson(query, hl, timeFilter, start);
 
-    if (reqUrl.searchParams.get('debug') === '1') {
-      const parsed = JSON.parse(jsonResultString);
-      parsed.__debug = loadedModule._debugInfo || null;
-      return new Response(JSON.stringify(parsed, null, 2), {
+    if (!wantDebug) {
+      return new Response(jsonResultString, {
         status: 200,
-        headers: { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*' }
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Access-Control-Allow-Origin': '*'
+        }
       });
     }
 
-    return new Response(jsonResultString, {
+    // --- MODE DEBUG DETAIL (?debug=1) ---
+    const parsed = JSON.parse(jsonResultString);
+
+    // Jalanin ulang query yang sama tapi hl dipaksa "all" (bypass filter bahasa di C++)
+    // buat mastiin apakah 0 hasil itu soal filter bahasa atau soal index-nya emang kosong
+    let bypassResult = null;
+    let bypassError = null;
+    try {
+      const bypassJsonString = loadedModule.searchJson(query, 'all', timeFilter, start);
+      bypassResult = JSON.parse(bypassJsonString);
+    } catch (e) {
+      bypassError = e.message;
+    }
+
+    const dbStat = loadedModule.FS.stat('/search_engine.db');
+
+    parsed.__debug = {
+      dbByteLength: dbStat.size,
+      dbByteLengthMB: (dbStat.size / 1024 / 1024).toFixed(2),
+      requestedHl: hl,
+      normalTotalResults: parsed.searchInformation.totalResults,
+      bypassLangFilter: {
+        note: "Hasil query sama tapi hl dipaksa 'all' (bypass filter bahasa)",
+        totalResults: bypassResult ? bypassResult.searchInformation.totalResults : null,
+        sampleTitles: bypassResult ? bypassResult.items.slice(0, 3).map(it => ({ title: it.title, link: it.link, displayLink: it.displayLink })) : null,
+        error: bypassError
+      },
+      diagnosis: (() => {
+        const normalCount = parseInt(parsed.searchInformation.totalResults, 10);
+        const bypassCount = bypassResult ? parseInt(bypassResult.searchInformation.totalResults, 10) : 0;
+        if (normalCount > 0) return "Ada hasil normal, tidak ada masalah filter bahasa untuk query ini.";
+        if (bypassCount > 0) return `Filter bahasa (hl=${hl}) yang membuang semua hasil. Index sebenarnya punya ${bypassCount} dokumen cocok, tapi lang-nya tidak match "${hl}".`;
+        return "Bahkan dengan hl=all pun 0 hasil — kata ini kemungkinan besar memang belum ter-index sama sekali (bukan soal filter, tapi soal crawling/tokenizing).";
+      })()
+    };
+
+    return new Response(JSON.stringify(parsed, null, 2), {
       status: 200,
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Access-Control-Allow-Origin': '*'
-      }
+      headers: { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*' }
     });
 
   } catch (err) {
