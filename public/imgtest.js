@@ -17,13 +17,21 @@ const minWidth = 150;
 const maxColumns = 6; 
 const gap = 1; 
 
-let start = 1; // Mengikuti penomoran page/start API baru
+let start = 1; 
 let isLoading = false; 
 let lastFetchHeight = 0; 
 
 // Pembatasan Auto-Scroll (Maksimal 2 kali nambah hasil)
 let scrollCount = 0;
 const maxScrolls = 2;
+
+// Helper hapus loader
+function clearLoader() {
+    if (shwrapper) {
+        shwrapper.innerHTML = ''; 
+        shwrapper.style.position = 'absolute'; 
+    }
+}
 
 // ==========================================
 // LAYOUT ENGINE (POSISI INSTAN)
@@ -47,7 +55,6 @@ function positionItems() {
         if (imgThumb) {
             imgThumb.style.width = `${itemWidth - 8}px`; 
             
-            // Hitung tinggi berdasarkan Aspect Ratio yang tersimpan tanpa nunggu gambar ter-load
             const ratio = parseFloat(item.dataset.aspectRatio) || 1.33;
             const computedThumbHeight = Math.floor((itemWidth - 8) / ratio);
             imgThumb.style.height = `${computedThumbHeight}px`;
@@ -71,37 +78,57 @@ function positionItems() {
 window.addEventListener("resize", positionItems); 
 
 // ==========================================
-// DATA FETCHING (API BARU)
+// DATA FETCHING (DENGAN ALERT DEBUG)
 // ==========================================
 function fetchData() { 
-    if (isLoading || !searchQuery) return; 
+    if (isLoading || !searchQuery) {
+        if (!searchQuery) alert("Query pencarian kosong!");
+        return; 
+    }
     isLoading = true; 
     
-    // Memanggil API Baru secara default
-    fetch(`${NEW_API_URL}?q=${encodeURIComponent(searchQuery)}&type=images&page=${start}`)
-    .then(response => response.json())
+    // Request ke API Baru
+    const fetchUrl = `${NEW_API_URL}?q=${encodeURIComponent(searchQuery)}&type=images&page=${start}`;
+    
+    fetch(fetchUrl)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP Error Status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(response => { 
+        // Debug Alert untuk HP
         console.log("Response API Baru:", response); 
         
-        // Memetakan struktur response API baru (jika berformat { results: [...] } atau array langsung)
-        const imageList = response.results || response.images || response.data || (Array.isArray(response) ? response : []);
-        
+        // Cek struktur array dari response
+        let imageList = [];
+        if (Array.isArray(response)) {
+            imageList = response;
+        } else if (response.results && Array.isArray(response.results)) {
+            imageList = response.results;
+        } else if (response.images && Array.isArray(response.images)) {
+            imageList = response.images;
+        } else if (response.data && Array.isArray(response.data)) {
+            imageList = response.data;
+        }
+
+        if (imageList.length === 0) {
+            alert("API berhasil dipanggil tapi data gambar kosong!\nIsi response: " + JSON.stringify(response).slice(0, 150));
+            clearLoader();
+            isLoading = false;
+            return;
+        }
+
         renderResults(imageList); 
         start += 1; 
         lastFetchHeight = document.body.scrollHeight; 
-
-        if (shwrapper) {
-            shwrapper.innerHTML = ''; 
-            shwrapper.style.position = 'absolute'; 
-        }
+        clearLoader();
     })
     .catch(error => { 
         isLoading = false; 
-        if (shwrapper) {
-            shwrapper.innerHTML = ''; 
-            shwrapper.style.position = 'absolute'; 
-        }
-        console.error("Fetch Error:", error.message); 
+        clearLoader();
+        alert("Gagal Fetch API!\nError: " + error.message); 
     }); 
 } 
 
@@ -119,13 +146,13 @@ function renderResults(images) {
     images.forEach((item, i) => {
         let imgElement = document.createElement("img"); 
         
-        // Parsing properti fleksibel (Mendukung API Baru & Fallback API Lama)
-        const thumbSrc = item.thumbnail || item.thumbnailUrl || item.image || item.url || "";
+        // Parsing properti dari API
+        const thumbSrc = item.thumbnail || item.thumbnailUrl || item.image || item.url || item.src || "";
         const fullSrc = item.image || item.originalUrl || item.url || thumbSrc;
         const pageUrl = item.pageUrl || item.contextLink || item.link || "#";
         const titleText = item.title || item.snippet || "Image";
 
-        // Mengambil width dan height dari API baru untuk aspek rasio instan
+        // Dimensi gambar untuk aspek rasio
         const imgWidth = item.width || item.imageWidth || 300;
         const imgHeight = item.height || item.imageHeight || 225;
         const aspectRatio = (imgWidth / imgHeight).toFixed(2);
@@ -137,7 +164,7 @@ function renderResults(images) {
         let imgContainer = document.createElement("div"); 
         imgContainer.classList.add("image-item"); 
         imgContainer.setAttribute("tabindex", `tab-${i}`); 
-        imgContainer.dataset.aspectRatio = aspectRatio; // Disimpan di dataset untuk kalkulasi posisi instan
+        imgContainer.dataset.aspectRatio = aspectRatio; 
         
         let hostname = "";
         if (pageUrl && pageUrl !== "#") {
@@ -177,15 +204,13 @@ function renderResults(images) {
         fragment.appendChild(imgContainer); 
     }); 
 
-    if (shwrapper) {
+    if (shwrapper && shwrapper.parentNode === container) {
         container.insertBefore(fragment, shwrapper); 
-    } else {
+    } else if (container) {
         container.appendChild(fragment);
     }
 
     isLoading = false; 
-    
-    // Posisi langsung dihitung seketika tanpa menunggu gambar di-download penuh
     positionItems(); 
 } 
 
@@ -213,23 +238,23 @@ function loadImage(imgElement, thumbnailSrc, fullSrc) {
 // INFINITE SCROLL (MAKSIMAL 2 KALI SCROLL)
 // ==========================================
 window.addEventListener("scroll", function() { 
-    // Hentikan scroll otomatis jika sedang loading atau sudah 2x fetch tambahan
     if (isLoading || scrollCount >= maxScrolls) return; 
 
     const scrollThreshold = 200; 
     const hasScrolledPastLastFetch = window.scrollY > lastFetchHeight - scrollThreshold; 
     
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && hasScrolledPastLastFetch) { 
-        scrollCount++; // Tambah hitungan scroll
+        scrollCount++; 
         
         if (shwrapper) {
             shwrapper.innerHTML = `<div class="loader"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="4" stroke-miterlimit="10"/></svg></div>`; 
+            shwrapper.style.position = 'static';
         }
         setTimeout(fetchData, 1000); 
     } 
 }); 
 
-// Pemuatan Pertama
+// Eksekusi Pemuatan Pertama
 fetchData(); 
 
 // ==========================================
