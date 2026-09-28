@@ -30,64 +30,59 @@ function clearLoader() {
 }
 
 // ==========================================
-// LAYOUT ENGINE (IMPROVED & PRESISI SIMETRIS)
+// LAYOUT ENGINE (ALL-SCREEN RESPONSIVE)
 // ==========================================
 function positionItems() { 
     if (!container) return;
     const items = Array.from(container.querySelectorAll(".image-item")); 
     if (items.length === 0) return; 
 
-    // 1. Ambil lebar murni kontainer
+    // Ambil lebar riil kontainer
     const containerWidth = container.clientWidth;
     
-    // 2. Tentukan jumlah kolom yang muat
-    let cols = Math.floor((containerWidth + gap) / (minWidth + gap)); 
+    // Tentukan jumlah kolom (Minimal 1 kolom, Maksimal 6)
+    let cols = Math.floor(containerWidth / (minWidth + gap)); 
     cols = Math.max(1, Math.min(maxColumns, cols)); 
 
-    // 3. Hitung lebar bersih item (kurangi total gap antar kolom)
-    let totalGapWidth = (cols - 1) * gap;
-    let itemWidth = Math.floor((containerWidth - totalGapWidth) / cols); 
-
-    // 4. Hitung sisa piksel pembulatan agar margin kiri dan kanan SEIMBANG (Auto-Center)
-    let totalUsedWidth = (itemWidth * cols) + totalGapWidth;
-    let sideMargin = Math.max(0, Math.floor((containerWidth - totalUsedWidth) / 2));
+    // Hitung itemWidth & amankan agar TIDAK PERNAH melebihi containerWidth
+    let computedWidth = Math.floor((containerWidth - (cols - 1) * gap) / cols); 
+    let itemWidth = Math.min(computedWidth, containerWidth);
 
     let columnHeights = new Array(cols).fill(0); 
 
     items.forEach((item) => { 
         let imgThumb = item.querySelector(".image-item__thumb"); 
         
-        // Tetapkan lebar item luar
+        // Set lebar kontainer kartu
         item.style.width = `${itemWidth}px`; 
         
         if (imgThumb) {
-            // Beri jarak 4px di kanan-kiri thumb agar tidak mepet (seperti logika -8px script lama)
-            imgThumb.style.width = `${itemWidth - 4}px`; 
+            // Trik skrip lama: -8px untuk ruang nafas visual antar kolom
+            // Gunakan Math.max agar nilai tidak negatif jika item sangat kecil
+            let thumbWidth = Math.max(0, itemWidth - 8);
+            imgThumb.style.width = `${thumbWidth}px`; 
             
-            // Hitung tinggi berdasarkan Aspect Ratio tanpa perlu tunggu onload (mencegah layout loncat)
+            // Lock rasio tinggi gambar langsung dari dataset
             const ratio = parseFloat(item.dataset.aspectRatio) || 1.33;
-            const computedThumbHeight = Math.floor((itemWidth - 4) / ratio);
+            const computedThumbHeight = Math.floor(thumbWidth / ratio);
             imgThumb.style.height = `${computedThumbHeight}px`;
         } 
 
         // Cari kolom yang paling pendek
         let colIndex = columnHeights.indexOf(Math.min(...columnHeights)); 
         let topPos = columnHeights[colIndex]; 
-        
-        // PENTING: Tambahkan sideMargin agar posisi dari tepi kiri & kanan simetris
-        let leftPos = sideMargin + (colIndex * (itemWidth + gap)); 
+        let leftPos = colIndex * (itemWidth + gap); 
 
         item.style.position = "absolute"; 
         item.style.left = `${leftPos}px`; 
         item.style.top = `${topPos}px`; 
 
-        // Hitung tinggi total elemen kartu
         let itemHeight = item.offsetHeight + gap; 
         columnHeights[colIndex] += itemHeight; 
     }); 
 
-    // Set tinggi elemen induk
-    container.style.height = `${Math.max(...columnHeights) + 40}px`; 
+    // Set tinggi dinamis kontainer induk
+    container.style.height = `${Math.max(...columnHeights) + 80}px`; 
 }
 
 window.addEventListener("resize", positionItems); 
