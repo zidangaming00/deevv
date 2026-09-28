@@ -92,8 +92,8 @@ body.dark .video-card .source { color: #BDC1C4; }
   -webkit-tap-highlight-color: transparent;
 }
 .image-item__thumb img { width: 100%; }
-.image-item__info { display: flex; flex-direction: column; justify-content: start; }
-.image-item__info p, .image-item__info span { color: #1f1f1f; font-size: 12px; font-family: 'Google Sans', Roboto, sans-serif; }
+.image-item__info { padding: 0 2px; display: flex; flex-direction: column; justify-content: start; }
+.image-item__info p, .image-item__info span { color: var(--color-text); font-size: 12px; font-family: 'Google Sans', Roboto, sans-serif; }
 .image-item__desc { align-items: center; display: flex; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; gap: 6px; }
 .image-item__desc img { width: 16px; border-radius: 50%; }
 .image-item__info .title { font-weight: 500; }
