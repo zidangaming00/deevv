@@ -1,6 +1,10 @@
 // ==========================================
 // CONFIGURATION & API ENDPOINTS
 // ==========================================
+// Ambil searchQuery dari urlParams yang sudah ada di script utama
+const searchQuery = typeof urlParams !== 'undefined' ? (urlParams.get("q") || "") : "";
+
+// API Backend
 const NEW_API_URL = "https://deevv-api-production.up.railway.app/api/search";
 
 // State & Layout Controls
@@ -8,7 +12,7 @@ const container = document.querySelector(".main-result");
 const shwrapper = document.querySelector(".show-wrapper"); 
 const minWidth = 150; 
 const maxColumns = 6; 
-const gap = 8; // Jarak antar item
+const gap = 8; 
 
 let startOffset = 0; 
 let isLoading = false; 
@@ -26,14 +30,14 @@ function clearLoader() {
 }
 
 // ==========================================
-// LAYOUT ENGINE (MURNI STATIS & PRESISI)
+// LAYOUT ENGINE (STATIS & PRESISI KANAN-KIRI)
 // ==========================================
 function positionItems() { 
     if (!container) return;
     const items = Array.from(container.querySelectorAll(".image-item")); 
     if (items.length === 0) return; 
 
-    // Ambil lebar kontainer setelah dipotong padding (agar tidak offset ke kanan)
+    // Potong padding kiri-kanan agar item tidak terdorong off-screen ke kanan
     const computedStyle = window.getComputedStyle(container);
     const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
     const paddingRight = parseFloat(computedStyle.paddingRight) || 0;
@@ -42,7 +46,6 @@ function positionItems() {
     let cols = Math.floor((availableWidth + gap) / (minWidth + gap)); 
     cols = Math.max(1, Math.min(maxColumns, cols)); 
     
-    // Hitung lebar item yang benar-benar pas di dalam kontainer
     let itemWidth = Math.floor((availableWidth - (cols - 1) * gap) / cols); 
     let columnHeights = new Array(cols).fill(0); 
 
@@ -53,7 +56,7 @@ function positionItems() {
         if (imgThumb) {
             imgThumb.style.width = `${itemWidth}px`; 
             
-            // Aspek rasio langsung dikunci dari awal (Rasio statis tanpa reload layout)
+            // Mengunci tinggi rasio langsung di awal (mencegah layout loncat/gerak)
             const ratio = parseFloat(item.dataset.aspectRatio) || 1.33;
             const computedThumbHeight = Math.floor(itemWidth / ratio);
             imgThumb.style.height = `${computedThumbHeight}px`;
@@ -115,7 +118,7 @@ function fetchData(retryCount = 0) {
     .catch(error => { 
         isLoading = false; 
         
-        // Auto-Retry silent jika Railway cold-start (error 502)
+        // Auto-retry silent jika Railway cold-start
         if (retryCount < 2) {
             setTimeout(() => {
                 fetchData(retryCount + 1);
@@ -145,7 +148,6 @@ function renderResults(images) {
         const pageUrl = item.pageUrl || item.link || "#";
         const titleText = item.title || "Image";
 
-        // Hitung dimensi awal secara langsung dari API
         const imgWidth = item.width || item.imageWidth || 0;
         const imgHeight = item.height || item.imageHeight || 0;
         
@@ -206,7 +208,6 @@ function renderResults(images) {
     }
 
     isLoading = false; 
-    // Posisi dihitung sekali secara STATIS saat item di-render!
     positionItems(); 
 } 
 
@@ -231,13 +232,13 @@ function loadImage(imgElement, thumbnailSrc, fullSrc) {
 } 
 
 // ==========================================
-// INFINITE SCROLL (DIBATASI KEMBALI MAX 2X)
+// INFINITE SCROLL (BATAS SCROLL MAX 2X)
 // ==========================================
 window.addEventListener("scroll", function() { 
     if (isLoading || scrollCount >= maxScrolls) return; 
 
     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) { 
-        scrollCount++; // Hitung jumlah scroll
+        scrollCount++; 
         
         if (shwrapper) {
             shwrapper.innerHTML = `<div class="loader"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="4" stroke-miterlimit="10"/></svg></div>`; 
