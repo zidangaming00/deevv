@@ -12,7 +12,7 @@ const container = document.querySelector(".main-result");
 const shwrapper = document.querySelector(".show-wrapper"); 
 const minWidth = 150; 
 const maxColumns = 6; 
-const gap = 4; 
+const gap = 2; 
 
 let startOffset = 0; 
 let isLoading = false; 
