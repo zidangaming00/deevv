@@ -76,7 +76,7 @@ body.dark .video-card .source { color: #BDC1C4; }
   /* width: 250px; -> DIHAPUS, karena lebar sekarang full dikontrol oleh JS (px per kolom) */
 }
 .image-item__box {
-  padding-top: 6px;
+  padding-top: 0px;
   box-sizing: border-box;  /* padding masuk hitungan width, gak nambah lebar keluar */
 }
 .image-item__thumb {
@@ -97,7 +97,7 @@ body.dark .video-card .source { color: #BDC1C4; }
 .image-item__desc { align-items: center; display: flex; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; gap: 6px; }
 .image-item__desc img { width: 16px; border-radius: 50%; }
 .image-item__info .title { font-weight: 500; }
-a.image-item__info { padding: 8px 6px 4px 6px; display: flex; flex-direction: column; gap: 8px; text-decoration: none; }
+a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: column; gap: 2px; text-decoration: none; }
 .image-item__info p { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* Grid mosaik (thumbnail utama + 2 sisi) — dulu g2079.css */
