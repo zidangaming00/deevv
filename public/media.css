@@ -152,7 +152,7 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
 
 .image-preview__thumbnail { 
   position: relative; 
-  background: #F9F6EE; 
+  background: #f8f9fa; 
   display: flex; 
   align-items: center; 
   justify-content: center;
