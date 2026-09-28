@@ -38,7 +38,7 @@ function positionItems() {
     if (items.length === 0) return; 
 
     const containerWidth = container.getBoundingClientRect().width;
-    const uniformGap = 8;
+    const uniformGap = 6;
 
     let cols = Math.floor(containerWidth / (minWidth + uniformGap)); 
     cols = Math.max(1, Math.min(maxColumns, cols)); 
