@@ -82,7 +82,6 @@ function positionItems() {
         item.style.width = `${itemWidth}px`; 
         
         if (imgThumb) {
-            imgThumb.style.width = `${itemWidth}px`; 
             const ratio = parseFloat(item.dataset.aspectRatio) || 1.33;
             imgThumb.style.height = `${Math.floor(itemWidth / ratio)}px`;
         } 
