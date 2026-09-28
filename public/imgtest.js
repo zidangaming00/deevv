@@ -37,30 +37,27 @@ function positionItems() {
     const items = Array.from(container.querySelectorAll(".image-item")); 
     if (items.length === 0) return; 
 
-    // Menggunakan getBoundingClientRect agar akurat hingga pecahan piksel
     const containerWidth = container.getBoundingClientRect().width;
-    
-    // Tentukan besaran jarak (spasi) yang seragam untuk KIRI, TENGAH, dan KANAN
-    const uniformGap = 8; // Silakan ubah angka ini kalau mau spasinya lebih renggang/sempit
-    
-    // Tentukan jumlah kolom
+    const uniformGap = 8;
+
     let cols = Math.floor(containerWidth / (minWidth + uniformGap)); 
     cols = Math.max(1, Math.min(maxColumns, cols)); 
 
-    // Rumus Kunci: 
-    // Total spasi = spasi kiri (1) + spasi kanan (1) + spasi tengah (cols - 1)
-    // Jadi total spasi selalu berjumlah (cols + 1)
+    // Total ruang gap: kiri (1) + tengah (cols-1) + kanan (1)
     const totalGapSpace = (cols + 1) * uniformGap;
-    
-    // Lebar gambar dihitung SETELAH semua spasi kiri-tengah-kanan diamankan
-    let itemWidth = Math.floor((containerWidth - totalGapSpace) / cols);
 
-    // Hitung total lebar ruang dalam (gambar + spasi tengah)
-    let innerUsedWidth = (cols * itemWidth) + ((cols - 1) * uniformGap);
-    
-    // Sisa piksel dibagi 2 secara absolut. 
-    // Ini menjamin sisi kiri dan kanan PASTI seimbang dan ukurannya sama persis dengan uniformGap
-    let sideMargin = (containerWidth - innerUsedWidth) / 2;
+    // Lebar total yang tersisa untuk gambar
+    const availableForItems = containerWidth - totalGapSpace;
+
+    // Lebar dasar per gambar (dibulatkan ke bawah)
+    let itemWidth = Math.floor(availableForItems / cols);
+
+    // Sisa piksel akibat pembulatan -> sebar rata ke tiap gambar (desimal px, aman di CSS)
+    const leftoverPixels = availableForItems - itemWidth * cols;
+    itemWidth += leftoverPixels / cols;
+
+    // Margin kiri = kanan = PERSIS uniformGap, tidak dihitung ulang dari sisa
+    const sideMargin = uniformGap;
 
     let columnHeights = new Array(cols).fill(0); 
 
@@ -71,7 +68,6 @@ function positionItems() {
         
         if (imgThumb) {
             imgThumb.style.width = `${itemWidth}px`; 
-            
             const ratio = parseFloat(item.dataset.aspectRatio) || 1.33;
             imgThumb.style.height = `${Math.floor(itemWidth / ratio)}px`;
         } 
@@ -79,14 +75,12 @@ function positionItems() {
         let colIndex = columnHeights.indexOf(Math.min(...columnHeights)); 
         let topPos = columnHeights[colIndex]; 
         
-        // Titik X = Margin Kiri + (Indeks * (Lebar Gambar + Spasi Tengah))
         let leftPos = sideMargin + (colIndex * (itemWidth + uniformGap)); 
 
         item.style.position = "absolute"; 
         item.style.left = `${leftPos}px`; 
         item.style.top = `${topPos}px`; 
 
-        // Tambahkan tinggi item + spasi bawah
         columnHeights[colIndex] += item.offsetHeight + uniformGap; 
     }); 
 
