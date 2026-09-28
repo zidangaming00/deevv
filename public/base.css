@@ -497,7 +497,6 @@ input[type="search"]::-webkit-search-results-decoration {
    ========================================================================== */
 
 footer {
-  margin-top: 32px;
   width: 100%;
   padding: 24px 16px;
   display: flex;
@@ -517,7 +516,6 @@ footer {
 }
 
 .footer-link {
-  /* Menggunakan warna biru standar Google Search / warna title dari results.css */
   color: var(--color-title, #1a73e8); 
   font-size: 15px; /* Ukuran diperbesar dari 13px */
   font-weight: 500;
