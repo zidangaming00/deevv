@@ -273,22 +273,25 @@ window.addEventListener("scroll", function() {
 fetchData();
 
 // ==========================================
-// MOBILE PREVIEW OVERLAY
+// MOBILE PREVIEW OVERLAY + RELATED IMAGES
 // ==========================================
 function isMobile() { 
     return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent); 
 } 
 
-if (isMobile() && document.querySelector(".cbKRN")) { 
-    document.querySelector(".cbKRN").insertAdjacentHTML("beforeend", ` 
-        <div class="image-preview"> 
+// Memastikan overlay dibuat baik untuk mobile maupun desktop bila elemen container ada
+const targetContainer = document.querySelector(".cbKRN") || document.body;
+
+if (targetContainer && !document.querySelector(".image-preview")) { 
+    targetContainer.insertAdjacentHTML("beforeend", ` 
+        <div class="image-preview" style="display:none;"> 
             <div class="image-preview__header"> 
                 <div class="left"> 
-                    <div class="image-preview__favicon"><img src=""></div> 
-                    <div class="title"></div> 
+                    <div class="image-preview__favicon"><img src="" alt="Favicon"></div> 
+                    <div class="title header-site-name"></div> 
                 </div> 
                 <div class="right"> 
-                    <div class="image-preview__favicon close-preview"> 
+                    <div class="image-preview__favicon close-preview" style="cursor:pointer;"> 
                         <svg viewBox="0 0 24 24" focusable="false" height="24" width="24"> 
                             <path d="M0 0h24v24H0z" fill="none"></path> 
                             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path> 
@@ -296,21 +299,28 @@ if (isMobile() && document.querySelector(".cbKRN")) {
                     </div> 
                 </div> 
             </div> 
-            <div class="image-preview__thumbnail"><img src="" alt="Preview"></div> 
-            <div class="image-preview__footer"> 
-                <div class="left"> 
-                    <div class="title"></div> 
-                    <div class="site"></div> 
+            <div class="image-preview__body">
+                <div class="image-preview__thumbnail"><img src="" alt="Preview"></div> 
+                <div class="image-preview__footer"> 
+                    <div class="left"> 
+                        <div class="title footer-image-title"></div> 
+                        <div class="site">Gambar mungkin memiliki hak cipta.</div> 
+                    </div> 
+                    <div class="right"> 
+                        <button><a href="" target="_blank" rel="noopener" class="visit-link">Kunjungi</a></button> 
+                    </div> 
                 </div> 
-                <div class="right"> 
-                    <button><a href="" target="_blank" rel="noopener">Kunjungi</a></button> 
-                </div> 
-            </div> 
+                
+                <!-- SECTION RELATED IMAGES -->
+                <div class="image-preview__related">
+                    <div class="related-title">Gambar Terkait</div>
+                    <div class="related-grid"></div>
+                </div>
+            </div>
         </div> 
     `); 
-    
+
     const preview = document.querySelector(".image-preview"); 
-    if (preview) preview.style.display = "none"; 
     
     function hidePreview() { 
         if (preview) preview.style.display = "none"; 
@@ -320,34 +330,101 @@ if (isMobile() && document.querySelector(".cbKRN")) {
     const closeBtn = document.querySelector(".close-preview");
     if (closeBtn) closeBtn.addEventListener("click", hidePreview); 
     
+    // Event listener delegasi klik gambar di main grid
     document.body.addEventListener("click", (event) => { 
         const img = event.target.closest(".image-item__thumb img"); 
         if (!img) return; 
         event.preventDefault(); 
-        showPreview(img); 
+        
+        const parent = img.closest(".image-item"); 
+        if (!parent) return;
+
+        const titleText = parent.querySelector(".image-item__info .title")?.innerText || "";
+        const siteName = parent.querySelector(".image-item__desc span")?.innerText || "";
+        const pageUrl = parent.querySelector(".image-item__info")?.href || "#";
+        const imgSrc = img.src;
+
+        showPreview({ titleText, siteName, pageUrl, imgSrc }); 
     }); 
     
-    function showPreview(img) { 
+    function showPreview(data) { 
         if (!preview) return; 
-        preview.style.display = "block"; 
+        
+        // Reset scroll position ke atas setiap kali preview dibuka
+        const bodyElem = preview.querySelector(".image-preview__body");
+        if (bodyElem) bodyElem.scrollTop = 0;
+
+        preview.style.display = "flex"; 
         document.documentElement.style.overflow = "hidden"; 
-        const parent = img.closest(".image-item"); 
-        if (parent) { 
-            const titleElement = parent.querySelector(".image-item__info .title"); 
-            const descElement = parent.querySelector(".image-item__desc span"); 
-            const infoLinkElement = parent.querySelector(".image-item__info"); 
-            const descImgElement = parent.querySelector(".image-item__desc img"); 
-            
-            if (titleElement) preview.querySelector(".image-preview__footer .left .title").innerText = titleElement.innerText; 
-            if (descElement) { 
-                preview.querySelector(".image-preview__footer .left .site").innerText = "Gambar mungkin memiliki hak cipta."; 
-                preview.querySelector(".image-preview__header .title").innerText = descElement.innerText; 
-            } 
-            if (infoLinkElement) preview.querySelector(".image-preview__footer .right a").href = infoLinkElement.href; 
-            if (descImgElement) preview.querySelector(".image-preview__favicon img").src = descImgElement.src; 
-            
-            preview.querySelector(".image-preview__thumbnail img").src = img.src; 
-            preview.querySelector(".image-preview__thumbnail img").alt = img.alt; 
-        } 
-    } 
+        
+        preview.querySelector(".footer-image-title").innerText = data.titleText; 
+        preview.querySelector(".header-site-name").innerText = data.siteName; 
+        preview.querySelector(".visit-link").href = data.pageUrl; 
+        
+        const hostname = data.pageUrl && data.pageUrl !== "#" ? new URL(data.pageUrl).hostname : "";
+        if (hostname) {
+            preview.querySelector(".image-preview__favicon img").src = `https://www.google.com/s2/favicons?domain=${hostname}&sz=32`;
+        }
+        
+        const mainImg = preview.querySelector(".image-preview__thumbnail img");
+        mainImg.src = data.imgSrc; 
+        mainImg.alt = data.titleText; 
+
+        // Muat Gambar Terkait berdasarkan judul
+        fetchRelatedImages(data.titleText);
+    }
+
+    // Fungsi Fetch untuk Related Images
+    function fetchRelatedImages(queryText) {
+        const relatedGrid = preview.querySelector(".related-grid");
+        if (!relatedGrid) return;
+
+        relatedGrid.innerHTML = `<div class="related-loader">Memuat gambar terkait...</div>`;
+
+        const fetchUrl = `${NEW_API_URL}?q=${encodeURIComponent(queryText)}&type=images&start=0&num=10`;
+        
+        fetch(fetchUrl)
+            .then(res => res.json())
+            .then(response => {
+                let list = Array.isArray(response) ? response : (response.results || response.images || []);
+                relatedGrid.innerHTML = "";
+
+                if (list.length === 0) {
+                    relatedGrid.innerHTML = `<div class="related-empty">Tidak ada gambar terkait.</div>`;
+                    return;
+                }
+
+                list.forEach(item => {
+                    const thumb = item.thumbnail || item.thumbnailUrl || item.image || item.imageUrl;
+                    const fullImg = item.image || item.imageUrl || thumb;
+                    const itemTitle = item.title || queryText;
+                    const itemSite = item.source || item.domain || "Web";
+                    const itemPage = item.pageUrl || item.link || "#";
+
+                    const card = document.createElement("div");
+                    card.className = "related-card";
+                    card.innerHTML = `
+                        <div class="related-card__thumb">
+                            <img src="${thumb}" loading="lazy" alt="${itemTitle}">
+                        </div>
+                        <div class="related-card__title">${itemTitle}</div>
+                    `;
+
+                    // Klik pada gambar terkait akan memperbarui tampilan preview
+                    card.addEventListener("click", () => {
+                        showPreview({
+                            titleText: itemTitle,
+                            siteName: itemSite,
+                            pageUrl: itemPage,
+                            imgSrc: fullImg
+                        });
+                    });
+
+                    relatedGrid.appendChild(card);
+                });
+            })
+            .catch(() => {
+                relatedGrid.innerHTML = `<div class="related-empty">Gagal memuat gambar terkait.</div>`;
+            });
+    }
 }
