@@ -201,13 +201,14 @@ imgContainer.innerHTML = `
         <div class="image-item__dt"> 
             <div class="image-item__thumb"></div> 
             <a class="image-item__info" href="${pageUrl}" target="_blank" rel="noopener"> 
+                <p class="title" name="t">${titleText}</p> 
                 <p class="image-item__desc"> 
                     <span>${siteName}</span> 
                 </p> 
-                <p class="title" name="t">${titleText}</p> 
             </a> 
         </div> 
     </div>`;
+
 
         loadImage(imgElement, thumbSrc, fullSrc); 
         imgContainer.querySelector(".image-item__thumb").appendChild(imgElement); 
