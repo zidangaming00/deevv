@@ -492,35 +492,62 @@ input[type="search"]::-webkit-search-results-decoration {
   100% { stroke-dasharray: 89, 200; stroke-dashoffset: -124px; }
 }
 
-/* --------------------------------------------------------------------
-   Footer
-   -------------------------------------------------------------------- */
+/* ==========================================================================
+   FOOTER (Diadaptasi langsung dari index.html)
+   ========================================================================== */
 
-.footer {
-  padding: 14px 0;
-  background: #FBFBFB;
-  border: 1px solid var(--color-border);
-  border-style: solid none;
-  margin-top: 6px;
+footer {
+  margin-top: 30px;
+  width: 100%;
+  max-width: 480px;
+  padding: 24px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
+  box-sizing: border-box;
 }
-.footer ul { list-style: none; text-align: center; }
-.footer ul a {
-  color: #444444;
-  text-decoration: none;
+
+.footer-links {
   display: flex;
   align-items: center;
-  justify-content: center;
-}
-.footer ul a svg { margin: 0 4px; }
-.footer ul li { display: inline-block; margin: 4px 8px; }
-.footer .copyright {
-  margin: 10px 0 0;
-  text-align: center;
-  font-family: Arial;
-  color: #444444;
+  gap: 16px;
 }
 
-@media (min-width: 780px) { .footer { margin-top: 28px; } }
+.footer-link {
+  color: var(--color-title, #1a73e8);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  letter-spacing: 0.1px;
+  transition: opacity 0.2s, text-decoration 0.2s;
+}
+
+.footer-link:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}
+
+.footer-copy {
+  font-size: 11px;
+  color: var(--color-text-muted, #70757a);
+  font-weight: 400;
+}
+
+/* Dukungan Mode Gelap di results.css */
+body.dark footer {
+  border-top-color: var(--color-border, rgba(255, 255, 255, 0.12));
+}
+
+body.dark .footer-link {
+  color: #8bb4f4;
+}
+
+body.dark .footer-copy {
+  color: #bdc1c4;
+}
+
 
 /* --------------------------------------------------------------------
    Dark mode
@@ -535,8 +562,6 @@ body.dark .search-item.selected .label:before { background: #E9EAEE; }
 body.dark .search-item.selected .label svg { fill: #E9EAEE; }
 body.dark .search-menu { border-color: #24282B; }
 body.dark .header { background: #202125; }
-body.dark .footer { border-color: #24282B; background: #202125; }
-body.dark .footer ul a, body.dark .footer .copyright { color: #BDC1C4; }
 
 body.dark .show-wrapper .more {
   color: #E9EAEE;
