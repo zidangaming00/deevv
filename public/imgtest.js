@@ -30,23 +30,31 @@ function clearLoader() {
 }
 
 // ==========================================
-// LAYOUT ENGINE (STATIS & PRESISI KANAN-KIRI)
+// LAYOUT ENGINE (SIMETRIS KANAN-KIRI)
 // ==========================================
 function positionItems() { 
     if (!container) return;
     const items = Array.from(container.querySelectorAll(".image-item")); 
     if (items.length === 0) return; 
 
-    // Potong padding kiri-kanan agar item tidak terdorong off-screen ke kanan
-    const computedStyle = window.getComputedStyle(container);
-    const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
-    const paddingRight = parseFloat(computedStyle.paddingRight) || 0;
-    const availableWidth = container.clientWidth - paddingLeft - paddingRight; 
-
-    let cols = Math.floor((availableWidth + gap) / (minWidth + gap)); 
-    cols = Math.max(1, Math.min(maxColumns, cols)); 
+    // Ambil lebar fisik kontainer
+    const containerWidth = container.clientWidth;
     
-    let itemWidth = Math.floor((availableWidth - (cols - 1) * gap) / cols); 
+    // Tentukan jumlah kolom
+    let cols = Math.floor((containerWidth + gap) / (minWidth + gap)); 
+    cols = Math.max(1, Math.min(maxColumns, cols)); 
+
+    // Hitung total sisa ruang kosong jika kita pakai margin/padding samping yang sama
+    // Lebar bersih semua kolom + gap antar kolom
+    let totalGapWidth = (cols - 1) * gap;
+    
+    // Lebar 1 kolom (pembulatan ke bawah agar tidak melebihi kontainer)
+    let itemWidth = Math.floor((containerWidth - totalGapWidth) / cols); 
+
+    // Hitung sisa pixel dari hasil pembulatan agar bisa dibagi rata ke margin kiri & kanan (Auto Center)
+    let totalUsedWidth = (itemWidth * cols) + totalGapWidth;
+    let sideMargin = Math.floor((containerWidth - totalUsedWidth) / 2);
+
     let columnHeights = new Array(cols).fill(0); 
 
     items.forEach((item) => { 
@@ -56,7 +64,7 @@ function positionItems() {
         if (imgThumb) {
             imgThumb.style.width = `${itemWidth}px`; 
             
-            // Mengunci tinggi rasio langsung di awal (mencegah layout loncat/gerak)
+            // Rasio statis (dikunci di awal)
             const ratio = parseFloat(item.dataset.aspectRatio) || 1.33;
             const computedThumbHeight = Math.floor(itemWidth / ratio);
             imgThumb.style.height = `${computedThumbHeight}px`;
@@ -64,7 +72,9 @@ function positionItems() {
 
         let colIndex = columnHeights.indexOf(Math.min(...columnHeights)); 
         let topPos = columnHeights[colIndex]; 
-        let leftPos = colIndex * (itemWidth + gap); 
+        
+        // PENTING: Tambahkan sideMargin agar posisi grid berada tepat di tengah (simetris kanan & kiri)
+        let leftPos = sideMargin + (colIndex * (itemWidth + gap)); 
 
         item.style.position = "absolute"; 
         item.style.left = `${leftPos}px`; 
@@ -75,7 +85,8 @@ function positionItems() {
     }); 
 
     container.style.height = `${Math.max(...columnHeights) + 80}px`; 
-} 
+}
+
 
 window.addEventListener("resize", positionItems); 
 
