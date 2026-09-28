@@ -30,58 +30,60 @@ function clearLoader() {
 }
 
 // ==========================================
-// LAYOUT ENGINE (ALL-SCREEN RESPONSIVE)
+// LAYOUT ENGINE (PRESISI & SPASI SEIMBANG)
 // ==========================================
 function positionItems() { 
     if (!container) return;
     const items = Array.from(container.querySelectorAll(".image-item")); 
     if (items.length === 0) return; 
 
-    // Ambil lebar riil kontainer
     const containerWidth = container.clientWidth;
     
-    // Tentukan jumlah kolom (Minimal 1 kolom, Maksimal 6)
+    // Tentukan jumlah kolom
     let cols = Math.floor(containerWidth / (minWidth + gap)); 
     cols = Math.max(1, Math.min(maxColumns, cols)); 
 
-    // Hitung itemWidth & amankan agar TIDAK PERNAH melebihi containerWidth
-    let computedWidth = Math.floor((containerWidth - (cols - 1) * gap) / cols); 
-    let itemWidth = Math.min(computedWidth, containerWidth);
+    // Tentukan spasi tepi (ujung kanan-kiri) & spasi tengah yang identik
+    // Gunakan nilai gap sebagai batas spasi yang konsisten
+    const edgePadding = 6; // Jarak aman di ujung paling kiri & kanan layar (bisa disesuaikan, e.g. 6-8px)
+    const middleGap = 6;   // Jarak persis antar-gambar di tengah
+
+    // Hitung lebar gambar agar benar-benar maksimal memenuhkan ruang
+    const totalSpacings = (edgePadding * 2) + ((cols - 1) * middleGap);
+    let itemWidth = Math.floor((containerWidth - totalSpacings) / cols);
 
     let columnHeights = new Array(cols).fill(0); 
 
     items.forEach((item) => { 
         let imgThumb = item.querySelector(".image-item__thumb"); 
         
-        // Set lebar kontainer kartu
+        // Lebar item memenuhkan perhitungan tanpa dipotong internal lagi
         item.style.width = `${itemWidth}px`; 
         
         if (imgThumb) {
-            // Trik skrip lama: -8px untuk ruang nafas visual antar kolom
-            // Gunakan Math.max agar nilai tidak negatif jika item sangat kecil
-            let thumbWidth = Math.max(0, itemWidth - 8);
-            imgThumb.style.width = `${thumbWidth}px`; 
+            // Gambar dibuat 100% dari itemWidth agar tidak ada celah kosong di dalam
+            imgThumb.style.width = `${itemWidth}px`; 
             
-            // Lock rasio tinggi gambar langsung dari dataset
+            // Kunci rasio tinggi
             const ratio = parseFloat(item.dataset.aspectRatio) || 1.33;
-            const computedThumbHeight = Math.floor(thumbWidth / ratio);
+            const computedThumbHeight = Math.floor(itemWidth / ratio);
             imgThumb.style.height = `${computedThumbHeight}px`;
         } 
 
-        // Cari kolom yang paling pendek
         let colIndex = columnHeights.indexOf(Math.min(...columnHeights)); 
         let topPos = columnHeights[colIndex]; 
-        let leftPos = colIndex * (itemWidth + gap); 
+        
+        // Posisi X dihitung dari edgePadding + (indeks kolom * (lebar gambar + middleGap))
+        let leftPos = edgePadding + (colIndex * (itemWidth + middleGap)); 
 
         item.style.position = "absolute"; 
         item.style.left = `${leftPos}px`; 
         item.style.top = `${topPos}px`; 
 
-        let itemHeight = item.offsetHeight + gap; 
+        let itemHeight = item.offsetHeight + middleGap; 
         columnHeights[colIndex] += itemHeight; 
     }); 
 
-    // Set tinggi dinamis kontainer induk
     container.style.height = `${Math.max(...columnHeights) + 80}px`; 
 }
 
