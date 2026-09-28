@@ -1,57 +1,101 @@
+// ==========================================
+// CONFIGURATION & API ENDPOINTS
+// ==========================================
+const urlParams = new URLSearchParams(window.location.search);
+const searchQuery = urlParams.get("q") || "";
+
+// API Baru (Default)
+const NEW_API_URL = "https://deevv-api-production.up.railway.app/api/search";
+
+// API Lama (Dipertahankan sebagai variabel)
+const OLD_API_URL = "https://images.searchdata.workers.dev/dimage";
+
+// State & Layout Controls
 const container = document.querySelector(".main-result"); 
 const shwrapper = document.querySelector(".show-wrapper"); 
 const minWidth = 150; 
 const maxColumns = 6; 
 const gap = 1; 
-let start = 0; 
-const maxStart = 30; 
+
+let start = 1; // Mengikuti penomoran page/start API baru
 let isLoading = false; 
 let lastFetchHeight = 0; 
 
-const searchQuery = urlParams.get("q") || "";
+// Pembatasan Auto-Scroll (Maksimal 2 kali nambah hasil)
+let scrollCount = 0;
+const maxScrolls = 2;
 
+// ==========================================
+// LAYOUT ENGINE (POSISI INSTAN)
+// ==========================================
 function positionItems() { 
+    if (!container) return;
     const items = Array.from(container.querySelectorAll(".image-item")); 
     if (items.length === 0) return; 
+
     const containerWidth = container.clientWidth; 
     let cols = Math.floor(containerWidth / (minWidth + gap)); 
     cols = Math.max(1, Math.min(maxColumns, cols)); 
+    
     let itemWidth = Math.floor((containerWidth - (cols - 1) * gap) / cols); 
     let columnHeights = new Array(cols).fill(0); 
+
     items.forEach((item) => { 
         let imgThumb = item.querySelector(".image-item__thumb"); 
         item.style.width = `${itemWidth}px`; 
-        if (imgThumb) imgThumb.style.width = `${itemWidth - 8}px`; 
+        
+        if (imgThumb) {
+            imgThumb.style.width = `${itemWidth - 8}px`; 
+            
+            // Hitung tinggi berdasarkan Aspect Ratio yang tersimpan tanpa nunggu gambar ter-load
+            const ratio = parseFloat(item.dataset.aspectRatio) || 1.33;
+            const computedThumbHeight = Math.floor((itemWidth - 8) / ratio);
+            imgThumb.style.height = `${computedThumbHeight}px`;
+        } 
+
         let colIndex = columnHeights.indexOf(Math.min(...columnHeights)); 
         let topPos = columnHeights[colIndex]; 
         let leftPos = colIndex * (itemWidth + gap); 
+
         item.style.position = "absolute"; 
         item.style.left = `${leftPos}px`; 
         item.style.top = `${topPos}px`; 
+
         let itemHeight = item.getBoundingClientRect().height + gap; 
         columnHeights[colIndex] += itemHeight; 
     }); 
+
     container.style.height = `${Math.max(...columnHeights) + 80}px`; 
 } 
 
 window.addEventListener("resize", positionItems); 
 
+// ==========================================
+// DATA FETCHING (API BARU)
+// ==========================================
 function fetchData() { 
-    if (isLoading || start > maxStart) return; 
+    if (isLoading || !searchQuery) return; 
     isLoading = true; 
     
-    fetch(`https://images.searchdata.workers.dev/dimage?q=${encodeURIComponent(searchQuery)}&start=${start}`)
+    // Memanggil API Baru secara default
+    fetch(`${NEW_API_URL}?q=${encodeURIComponent(searchQuery)}&type=images&page=${start}`)
     .then(response => response.json())
     .then(response => { 
-        console.log("Response:", response); 
-        renderResults(response); 
-        start += 10; 
+        console.log("Response API Baru:", response); 
+        
+        // Memetakan struktur response API baru (jika berformat { results: [...] } atau array langsung)
+        const imageList = response.results || response.images || response.data || (Array.isArray(response) ? response : []);
+        
+        renderResults(imageList); 
+        start += 1; 
         lastFetchHeight = document.body.scrollHeight; 
+
         if (shwrapper) {
             shwrapper.innerHTML = ''; 
             shwrapper.style.position = 'absolute'; 
         }
-    }).catch(error => { 
+    })
+    .catch(error => { 
         isLoading = false; 
         if (shwrapper) {
             shwrapper.innerHTML = ''; 
@@ -61,42 +105,58 @@ function fetchData() {
     }); 
 } 
 
-function renderResults(res) { 
-    if (!res || !Array.isArray(res.images) || res.images.length === 0) {
+// ==========================================
+// RENDER & DOM BUILDING
+// ==========================================
+function renderResults(images) { 
+    if (!images || !Array.isArray(images) || images.length === 0) {
         isLoading = false;
         return;
     }
 
     let fragment = document.createDocumentFragment(); 
-    for (let i = 0; i < res.images.length; i++) { 
-        let item = res.images[i];
+
+    images.forEach((item, i) => {
         let imgElement = document.createElement("img"); 
-        imgElement.src = item.thumbnail || item.image; 
+        
+        // Parsing properti fleksibel (Mendukung API Baru & Fallback API Lama)
+        const thumbSrc = item.thumbnail || item.thumbnailUrl || item.image || item.url || "";
+        const fullSrc = item.image || item.originalUrl || item.url || thumbSrc;
+        const pageUrl = item.pageUrl || item.contextLink || item.link || "#";
+        const titleText = item.title || item.snippet || "Image";
+
+        // Mengambil width dan height dari API baru untuk aspek rasio instan
+        const imgWidth = item.width || item.imageWidth || 300;
+        const imgHeight = item.height || item.imageHeight || 225;
+        const aspectRatio = (imgWidth / imgHeight).toFixed(2);
+
+        imgElement.src = thumbSrc; 
         imgElement.loading = "lazy"; 
-        imgElement.alt = item.title || "Image"; 
+        imgElement.alt = titleText; 
         
         let imgContainer = document.createElement("div"); 
         imgContainer.classList.add("image-item"); 
         imgContainer.setAttribute("tabindex", `tab-${i}`); 
+        imgContainer.dataset.aspectRatio = aspectRatio; // Disimpan di dataset untuk kalkulasi posisi instan
         
         let hostname = "";
-        if (item.pageUrl) {
+        if (pageUrl && pageUrl !== "#") {
             try {
-                hostname = new URL(item.pageUrl).hostname;
+                hostname = new URL(pageUrl).hostname;
             } catch (e) {
                 hostname = "";
             }
         }
         
         const faviconSrc = hostname ? `https://datasearch.searchdata.workers.dev/img/${encodeURIComponent(hostname)}` : '';
-        const siteName = item.siteName || hostname || "Web";
+        const siteName = item.siteName || item.source || hostname || "Web";
 
         imgContainer.innerHTML = ` 
             <div class="image-item__box"> 
                 <div class="image-item__dt"> 
                     <div class="image-item__thumb"></div> 
-                    <a class="image-item__info" href="${item.pageUrl || '#'}" target="_blank"> 
-                        <p class="title" name="t">${item.title || ''}</p> 
+                    <a class="image-item__info" href="${pageUrl}" target="_blank" rel="noopener"> 
+                        <p class="title" name="t">${titleText}</p> 
                         <p class="image-item__desc"> 
                             ${faviconSrc ? `<img src="${faviconSrc}">` : ''} 
                             <span>${siteName}</span> 
@@ -105,12 +165,8 @@ function renderResults(res) {
                 </div> 
             </div>`; 
         
-        loadImage(imgElement, item.thumbnail || item.image, item.image); 
+        loadImage(imgElement, thumbSrc, fullSrc); 
         imgContainer.querySelector(".image-item__thumb").appendChild(imgElement); 
-        
-        imgElement.onload = function() { 
-            positionItems(); 
-        }; 
         
         imgElement.onerror = function() { 
             let parent = imgElement.closest(".image-item"); 
@@ -119,9 +175,17 @@ function renderResults(res) {
         }; 
         
         fragment.appendChild(imgContainer); 
-    } 
-    container.insertBefore(fragment, shwrapper); 
+    }); 
+
+    if (shwrapper) {
+        container.insertBefore(fragment, shwrapper); 
+    } else {
+        container.appendChild(fragment);
+    }
+
     isLoading = false; 
+    
+    // Posisi langsung dihitung seketika tanpa menunggu gambar di-download penuh
     positionItems(); 
 } 
 
@@ -130,7 +194,7 @@ function loadImage(imgElement, thumbnailSrc, fullSrc) {
     imgElement.style.filter = "blur(2px)"; 
     imgElement.style.transition = "filter .5s ease-in-out"; 
     
-    if (fullSrc) {
+    if (fullSrc && fullSrc !== thumbnailSrc) {
         const fullImage = new Image(); 
         fullImage.src = fullSrc; 
         fullImage.onload = function() { 
@@ -145,11 +209,19 @@ function loadImage(imgElement, thumbnailSrc, fullSrc) {
     }, 5000); 
 } 
 
+// ==========================================
+// INFINITE SCROLL (MAKSIMAL 2 KALI SCROLL)
+// ==========================================
 window.addEventListener("scroll", function() { 
-    if (isLoading) return; 
+    // Hentikan scroll otomatis jika sedang loading atau sudah 2x fetch tambahan
+    if (isLoading || scrollCount >= maxScrolls) return; 
+
     const scrollThreshold = 200; 
     const hasScrolledPastLastFetch = window.scrollY > lastFetchHeight - scrollThreshold; 
+    
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && hasScrolledPastLastFetch) { 
+        scrollCount++; // Tambah hitungan scroll
+        
         if (shwrapper) {
             shwrapper.innerHTML = `<div class="loader"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="4" stroke-miterlimit="10"/></svg></div>`; 
         }
@@ -157,8 +229,12 @@ window.addEventListener("scroll", function() {
     } 
 }); 
 
+// Pemuatan Pertama
 fetchData(); 
 
+// ==========================================
+// MOBILE PREVIEW OVERLAY
+// ==========================================
 function isMobile() { 
     return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent); 
 } 
@@ -187,7 +263,7 @@ if (isMobile() && document.querySelector(".cbKRN")) {
                     <div class="site"></div> 
                 </div> 
                 <div class="right"> 
-                    <button><a href="" target="_blank">Kunjungi</a></button> 
+                    <button><a href="" target="_blank" rel="noopener">Kunjungi</a></button> 
                 </div> 
             </div> 
         </div> 
