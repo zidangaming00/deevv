@@ -1,28 +1,22 @@
 // ==========================================
 // CONFIGURATION & API ENDPOINTS
 // ==========================================
+const urlParams = new URLSearchParams(window.location.search);
 const searchQuery = urlParams.get("q") || "";
 
-// API Baru (Default)
+// API Backend
 const NEW_API_URL = "https://deevv-api-production.up.railway.app/api/search";
-
-// API Lama (Dipertahankan sebagai variabel)
-const OLD_API_URL = "https://images.searchdata.workers.dev/dimage";
 
 // State & Layout Controls
 const container = document.querySelector(".main-result"); 
 const shwrapper = document.querySelector(".show-wrapper"); 
 const minWidth = 150; 
 const maxColumns = 6; 
-const gap = 1; 
+const gap = 8; // Ditingkatkan sedikit agar layout grid bernapas
 
-let start = 1; 
+let startOffset = 0; 
 let isLoading = false; 
-let lastFetchHeight = 0; 
-
-// Pembatasan Auto-Scroll (Maksimal 2 kali nambah hasil)
-let scrollCount = 0;
-const maxScrolls = 2;
+let hasMoreData = true; // Flag jika data dari API benar-benar habis
 
 // Helper hapus loader
 function clearLoader() {
@@ -33,7 +27,7 @@ function clearLoader() {
 }
 
 // ==========================================
-// LAYOUT ENGINE (POSISI INSTAN)
+// LAYOUT ENGINE (POSISI MASONRY PRESISI)
 // ==========================================
 function positionItems() { 
     if (!container) return;
@@ -52,10 +46,11 @@ function positionItems() {
         item.style.width = `${itemWidth}px`; 
         
         if (imgThumb) {
-            imgThumb.style.width = `${itemWidth - 8}px`; 
+            imgThumb.style.width = `${itemWidth}px`; 
             
+            // Hitung tinggi berdasarkan Aspect Ratio dinamis
             const ratio = parseFloat(item.dataset.aspectRatio) || 1.33;
-            const computedThumbHeight = Math.floor((itemWidth - 8) / ratio);
+            const computedThumbHeight = Math.floor(itemWidth / ratio);
             imgThumb.style.height = `${computedThumbHeight}px`;
         } 
 
@@ -77,30 +72,23 @@ function positionItems() {
 window.addEventListener("resize", positionItems); 
 
 // ==========================================
-// DATA FETCHING (DENGAN ALERT DEBUG)
+// DATA FETCHING (DENGAN RETRY AUTO-HANDLING 502)
 // ==========================================
-function fetchData() { 
-    if (isLoading || !searchQuery) {
-        if (!searchQuery) alert("Query pencarian kosong!");
-        return; 
-    }
+function fetchData(retryCount = 0) { 
+    if (isLoading || !searchQuery || !hasMoreData) return; 
     isLoading = true; 
     
-    // Request ke API Baru
-    const fetchUrl = `${NEW_API_URL}?q=${encodeURIComponent(searchQuery)}&type=images&page=${start}`;
+    // Gunakan start (offset) bukan page agar klop dengan backend
+    const fetchUrl = `${NEW_API_URL}?q=${encodeURIComponent(searchQuery)}&type=images&start=${startOffset}&num=20`;
     
     fetch(fetchUrl)
     .then(response => {
         if (!response.ok) {
-            throw new Error(`HTTP Error Status: ${response.status}`);
+            throw new Error(`HTTP Status ${response.status}`);
         }
         return response.json();
     })
     .then(response => { 
-        // Debug Alert untuk HP
-        console.log("Response API Baru:", response); 
-        
-        // Cek struktur array dari response
         let imageList = [];
         if (Array.isArray(response)) {
             imageList = response;
@@ -108,26 +96,30 @@ function fetchData() {
             imageList = response.results;
         } else if (response.images && Array.isArray(response.images)) {
             imageList = response.images;
-        } else if (response.data && Array.isArray(response.data)) {
-            imageList = response.data;
         }
 
         if (imageList.length === 0) {
-            alert("API berhasil dipanggil tapi data gambar kosong!\nIsi response: " + JSON.stringify(response).slice(0, 150));
+            hasMoreData = false; // Tandai data habis agar tidak fetch terus
             clearLoader();
             isLoading = false;
             return;
         }
 
         renderResults(imageList); 
-        start += 1; 
-        lastFetchHeight = document.body.scrollHeight; 
+        startOffset += imageList.length; // Nambah offset secara dinamis
         clearLoader();
     })
     .catch(error => { 
         isLoading = false; 
-        clearLoader();
-        alert("Gagal Fetch API!\nError: " + error.message); 
+        
+        // JIKA ERROR 502 (Railway Cold Start) -> COBA LAGI OTOMATIS SAK NGE-FRESH (MAX 2 RETRY)
+        if (retryCount < 2) {
+            setTimeout(() => {
+                fetchData(retryCount + 1);
+            }, 1500);
+        } else {
+            clearLoader();
+        }
     }); 
 } 
 
@@ -145,37 +137,38 @@ function renderResults(images) {
     images.forEach((item, i) => {
         let imgElement = document.createElement("img"); 
         
-        // Parsing properti dari API
-        const thumbSrc = item.thumbnail || item.thumbnailUrl || item.image || item.url || item.src || "";
-        const fullSrc = item.image || item.originalUrl || item.url || thumbSrc;
-        const pageUrl = item.pageUrl || item.contextLink || item.link || "#";
-        const titleText = item.title || item.snippet || "Image";
+        const thumbSrc = item.thumbnail || item.thumbnailUrl || item.image || item.imageUrl || "";
+        const fullSrc = item.image || item.imageUrl || thumbSrc;
+        const pageUrl = item.pageUrl || item.link || "#";
+        const titleText = item.title || "Image";
 
-        // Dimensi gambar untuk aspek rasio
-        const imgWidth = item.width || item.imageWidth || 300;
-        const imgHeight = item.height || item.imageHeight || 225;
-        const aspectRatio = (imgWidth / imgHeight).toFixed(2);
+        // Cek dimensi awal dari API
+        const imgWidth = item.width || item.imageWidth || 0;
+        const imgHeight = item.height || item.imageHeight || 0;
+        
+        let aspectRatio = 1.33;
+        if (imgWidth > 0 && imgHeight > 0) {
+            aspectRatio = (imgWidth / imgHeight).toFixed(2);
+        }
 
         imgElement.src = thumbSrc; 
         imgElement.loading = "lazy"; 
         imgElement.alt = titleText; 
+        imgElement.style.width = "100%";
+        imgElement.style.height = "100%";
+        imgElement.style.objectFit = "cover";
         
         let imgContainer = document.createElement("div"); 
         imgContainer.classList.add("image-item"); 
-        imgContainer.setAttribute("tabindex", `tab-${i}`); 
         imgContainer.dataset.aspectRatio = aspectRatio; 
         
         let hostname = "";
         if (pageUrl && pageUrl !== "#") {
-            try {
-                hostname = new URL(pageUrl).hostname;
-            } catch (e) {
-                hostname = "";
-            }
+            try { hostname = new URL(pageUrl).hostname.replace(/^www\./, ''); } catch (e) {}
         }
         
-        const faviconSrc = hostname ? `https://datasearch.searchdata.workers.dev/img/${encodeURIComponent(hostname)}` : '';
-        const siteName = item.siteName || item.source || hostname || "Web";
+        const faviconSrc = hostname ? `https://www.google.com/s2/favicons?domain=${hostname}&sz=32` : '';
+        const siteName = item.source || item.domain || hostname || "Web";
 
         imgContainer.innerHTML = ` 
             <div class="image-item__box"> 
@@ -184,13 +177,22 @@ function renderResults(images) {
                     <a class="image-item__info" href="${pageUrl}" target="_blank" rel="noopener"> 
                         <p class="title" name="t">${titleText}</p> 
                         <p class="image-item__desc"> 
-                            ${faviconSrc ? `<img src="${faviconSrc}">` : ''} 
+                            ${faviconSrc ? `<img src="${faviconSrc}" style="width:14px;height:14px;margin-right:4px;">` : ''} 
                             <span>${siteName}</span> 
                         </p> 
                     </a> 
                 </div> 
             </div>`; 
         
+        // Koreksi Aspek Rasio Asli saat Gambar Selesai Loading (Cegah Pendet / Gepeng)
+        imgElement.onload = function() {
+            if (this.naturalWidth && this.naturalHeight) {
+                const realRatio = (this.naturalWidth / this.naturalHeight).toFixed(2);
+                imgContainer.dataset.aspectRatio = realRatio;
+                positionItems(); // Re-layout otomatis
+            }
+        };
+
         loadImage(imgElement, thumbSrc, fullSrc); 
         imgContainer.querySelector(".image-item__thumb").appendChild(imgElement); 
         
@@ -216,7 +218,7 @@ function renderResults(images) {
 function loadImage(imgElement, thumbnailSrc, fullSrc) { 
     imgElement.src = thumbnailSrc; 
     imgElement.style.filter = "blur(2px)"; 
-    imgElement.style.transition = "filter .5s ease-in-out"; 
+    imgElement.style.transition = "filter .3s ease-in-out"; 
     
     if (fullSrc && fullSrc !== thumbnailSrc) {
         const fullImage = new Image(); 
@@ -224,37 +226,33 @@ function loadImage(imgElement, thumbnailSrc, fullSrc) {
         fullImage.onload = function() { 
             imgElement.src = fullSrc; 
             imgElement.style.filter = "blur(0)"; 
-        }; 
+        };
+        fullImage.onerror = function() {
+            imgElement.style.filter = "blur(0)";
+        };
+    } else {
+        imgElement.style.filter = "blur(0)";
     }
-    
-    setTimeout(() => { 
-        imgElement.style.filter = "blur(0)"; 
-        imgElement.removeAttribute("style"); 
-    }, 5000); 
 } 
 
 // ==========================================
-// INFINITE SCROLL (MAKSIMAL 2 KALI SCROLL)
+// INFINITE SCROLL TANPA BATAS (UNLIMITED)
 // ==========================================
 window.addEventListener("scroll", function() { 
-    if (isLoading || scrollCount >= maxScrolls) return; 
+    if (isLoading || !hasMoreData) return; 
 
-    const scrollThreshold = 200; 
-    const hasScrolledPastLastFetch = window.scrollY > lastFetchHeight - scrollThreshold; 
-    
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && hasScrolledPastLastFetch) { 
-        scrollCount++; 
-        
+    // Trigger saat scroll mendekati 300px sebelum bawah halaman
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300) { 
         if (shwrapper) {
             shwrapper.innerHTML = `<div class="loader"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="4" stroke-miterlimit="10"/></svg></div>`; 
             shwrapper.style.position = 'static';
         }
-        setTimeout(fetchData, 1000); 
+        fetchData(); 
     } 
 }); 
 
 // Eksekusi Pemuatan Pertama
-fetchData(); 
+fetchData();
 
 // ==========================================
 // MOBILE PREVIEW OVERLAY
