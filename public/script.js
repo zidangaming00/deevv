@@ -660,9 +660,10 @@ const UI = {
             <footer>
                 <div class="footer-links">
                     <a href="/privacy" class="footer-link">Privacy</a>
+                    <span class="footer-separator">•</span>
                     <a href="/settings" class="footer-link">Settings</a>
                 </div>
-                <span class="footer-copy">&copy; Deevv Search</span>
+                <span class="footer-copy">&copy; ${new Date().getFullYear()} Deevv Search</span>
             </footer>
         `);
     }
