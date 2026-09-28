@@ -1,9 +1,6 @@
 // ==========================================
 // CONFIGURATION & API ENDPOINTS
 // ==========================================
-const searchQuery = urlParams.get("q") || "";
-
-// API Backend
 const NEW_API_URL = "https://deevv-api-production.up.railway.app/api/search";
 
 // State & Layout Controls
@@ -11,11 +8,14 @@ const container = document.querySelector(".main-result");
 const shwrapper = document.querySelector(".show-wrapper"); 
 const minWidth = 150; 
 const maxColumns = 6; 
-const gap = 8; // Ditingkatkan sedikit agar layout grid bernapas
+const gap = 8; // Jarak antar item
 
 let startOffset = 0; 
 let isLoading = false; 
-let hasMoreData = true; // Flag jika data dari API benar-benar habis
+
+// Pembatasan Auto-Scroll (Maksimal 2 kali nambah hasil)
+let scrollCount = 0;
+const maxScrolls = 2;
 
 // Helper hapus loader
 function clearLoader() {
@@ -26,18 +26,24 @@ function clearLoader() {
 }
 
 // ==========================================
-// LAYOUT ENGINE (POSISI MASONRY PRESISI)
+// LAYOUT ENGINE (MURNI STATIS & PRESISI)
 // ==========================================
 function positionItems() { 
     if (!container) return;
     const items = Array.from(container.querySelectorAll(".image-item")); 
     if (items.length === 0) return; 
 
-    const containerWidth = container.clientWidth; 
-    let cols = Math.floor(containerWidth / (minWidth + gap)); 
+    // Ambil lebar kontainer setelah dipotong padding (agar tidak offset ke kanan)
+    const computedStyle = window.getComputedStyle(container);
+    const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
+    const paddingRight = parseFloat(computedStyle.paddingRight) || 0;
+    const availableWidth = container.clientWidth - paddingLeft - paddingRight; 
+
+    let cols = Math.floor((availableWidth + gap) / (minWidth + gap)); 
     cols = Math.max(1, Math.min(maxColumns, cols)); 
     
-    let itemWidth = Math.floor((containerWidth - (cols - 1) * gap) / cols); 
+    // Hitung lebar item yang benar-benar pas di dalam kontainer
+    let itemWidth = Math.floor((availableWidth - (cols - 1) * gap) / cols); 
     let columnHeights = new Array(cols).fill(0); 
 
     items.forEach((item) => { 
@@ -47,7 +53,7 @@ function positionItems() {
         if (imgThumb) {
             imgThumb.style.width = `${itemWidth}px`; 
             
-            // Hitung tinggi berdasarkan Aspect Ratio dinamis
+            // Aspek rasio langsung dikunci dari awal (Rasio statis tanpa reload layout)
             const ratio = parseFloat(item.dataset.aspectRatio) || 1.33;
             const computedThumbHeight = Math.floor(itemWidth / ratio);
             imgThumb.style.height = `${computedThumbHeight}px`;
@@ -71,13 +77,12 @@ function positionItems() {
 window.addEventListener("resize", positionItems); 
 
 // ==========================================
-// DATA FETCHING (DENGAN RETRY AUTO-HANDLING 502)
+// DATA FETCHING
 // ==========================================
 function fetchData(retryCount = 0) { 
-    if (isLoading || !searchQuery || !hasMoreData) return; 
+    if (isLoading || !searchQuery) return; 
     isLoading = true; 
     
-    // Gunakan start (offset) bukan page agar klop dengan backend
     const fetchUrl = `${NEW_API_URL}?q=${encodeURIComponent(searchQuery)}&type=images&start=${startOffset}&num=20`;
     
     fetch(fetchUrl)
@@ -98,20 +103,19 @@ function fetchData(retryCount = 0) {
         }
 
         if (imageList.length === 0) {
-            hasMoreData = false; // Tandai data habis agar tidak fetch terus
             clearLoader();
             isLoading = false;
             return;
         }
 
         renderResults(imageList); 
-        startOffset += imageList.length; // Nambah offset secara dinamis
+        startOffset += imageList.length; 
         clearLoader();
     })
     .catch(error => { 
         isLoading = false; 
         
-        // JIKA ERROR 502 (Railway Cold Start) -> COBA LAGI OTOMATIS SAK NGE-FRESH (MAX 2 RETRY)
+        // Auto-Retry silent jika Railway cold-start (error 502)
         if (retryCount < 2) {
             setTimeout(() => {
                 fetchData(retryCount + 1);
@@ -141,7 +145,7 @@ function renderResults(images) {
         const pageUrl = item.pageUrl || item.link || "#";
         const titleText = item.title || "Image";
 
-        // Cek dimensi awal dari API
+        // Hitung dimensi awal secara langsung dari API
         const imgWidth = item.width || item.imageWidth || 0;
         const imgHeight = item.height || item.imageHeight || 0;
         
@@ -182,15 +186,6 @@ function renderResults(images) {
                     </a> 
                 </div> 
             </div>`; 
-        
-        // Koreksi Aspek Rasio Asli saat Gambar Selesai Loading (Cegah Pendet / Gepeng)
-        imgElement.onload = function() {
-            if (this.naturalWidth && this.naturalHeight) {
-                const realRatio = (this.naturalWidth / this.naturalHeight).toFixed(2);
-                imgContainer.dataset.aspectRatio = realRatio;
-                positionItems(); // Re-layout otomatis
-            }
-        };
 
         loadImage(imgElement, thumbSrc, fullSrc); 
         imgContainer.querySelector(".image-item__thumb").appendChild(imgElement); 
@@ -211,6 +206,7 @@ function renderResults(images) {
     }
 
     isLoading = false; 
+    // Posisi dihitung sekali secara STATIS saat item di-render!
     positionItems(); 
 } 
 
@@ -235,13 +231,14 @@ function loadImage(imgElement, thumbnailSrc, fullSrc) {
 } 
 
 // ==========================================
-// INFINITE SCROLL TANPA BATAS (UNLIMITED)
+// INFINITE SCROLL (DIBATASI KEMBALI MAX 2X)
 // ==========================================
 window.addEventListener("scroll", function() { 
-    if (isLoading || !hasMoreData) return; 
+    if (isLoading || scrollCount >= maxScrolls) return; 
 
-    // Trigger saat scroll mendekati 300px sebelum bawah halaman
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300) { 
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) { 
+        scrollCount++; // Hitung jumlah scroll
+        
         if (shwrapper) {
             shwrapper.innerHTML = `<div class="loader"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="4" stroke-miterlimit="10"/></svg></div>`; 
             shwrapper.style.position = 'static';
