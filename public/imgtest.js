@@ -196,19 +196,18 @@ function renderResults(images) {
         const faviconSrc = hostname ? `https://www.google.com/s2/favicons?domain=${hostname}&sz=32` : '';
         const siteName = item.source || item.domain || hostname || "Web";
 
-        imgContainer.innerHTML = ` 
-            <div class="image-item__box"> 
-                <div class="image-item__dt"> 
-                    <div class="image-item__thumb"></div> 
-                    <a class="image-item__info" href="${pageUrl}" target="_blank" rel="noopener"> 
-                        <p class="title" name="t">${titleText}</p> 
-                        <p class="image-item__desc"> 
-                            ${faviconSrc ? `<img src="${faviconSrc}" style="width:14px;height:14px;margin-right:4px;">` : ''} 
-                            <span>${siteName}</span> 
-                        </p> 
-                    </a> 
-                </div> 
-            </div>`; 
+imgContainer.innerHTML = ` 
+    <div class="image-item__box"> 
+        <div class="image-item__dt"> 
+            <div class="image-item__thumb"></div> 
+            <a class="image-item__info" href="${pageUrl}" target="_blank" rel="noopener"> 
+                <p class="image-item__desc"> 
+                    <span>${siteName}</span> 
+                </p> 
+                <p class="title" name="t">${titleText}</p> 
+            </a> 
+        </div> 
+    </div>`;
 
         loadImage(imgElement, thumbSrc, fullSrc); 
         imgContainer.querySelector(".image-item__thumb").appendChild(imgElement); 
