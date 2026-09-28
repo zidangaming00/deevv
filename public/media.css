@@ -190,7 +190,7 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
 
 /* Related Images Section */
 .image-preview__related {
-  padding: 16px;
+  padding: 6px;
   border-top: 8px solid #f1f3f4;
   background: #fff;
 }
