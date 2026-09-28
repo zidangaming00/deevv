@@ -1,7 +1,6 @@
 // ==========================================
 // CONFIGURATION & API ENDPOINTS
 // ==========================================
-const urlParams = new URLSearchParams(window.location.search);
 const searchQuery = urlParams.get("q") || "";
 
 // API Baru (Default)
