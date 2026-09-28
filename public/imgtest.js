@@ -30,7 +30,7 @@ function clearLoader() {
 }
 
 // ==========================================
-// LAYOUT ENGINE (PRESISI & SPASI SEIMBANG)
+// LAYOUT ENGINE (BALANCED & PERFECT SPACING)
 // ==========================================
 function positionItems() { 
     if (!container) return;
@@ -43,28 +43,31 @@ function positionItems() {
     let cols = Math.floor(containerWidth / (minWidth + gap)); 
     cols = Math.max(1, Math.min(maxColumns, cols)); 
 
-    // Tentukan spasi tepi (ujung kanan-kiri) & spasi tengah yang identik
-    // Gunakan nilai gap sebagai batas spasi yang konsisten
-    const edgePadding = 6; // Jarak aman di ujung paling kiri & kanan layar (bisa disesuaikan, e.g. 6-8px)
-    const middleGap = 6;   // Jarak persis antar-gambar di tengah
+    // Jarak target antar gambar (tengah)
+    const middleGap = 6; 
 
-    // Hitung lebar gambar agar benar-benar maksimal memenuhkan ruang
-    const totalSpacings = (edgePadding * 2) + ((cols - 1) * middleGap);
-    let itemWidth = Math.floor((containerWidth - totalSpacings) / cols);
+    // Total lebar gap yang dibutuhkan di bagian dalam (antar-kolom)
+    const totalMiddleGap = (cols - 1) * middleGap;
+
+    // Lebar murni 1 item gambar
+    let itemWidth = Math.floor((containerWidth - totalMiddleGap) / cols);
+
+    // Hitung total lebar yang terpakai oleh seluruh gambar + gap tengah
+    let totalUsedWidth = (itemWidth * cols) + totalMiddleGap;
+
+    // Sisa piksel dibagi 2 secara otomatis untuk menentukan margin kiri & kanan (DIJAMIN SEIMBANG)
+    let autoSideMargin = Math.max(0, Math.floor((containerWidth - totalUsedWidth) / 2));
 
     let columnHeights = new Array(cols).fill(0); 
 
     items.forEach((item) => { 
         let imgThumb = item.querySelector(".image-item__thumb"); 
         
-        // Lebar item memenuhkan perhitungan tanpa dipotong internal lagi
         item.style.width = `${itemWidth}px`; 
         
         if (imgThumb) {
-            // Gambar dibuat 100% dari itemWidth agar tidak ada celah kosong di dalam
             imgThumb.style.width = `${itemWidth}px`; 
             
-            // Kunci rasio tinggi
             const ratio = parseFloat(item.dataset.aspectRatio) || 1.33;
             const computedThumbHeight = Math.floor(itemWidth / ratio);
             imgThumb.style.height = `${computedThumbHeight}px`;
@@ -73,8 +76,8 @@ function positionItems() {
         let colIndex = columnHeights.indexOf(Math.min(...columnHeights)); 
         let topPos = columnHeights[colIndex]; 
         
-        // Posisi X dihitung dari edgePadding + (indeks kolom * (lebar gambar + middleGap))
-        let leftPos = edgePadding + (colIndex * (itemWidth + middleGap)); 
+        // Titik X = autoSideMargin (kiri) + offset kolom + gap tengah
+        let leftPos = autoSideMargin + (colIndex * (itemWidth + middleGap)); 
 
         item.style.position = "absolute"; 
         item.style.left = `${leftPos}px`; 
