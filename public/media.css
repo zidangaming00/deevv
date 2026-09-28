@@ -60,9 +60,25 @@ body.dark .video-card .source { color: #BDC1C4; }
 /* --------------------------------------------------------------------
    Tab gambar — grid hasil (dulu i2025.css)
    -------------------------------------------------------------------- */
+/* ======================================================
+   FIX LAYOUT — WAJIB untuk absolute positioning yang benar
+   ====================================================== */
+.main-result {
+  position: relative;      /* acuan absolute untuk .image-item — INI PALING PENTING */
+  box-sizing: border-box;
+  overflow: hidden;
+}
 
-.image-item { position: relative; transition: all 0.3s ease; width: 250px; }
-.image-item__box { padding: 4px; }
+.image-item {
+  position: absolute;      /* default eksplisit, akan tetap di-set ulang oleh JS */
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  /* width: 250px; -> DIHAPUS, karena lebar sekarang full dikontrol oleh JS (px per kolom) */
+}
+.image-item__box {
+  padding: 4px;
+  box-sizing: border-box;  /* padding masuk hitungan width, gak nambah lebar keluar */
+}
 .image-item__thumb {
   overflow: hidden;
   position: relative;
@@ -70,6 +86,8 @@ body.dark .video-card .source { color: #BDC1C4; }
   background-color: #e9e9ec;
   cursor: pointer;
   display: flex;
+  box-sizing: border-box;
+  width: 100%;              /* ikut lebar .image-item__box (yang sudah dikurangi padding) */
   transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
 }
@@ -118,5 +136,4 @@ a.image-item__info { padding: 4px 0; display: flex; flex-direction: column; gap:
 }
 .image-preview__footer button a { color: #fff; text-decoration: none; -webkit-tap-highlight-color: transparent; }
 .image-preview__footer button:hover { filter: brightness(80%); }
-
 .show-wrapper--preview { bottom: 0; }
