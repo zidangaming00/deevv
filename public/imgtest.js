@@ -46,22 +46,37 @@ function positionItems() {
     // Total ruang gap: kiri (1) + tengah (cols-1) + kanan (1)
     const totalGapSpace = (cols + 1) * uniformGap;
 
-    // Lebar total yang tersisa untuk gambar
+    // Lebar total yang tersisa untuk semua gambar (gabungan semua kolom)
     const availableForItems = containerWidth - totalGapSpace;
 
-    // Lebar dasar per gambar (dibulatkan ke bawah)
-    let itemWidth = Math.floor(availableForItems / cols);
+    // Lebar dasar tiap kolom (integer, dibulatkan ke bawah)
+    const baseWidth = Math.floor(availableForItems / cols);
 
-    // Sisa piksel akibat pembulatan -> sebar rata ke tiap gambar (desimal px, aman di CSS)
-    const leftoverPixels = availableForItems - itemWidth * cols;
-    itemWidth += leftoverPixels / cols;
+    // Sisa piksel akibat pembulatan -> bagikan SEBAGAI INTEGER +1px
+    // ke beberapa kolom PERTAMA saja, bukan pecahan desimal ke semua
+    const leftoverPixels = availableForItems - baseWidth * cols;
 
-    // Margin kiri = kanan = PERSIS uniformGap, tidak dihitung ulang dari sisa
-    const sideMargin = uniformGap;
+    // Array lebar tiap kolom (integer semua, totalnya PASTI = availableForItems)
+    const columnWidths = new Array(cols).fill(baseWidth);
+    for (let i = 0; i < leftoverPixels; i++) {
+        columnWidths[i] += 1;
+    }
+
+    // Hitung posisi X kiri tiap kolom secara kumulatif (bukan colIndex * itemWidth)
+    const columnLeftPositions = new Array(cols);
+    let cursor = uniformGap; // margin kiri
+    for (let i = 0; i < cols; i++) {
+        columnLeftPositions[i] = cursor;
+        cursor += columnWidths[i] + uniformGap;
+    }
+    // Sekarang cursor (setelah loop) = containerWidth - uniformGap + uniformGap
+    // = containerWidth persis, sehingga margin kanan otomatis pas = uniformGap
 
     let columnHeights = new Array(cols).fill(0); 
 
     items.forEach((item) => { 
+        let colIndex = columnHeights.indexOf(Math.min(...columnHeights)); 
+        let itemWidth = columnWidths[colIndex];
         let imgThumb = item.querySelector(".image-item__thumb"); 
         
         item.style.width = `${itemWidth}px`; 
@@ -72,10 +87,8 @@ function positionItems() {
             imgThumb.style.height = `${Math.floor(itemWidth / ratio)}px`;
         } 
 
-        let colIndex = columnHeights.indexOf(Math.min(...columnHeights)); 
         let topPos = columnHeights[colIndex]; 
-        
-        let leftPos = sideMargin + (colIndex * (itemWidth + uniformGap)); 
+        let leftPos = columnLeftPositions[colIndex];
 
         item.style.position = "absolute"; 
         item.style.left = `${leftPos}px`; 
@@ -86,8 +99,6 @@ function positionItems() {
 
     container.style.height = `${Math.max(...columnHeights) + 80}px`; 
 }
-
-
 window.addEventListener("resize", positionItems); 
 
 // ==========================================
