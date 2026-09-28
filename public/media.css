@@ -152,7 +152,7 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
 
 .image-preview__thumbnail { 
   position: relative; 
-  background: #000000; 
+  background: #F9F6EE; 
   display: flex; 
   align-items: center; 
   justify-content: center;
@@ -197,7 +197,7 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
 .image-preview__related .related-title {
   font-size: 16px;
   font-weight: 500;
-   margin: 16px;
+   margin: 0 16px;
   margin-bottom: 12px;
   color: #202124;
 }
