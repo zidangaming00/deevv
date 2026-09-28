@@ -655,15 +655,19 @@ const UI = {
     },
 
     renderFooter: () => {
-        if (!document.querySelector(".footer")) {
-            document.querySelector(".results-section").insertAdjacentHTML('beforeend', `
-                <section class="footer">
-                    <ul class="list"><li><a href="/settings">Settings</a></li><li><a href="/privacy">Privacy</a></li><li><a href="/search?q=translate">Translate</a></li></ul>
-                    <div class="copyright">©Copyright ${new Date().getFullYear()}</div>
-                </section>
-            `);
-        }
-    },
+    if (!document.querySelector("footer")) {
+        document.querySelector(".results-section").insertAdjacentHTML('beforeend', `
+            <footer>
+                <div class="footer-links">
+                    <a href="/privacy" class="footer-link">Privacy</a>
+                    <a href="/settings" class="footer-link">Settings</a>
+                </div>
+                <span class="footer-copy">&copy; Deevv Search</span>
+            </footer>
+        `);
+    }
+},
+
 
     renderEmptyState: () => {
         const list = Array(3).fill(0).map((_, i) => `<li>${getText("noresultsug", i)}</li>`).join("");
