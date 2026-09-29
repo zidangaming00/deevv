@@ -93,6 +93,25 @@ const Utils = {
         return "Just now";
     },
 
+formatDuration: (duration) => {
+    if (!duration) return "";
+    // Mengubah ISO 8601 duration (misal PT1H2M30S / PT4M15S) ke format mm:ss / hh:mm:ss
+    const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+    if (match) {
+        const hours = parseInt(match[1] || 0, 10);
+        const minutes = parseInt(match[2] || 0, 10);
+        const seconds = parseInt(match[3] || 0, 10);
+
+        const hStr = hours > 0 ? `${hours}:` : '';
+        const mStr = hours > 0 ? String(minutes).padStart(2, '0') : minutes;
+        const sStr = String(seconds).padStart(2, '0');
+
+        return `${hStr}${mStr}:${sStr}`;
+    }
+    return duration; // Jika API sudah mengirim format teks seperti "04:15"
+},
+
+
     dateConversion: (val, shortMonth = false, skip = false) => {
         let parsedDate = new Date(val);
         if (isNaN(parsedDate)) {
@@ -942,6 +961,10 @@ function renderVideos(res) {
         const timeStr = Utils.timeAgo ? Utils.timeAgo(item.snippet.publishTime) : '';
         const videoId = item.id.videoId || item.id;
 
+        // Ambil data durasi dari API
+        const rawDuration = item.contentDetails?.duration || item.duration || item.snippet?.duration || "";
+        const durationStr = Utils.formatDuration(rawDuration);
+
         container.insertAdjacentHTML('beforeend', `
             <div class="video-card">
                 <a href="https://youtube.com/watch?v=${videoId}" target="_blank" rel="noopener">
@@ -952,6 +975,7 @@ function renderVideos(res) {
                                 <path d="M8 5v14l11-7z"/>
                             </svg>
                         </div>
+                        ${durationStr ? `<div class="video-card__duration">${durationStr}</div>` : ''}
                     </div>
                     <div class="video-card__content">
                         <div class="title">${title}</div>
