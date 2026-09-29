@@ -926,14 +926,32 @@ function renderVideos(res) {
     if (!res.items || !res.items.length) { UI.renderEmptyState(); return; }
     
     res.items.forEach(item => {
+        const title = Utils.escapeHTML(item.snippet.title);
+        const thumb = item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default?.url;
+        const channel = Utils.escapeHTML(item.snippet.channelTitle);
+        const timeStr = Utils.timeAgo(item.snippet.publishTime);
+        const videoId = item.id.videoId || item.id;
+
         container.insertAdjacentHTML('beforeend', `
             <div class="video-card">
-                <a href="https://youtube.com/watch?v=${item.id.videoId}">
-                    <img src="${item.snippet.thumbnails.medium.url}" class="thumbnail">
-                    <div class="title">${item.snippet.title}</div>
-                    <div class="source">
-                        <div class="info">${Utils.timeAgo(item.snippet.publishTime)}</div>
-                        <div class="info"><img src="images/youtube.png" class="favicon"><div>${item.snippet.channelTitle}</div></div>
+                <a href="https://youtube.com/watch?v=${videoId}" target="_blank" rel="noopener">
+                    <div class="video-card__thumb-wrapper">
+                        <img src="${thumb}" class="thumbnail" alt="${title}" loading="lazy">
+                        <div class="video-card__play-badge">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="video-card__content">
+                        <div class="title">${title}</div>
+                        <div class="source">
+                            <div class="info">
+                                <img src="images/youtube.png" class="favicon" alt="YouTube">
+                                <span class="channel-name">${channel}</span>
+                            </div>
+                            <div class="time-ago">${timeStr}</div>
+                        </div>
                     </div>
                 </a>
             </div>
@@ -942,6 +960,7 @@ function renderVideos(res) {
     if (Config.startIndex === 1) UI.renderFooter();
     handlePaginationUi("stop", res);
 }
+
 
 function renderNews(res) {
     const container = document.querySelector(".main-result");
