@@ -1,6 +1,4 @@
-
-
-const API_KEY = "latlng_tvvke9nwdfdj8qcstelaszh54ndy46t9";
+const API_KEY = "ISI_API_KEY_KAMU_DI_SINI";
 const ALLOWED_ORIGIN = "https://deevv.pages.dev";
 
 const CATEGORY_MAP = {
@@ -10,113 +8,104 @@ const CATEGORY_MAP = {
   spbu: "fuel_station"
 };
 
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 204,
+    headers: corsHeaders()
+  });
+}
 
-    if (request.method === "OPTIONS") {
-      return new Response(null, {
-        status: 204,
-        headers: corsHeaders()
-      });
-    }
+export async function onRequestGet(context) {
+  const url = new URL(context.request.url);
 
-    if (request.method !== "GET") {
-      return json({ error: "Method not allowed" }, 405);
-    }
+  const lat = Number(url.searchParams.get("lat"));
+  const lon = Number(url.searchParams.get("lon"));
+  const input = (url.searchParams.get("category") || "")
+    .trim()
+    .toLowerCase();
 
-    if (url.pathname !== "/nearby") {
-      return json({ error: "Not found" }, 404);
-    }
+  const radius = Math.min(
+    Math.max(Number(url.searchParams.get("radius")) || 3000, 100),
+    50000
+  );
 
-    const lat = Number(url.searchParams.get("lat"));
-    const lon = Number(url.searchParams.get("lon"));
-    const input = (url.searchParams.get("category") || "")
-      .trim()
-      .toLowerCase();
+  const limit = Math.min(
+    Math.max(Number(url.searchParams.get("limit")) || 30, 1),
+    100
+  );
 
-    const radius = Math.min(
-      Math.max(Number(url.searchParams.get("radius")) || 3000, 100),
-      50000
-    );
+  if (
+    !Number.isFinite(lat) ||
+    !Number.isFinite(lon) ||
+    lat < -90 ||
+    lat > 90 ||
+    lon < -180 ||
+    lon > 180
+  ) {
+    return json({ error: "Invalid coordinates" }, 400);
+  }
 
-    const limit = Math.min(
-      Math.max(Number(url.searchParams.get("limit")) || 30, 1),
-      100
-    );
+  const category = CATEGORY_MAP[input];
 
-    if (
-      !Number.isFinite(lat) ||
-      !Number.isFinite(lon) ||
-      lat < -90 ||
-      lat > 90 ||
-      lon < -180 ||
-      lon > 180
-    ) {
-      return json({ error: "Invalid coordinates" }, 400);
-    }
+  if (!category) {
+    return json({
+      error: "Unknown category",
+      available: Object.keys(CATEGORY_MAP)
+    }, 400);
+  }
 
-    const category = CATEGORY_MAP[input];
+  const api = new URL(
+    "https://api.latlng.work/v1/places/nearby"
+  );
 
-    if (!category) {
-      return json({
-        error: "Unknown category",
-        available: Object.keys(CATEGORY_MAP)
-      }, 400);
-    }
+  api.searchParams.set("lat", String(lat));
+  api.searchParams.set("lon", String(lon));
+  api.searchParams.set("radius", String(radius));
+  api.searchParams.set("category", category);
+  api.searchParams.set("limit", String(limit));
+  api.searchParams.set("country", "id");
 
-    const api = new URL(
-      "https://api.latlng.work/v1/places/nearby"
-    );
+  try {
+    const response = await fetch(api.toString(), {
+      method: "GET",
+      headers: {
+        "X-Api-Key": API_KEY,
+        "Accept": "application/json"
+      }
+    });
 
-    api.searchParams.set("lat", lat);
-    api.searchParams.set("lon", lon);
-    api.searchParams.set("radius", radius);
-    api.searchParams.set("category", category);
-    api.searchParams.set("limit", limit);
-    api.searchParams.set("country", "id");
+    const text = await response.text();
+
+    let data;
 
     try {
-      const response = await fetch(api, {
-        headers: {
-          "X-Api-Key": API_KEY,
-          "Accept": "application/json"
-        }
-      });
-
-      const text = await response.text();
-
-      let data;
-
-      try {
-        data = JSON.parse(text);
-      } catch {
-        return json({
-          error: "Invalid provider response",
-          status: response.status
-        }, 502);
-      }
-
-      if (!response.ok) {
-        return json({
-          error: "Places provider error",
-          status: response.status,
-          details: data
-        }, 502);
-      }
-
-      return json(data);
-
-    } catch (error) {
+      data = JSON.parse(text);
+    } catch {
       return json({
-        error: "Failed to contact Places provider",
-        message: error instanceof Error
-          ? error.message
-          : String(error)
+        error: "Invalid provider response",
+        status: response.status
       }, 502);
     }
+
+    if (!response.ok) {
+      return json({
+        error: "Places provider error",
+        status: response.status,
+        details: data
+      }, 502);
+    }
+
+    return json(data);
+
+  } catch (error) {
+    return json({
+      error: "Failed to contact Places provider",
+      message: error instanceof Error
+        ? error.message
+        : String(error)
+    }, 502);
   }
-};
+}
 
 function corsHeaders() {
   return {
