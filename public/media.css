@@ -19,7 +19,7 @@
   /* WHITESPACE / GAP: 4px antar kartu */
   gap: 4px; 
   /* PADDING KIRI-KANAN: 4px dari tepi layar */
-  padding: 8px 4px 0 4px; 
+  padding: 8px 6px 0 6px; 
   
   background: var(--color-white, #ffffff);
   box-sizing: border-box;
@@ -31,7 +31,7 @@
   display: flex;
   flex-direction: column;
   background: #ffffff;
-  border-radius: 8px;
+  border-radius: 16px;
   border: 1px solid rgba(0, 0, 0, 0.05);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
   overflow: hidden;
@@ -69,6 +69,13 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1); 
+}
+
+/* 3. Efek Zoom saat di-hold (di-touch) atau di-hover */
+.video-card:active .thumbnail,
+.video-card:hover .thumbnail {
+  transform: scale(1.12); /* Pembesaran 12% (pas & tidak berlebihan) */
 }
 
 /* Play Badge Overlay — Tetap Konsisten Tanpa Berganti Warna */
