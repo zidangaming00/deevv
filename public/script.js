@@ -923,13 +923,23 @@ async function performSearch() {
 
 function renderVideos(res) {
     const container = document.querySelector(".main-result");
-    if (!res.items || !res.items.length) { UI.renderEmptyState(); return; }
+    if (!res.items || !res.items.length) { 
+        if (typeof UI !== 'undefined' && UI.renderEmptyState) UI.renderEmptyState(); 
+        return; 
+    }
     
+    // Pastikan container memiliki class video-grid
+    container.className = "main-result video-grid";
+
     res.items.forEach(item => {
-        const title = Utils.escapeHTML(item.snippet.title);
+        // Menggunakan DOMParser agar HTML entities ter-decode dengan rapi
+        const parser = new DOMParser();
+        const decodedTitle = parser.parseFromString(item.snippet.title, 'text/html').body.textContent;
+        const title = Utils.escapeHTML(decodedTitle);
+        
         const thumb = item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default?.url;
         const channel = Utils.escapeHTML(item.snippet.channelTitle);
-        const timeStr = Utils.timeAgo(item.snippet.publishTime);
+        const timeStr = Utils.timeAgo ? Utils.timeAgo(item.snippet.publishTime) : '';
         const videoId = item.id.videoId || item.id;
 
         container.insertAdjacentHTML('beforeend', `
@@ -957,10 +967,14 @@ function renderVideos(res) {
             </div>
         `);
     });
-    if (Config.startIndex === 1) UI.renderFooter();
-    handlePaginationUi("stop", res);
-}
 
+    if (typeof Config !== 'undefined' && Config.startIndex === 1 && typeof UI !== 'undefined' && UI.renderFooter) {
+        UI.renderFooter();
+    }
+    if (typeof handlePaginationUi === 'function') {
+        handlePaginationUi("stop", res);
+    }
+}
 
 function renderNews(res) {
     const container = document.querySelector(".main-result");
