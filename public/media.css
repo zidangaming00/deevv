@@ -127,6 +127,8 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
   font-family: 'Google Sans', Roboto, sans-serif;
   display: flex;
   flex-direction: column;
+  height: 100dvh;          /* tinggi layar sebenarnya di mobile (100vh ikut tertutup address bar) */
+  overflow: hidden;        /* scroll hanya terjadi di .image-preview__body */
 }
 
 .image-preview__header { 
@@ -146,8 +148,11 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
 /* Scrollable Container untuk Konten Preview & Related */
 .image-preview__body {
   flex: 1;
+  min-height: 0;           /* KUNCI: tanpa ini flex item melebar sesuai isi & tidak bisa di-scroll */
   overflow-y: auto;
+  overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .image-preview__thumbnail { 
@@ -190,7 +195,7 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
 
 /* Related Images Section */
 .image-preview__related {
-  padding: 6px;
+  padding: 6px 6px 32px;
   border-top: 8px solid #f1f3f4;
   background: #fff;
 }
@@ -249,3 +254,10 @@ body.dark .image-preview__related { background: #202125; border-color: #3c4043; 
 body.dark .image-preview .title, 
 body.dark .image-preview__related .related-title,
 body.dark .related-card__title { color: #e8eaed; }
+
+.related-note {
+  grid-column: span 2;
+  font-size: 12px;
+  color: #70757a;
+  padding: 2px 10px 6px;
+}
