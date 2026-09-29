@@ -32,19 +32,23 @@ html,body{width:100%;height:100%;overflow:hidden;background:#f8f9fa}
 .chip{background:#fff;border-radius:20px;padding:8px 14px;font-size:13.5px;font-weight:500;color:#3c4043;display:flex;align-items:center;gap:6px;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.12);border:1px solid #dadce0;cursor:pointer;flex-shrink:0;transition:transform .12s ease,box-shadow .12s ease}
 .chip:active{transform:scale(.96);box-shadow:0 1px 2px rgba(0,0,0,.1)}
 .chip svg{width:18px;height:18px;fill:#5f6368;flex-shrink:0}
+
 .fab-group{position:absolute;right:16px;bottom:261px;z-index:1000;display:flex;flex-direction:column;gap:12px;align-items:center;transition:bottom .32s cubic-bezier(.2,.8,.2,1)}
 .fab{width:48px;height:48px;border-radius:50%;background:#fff;border:none;box-shadow:0 2px 6px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;color:#5f6368;cursor:pointer;transition:transform .12s cubic-bezier(.2,.8,.2,1),box-shadow .12s ease,background .12s ease}
 .fab:active,.fab.clicked{transform:scale(.86);box-shadow:0 1px 3px rgba(0,0,0,.14)}
 .fab.directions{background:#0b57d0;color:#fff;width:54px;height:54px;border-radius:16px}
 .fab.directions:active,.fab.directions.clicked{transform:scale(.90)}
-.fab svg{width:24px;height:24px;fill:currentColor;flex-shrink:0;transition:transform .12s ease}
+.fab svg{width:24px;height:24px;fill:currentColor;flex-shrink:0}
 .fab.clicked svg{transform:scale(.94)}
+.fab svg{transition:transform .12s ease}
+
 .bottom-sheet{position:absolute;bottom:0;left:0;right:0;z-index:999;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -4px 16px rgba(0,0,0,.12);height:245px;min-height:205px;display:flex;flex-direction:column;transition:height .32s cubic-bezier(.2,.8,.2,1),border-radius .25s ease;overflow:hidden}
 .sheet-handle-area{height:34px;padding:10px 16px 8px;display:flex;align-items:center;justify-content:center;cursor:grab;flex-shrink:0;touch-action:none;position:relative}
 .sheet-handle{width:36px;height:4px;background:#dadce0;border-radius:2px}
 .panel-close{width:32px;height:32px;border:0;border-radius:50%;background:#f1f3f4;color:#5f6368;display:none;align-items:center;justify-content:center;cursor:pointer;position:absolute;right:16px;top:8px}
 .panel-close:active{background:#e8eaed}
 .panel-close svg{width:18px;height:18px;fill:currentColor}
+
 .saved-close{width:40px;height:40px;border:0;border-radius:50%;background:#f1f3f4;color:#5f6368;display:none;align-items:center;justify-content:center;cursor:pointer;margin-left:auto}
 .saved-close:active{background:#e8eaed;transform:scale(.94)}
 .saved-close svg{width:21px;height:21px;fill:currentColor}
@@ -56,6 +60,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#f8f9fa}
 .saved-mode .sheet-content{padding-top:0}
 .saved-mode #sheet-title{font-size:22px;margin-bottom:10px}
 .saved-mode .sheet-nav{display:flex}
+
 .sheet-content{flex:1;min-height:0;overflow-y:auto;padding:0 16px 12px;touch-action:pan-y;-webkit-overflow-scrolling:touch;transition:opacity .18s ease,transform .25s ease}
 #sheet-title{font-size:18px;font-weight:700;color:#202124;margin-bottom:4px;padding-right:32px}
 .hint{font-size:13px;color:#5f6368;line-height:1.5}
@@ -84,6 +89,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#f8f9fa}
 .saved-empty-icon{width:56px;height:56px;border-radius:50%;background:#f1f3f4;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
 .saved-empty-icon svg{width:28px;height:28px;fill:#5f6368}
 .saved-empty-title{font-size:16px;font-weight:600;color:#202124;margin-bottom:5px}
+
 .saved-item{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #f1f3f4;cursor:pointer;transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s cubic-bezier(.4,0,.2,1);overflow:hidden;opacity:1;transform:translateX(0)}
 .saved-item:active{background:#f8f9fa}
 .saved-item.removing{opacity:0;transform:translateX(100%)}
@@ -95,16 +101,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:#f8f9fa}
 .saved-remove{width:36px;height:36px;border:0;border-radius:50%;background:transparent;color:#5f6368;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
 .saved-remove:active{background:#f1f3f4;transform:scale(.92)}
 .saved-remove svg{width:20px;height:20px;fill:currentColor}
+
 .sheet-nav{height:64px;flex-shrink:0;border-top:1px solid #f1f3f4;background:#fff;display:flex;align-items:center;justify-content:space-around;padding:4px 18px env(safe-area-inset-bottom,4px)}
 .sheet-tab{border:none;background:transparent;color:#5f6368;min-width:90px;height:54px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:500;cursor:pointer;transition:transform .12s ease,background .15s ease,color .15s ease}
 .sheet-tab:active{transform:scale(.95)}
 .sheet-tab svg{width:22px;height:22px;fill:currentColor;display:block}
 .sheet-tab.active{color:#0b57d0;background:#e8f0fe;font-weight:700}
 .user-dot{width:18px;height:18px;background:#1a73e8;border:3px solid #fff;border-radius:50%;box-shadow:0 0 8px rgba(0,0,0,.4)}
+
 .location-fallback{padding:14px;border:1px solid #e8eaed;border-radius:16px;background:#fff;margin-bottom:12px}
 .location-fallback-title{font-size:14px;font-weight:700;color:#202124;margin-bottom:5px}
 .location-fallback-text{font-size:12.5px;color:#5f6368;line-height:1.5}
 .location-fallback .btn{margin-top:10px}
+
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity .2s cubic-bezier(.2,0,0,1)}
 .modal-overlay.active{display:flex;opacity:1}
 .modal-box{background:#fff;border-radius:24px;width:100%;max-width:320px;padding:24px;box-shadow:0 12px 32px rgba(0,0,0,.2);transform:scale(.95);transition:transform .2s cubic-bezier(.2,0,0,1)}
@@ -118,15 +127,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:#f8f9fa}
 .modal-btn.delete{color:#b3261e;background:#fce8e6;font-weight:700}
 .modal-btn.delete:active{background:#f9dedc}
 .nav-badge{display:inline-block;padding:3px 8px;background:#e6f4ea;color:#137333;font-weight:700;border-radius:12px;font-size:11px;margin-bottom:6px}
-.category-loading{display:flex;align-items:center;gap:10px;padding:16px 0;color:#5f6368;font-size:13px}
-.category-spinner{width:18px;height:18px;border:2px solid #dadce0;border-top-color:#1a73e8;border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes panelFadeOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(5px)}}
-@keyframes panelFadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+@keyframes panelFadeOut{
+from{opacity:1;transform:translateY(0)}
+to{opacity:0;transform:translateY(5px)}
+}
+@keyframes panelFadeIn{
+from{opacity:0;transform:translateY(5px)}
+to{opacity:1;transform:translateY(0)}
+}
 .sheet-content.switching-out{animation:panelFadeOut .14s ease forwards}
 .sheet-content.switching-in{animation:panelFadeIn .2s ease forwards}
 </style>
 </head>
+
 <body>
 
 <div class="top-container" id="top-container">
@@ -144,7 +158,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#f8f9fa}
 <div class="chips-wrapper">
 <div class="chip" data-cat="Restoran"><svg viewBox="0 0 24 24"><path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.46 3.9 3.45 4.38V21h2.1v-7.62C10.54 12.9 12 11.12 12 9V2h-1v7zm7-7h-2v19h2v-8h2V2h-2z"/></svg>Restoran</div>
 <div class="chip" data-cat="Hotel"><svg viewBox="0 0 24 24"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/></svg>Hotel</div>
-<div class="chip" data-cat="Kedai Kopi"><svg viewBox="0 0 24 24"><path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-4-4-4v-3h2c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/></svg>Kedai Kopi</div>
+<div class="chip" data-cat="Kedai Kopi"><svg viewBox="0 0 24 24"><path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-4 4-4v-3h2c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/></svg>Kedai Kopi</div>
 <div class="chip" data-cat="SPBU"><svg viewBox="0 0 24 24"><path d="M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2h-1V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2v-5h1v5.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V10.5c0-.85-.43-1.61-1.23-2.27zM11 10H5V5h6v5z"/></svg>SPBU</div>
 </div>
 </div>
@@ -152,7 +166,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#f8f9fa}
 <div class="fab-group" id="fab-group">
 <button class="fab" title="Ubah layer peta" id="btn-layer"><svg viewBox="0 0 24 24"><path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.38 5.74zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z"/></svg></button>
 <button class="fab" title="Kembali menghadap utara" id="btn-north"><svg id="compass-icon" viewBox="0 0 24 24" style="transition:transform .1s linear"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><polygon points="12,4 15,12 12,10" fill="#ea4335"/><polygon points="12,4 9,12 12,10" fill="#cc2515"/><polygon points="12,20 15,12 12,14" fill="#9aa0a6"/><polygon points="12,20 9,12 12,14" fill="#5f6368"/></svg></button>
-<button class="fab" title="Lokasi saya" id="btn-me" style="color:#1a73e8"><svg viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-7.94 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg></button>
+<button class="fab" title="Lokasi saya" id="btn-me" style="color:#1a73e8"><svg viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg></button>
 <button class="fab directions" title="Rute ke tempat terpilih" id="btn-route"><svg viewBox="0 0 24 24"><path d="M22.43 10.59l-9.01-9.01c-.75-.75-2.07-1.32-2.83 0l-9 9c-.78.78-.78 2.04 0 2.82l9 9c.39.39.9.58 1.41.58.51 0 1.02-.19 1.41-.58l8.99-8.99c.79-.76.79-2.03.03-2.82zM13 14.5V12h-4v3H7v-5c0-.55.45-1 1-1h5V6.5l3.5 3.5-3.5 3.5z"/></svg></button>
 </div>
 
@@ -199,11 +213,12 @@ Disimpan
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
+
 <script>
 const DEFAULT=[-6.30,106.82];
 const JABODETABEK_BOUNDS=[[-6.95,106.45],[-5.85,107.35]];
 const RADIUS=3000;
-const MAP_API='/api/maps';
+const PLACES_API='/api/maps';
 
 let userCoords=DEFAULT.slice();
 let located=false;
@@ -246,7 +261,7 @@ let userMarker=null;
 
 const $=id=>document.getElementById(id);
 
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({
 '&':'&amp;',
 '<':'&lt;',
 '>':'&gt;',
@@ -256,14 +271,11 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({
 
 const origin=()=>located?userCoords:[map.getCenter().lat,map.getCenter().lng];
 
-const fmtDist=m=>{
-m=Number(m)||0;
-return m<1000?Math.round(m)+' m':(m/1000).toFixed(1)+' km';
-};
+const fmtDist=m=>m<1000?Math.round(m)+' m':(m/1000).toFixed(1)+' km';
 
 const PIN=`<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
 const BOOKMARK_ICON=`<svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2zm0 15l-5-2.18L7 18V5h10v13z"/></svg>`;
-const TRASH_ICON=`<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2- .9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`;
+const TRASH_ICON=`<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`;
 
 const SAVED_KEY='deevv_maps_saved_places';
 
@@ -271,7 +283,9 @@ function getSaved(){
 try{
 const data=JSON.parse(localStorage.getItem(SAVED_KEY)||'[]');
 return Array.isArray(data)?data:[];
-}catch(_){return[];}
+}catch(_){
+return[];
+}
 }
 
 function saveSaved(list){
@@ -281,7 +295,6 @@ localStorage.setItem(SAVED_KEY,JSON.stringify(list));
 function placeKey(p){
 if(!p)return'';
 if(p.place_id)return'place:'+p.place_id;
-if(p.id)return'id:'+p.id;
 return'coord:'+Number(p.lat).toFixed(6)+','+Number(p.lon).toFixed(6);
 }
 
@@ -308,7 +321,7 @@ lat:Number(p.lat),
 lon:Number(p.lon),
 addr:p.addr||'',
 tags:p.tags||{},
-place_id:p.place_id||p.id||''
+place_id:p.place_id||''
 });
 
 saveSaved(list.slice(0,100));
@@ -363,9 +376,7 @@ return;
 navigator.geolocation.getCurrentPosition(
 p=>{
 updateUserLocation(p.coords);
-
 if(moveMap)map.flyTo(userCoords,16,{duration:1.2});
-
 if(!savedMode&&$('location-fallback'))resetToWelcome();
 },
 ()=>{
@@ -385,16 +396,16 @@ if(!detail)return;
 
 if(!detail.querySelector('.location-fallback')){
 detail.insertAdjacentHTML('afterbegin',locationFallbackHTML());
-
 const btn=$('btn-request-location');
-
 if(btn)btn.onclick=()=>requestLocation(true);
 }
 }
 
 requestLocation(true);
 
-$('btn-me').onclick=()=>requestLocation(true);
+$('btn-me').onclick=()=>{
+requestLocation(true);
+};
 
 map.on('rotate',()=>{
 $('compass-icon').style.transform=`rotate(${-map.getBearing()}deg)`;
@@ -450,57 +461,229 @@ void btn.offsetWidth;
 btn.classList.add('clicked');
 setTimeout(()=>btn.classList.remove('clicked'),150);
 };
+
 btn.addEventListener('pointerdown',clickAnimation);
 });
 
 const CATS={
-'restoran':{label:'Restoran'},
-'kedai kopi':{label:'Kedai Kopi'},
-'spbu':{label:'SPBU'},
-'hotel':{label:'Hotel'}
+'restoran':{
+label:'Restoran',
+filters:['["amenity"="restaurant"]','["amenity"="fast_food"]'],
+queries:['restaurant','restoran','fast food'],
+apiCategory:'restoran'
+},
+'kedai kopi':{
+label:'Kedai Kopi',
+filters:['["amenity"="cafe"]'],
+queries:['cafe','kedai kopi','coffee shop'],
+apiCategory:'kedai kopi'
+},
+'spbu':{
+label:'SPBU',
+filters:['["amenity"="fuel"]'],
+queries:['SPBU','pom bensin','gas station'],
+apiCategory:'spbu'
+},
+'hotel':{
+label:'Hotel',
+filters:['["tourism"="hotel"]','["tourism"="motel"]'],
+queries:['hotel','motel'],
+apiCategory:'hotel'
+}
 };
 
-function normalizeGeoapifyPlace(p,label){
-const props=p?.properties||p||{};
-const coords=p?.geometry?.coordinates||[];
+const OVERPASS_ENDPOINTS=[
+'https://overpass-api.de/api/interpreter',
+'https://overpass.kumi.systems/api/interpreter',
+'https://overpass.private.coffee/api/interpreter'
+];
 
-const lon=Number(
-Array.isArray(coords)&&coords.length>=2
-?coords[0]
-:props.lon
-);
+function fromOverpass(el){
+const t=el.tags||{};
+const lat=el.lat??el.center?.lat;
+const lon=el.lon??el.center?.lon;
 
-const lat=Number(
-Array.isArray(coords)&&coords.length>=2
-?coords[1]
-:props.lat
-);
+if(lat==null||lon==null||!t.name)return null;
 
-if(!Number.isFinite(lat)||!Number.isFinite(lon))return null;
-
-const raw=props.datasource?.raw||{};
+const addr=[
+t['addr:housenumber'],
+t['addr:street'],
+t['addr:suburb']||t['addr:village']||t['addr:town']||t['addr:city']
+].filter(Boolean).join(', ');
 
 return{
-id:props.place_id||props.datasource?.raw?.osm_id||'',
-place_id:props.place_id||'',
-name:props.name||props.address_line1||'Tempat tanpa nama',
-lat,
-lon,
-addr:props.formatted||props.address_line2||props.address_line1||'',
-tags:{
-opening_hours:props.opening_hours||raw.opening_hours||'',
-phone:props.contact?.phone||raw.phone||'',
-website:props.website||props.contact?.website||raw.website||'',
-image:props.image||raw.image||'',
-wikimedia_commons:raw.wikimedia_commons||''
-},
-phone:props.contact?.phone||raw.phone||'',
-website:props.website||props.contact?.website||raw.website||'',
-opening_hours:props.opening_hours||raw.opening_hours||'',
-image:props.image||raw.image||'',
-distance:Number(props.distance)||null,
-category:label
+name:t.name,
+lat:Number(lat),
+lon:Number(lon),
+tags:t,
+addr:addr||t['addr:full']||'',
+place_id:el.id?`osm_${el.type||'node'}_${el.id}`:''
 };
+}
+
+async function fetchWithTimeout(url,options={},timeout=30000){
+const controller=new AbortController();
+const timer=setTimeout(()=>controller.abort(),timeout);
+
+try{
+return await fetch(url,{...options,signal:controller.signal});
+}finally{
+clearTimeout(timer);
+}
+}
+
+async function fetchOverpass(query){
+let lastError=null;
+
+for(const endpoint of OVERPASS_ENDPOINTS){
+try{
+let res=await fetchWithTimeout(endpoint+'?data='+encodeURIComponent(query),{
+method:'GET',
+headers:{Accept:'application/json'}
+},30000);
+
+if(res.ok){
+const data=await res.json();
+
+if(data&&Array.isArray(data.elements)){
+return data.elements;
+}
+}
+
+try{
+res=await fetchWithTimeout(endpoint,{
+method:'POST',
+headers:{
+'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8',
+Accept:'application/json'
+},
+body:'data='+encodeURIComponent(query)
+},30000);
+
+if(res.ok){
+const data=await res.json();
+
+if(data&&Array.isArray(data.elements)){
+return data.elements;
+}
+}
+
+lastError=new Error('HTTP '+res.status);
+}catch(e){
+lastError=e;
+}
+
+}catch(e){
+lastError=e;
+}
+}
+
+throw lastError||new Error('Overpass unavailable');
+}
+
+function uniquePlaces(list){
+const seen=new Set();
+
+return list.filter(p=>{
+if(!p||!p.name||!Number.isFinite(Number(p.lat))||!Number.isFinite(Number(p.lon)))return false;
+
+const key=placeKey(p);
+
+if(seen.has(key))return false;
+
+seen.add(key);
+return true;
+});
+}
+
+function preparePlaces(list,lat,lon){
+return uniquePlaces(list)
+.map(p=>({...p,d:Number.isFinite(Number(p.d))?Number(p.d):map.distance([lat,lon],[p.lat,p.lon])}))
+.sort((a,b)=>a.d-b.d)
+.slice(0,30);
+}
+
+async function fetchPlacesAPI(key,lat,lon){
+const cat=CATS[key];
+
+if(!cat)throw new Error('Unknown category');
+
+const params=new URLSearchParams({
+lat:Number(lat).toFixed(6),
+lon:Number(lon).toFixed(6),
+category:cat.apiCategory||key
+});
+
+const res=await fetchWithTimeout(
+`${PLACES_API}?${params.toString()}`,
+{
+method:'GET',
+headers:{Accept:'application/json'}
+},
+15000
+);
+
+if(!res.ok){
+throw new Error('Places API HTTP '+res.status);
+}
+
+const data=await res.json();
+
+if(!data||!Array.isArray(data.places)){
+throw new Error('Invalid Places API response');
+}
+
+const places=data.places.map(item=>{
+if(!item)return null;
+
+const lat2=Number(item.lat);
+const lon2=Number(item.lon);
+
+if(!Number.isFinite(lat2)||!Number.isFinite(lon2))return null;
+if(!item.name)return null;
+
+const tags={
+category:item.category||cat.apiCategory||key,
+street:item.street||'',
+city:item.city||'',
+postcode:item.postcode||'',
+country:item.country||'',
+phone:item.phone||'',
+website:item.website||'',
+opening_hours:item.opening_hours||'',
+image:item.image||''
+};
+
+return{
+name:String(item.name),
+lat:lat2,
+lon:lon2,
+tags,
+addr:item.address||'',
+place_id:item.id?`geo_${item.id}`:`geo_${lat2}_${lon2}`,
+d:Number.isFinite(Number(item.distance_m))
+?Number(item.distance_m)
+:map.distance([lat,lon],[lat2,lon2])
+};
+}).filter(Boolean);
+
+return preparePlaces(places,lat,lon);
+}
+
+async function searchNearbyFallback(cat,lat,lon){
+const results=[];
+
+for(const q of cat.queries){
+try{
+const list=await nominatim(q,10);
+results.push(...list);
+if(results.length>=30)break;
+}catch(e){
+console.warn('Nominatim fallback error:',q,e);
+}
+}
+
+return preparePlaces(results,lat,lon);
 }
 
 async function searchNearby(key){
@@ -525,88 +708,73 @@ $('tab-explore').classList.add('active');
 
 $('panel-close').style.display='flex';
 $('sheet-title').textContent=cat.label+' terdekat';
-
-$('sheet-detail').innerHTML=`
-<div class="category-loading">
-<div class="category-spinner"></div>
-<div>Mencari ${esc(cat.label.toLowerCase())} di sekitar kamu...</div>
-</div>`;
+$('sheet-detail').innerHTML='<div class="hint">Mencari tempat di sekitar kamu...</div>';
 
 setSheet(300);
 routeLayer.clearLayers();
-markers.clearLayers();
 
 try{
-const url=new URL(MAP_API,location.origin);
+let places=[];
 
-url.searchParams.set('lat',lat);
-url.searchParams.set('lon',lon);
-url.searchParams.set('category',key);
-url.searchParams.set('radius',RADIUS);
-url.searchParams.set('limit',30);
-
-const res=await fetchWithTimeout(url.toString(),{
-headers:{Accept:'application/json'}
-},15000);
+try{
+places=await fetchPlacesAPI(key,lat,lon);
 
 if(requestId!==categoryRequestId)return;
 
-if(!res.ok){
-let detail='HTTP '+res.status;
+}catch(apiError){
+console.warn('Places API gagal, mencoba Overpass:',apiError);
+
+if(requestId!==categoryRequestId)return;
+
+$('sheet-detail').innerHTML='<div class="hint">Layanan tempat sedang lambat. Mencoba sumber alternatif...</div>';
 
 try{
-const err=await res.json();
+const filters=cat.filters.map(f=>`nwr${f}(around:${RADIUS},${lat},${lon});`).join('');
+const q=`[out:json][timeout:25];(${filters});out center tags;`;
 
-if(err?.detail)detail=err.detail;
-else if(err?.error)detail=err.error;
-}catch(_){}
+const elements=await fetchOverpass(q);
 
-throw new Error(detail);
+if(requestId!==categoryRequestId)return;
+
+places=preparePlaces(
+elements.map(fromOverpass).filter(Boolean),
+lat,
+lon
+);
+
+}catch(overpassError){
+console.warn('Overpass juga gagal, menggunakan Nominatim:',overpassError);
+
+if(requestId!==categoryRequestId)return;
+
+$('sheet-detail').innerHTML='<div class="hint">Mencoba sumber alternatif terakhir...</div>';
+
+places=await searchNearbyFallback(cat,lat,lon);
+}
 }
 
-const data=await res.json();
-
 if(requestId!==categoryRequestId)return;
-
-if(data?.error)throw new Error(data.error);
-
-let places=Array.isArray(data?.places)
-?data.places.map(p=>normalizeGeoapifyPlace(p,cat.label)).filter(Boolean)
-:[ ];
-
-places=uniquePlaces(places)
-.map(p=>({
-...p,
-d:Number.isFinite(Number(p.distance))
-?Number(p.distance)
-:map.distance([lat,lon],[p.lat,p.lon])
-}))
-.sort((a,b)=>a.d-b.d)
-.slice(0,30);
 
 if(!places.length){
 $('sheet-detail').innerHTML=`
 <div class="hint">
-Tidak ada ${esc(cat.label.toLowerCase())} yang ditemukan dalam radius ${RADIUS/1000} km dari posisi ini.
+Tidak ada ${esc(cat.label.toLowerCase())} terdata dalam radius ${RADIUS/1000} km dari posisi ini.
 <br><br>
 Coba aktifkan lokasi atau geser peta ke area lain lalu tekan ${esc(cat.label)} lagi.
-</div>
-`;
+</div>`;
 return;
 }
 
 showList(places,cat.label);
 
 }catch(e){
-console.error('Geoapify category search error:',e);
+console.error('Category search error:',e);
 
 if(requestId!==categoryRequestId)return;
 
 $('sheet-detail').innerHTML=`
 <div class="hint" style="color:#ea4335">
-Pencarian ${esc(cat.label.toLowerCase())} gagal terhubung ke layanan tempat.
-<br><br>
-${esc(e?.message||'Coba lagi beberapa saat lagi.')}
+Pencarian tempat sedang tidak merespons.
 </div>
 <div class="btns">
 <button class="btn primary" id="retry-category">Coba lagi</button>
@@ -614,7 +782,6 @@ ${esc(e?.message||'Coba lagi beberapa saat lagi.')}
 `;
 
 const retry=$('retry-category');
-
 if(retry)retry.onclick=()=>searchNearby(key);
 }
 }
@@ -639,7 +806,9 @@ const d=.3;
 const url=`https://nominatim.openstreetmap.org/search?format=json&extratags=1&limit=${limit}&countrycodes=id&q=${encodeURIComponent(q)}&viewbox=${lon-d},${lat+d},${lon+d},${lat-d}&bounded=0`;
 
 const res=await fetchWithTimeout(url,{
-headers:{Accept:'application/json'}
+headers:{
+Accept:'application/json'
+}
 },20000);
 
 if(!res.ok)throw new Error(res.status);
@@ -786,7 +955,9 @@ $('sheet-detail').innerHTML='<div class="hint" style="color:#ea4335">Gagal terhu
 });
 
 document.querySelectorAll('.chip').forEach(c=>{
-c.onclick=()=>searchNearby(c.dataset.cat.toLowerCase());
+c.onclick=()=>{
+searchNearby(c.dataset.cat.toLowerCase());
+};
 });
 
 document.addEventListener('click',e=>{
@@ -799,21 +970,6 @@ function addMarker(p){
 const m=L.marker([p.lat,p.lon]).addTo(markers);
 m.on('click',()=>showDetail(p));
 return m;
-}
-
-function uniquePlaces(list){
-const seen=new Set();
-
-return list.filter(p=>{
-if(!p||!p.name||!Number.isFinite(Number(p.lat))||!Number.isFinite(Number(p.lon)))return false;
-
-const key=placeKey(p);
-
-if(seen.has(key))return false;
-
-seen.add(key);
-return true;
-});
 }
 
 function showList(places,label){
@@ -851,9 +1007,9 @@ map.flyTo([places[0].lat,places[0].lon],16,{duration:1});
 }
 
 function photoUrl(t){
-if(t?.image&&/^https?:\/\//.test(t.image))return t.image;
+if(t.image&&/^https?:\/\//.test(t.image))return t.image;
 
-const wc=t?.wikimedia_commons;
+const wc=t.wikimedia_commons;
 
 if(wc&&wc.startsWith('File:')){
 return'https://commons.wikimedia.org/wiki/Special:FilePath/'+encodeURIComponent(wc.slice(5))+'?width=700';
@@ -871,17 +1027,10 @@ const t=p.tags||{};
 map.flyTo([p.lat,p.lon],Math.max(map.getZoom(),17));
 
 const[lat,lon]=origin();
-
-const dist=fmtDist(
-Number.isFinite(Number(p.d))
-?Number(p.d)
-:map.distance([lat,lon],[p.lat,p.lon])
-);
-
+const dist=fmtDist(map.distance([lat,lon],[p.lat,p.lon]));
 const photo=photoUrl(t);
-const web=p.website||t.website||t['contact:website'];
-const phone=p.phone||t.phone||t['contact:phone'];
-const opening=p.opening_hours||t.opening_hours;
+const web=t.website||t['contact:website'];
+const phone=t.phone||t['contact:phone'];
 const saved=isSaved(p);
 
 let h='';
@@ -896,14 +1045,12 @@ if(p.addr){
 h+=`<div class="row"><b>Alamat:</b> ${esc(p.addr)}</div>`;
 }
 
-if(opening){
-h+=`<div class="row"><b>Jam buka:</b> ${esc(opening)}</div>`;
+if(t.opening_hours){
+h+=`<div class="row"><b>Jam buka:</b> ${esc(t.opening_hours)}</div>`;
 }
 
 if(phone){
-const cleanPhone=String(phone).replace(/[^\d+]/g,'');
-
-h+=`<div class="row"><b>Telepon:</b> <a href="tel:${esc(cleanPhone)}">${esc(phone)}</a></div>`;
+h+=`<div class="row"><b>Telepon:</b> <a href="tel:${esc(phone.replace(/[^\d+]/g,''))}">${esc(phone)}</a></div>`;
 }
 
 if(web&&/^https?:\/\//.test(web)){
@@ -917,7 +1064,7 @@ h+=`
 <span class="save-btn-icon">${BOOKMARK_ICON}</span>
 ${saved?'Tersimpan':'Simpan'}
 </button>
-<a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.lat+','+p.lon)}">
+<a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lon}">
 Foto &amp; ulasan di Google Maps
 </a>
 </div>`;
@@ -984,6 +1131,7 @@ currentPlace=p;
 markers.clearLayers();
 routeLayer.clearLayers();
 addMarker(p);
+
 closeSavedToDetail(p);
 };
 
@@ -999,7 +1147,6 @@ function closeSavedToDetail(p){
 closingSaved=true;
 
 const content=$('sheet-content');
-
 content.classList.remove('switching-in');
 content.classList.add('switching-out');
 
@@ -1157,7 +1304,6 @@ Ketuk salah satu kategori di atas atau telusuri nama tempat untuk mulai menjelaj
 updateWelcome();
 
 const btn=$('btn-request-location');
-
 if(btn)btn.onclick=()=>requestLocation(true);
 
 setSheet(SHEET_INITIAL);
@@ -1250,13 +1396,7 @@ map.fitBounds(line.getBounds().pad(.2));
 const mins=Math.round(rt.duration/60);
 
 $('panel-close').style.display='flex';
-
-$('sheet-title').textContent=
-`${fmtDist(rt.distance)} · ${
-mins>=60
-?Math.floor(mins/60)+' j '+(mins%60)+' mnt'
-:mins+' mnt'
-}`;
+$('sheet-title').textContent=`${fmtDist(rt.distance)} · ${mins>=60?Math.floor(mins/60)+' j '+(mins%60)+' mnt':mins+' mnt'}`;
 
 $('sheet-detail').innerHTML=`
 <div class="hint" style="margin-bottom:10px">Rute mobil menuju <b>${esc(p.name)}</b>.</div>
@@ -1265,7 +1405,6 @@ $('sheet-detail').innerHTML=`
 </div>`;
 
 $('btn-start-nav').onclick=()=>startLiveNavigation(p);
-
 setSheet(230);
 
 }catch(_){
@@ -1287,8 +1426,7 @@ const distRemaining=map.distance(
 [destination.lat,destination.lon]
 );
 
-$('sheet-title').innerHTML=
-`<span class="nav-badge">BERJALAN</span> ${fmtDist(distRemaining)}`;
+$('sheet-title').innerHTML=`<span class="nav-badge">BERJALAN</span> ${fmtDist(distRemaining)}`;
 
 $('sheet-detail').innerHTML=`
 <div class="hint">Navigasi aktif ke <b>${esc(destination.name)}</b>. Peta mengunci posisi kamu secara langsung.</div>
