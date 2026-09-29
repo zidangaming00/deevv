@@ -38,18 +38,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#f8f9fa}
 .bottom-sheet{position:absolute;bottom:0;left:0;right:0;z-index:999;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -4px 16px rgba(0,0,0,.12);height:245px;min-height:205px;display:flex;flex-direction:column;transition:height .32s cubic-bezier(.2,.8,.2,1);overflow:hidden}
 .sheet-handle-area{height:34px;padding:10px 16px 8px;display:flex;align-items:center;justify-content:center;cursor:grab;flex-shrink:0;touch-action:none;position:relative}
 .sheet-handle{width:36px;height:4px;background:#dadce0;border-radius:2px}
-
 .panel-close{width:32px;height:32px;border:0;border-radius:50%;background:#f1f3f4;color:#5f6368;display:none;align-items:center;justify-content:center;cursor:pointer;position:absolute;right:16px;top:8px}
 .panel-close:active{background:#e8eaed}
 .panel-close svg{width:18px;height:18px;fill:currentColor}
-
 .saved-close{width:40px;height:40px;border:0;border-radius:50%;background:#f1f3f4;color:#5f6368;display:none;align-items:center;justify-content:center;cursor:pointer;margin-left:auto}
 .saved-close svg{width:21px;height:21px;fill:currentColor}
 .saved-mode{z-index:1100}
 .saved-mode .sheet-handle-area{height:58px;padding:10px 16px;justify-content:space-between}
 .saved-mode .sheet-handle{opacity:0}
 .saved-mode .saved-close{display:flex}
-.saved-mode .panel-close{display:none !important}
+.saved-mode .panel-close{display:none!important}
 .saved-mode .sheet-content{padding-top:0}
 .saved-mode #sheet-title{font-size:22px;margin-bottom:10px}
 .saved-mode .sheet-nav{display:flex}
@@ -72,13 +70,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#f8f9fa}
 .btns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .btn{border:1px solid #dadce0;background:#fff;color:#1a73e8;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px}
 .btn.primary{background:#0b57d0;color:#fff;border-color:#0b57d0}
+.btn.danger{background:#d93025;color:#fff;border-color:#d93025}
 .btn.saved{background:#e8f0fe;color:#0b57d0;border-color:#aecbfa}
 .save-btn-icon{width:18px;height:18px;fill:currentColor;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .saved-empty{text-align:center;padding:24px 10px 12px}
 .saved-empty-icon{width:56px;height:56px;border-radius:50%;background:#f1f3f4;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
 .saved-empty-icon svg{width:28px;height:28px;fill:#5f6368}
-
-.saved-item{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #f1f3f4;cursor:pointer;transition:transform .3s cubic-bezier(.4,0,.2,1), opacity .3s cubic-bezier(.4,0,.2,1);overflow:hidden;opacity:1;transform:translateX(0)}
+.saved-item{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #f1f3f4;cursor:pointer;transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s cubic-bezier(.4,0,.2,1);overflow:hidden;opacity:1;transform:translateX(0)}
 .saved-item.removing{opacity:0;transform:translateX(100%)}
 .saved-pin{width:38px;height:38px;flex-shrink:0;border-radius:12px;background:#e8f0fe;color:#1a73e8;display:flex;align-items:center;justify-content:center}
 .saved-pin svg{width:20px;height:20px;fill:currentColor}
@@ -88,13 +86,18 @@ html,body{width:100%;height:100%;overflow:hidden;background:#f8f9fa}
 .saved-remove{width:36px;height:36px;border:0;border-radius:50%;background:transparent;color:#5f6368;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
 .saved-remove:active{background:#f1f3f4}
 .saved-remove svg{width:20px;height:20px;fill:currentColor}
-
 .sheet-nav{height:64px;flex-shrink:0;border-top:1px solid #f1f3f4;background:#fff;display:flex;align-items:center;justify-content:space-around;padding:4px 18px env(safe-area-inset-bottom,4px)}
 .sheet-tab{border:none;background:transparent;color:#5f6368;min-width:90px;height:54px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:500;cursor:pointer}
 .sheet-tab svg{width:22px;height:22px;fill:currentColor;display:block}
 .sheet-tab.active{color:#0b57d0;background:#e8f0fe;font-weight:700}
-.user-dot{width:16px;height:16px;background:#1a73e8;border:3px solid #fff;border-radius:50%;box-shadow:0 0 8px rgba(0,0,0,.4)}
-
+.user-dot{width:18px;height:18px;background:#1a73e8;border:3px solid #fff;border-radius:50%;box-shadow:0 0 8px rgba(0,0,0,.4)}
+.location-request{display:flex;align-items:center;gap:12px;padding:13px 14px;margin-top:12px;border:1px solid #dadce0;border-radius:16px;background:#fff}
+.location-request-icon{width:38px;height:38px;flex-shrink:0;border-radius:12px;background:#e8f0fe;color:#1a73e8;display:flex;align-items:center;justify-content:center}
+.location-request-icon svg{width:21px;height:21px;fill:currentColor}
+.location-request-info{flex:1;min-width:0}
+.location-request-title{font-size:13px;font-weight:700;color:#202124}
+.location-request-text{font-size:11px;color:#70757a;margin-top:3px;line-height:1.35}
+.location-request-btn{border:0;background:#0b57d0;color:#fff;border-radius:18px;padding:8px 12px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity .2s cubic-bezier(.2,0,0,1)}
 .modal-overlay.active{display:flex;opacity:1}
 .modal-box{background:#fff;border-radius:24px;width:100%;max-width:320px;padding:24px;box-shadow:0 12px 32px rgba(0,0,0,.2);transform:scale(.95);transition:transform .2s cubic-bezier(.2,0,0,1)}
@@ -107,6 +110,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#f8f9fa}
 .modal-btn.cancel:active{background:#f1f3f4}
 .modal-btn.delete{color:#b3261e;background:#fce8e6;font-weight:700}
 .modal-btn.delete:active{background:#f9dedc}
+.nav-badge{display:inline-block;padding:3px 8px;background:#e6f4ea;color:#137333;font-weight:700;border-radius:12px;font-size:11px;margin-bottom:6px}
 </style>
 </head>
 <body>
@@ -133,7 +137,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#f8f9fa}
 
 <div class="fab-group" id="fab-group">
 <button class="fab" title="Ubah layer peta" id="btn-layer"><svg viewBox="0 0 24 24"><path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.38 5.74zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z"/></svg></button>
-<button class="fab" title="Kembali menghadap utara" id="btn-north"><svg id="compass-icon" viewBox="0 0 24 24" style="transition: transform 0.1s linear;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><polygon points="12,4 15,12 12,10" fill="#ea4335"/><polygon points="12,4 9,12 12,10" fill="#cc2515"/><polygon points="12,20 15,12 12,14" fill="#9aa0a6"/><polygon points="12,20 9,12 12,14" fill="#5f6368"/></svg></button>
+<button class="fab" title="Kembali menghadap utara" id="btn-north"><svg id="compass-icon" viewBox="0 0 24 24" style="transition:transform .1s linear"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><polygon points="12,4 15,12 12,10" fill="#ea4335"/><polygon points="12,4 9,12 12,10" fill="#cc2515"/><polygon points="12,20 15,12 12,14" fill="#9aa0a6"/><polygon points="12,20 9,12 12,14" fill="#5f6368"/></svg></button>
 <button class="fab" title="Lokasi saya" id="btn-me" style="color:#1a73e8"><svg viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-7.94 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg></button>
 <button class="fab directions" title="Rute ke tempat terpilih" id="btn-route"><svg viewBox="0 0 24 24"><path d="M22.43 10.59l-9.01-9.01c-.75-.75-2.07-1.32-2.83 0l-9 9c-.78.78-.78 2.04 0 2.82l9 9c.39.39.9.58 1.41.58.51 0 1.02-.19 1.41-.58l8.99-8.99c.79-.76.79-2.03.03-2.82zM13 14.5V12h-4v3H7v-5c0-.55.45-1 1-1h5V6.5l3.5 3.5-3.5 3.5z"/></svg></button>
 </div>
@@ -168,22 +172,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#f8f9fa}
 
 <nav class="sheet-nav">
 <button class="sheet-tab active" id="tab-explore">
-<svg viewBox="0 0 24 24">
-<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-.32.04-.65.07-1 .07-4.41 0-8-3.59-8-8 0-.35.03-.68.07-1H7v2.5c0 .83.67 1.5 1.5 1.5H11v2.93zM17 17.5c0 .28-.22.5-.5.5H15v-2.5c0-.83-.67-1.5-1.5-1.5H11v-3h2.5c.83 0 1.5-.67 1.5-1.5V7h2v10.5z"/>
-</svg>
+<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-.32.04-.65.07-1 .07-4.41 0-8-3.59-8-8 0-.35.03-.68.07-1H7v2.5c0 .83.67 1.5 1.5 1.5H11v2.93zM17 17.5c0 .28-.22.5-.5.5H15v-2.5c0-.83-.67-1.5-1.5-1.5H11v-3h2.5c.83 0 1.5-.67 1.5-1.5V7h2v10.5z"/></svg>
 Jelajahi
 </button>
-
 <button class="sheet-tab" id="tab-saved">
-<svg viewBox="0 0 24 24">
-<path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2zm0 15l-5-2.18L7 18V5h10v13z"/>
-</svg>
+<svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2zm0 15l-5-2.18L7 18V5h10v13z"/></svg>
 Disimpan
 </button>
 </nav>
 </div>
 
-<!-- Modal Konfirmasi Hapus -->
 <div class="modal-overlay" id="confirm-modal">
 <div class="modal-box">
 <div class="modal-title">Hapus Lokasi?</div>
@@ -200,11 +198,12 @@ Disimpan
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
 <script>
-const JABODETABEK_BOUNDS=[[-6.75,106.35],[-5.95,107.25]];
 const DEFAULT=[-6.30,106.82];
+const DEFAULT_ZOOM=10;
 const RADIUS=3000;
+
 let userCoords=DEFAULT,located=false,currentPlace=null,searchTimer=null;
-let pendingDeleteKey=null;
+let pendingDeleteKey=null,watchId=null,isNavigating=false;
 
 const map=L.map('map',{
 zoomControl:false,
@@ -212,8 +211,10 @@ attributionControl:false,
 rotate:true,
 touchRotate:true,
 rotateControl:false,
-bearing:0
-}).fitBounds(JABODETABEK_BOUNDS);
+bearing:0,
+center:DEFAULT,
+zoom:DEFAULT_ZOOM
+});
 
 const roadmap=L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
 maxZoom:20,
@@ -248,6 +249,7 @@ const fmtDist=m=>m<1000?Math.round(m)+' m':(m/1000).toFixed(1)+' km';
 const PIN=`<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
 const BOOKMARK_ICON=`<svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2zm0 15l-5-2.18L7 18V5h10v13z"/></svg>`;
 const TRASH_ICON=`<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`;
+const LOCATION_ICON=`<svg viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 7.48 7.94 7.94 7.94V23h2v-2.06c4.17-.46 7.48-7.94 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>`;
 
 const SAVED_KEY='deevv_maps_saved_places';
 
@@ -256,7 +258,7 @@ try{
 const data=JSON.parse(localStorage.getItem(SAVED_KEY)||'[]');
 return Array.isArray(data)?data:[];
 }catch(_){
-return [];
+return[];
 }
 }
 
@@ -265,9 +267,9 @@ localStorage.setItem(SAVED_KEY,JSON.stringify(list));
 }
 
 function placeKey(p){
-if(!p)return '';
-if(p.place_id)return 'place:'+p.place_id;
-return 'coord:'+Number(p.lat).toFixed(6)+','+Number(p.lon).toFixed(6);
+if(!p)return'';
+if(p.place_id)return'place:'+p.place_id;
+return'coord:'+Number(p.lat).toFixed(6)+','+Number(p.lon).toFixed(6);
 }
 
 function isSaved(p){
@@ -300,10 +302,8 @@ saveSaved(list.slice(0,100));
 return true;
 }
 
-if(navigator.geolocation){
-navigator.geolocation.getCurrentPosition(
-p=>{
-userCoords=[p.coords.latitude,p.coords.longitude];
+function updateUserLocation(coords,heading=null){
+userCoords=[coords.latitude,coords.longitude];
 located=true;
 
 if(userMarker){
@@ -313,21 +313,93 @@ userMarker=L.marker(userCoords,{
 icon:L.divIcon({
 className:'',
 html:'<div class="user-dot"></div>',
-iconSize:[16,16],
-iconAnchor:[8,8]
+iconSize:[18,18],
+iconAnchor:[9,9]
 })
 }).addTo(map);
 }
-},
-()=>{},
-{
-enableHighAccuracy:true,
-timeout:10000
+
+if(isNavigating){
+map.panTo(userCoords);
+if(heading!==null&&heading!==undefined&&!isNaN(heading)){
+map.setBearing(heading);
 }
+}
+}
+
+function requestLocation(moveMap=false){
+if(!navigator.geolocation){
+showLocationFallback('Perangkat ini tidak mendukung lokasi.');
+return;
+}
+
+navigator.geolocation.getCurrentPosition(
+p=>{
+updateUserLocation(p.coords);
+
+if(moveMap){
+map.flyTo(userCoords,17,{duration:1.2});
+}
+hideLocationFallback();
+},
+err=>{
+located=false;
+
+if(err&&err.code===1){
+showLocationFallback('Izin lokasi belum diberikan. Aktifkan lokasi untuk mengetahui posisi Anda.');
+}else if(err&&err.code===2){
+showLocationFallback('Lokasi tidak tersedia. Pastikan GPS/lokasi perangkat aktif.');
+}else{
+showLocationFallback('Lokasi belum bisa diperoleh. Coba aktifkan lokasi lalu ulangi.');
+}
+},
+{enableHighAccuracy:true,timeout:10000,maximumAge:0}
 );
 }
 
-$('btn-me').onclick=()=>map.flyTo(userCoords,17,{duration:1.2});
+function showLocationFallback(message){
+const detail=$('sheet-detail');
+
+if($('location-request')){
+const text=$('location-request-text');
+if(text)text.textContent=message;
+return;
+}
+
+const box=document.createElement('div');
+box.className='location-request';
+box.id='location-request';
+
+box.innerHTML=`
+<div class="location-request-icon">${LOCATION_ICON}</div>
+<div class="location-request-info">
+<div class="location-request-title">Aktifkan lokasi</div>
+<div class="location-request-text" id="location-request-text">${esc(message)}</div>
+</div>
+<button class="location-request-btn" id="location-request-btn">Aktifkan</button>
+`;
+
+detail.appendChild(box);
+
+$('location-request-btn').onclick=()=>{
+requestLocation(true);
+};
+}
+
+function hideLocationFallback(){
+const el=$('location-request');
+if(el)el.remove();
+}
+
+requestLocation(false);
+
+$('btn-me').onclick=()=>{
+if(located){
+map.flyTo(userCoords,17,{duration:1.2});
+}else{
+requestLocation(true);
+}
+};
 
 map.on('rotate',()=>{
 $('compass-icon').style.transform=`rotate(${-map.getBearing()}deg)`;
@@ -396,7 +468,14 @@ t['addr:housenumber'],
 t['addr:suburb']||t['addr:city']
 ].filter(Boolean).join(', ');
 
-return{name:t.name,lat,lon,tags:t,addr,place_id:el.id?`osm_${el.type||'node'}_${el.id}`:''};
+return{
+name:t.name,
+lat,
+lon,
+tags:t,
+addr,
+place_id:el.id?`osm_${el.type||'node'}_${el.id}`:''
+};
 }
 
 async function searchNearby(key){
@@ -410,11 +489,13 @@ $('suggestions').style.display='none';
 if(savedMode){
 savedMode=false;
 $('sheet').classList.remove('saved-mode');
-$('tab-saved').classList.remove('active');$('tab-explore').classList.add('active');
+$('tab-saved').classList.remove('active');
+$('tab-explore').classList.add('active');
 }
 
 $('panel-close').style.display='flex';
-$('sheet-title').textContent=cat.label+' terdekat';$('sheet-detail').innerHTML='<div class="hint">Mencari di sekitar Anda...</div>';
+$('sheet-title').textContent=cat.label+' terdekat';
+$('sheet-detail').innerHTML='<div class="hint">Mencari di sekitar Anda...</div>';
 
 setSheet(300);
 routeLayer.clearLayers();
@@ -483,22 +564,27 @@ function updateClearButton(){
 clearSearch.style.display=searchInput.value.trim()?'flex':'none';
 }
 
-searchInput.addEventListener('input',updateClearButton);
+searchInput.addEventListener('input',e=>{
+updateClearButton();
+
+if(!e.target.value.trim()){
+$('suggestions').style.display='none';
+resetToWelcome();
+}
+});
 
 clearSearch.onclick=()=>{
 searchInput.value='';
 $('suggestions').style.display='none';
 clearTimeout(searchTimer);
 updateClearButton();
-searchInput.focus();
+resetToWelcome();
 };
 
 searchInput.addEventListener('input',e=>{
 clearTimeout(searchTimer);
 
 const q=e.target.value.trim();
-updateClearButton();
-
 const dd=$('suggestions');
 
 if(!q){
@@ -536,11 +622,14 @@ updateClearButton();
 markers.clearLayers();
 routeLayer.clearLayers();
 addMarker(p);
+
 if(savedMode){
 savedMode=false;
 $('sheet').classList.remove('saved-mode');
-$('tab-saved').classList.remove('active');$('tab-explore').classList.add('active');
+$('tab-saved').classList.remove('active');
+$('tab-explore').classList.add('active');
 }
+
 showDetail(p);
 };
 
@@ -560,7 +649,10 @@ if(e.key!=='Enter')return;
 
 const q=e.target.value.trim();
 
-if(!q)return;
+if(!q){
+resetToWelcome();
+return;
+}
 
 e.target.blur();
 
@@ -573,10 +665,12 @@ $('suggestions').style.display='none';
 if(savedMode){
 savedMode=false;
 $('sheet').classList.remove('saved-mode');
-$('tab-saved').classList.remove('active');$('tab-explore').classList.add('active');
+$('tab-saved').classList.remove('active');
+$('tab-explore').classList.add('active');
 }
 
-$('panel-close').style.display='flex';$('sheet-title').textContent=`Hasil: "${q}"`;
+$('panel-close').style.display='flex';
+$('sheet-title').textContent=`Hasil: "${q}"`;
 $('sheet-detail').innerHTML='<div class="hint">Mencari...</div>';
 
 setSheet(300);
@@ -584,7 +678,8 @@ setSheet(300);
 try{
 const[lat,lon]=origin();
 
-const places=(await nominatim(q,10)).map(p=>({...p,d:map.distance([lat,lon],[p.lat,p.lon])}));
+const places=(await nominatim(q,10))
+.map(p=>({...p,d:map.distance([lat,lon],[p.lat,p.lon])}));
 
 if(!places.length){
 $('sheet-detail').innerHTML='<div class="hint">Lokasi tidak ditemukan.</div>';
@@ -640,9 +735,14 @@ item.onclick=()=>showDetail(p);
 list.appendChild(item);
 });
 
-$('sheet-detail').innerHTML='';$('sheet-detail').appendChild(list);
+$('sheet-detail').innerHTML='';
+$('sheet-detail').appendChild(list);
 
+if(places.length>1){
 map.fitBounds(L.latLngBounds(places.map(p=>[p.lat,p.lon])).pad(.15));
+}else{
+map.flyTo([places[0].lat,places[0].lon],17,{duration:.8});
+}
 }
 
 function photoUrl(t){
@@ -666,9 +766,7 @@ const t=p.tags||{};
 map.flyTo([p.lat,p.lon],Math.max(map.getZoom(),17));
 
 const[lat,lon]=origin();
-
 const dist=fmtDist(map.distance([lat,lon],[p.lat,p.lon]));
-
 const photo=photoUrl(t);
 const web=t.website||t['contact:website'];
 const phone=t.phone||t['contact:phone'];
@@ -701,12 +799,10 @@ h+=`<div class="row"><b>Situs:</b> <a href="${esc(web)}" target="_blank" rel="no
 h+=`
 <div class="btns">
 <button class="btn primary" onclick="routeTo(currentPlace)">Rute</button>
-
 <button class="btn ${saved?'saved':''}" id="save-place-btn" onclick="saveCurrentPlace()">
 <span class="save-btn-icon">${BOOKMARK_ICON}</span>
 ${saved?'Tersimpan':'Simpan'}
 </button>
-
 <a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lon}">
 Foto &amp; ulasan di Google Maps
 </a>
@@ -743,9 +839,7 @@ $('sheet-title').textContent='Disimpan';
 if(!list.length){
 $('sheet-detail').innerHTML=`
 <div class="saved-empty">
-<div class="saved-empty-icon">
-${BOOKMARK_ICON}
-</div>
+<div class="saved-empty-icon">${BOOKMARK_ICON}</div>
 <div class="saved-empty-title">Belum ada tempat disimpan</div>
 <div class="hint">Simpan tempat yang ingin kamu lihat lagi agar mudah ditemukan di sini.</div>
 </div>
@@ -753,7 +847,7 @@ ${BOOKMARK_ICON}
 }else{
 const wrapper=document.createElement('div');
 
-list.forEach((p)=>{
+list.forEach(p=>{
 const key=placeKey(p);
 const item=document.createElement('div');
 
@@ -766,14 +860,12 @@ item.innerHTML=`
 <div class="saved-name">${esc(p.name)}</div>
 <div class="saved-address">${esc(p.addr||'Lokasi tersimpan')}</div>
 </div>
-<button class="saved-remove" title="Hapus">
-${TRASH_ICON}
-</button>
+<button class="saved-remove" title="Hapus">${TRASH_ICON}</button>
 `;
 
 item.querySelector('.saved-remove').onclick=e=>{
 e.stopPropagation();
-askDeleteSaved(key, p.name);
+askDeleteSaved(key,p.name);
 };
 
 item.onclick=()=>{
@@ -786,8 +878,10 @@ addMarker(p);
 
 savedMode=false;
 closingSaved=false;
+
 $('sheet').classList.remove('saved-mode');
-$('tab-saved').classList.remove('active');$('tab-explore').classList.add('active');
+$('tab-saved').classList.remove('active');
+$('tab-explore').classList.add('active');
 
 map.flyTo([p.lat,p.lon],17,{duration:1});
 
@@ -797,7 +891,8 @@ showDetail(p);
 wrapper.appendChild(item);
 });
 
-$('sheet-detail').innerHTML='';$('sheet-detail').appendChild(wrapper);
+$('sheet-detail').innerHTML='';
+$('sheet-detail').appendChild(wrapper);
 }
 }
 
@@ -807,7 +902,8 @@ if(savedMode)return;
 savedMode=true;
 $('panel-close').style.display='none';
 
-$('tab-explore').classList.remove('active');$('tab-saved').classList.add('active');
+$('tab-explore').classList.remove('active');
+$('tab-saved').classList.add('active');
 
 renderSavedList();
 
@@ -822,38 +918,38 @@ setSheet(window.innerHeight);
 });
 }
 
-function askDeleteSaved(key, name){
-pendingDeleteKey = key;
-$('modal-place-name').textContent = `Yakin ingin menghapus "${name}" dari daftar tersimpan?`;
+function askDeleteSaved(key,name){
+pendingDeleteKey=key;
+$('modal-place-name').textContent=`Yakin ingin menghapus "${name}" dari daftar tersimpan?`;
 $('confirm-modal').classList.add('active');
 }
 
 function closeDeleteModal(){
 $('confirm-modal').classList.remove('active');
-pendingDeleteKey = null;
+pendingDeleteKey=null;
 }
 
-$('btn-modal-cancel').onclick = closeDeleteModal;
+$('btn-modal-cancel').onclick=closeDeleteModal;
 
-$('btn-modal-delete').onclick = ()=>{
+$('btn-modal-delete').onclick=()=>{
 if(pendingDeleteKey){
-const targetKey = pendingDeleteKey;
+const targetKey=pendingDeleteKey;
 closeDeleteModal();
 
-const itemEl = document.querySelector(`.saved-item[data-key="${CSS.escape(targetKey)}"]`);
+const itemEl=document.querySelector(`.saved-item[data-key="${CSS.escape(targetKey)}"]`);
 
 if(itemEl){
 itemEl.classList.add('removing');
 
 setTimeout(()=>{
-const current = getSaved();
-const filtered = current.filter(x => placeKey(x) !== targetKey);
+const current=getSaved();
+const filtered=current.filter(x=>placeKey(x)!==targetKey);
 saveSaved(filtered);
 renderSavedList();
-}, 300);
+},300);
 }else{
-const current = getSaved();
-const filtered = current.filter(x => placeKey(x) !== targetKey);
+const current=getSaved();
+const filtered=current.filter(x=>placeKey(x)!==targetKey);
 saveSaved(filtered);
 renderSavedList();
 }
@@ -890,14 +986,27 @@ year:'numeric'
 
 let closingSaved=false;
 
+function stopLiveNavigation(){
+if(watchId!==null){
+navigator.geolocation.clearWatch(watchId);
+watchId=null;
+}
+
+isNavigating=false;
+}
+
 function resetToWelcome(){
-currentPlace = null;
+stopLiveNavigation();
+
+currentPlace=null;
 markers.clearLayers();
 routeLayer.clearLayers();
-searchInput.value = '';
+
+searchInput.value='';
 updateClearButton();
 
-$('panel-close').style.display='none';$('sheet-title').textContent='Suasana lokal';
+$('panel-close').style.display='none';
+$('sheet-title').textContent='Suasana lokal';
 
 $('sheet-detail').innerHTML=`
 <div class="welcome-card">
@@ -919,6 +1028,11 @@ Ketuk salah satu kategori di atas atau telusuri nama tempat untuk mulai menjelaj
 `;
 
 updateWelcome();
+
+if(!located){
+showLocationFallback('Aktifkan lokasi agar pencarian tempat dan jarak dapat disesuaikan dengan posisi Anda.');
+}
+
 setSheet(SHEET_INITIAL);
 }
 
@@ -930,7 +1044,9 @@ return;
 
 closingSaved=true;
 
-$('tab-saved').classList.remove('active');$('tab-explore').classList.add('active');
+$('tab-saved').classList.remove('active');
+$('tab-explore').classList.add('active');
+
 resetToWelcome();
 
 sheet.style.transition='height .32s cubic-bezier(.2,.8,.2,1)';
@@ -946,7 +1062,7 @@ setSheet(SHEET_INITIAL);
 }
 
 $('tab-explore').onclick=()=>{
-if(savedMode) showExplore();
+if(savedMode)showExplore();
 };
 
 $('tab-saved').onclick=showSaved;
@@ -956,28 +1072,19 @@ $('panel-close').onclick=resetToWelcome;
 async function routeTo(p){
 if(!p){
 $('sheet-title').textContent='Rute';
-
-$('sheet-detail').innerHTML=`
-<div class="hint">
-Pilih tempat tujuan dulu, lalu ketuk tombol Rute.
-</div>
-`;
-
+$('sheet-detail').innerHTML=`<div class="hint">Pilih tempat tujuan dulu, lalu ketuk tombol Rute.</div>`;
 setSheet(205);
 return;
 }
 
 if(!located){
-alert('Aktifkan izin lokasi agar rute dari posisi Anda bisa dihitung.');
+showLocationFallback('Aktifkan lokasi agar rute dari posisi Anda bisa dihitung.');
+setSheet(300);
 return;
 }
 
 try{
-const url=
-`https://router.project-osrm.org/route/v1/driving/`+
-`${userCoords[1]},${userCoords[0]};`+
-`${p.lon},${p.lat}`+
-`?overview=full&geometries=geojson`;
+const url=`https://router.project-osrm.org/route/v1/driving/${userCoords[1]},${userCoords[0]};${p.lon},${p.lat}?overview=full&geometries=geojson`;
 
 const r=await(await fetch(url)).json();
 
@@ -990,34 +1097,74 @@ const rt=r.routes[0];
 routeLayer.clearLayers();
 
 const line=L.geoJSON(rt.geometry,{
-style:{
-color:'#1a73e8',
-weight:6,
-opacity:.85
-}
+style:{color:'#1a73e8',weight:6,opacity:.85}
 }).addTo(routeLayer);
 
 map.fitBounds(line.getBounds().pad(.2));
 
 const mins=Math.round(rt.duration/60);
 
-$('panel-close').style.display='flex';$('sheet-title').textContent=
-`${fmtDist(rt.distance)} · ${
-mins>=60
-?Math.floor(mins/60)+' j '+(mins%60)+' mnt'
-:mins+' mnt'
-}`;
+$('panel-close').style.display='flex';
+
+$('sheet-title').textContent=
+`${fmtDist(rt.distance)} · ${mins>=60?Math.floor(mins/60)+' j '+(mins%60)+' mnt':mins+' mnt'}`;
 
 $('sheet-detail').innerHTML=`
-<div class="hint">
-Rute mobil menuju ${esc(p.name)}.
+<div class="hint" style="margin-bottom:10px">
+Rute mobil menuju <b>${esc(p.name)}</b>.
+</div>
+<div class="btns">
+<button class="btn primary" id="btn-start-nav">▶ Mulai Navigasi</button>
 </div>
 `;
 
-setSheet(205);
+$('btn-start-nav').onclick=()=>startLiveNavigation(p);
+
+setSheet(230);
 
 }catch(_){
 alert('Rute tidak dapat dihitung saat ini.');
+}
+}
+
+function startLiveNavigation(destination){
+isNavigating=true;
+
+map.setZoom(18);
+
+if(navigator.geolocation){
+watchId=navigator.geolocation.watchPosition(
+pos=>{
+updateUserLocation(pos.coords,pos.coords.heading);
+
+const distRemaining=map.distance(
+[pos.coords.latitude,pos.coords.longitude],
+[destination.lat,destination.lon]
+);
+
+$('sheet-title').innerHTML=
+`<span class="nav-badge">BERJALAN</span> ${fmtDist(distRemaining)}`;
+
+$('sheet-detail').innerHTML=`
+<div class="hint">
+Navigasi aktif ke <b>${esc(destination.name)}</b>.
+Peta mengunci posisi Anda secara langsung.
+</div>
+
+<div class="btns" style="margin-top:10px">
+<button class="btn danger" onclick="stopLiveNavigation();routeTo(currentPlace);">
+Selesai
+</button>
+</div>
+`;
+},
+err=>{},
+{
+enableHighAccuracy:true,
+maximumAge:1000,
+timeout:5000
+}
+);
 }
 }
 
@@ -1051,7 +1198,12 @@ max
 );
 
 sheet.style.height=safe+'px';
+
+if(savedMode){
+fabGroup.style.bottom=(window.innerHeight+16)+'px';
+}else{
 fabGroup.style.bottom=(safe+16)+'px';
+}
 }
 
 function startDrag(y){
