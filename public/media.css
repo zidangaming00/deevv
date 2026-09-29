@@ -4,58 +4,227 @@
    Gabungan dari i2025.css + g2079.css + m2095.css.
    ========================================================================== */
 
-/* --------------------------------------------------------------------
-   Tab video — grid kartu (dulu m2095.css)
-   -------------------------------------------------------------------- */
+/* ==========================================================================
+   Tab video — Modern, Clean & Elegant Card Grid
+   ========================================================================== */
 
 .video-grid {
   min-width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  background: var(--color-white);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Default Mobile: 2 Kolom Seimbang */
+  gap: 12px;
+  padding: 12px;
+  background: var(--color-white, #ffffff);
+  box-sizing: border-box;
 }
 
 .video-card {
-  width: 48%;
-  padding: 0;
-  box-shadow: var(--card-shadow);
-  border-radius: 10px;
-  margin: 2px;
+  width: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
   position: relative;
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease;
 }
-.video-card a { text-decoration: none; -webkit-tap-highlight-color: transparent; }
-.video-card a:active > * { opacity: .5; }
-.video-card .thumbnail { width: 100%; height: 100px; object-fit: cover; border-radius: 10px 10px 0 0; background: #ededed; }
+
+/* Hover & Active Effects */
+.video-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.video-card a {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.video-card a:active {
+  opacity: 0.85;
+}
+
+/* Thumbnail Container */
+.video-card__thumb-wrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* Aspect Ratio 16:9 Standard Video */
+  background: #e9ecef;
+  overflow: hidden;
+}
+
+.video-card .thumbnail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+  transition: transform 0.3s ease;
+}
+
+.video-card:hover .thumbnail {
+  transform: scale(1.03); /* Soft Zoom Effect */
+}
+
+/* Modern Play Badge Overlay */
+.video-card__play-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 38px;
+  height: 38px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.9;
+  transition: all 0.2s ease;
+}
+
+.video-card__play-badge svg {
+  width: 16px;
+  height: 16px;
+  fill: #ffffff;
+  margin-left: 2px; /* Offset visual centering play icon */
+}
+
+.video-card:hover .video-card__play-badge {
+  background: rgba(26, 115, 232, 0.9); /* Highlight Biru saat Hover */
+  transform: translate(-50%, -50%) scale(1.1);
+  opacity: 1;
+}
+
+/* Content & Typography */
+.video-card__content {
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+}
+
 .video-card .title {
-  color: var(--color-title);
-  margin: 2px 5px 8px;
-  font-size: 15px;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-.video-card .source { color: #000; padding: 8px 8px 8px; font-size: 12px; }
-.video-card .info { display: flex; margin-top: 4px; align-items: center; gap: 4px; overflow: hidden; white-space: nowrap; }
-.video-card .favicon { width: 16px; height: 16px; }
-
-@media (min-width: 780px) {
-  .video-grid { padding-left: 130px; }
-  .video-card { width: calc(160px + .5px); }
-  .video-card .thumbnail { height: 115px; }
-}
-@media (min-width: 992px) {
-  .video-card { width: 205px; margin: 4px; }
+  word-break: break-word;
 }
 
-body.dark .video-grid { background: #171717; }
-body.dark .video-card { border-color: #24282B; background: #202125; }
-body.dark .video-card .title { color: #8BB4F4; }
-body.dark .video-card .source { color: #BDC1C4; }
+/* Meta / Source Row */
+.video-card .source {
+  padding: 0;
+  margin-top: auto;
+  font-size: 11.5px;
+  color: #6b7280;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.video-card .info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.video-card .favicon {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.video-card .channel-name {
+  font-weight: 500;
+  color: #4b5563;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.video-card .time-ago {
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+/* Responsif Tablet & Desktop Grid */
+@media (min-width: 600px) {
+  .video-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 16px;
+  }
+  .video-card .title {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 900px) {
+  .video-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .video-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* Dark Mode Integration */
+body.dark .video-grid {
+  background: #121212;
+}
+
+body.dark .video-card {
+  background: #1e1e20;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .video-card:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+body.dark .video-card .title {
+  color: #e5e7eb;
+}
+
+body.dark .video-card .channel-name {
+  color: #9ca3af;
+}
+
+body.dark .video-card .time-ago {
+  color: #6b7280;
+}
+
 
 /* --------------------------------------------------------------------
    Tab gambar — grid hasil (dulu i2025.css)
