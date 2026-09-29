@@ -6,7 +6,6 @@ const searchQuery = typeof urlParams !== 'undefined' ? (urlParams.get("q") || ""
 
 // API Backend
 const NEW_API_URL = "https://deevv-api-production.up.railway.app/api/search";
-const SIMILAR_API_URL = NEW_API_URL.replace("/api/search", "/api/similar");
 
 // State & Layout Controls
 const container = document.querySelector(".main-result"); 
@@ -188,8 +187,6 @@ function renderResults(images) {
         let imgContainer = document.createElement("div"); 
         imgContainer.classList.add("image-item"); 
         imgContainer.dataset.aspectRatio = aspectRatio; 
-        imgContainer.dataset.full = fullSrc; 
-        imgContainer.dataset.thumb = thumbSrc; 
         
         let hostname = "";
         if (pageUrl && pageUrl !== "#") {
@@ -327,7 +324,6 @@ if (targetContainer && !document.querySelector(".image-preview")) {
     function hidePreview() { 
         if (preview) preview.style.display = "none"; 
         document.documentElement.style.overflow = "auto"; 
-        document.body.style.overflow = ""; 
     } 
     
     const closeBtn = document.querySelector(".close-preview");
@@ -345,10 +341,9 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         const titleText = parent.querySelector(".image-item__info .title")?.innerText || "";
         const siteName = parent.querySelector(".image-item__desc span")?.innerText || "";
         const pageUrl = parent.querySelector(".image-item__info")?.href || "#";
-        const imgSrc = parent.dataset.full || img.src;
-        const thumbSrc = parent.dataset.thumb || img.src;
+        const imgSrc = img.src;
 
-        showPreview({ titleText, siteName, pageUrl, imgSrc, thumbSrc }); 
+        showPreview({ titleText, siteName, pageUrl, imgSrc }); 
     }); 
     
     function showPreview(data) { 
@@ -360,65 +355,37 @@ if (targetContainer && !document.querySelector(".image-preview")) {
 
         preview.style.display = "flex"; 
         document.documentElement.style.overflow = "hidden"; 
-        document.body.style.overflow = "hidden"; 
         
         preview.querySelector(".footer-image-title").innerText = data.titleText; 
         preview.querySelector(".header-site-name").innerText = data.siteName; 
         preview.querySelector(".visit-link").href = data.pageUrl; 
         
-        let hostname = "";
-        try { hostname = data.pageUrl && data.pageUrl !== "#" ? new URL(data.pageUrl).hostname : ""; } catch (e) {}
+        const hostname = data.pageUrl && data.pageUrl !== "#" ? new URL(data.pageUrl).hostname : "";
         if (hostname) {
             preview.querySelector(".image-preview__favicon img").src = `https://www.google.com/s2/favicons?domain=${hostname}&sz=32`;
         }
         
         const mainImg = preview.querySelector(".image-preview__thumbnail img");
-        // Tampilkan thumbnail dulu (cepat), lalu ganti ke gambar penuh kalau sudah termuat
-        mainImg.src = data.thumbSrc || data.imgSrc;
-        if (data.imgSrc && data.imgSrc !== mainImg.src) {
-            const big = new Image();
-            big.onload = () => { if (preview.style.display !== "none") mainImg.src = data.imgSrc; };
-            big.src = data.imgSrc;
-        } 
+        mainImg.src = data.imgSrc; 
         mainImg.alt = data.titleText; 
 
         // Muat Gambar Terkait berdasarkan judul
-        fetchRelatedImages(data);
+        fetchRelatedImages(data.titleText);
     }
 
-    // ==========================================
-    // RELATED IMAGES — mirip SECARA VISUAL (bukan cuma satu tema)
-    // Backend /api/similar mencari lewat gambar itu sendiri (visual search).
-    // Kalau visual search gagal, backend jatuh ke pencarian judul (mode "topic").
-    // ==========================================
-    let relatedToken = 0;
-
-    function escapeHtml(s) {
-        return String(s == null ? "" : s)
-            .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    }
-
-    function fetchRelatedImages(data) {
+    // Fungsi Fetch untuk Related Images
+    function fetchRelatedImages(queryText) {
         const relatedGrid = preview.querySelector(".related-grid");
         if (!relatedGrid) return;
 
-        const token = ++relatedToken; // batalkan respon lama kalau user klik gambar lain
         relatedGrid.innerHTML = `<div class="related-loader">Memuat gambar terkait...</div>`;
 
-        const imgUrl = data.imgSrc || "";
-        const hasUrl = /^https?:\/\//i.test(imgUrl);
-        const fetchUrl = hasUrl
-            ? `${SIMILAR_API_URL}?imgurl=${encodeURIComponent(imgUrl)}&q=${encodeURIComponent(data.titleText || "")}&num=12`
-            : `${NEW_API_URL}?q=${encodeURIComponent(data.titleText || "")}&type=images&start=0&num=12`;
-
+        const fetchUrl = `${NEW_API_URL}?q=${encodeURIComponent(queryText)}&type=images&start=0&num=10`;
+        
         fetch(fetchUrl)
             .then(res => res.json())
             .then(response => {
-                if (token !== relatedToken) return;
-
                 let list = Array.isArray(response) ? response : (response.results || response.images || []);
-                list = list.filter(it => (it.image || it.imageUrl) !== imgUrl);
                 relatedGrid.innerHTML = "";
 
                 if (list.length === 0) {
@@ -426,15 +393,10 @@ if (targetContainer && !document.querySelector(".image-preview")) {
                     return;
                 }
 
-                if (response.mode === "topic") {
-                    relatedGrid.insertAdjacentHTML("beforeend",
-                        `<div class="related-note">Menampilkan gambar dengan topik serupa.</div>`);
-                }
-
                 list.forEach(item => {
-                    const thumb = item.thumbnail || item.thumbnailUrl || item.image || item.imageUrl || "";
+                    const thumb = item.thumbnail || item.thumbnailUrl || item.image || item.imageUrl;
                     const fullImg = item.image || item.imageUrl || thumb;
-                    const itemTitle = item.title || data.titleText || "Image";
+                    const itemTitle = item.title || queryText;
                     const itemSite = item.source || item.domain || "Web";
                     const itemPage = item.pageUrl || item.link || "#";
 
@@ -442,21 +404,18 @@ if (targetContainer && !document.querySelector(".image-preview")) {
                     card.className = "related-card";
                     card.innerHTML = `
                         <div class="related-card__thumb">
-                            <img src="${escapeHtml(thumb)}" loading="lazy" alt="${escapeHtml(itemTitle)}">
+                            <img src="${thumb}" loading="lazy" alt="${itemTitle}">
                         </div>
-                        <div class="related-card__title">${escapeHtml(itemTitle)}</div>
+                        <div class="related-card__title">${itemTitle}</div>
                     `;
 
-                    const thumbImg = card.querySelector("img");
-                    thumbImg.onerror = () => card.remove();
-
+                    // Klik pada gambar terkait akan memperbarui tampilan preview
                     card.addEventListener("click", () => {
                         showPreview({
                             titleText: itemTitle,
                             siteName: itemSite,
                             pageUrl: itemPage,
-                            imgSrc: fullImg,
-                            thumbSrc: thumb
+                            imgSrc: fullImg
                         });
                     });
 
@@ -464,7 +423,6 @@ if (targetContainer && !document.querySelector(".image-preview")) {
                 });
             })
             .catch(() => {
-                if (token !== relatedToken) return;
                 relatedGrid.innerHTML = `<div class="related-empty">Gagal memuat gambar terkait.</div>`;
             });
     }
