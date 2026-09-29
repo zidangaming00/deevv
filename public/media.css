@@ -19,7 +19,7 @@
   /* WHITESPACE / GAP: 4px antar kartu */
   gap: 4px; 
   /* PADDING KIRI-KANAN: 4px dari tepi layar */
-  padding: 0 4px; 
+  padding: 8px 4px 0 4px; 
   
   background: var(--color-white, #ffffff);
   box-sizing: border-box;
@@ -115,6 +115,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
+   min-height: 35.1px;
 }
 
 /* Source & Meta */
