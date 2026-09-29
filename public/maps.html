@@ -214,10 +214,7 @@ Disimpan
 <script src="https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
 <script>
 const DEFAULT=[-6.30,106.82];
-const JABODETABEK_BOUNDS=[
-[-6.95,106.45],
-[-5.85,107.35]
-];
+const JABODETABEK_BOUNDS=[[-6.95,106.45],[-5.85,107.35]];
 const RADIUS=3000;
 
 let userCoords=DEFAULT.slice();
@@ -230,6 +227,7 @@ let watchId=null;
 let isNavigating=false;
 let savedMode=false;
 let closingSaved=false;
+let categoryRequestId=0;
 
 const map=L.map('map',{
 zoomControl:false,
@@ -466,19 +464,23 @@ btn.addEventListener('pointerdown',clickAnimation);
 const CATS={
 'restoran':{
 label:'Restoran',
-filters:['["amenity"="restaurant"]','["amenity"="fast_food"]']
+filters:['["amenity"="restaurant"]','["amenity"="fast_food"]'],
+queries:['restaurant','restoran','fast food']
 },
 'kedai kopi':{
 label:'Kedai Kopi',
-filters:['["amenity"="cafe"]']
+filters:['["amenity"="cafe"]'],
+queries:['cafe','kedai kopi','coffee shop']
 },
 'spbu':{
 label:'SPBU',
-filters:['["amenity"="fuel"]']
+filters:['["amenity"="fuel"]'],
+queries:['SPBU','pom bensin','gas station']
 },
 'hotel':{
 label:'Hotel',
-filters:['["tourism"="hotel"]','["tourism"="motel"]']
+filters:['["tourism"="hotel"]','["tourism"="motel"]'],
+queries:['hotel','motel']
 }
 };
 
@@ -511,35 +513,60 @@ place_id:el.id?`osm_${el.type||'node'}_${el.id}`:''
 };
 }
 
+async function fetchWithTimeout(url,options={},timeout=30000){
+const controller=new AbortController();
+const timer=setTimeout(()=>controller.abort(),timeout);
+
+try{
+return await fetch(url,{...options,signal:controller.signal});
+}finally{
+clearTimeout(timer);
+}
+}
+
 async function fetchOverpass(query){
 let lastError=null;
 
 for(const endpoint of OVERPASS_ENDPOINTS){
 try{
-const controller=new AbortController();
-const timer=setTimeout(()=>controller.abort(),25000);
+const getUrl=endpoint+'?data='+encodeURIComponent(query);
 
-const res=await fetch(endpoint,{
-method:'POST',
-headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
-body:'data='+encodeURIComponent(query),
-signal:controller.signal
-});
+let res=await fetchWithTimeout(getUrl,{
+method:'GET',
+headers:{Accept:'application/json'}
+},30000);
 
-clearTimeout(timer);
-
-if(!res.ok){
-lastError=new Error('HTTP '+res.status);
-continue;
-}
-
+if(res.ok){
 const data=await res.json();
 
 if(data&&Array.isArray(data.elements)){
 return data.elements;
 }
+}
 
-lastError=new Error('Invalid Overpass response');
+try{
+res=await fetchWithTimeout(endpoint,{
+method:'POST',
+headers:{
+'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8',
+Accept:'application/json'
+},
+body:'data='+encodeURIComponent(query)
+},30000);
+
+if(res.ok){
+const data=await res.json();
+
+if(data&&Array.isArray(data.elements)){
+return data.elements;
+}
+}
+
+lastError=new Error('HTTP '+res.status);
+}catch(e){
+lastError=e;
+}
+
 }catch(e){
 lastError=e;
 }
@@ -548,13 +575,50 @@ lastError=e;
 throw lastError||new Error('Overpass unavailable');
 }
 
+function uniquePlaces(list){
+const seen=new Set();
+
+return list.filter(p=>{
+if(!p||!p.name||!Number.isFinite(Number(p.lat))||!Number.isFinite(Number(p.lon)))return false;
+
+const key=placeKey(p);
+
+if(seen.has(key))return false;
+
+seen.add(key);
+return true;
+});
+}
+
+function preparePlaces(list,lat,lon){
+return uniquePlaces(list)
+.map(p=>({...p,d:map.distance([lat,lon],[p.lat,p.lon])}))
+.sort((a,b)=>a.d-b.d)
+.slice(0,30);
+}
+
+async function searchNearbyFallback(cat,lat,lon){
+const results=[];
+
+for(const q of cat.queries){
+try{
+const list=await nominatim(q,10);
+results.push(...list);
+if(results.length>=30)break;
+}catch(e){
+console.warn('Nominatim fallback error:',q,e);
+}
+}
+
+return preparePlaces(results,lat,lon);
+}
+
 async function searchNearby(key){
 const cat=CATS[key];
 
-if(!cat){
-return;
-}
+if(!cat)return;
 
+const requestId=++categoryRequestId;
 const[lat,lon]=origin();
 
 $('search-input').value=cat.label;
@@ -576,26 +640,33 @@ $('sheet-detail').innerHTML='<div class="hint">Mencari tempat di sekitar kamu...
 setSheet(300);
 routeLayer.clearLayers();
 
-const filters=cat.filters.map(f=>`nwr${f}["name"](around:${RADIUS},${lat},${lon});`).join('');
+const filters=cat.filters.map(f=>`nwr${f}(around:${RADIUS},${lat},${lon});`).join('');
 const q=`[out:json][timeout:25];(${filters});out center tags;`;
+
+try{
+let places=[];
 
 try{
 const elements=await fetchOverpass(q);
 
-const seen=new Set();
+if(requestId!==categoryRequestId)return;
 
-const places=elements
-.map(fromOverpass)
-.filter(Boolean)
-.filter(p=>{
-const key=placeKey(p);
-if(seen.has(key))return false;
-seen.add(key);
-return true;
-})
-.map(p=>({...p,d:map.distance([lat,lon],[p.lat,p.lon])}))
-.sort((a,b)=>a.d-b.d)
-.slice(0,30);
+places=preparePlaces(
+elements.map(fromOverpass).filter(Boolean),
+lat,
+lon
+);
+}catch(overpassError){
+console.warn('Overpass gagal, menggunakan fallback Nominatim:',overpassError);
+
+if(requestId!==categoryRequestId)return;
+
+$('sheet-detail').innerHTML='<div class="hint">Sumber utama sedang lambat. Mencoba sumber alternatif...</div>';
+
+places=await searchNearbyFallback(cat,lat,lon);
+}
+
+if(requestId!==categoryRequestId)return;
 
 if(!places.length){
 $('sheet-detail').innerHTML=`
@@ -610,30 +681,33 @@ return;
 showList(places,cat.label);
 
 }catch(e){
-console.error('Overpass error:',e);
+console.error('Category search error:',e);
+
+if(requestId!==categoryRequestId)return;
 
 $('sheet-detail').innerHTML=`
 <div class="hint" style="color:#ea4335">
-Layanan data tempat sedang tidak merespons.
+Pencarian tempat sedang tidak merespons.
 </div>
 <div class="btns">
 <button class="btn primary" id="retry-category">Coba lagi</button>
 </div>
 `;
 
-$('retry-category').onclick=()=>searchNearby(key);
+const retry=$('retry-category');
+if(retry)retry.onclick=()=>searchNearby(key);
 }
 }
 
 function fromNominatim(it){
-const name=it.name||it.display_name.split(',')[0];
+const name=it.name||it.display_name?.split(',')[0]||'Tempat tanpa nama';
 
 return{
 name,
 lat:parseFloat(it.lat),
 lon:parseFloat(it.lon),
 tags:it.extratags||{},
-addr:it.display_name,
+addr:it.display_name||'',
 place_id:it.place_id?`nom_${it.place_id}`:''
 };
 }
@@ -644,13 +718,21 @@ const d=.3;
 
 const url=`https://nominatim.openstreetmap.org/search?format=json&extratags=1&limit=${limit}&countrycodes=id&q=${encodeURIComponent(q)}&viewbox=${lon-d},${lat+d},${lon+d},${lat-d}&bounded=0`;
 
-const res=await fetch(url,{
-headers:{Accept:'application/json'}
-});
+const res=await fetchWithTimeout(url,{
+headers:{
+Accept:'application/json'
+}
+},20000);
 
 if(!res.ok)throw new Error(res.status);
 
-return(await res.json()).map(fromNominatim);
+const data=await res.json();
+
+if(!Array.isArray(data))return[];
+
+return data.map(fromNominatim).filter(p=>
+Number.isFinite(p.lat)&&Number.isFinite(p.lon)
+);
 }
 
 const searchInput=$('search-input');
@@ -1100,6 +1182,8 @@ isNavigating=false;
 }
 
 function resetToWelcome(){
+categoryRequestId++;
+
 stopLiveNavigation();
 currentPlace=null;
 markers.clearLayers();
