@@ -147,8 +147,8 @@ const API = {
     },
 
     fetchNews: async (query) => {
-        const langFilter = isIdLang ? `&gl=${Config.hl}&lr=lang_id&hl=id` : "";
-        const res = await fetch(`${API.baseUrl}/api?q=${query}${langFilter}&tbm=nws`);
+       const langFilter = isIdLang ? `&gl=${Config.hl}&lr=lang_id&hl=id` : "";
+        const res = await fetch(`https://deevv-api-production.up.railway.app/api/search?q=${encodeURIComponent(query)}${langFilter}&type=news`);
         return res.json();
     },
 
@@ -1000,27 +1000,67 @@ function renderVideos(res) {
     }
 }
 
+// ==========================================
+// MAIN EXECUTION & RENDER LOGIC
+// ==========================================
 function renderNews(res) {
     const container = document.querySelector(".main-result");
-    if (!res.items || !res.items.length) { UI.renderEmptyState(); return; }
+    
+    // Ambil array berita dari res.results atau res.news
+    const newsItems = res.results || res.news || res.items;
+    
+    if (!newsItems || !newsItems.length) { 
+        if (typeof UI !== 'undefined' && UI.renderEmptyState) UI.renderEmptyState(); 
+        return; 
+    }
 
-    res.items.forEach(item => {
-        const publisher = item.pagemap?.metatags?.[0]?.['og:site_name'] || item.displayLink;
-        const pubTime = [item.pagemap?.metatags?.[0]?.['article:published_time'], item.pagemap?.newsarticle?.[0]?.datepublished].find(Boolean);
-        const timeStr = pubTime ? Utils.dateConversion(pubTime) : "Published";
-        const thumb = item.pagemap?.cse_thumbnail ? `<img class="thumb" src="${item.pagemap.cse_thumbnail[0].src}">` : "";
-        const snippet = Config.windowWidth > 780 ? `<div class="snippet">${item.snippet}</div>` : "";
+    newsItems.forEach(item => {
+        const title = Utils.escapeHTML(item.title || "");
+        const link = item.link || "#";
+        const publisher = Utils.escapeHTML(item.publisher || item.domain || "Berita");
+        
+        // Pembacaan Waktu Publikasi (publishedAt dari API baru)
+        const rawPubTime = item.publishedAt || item.published_at || item.pubDate || item.date;
+        // Pembersihan karakter ' · · ' dari string waktu jika ada
+        const cleanPubTime = rawPubTime ? rawPubTime.replace(/[\s·]/g, '').trim() : "";
+        const timeStr = cleanPubTime ? Utils.dateConversion(cleanPubTime) : "";
+
+        // Pembacaan Thumbnail (thumbnailUrl dari API baru)
+        const thumbUrl = item.thumbnailUrl || item.thumbnail || item.image || item.og_image || "";
+        const thumbHtml = thumbUrl 
+            ? `<div class="news-card__thumb-wrap"><img class="thumb" src="${thumbUrl}" alt="${title}" loading="lazy"></div>` 
+            : `<div class="news-card__thumb-wrap news-card__thumb-placeholder"></div>`;
+
+        // Ringkasan Berita
+        const snippetText = item.snippet || item.description || "";
+        const snippetHtml = (Config.windowWidth > 780 && snippetText) 
+            ? `<div class="snippet">${Utils.escapeHTML(snippetText)}</div>` 
+            : "";
+
+        // Favicon Publisher
+        const faviconUrl = item.favicon || `https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(link)}&size=64`;
 
         container.insertAdjacentHTML('beforeend', `
-            <div class="result-card news-card"><div class="news-card__body">
-                <a href="${item.link}">${thumb}
-                    <div class="top"><img src="https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&url=${item.link}&size=64" class="favicon"><div class="link">${publisher}</div></div>
-                    <div class="title">${item.title.slice(0, 70)}</div>${snippet}<div class="publishtime">${timeStr}</div>
+            <div class="result-card news-card">
+                <a href="${link}" target="_blank" rel="noopener" class="news-card__body">
+                    ${thumbHtml}
+                    <div class="news-card__content">
+                        <div class="top">
+                            <img src="${faviconUrl}" class="favicon" alt="${publisher}">
+                            <div class="link">${publisher}</div>
+                        </div>
+                        <div class="title">${title}</div>
+                        ${snippetHtml}
+                        ${timeStr ? `<div class="publishtime">${timeStr}</div>` : ''}
+                    </div>
                 </a>
-            </div></div>
+            </div>
         `);
     });
-    if (Config.startIndex === 1) UI.renderFooter();
+
+    if (Config.startIndex === 1 && typeof UI !== 'undefined' && UI.renderFooter) {
+        UI.renderFooter();
+    }
 }
 
 function renderWebResults(res) {
