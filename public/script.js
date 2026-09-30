@@ -1005,7 +1005,6 @@ function renderVideos(res) {
 // ==========================================
 function renderNews(res) {
     const container = document.querySelector(".main-result");
-    
     const newsItems = res.results || res.news || res.items;
     
     if (!newsItems || !newsItems.length) { 
@@ -1018,23 +1017,16 @@ function renderNews(res) {
         const link = item.link || "#";
         const publisher = Utils.escapeHTML(item.publisher || item.domain || "Berita");
         
-        // ----------------------------------------------------------------
-        // FIX DATE INVALID: Bersihkan simbol '·' dan spasi dari string API
-        // Contoh " ·  · 12h" -> "12h" / "12j yang lalu"
-        // ----------------------------------------------------------------
+        // Membersihkan string tanggal
         const rawPubTime = item.publishedAt || item.published_at || item.pubDate || item.date || "";
         let timeStr = "";
 
         if (rawPubTime) {
-            // Hapus karakter non-alphanumeric selain spasi bawaan (menghilangkan '·')
             const cleanedTime = rawPubTime.replace(/[·•]/g, '').trim();
-
-            // Jika berformat tanggal ISO /Timestamp baku, gunakan Utils.dateConversion
-            // Jika formatnya sudah relatif seperti "12h" atau "1d", tampilkan langsung
             if (cleanedTime.includes('T') || cleanedTime.includes('-') || !isNaN(Date.parse(cleanedTime))) {
                 timeStr = typeof Utils.dateConversion === 'function' ? Utils.dateConversion(cleanedTime) : cleanedTime;
             } else {
-                timeStr = cleanedTime; // Tampilkan teks relatif bersih "12h", "1d", dll.
+                timeStr = cleanedTime;
             }
         }
 
@@ -1058,10 +1050,7 @@ function renderNews(res) {
                 <a href="${link}" target="_blank" rel="noopener" class="news-card__body">
                     ${thumbHtml}
                     <div class="news-card__content">
-                        <div class="top">
-                            <img src="${faviconUrl}" class="favicon" alt="${publisher}">
-                            <div class="link">${publisher}</div>
-                        </div>
+                        <div class="top"><img src="${faviconUrl}" class="favicon" alt="${publisher}"><span class="link">${publisher}</span></div>
                         <div class="title">${title}</div>
                         ${snippetHtml}
                         ${timeStr ? `<div class="publishtime">${timeStr}</div>` : ''}
@@ -1072,13 +1061,12 @@ function renderNews(res) {
     });
 
     if (Config.startIndex === 1 && typeof UI !== 'undefined' && UI.renderFooter) {
-        // Hapus footer lama jika ada agar tidak terduplikasi
         const existingFooter = document.querySelector(".search-footer");
         if (existingFooter) existingFooter.remove();
-
         UI.renderFooter();
     }
 }
+
 
 function renderWebResults(res) {
   const container = document.querySelector(".main-result .results-list");
