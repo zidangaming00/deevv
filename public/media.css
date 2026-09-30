@@ -382,20 +382,39 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-.image-preview__thumbnail { 
-  position: relative; 
-  background: #f8f9fa; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center;
-  width: 100%; 
-  min-height: 250px;
+.image-preview__thumbnail {
+    position: relative;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 0 !important;
+    overflow: hidden;
 }
-.image-preview__thumbnail img { 
-  width: 100%; 
-  height: 100%; 
-  object-fit: contain; 
-  max-height: 50vh; 
+
+.image-preview__thumbnail img {
+    width: 100%;
+    height: auto;
+    max-height: 55vh;
+    object-fit: contain;
+    display: block;
+}
+
+/* Track Carousel untuk animasi slide horizontal */
+.preview-carouselTrack {
+    display: flex;
+    width: 100%;
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
+}
+
+.preview-slide {
+    min-width: 100%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .image-preview__footer { 
@@ -420,63 +439,62 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
 }
 .image-preview__footer button a { color: #fff; text-decoration: none; }
 
-/* Container Indikator 4 Titik */
+/* Indikator 4 Titik Melayang di Bawah Layar (Abu-abu ala Google) */
 .preview-dots {
+    position: fixed;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
     display: flex !important;
     justify-content: center;
     align-items: center;
-    gap: 6px;
-    padding: 12px 0 8px 0;
-    width: 100%;
-    background: #ffffff;
+    gap: 5px;
+    padding: 6px 10px;
+    background: rgba(32, 33, 36, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 12px;
+    pointer-events: none;
 }
 
-/* Base Element Titik (Default) */
+/* Base Dot (Abu-abu redup) */
 .preview-dot {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
-    background-color: #dadce0;
+    background-color: rgba(255, 255, 255, 0.4);
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Indikator Aktif (Melebar Dinamis) */
+/* Active Dot (Putih/Abu-abu Terang melebar) */
 .preview-dot.active {
-    width: 20px;
-    height: 6px;
-    border-radius: 4px;
-    background-color: #1a73e8; /* Warna biru khas Google */
-}
-
-/* Dark Mode Alignment */
-body.dark .preview-dots {
-    background: #202125;
-}
-body.dark .preview-dot {
-    background-color: #5f6368;
-}
-body.dark .preview-dot.active {
-    background-color: #8ab4f8;
+    width: 16px;
+    height: 5px;
+    border-radius: 3px;
+    background-color: #ffffff;
 }
 
 /* Related Images Section */
 .image-preview__related {
-  padding: 6px 6px 32px;
+  padding: 12px 6px 32px;
   border-top: 8px solid #f1f3f4;
   background: #fff;
 }
 .image-preview__related .related-title {
   font-size: 16px;
   font-weight: 500;
-   margin: 0 16px;
-  margin-bottom: 12px;
+  margin: 0 6px 12px;
   color: #202124;
 }
 .related-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 6px;
+  padding: 0;
+  box-sizing: border-box;
 }
+
 .related-card {
   cursor: pointer;
   display: flex;

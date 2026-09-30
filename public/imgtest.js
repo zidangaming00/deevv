@@ -279,6 +279,9 @@ function isMobile() {
     return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent); 
 } 
 
+// ==========================================
+// MOBILE PREVIEW OVERLAY + REAL SLIDE CAROUSEL + FLOATING DOTS
+// ==========================================
 const targetContainer = document.querySelector(".cbKRN") || document.body;
 
 if (targetContainer && !document.querySelector(".image-preview")) { 
@@ -299,18 +302,14 @@ if (targetContainer && !document.querySelector(".image-preview")) {
                 </div> 
             </div> 
             <div class="image-preview__body">
-                <!-- Main Preview Image Slider Container -->
+                <!-- Track Carousel untuk Slide nyata antar Gambar -->
                 <div class="image-preview__thumbnail">
-                    <img src="" alt="Preview">
+                    <div class="preview-carouselTrack">
+                        <div class="preview-slide prev-slide"><img src="" alt="Prev"></div>
+                        <div class="preview-slide current-slide"><img src="" alt="Current"></div>
+                        <div class="preview-slide next-slide"><img src="" alt="Next"></div>
+                    </div>
                 </div> 
-                
-                <!-- Indikator 4 Titik -->
-                <div class="preview-dots">
-                    <div class="preview-dot active"></div>
-                    <div class="preview-dot"></div>
-                    <div class="preview-dot"></div>
-                    <div class="preview-dot"></div>
-                </div>
 
                 <div class="image-preview__footer"> 
                     <div class="left"> 
@@ -322,18 +321,32 @@ if (targetContainer && !document.querySelector(".image-preview")) {
                     </div> 
                 </div> 
                 
-                <!-- SECTION RELATED IMAGES (Dari DOM lokal) -->
+                <!-- SECTION RELATED IMAGES (Local DOM) -->
                 <div class="image-preview__related">
                     <div class="related-grid"></div>
                 </div>
+            </div>
+
+            <!-- Indikator 4 Titik Melayang Ala Google -->
+            <div class="preview-dots">
+                <div class="preview-dot active"></div>
+                <div class="preview-dot"></div>
+                <div class="preview-dot"></div>
+                <div class="preview-dot"></div>
             </div>
         </div> 
     `); 
 
     const preview = document.querySelector(".image-preview"); 
+    const track = preview.querySelector(".preview-carouselTrack");
+    const prevImg = preview.querySelector(".prev-slide img");
+    const currImg = preview.querySelector(".current-slide img");
+    const nextImg = preview.querySelector(".next-slide img");
+
     let currentImageIndex = -1;
     let touchStartX = 0;
-    let touchEndX = 0;
+    let touchMoveX = 0;
+    let isSwiping = false;
     
     function hidePreview() { 
         if (preview) preview.style.display = "none"; 
@@ -343,7 +356,7 @@ if (targetContainer && !document.querySelector(".image-preview")) {
     const closeBtn = document.querySelector(".close-preview");
     if (closeBtn) closeBtn.addEventListener("click", hidePreview); 
     
-    // Delegasi Klik Elemen Gambar
+    // Delegasi Klik Gambar Utama
     document.body.addEventListener("click", (event) => { 
         const img = event.target.closest(".image-item__thumb img"); 
         if (!img) return; 
@@ -369,69 +382,66 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         };
     }
 
-    function showPreviewByIndex(index) {
+    function showPreviewByIndex(index, animateDirection = 0) {
         const allItems = Array.from(document.querySelectorAll(".main-result .image-item"));
         if (index < 0 || index >= allItems.length) return;
 
         currentImageIndex = index;
-        const data = extractDataFromElement(allItems[index]);
-        if (!data) return;
+        const currentData = extractDataFromElement(allItems[index]);
+        if (!currentData) return;
 
         const bodyElem = preview.querySelector(".image-preview__body");
-        if (bodyElem) bodyElem.scrollTop = 0;
+        if (bodyElem && animateDirection === 0) bodyElem.scrollTop = 0;
 
         preview.style.display = "flex"; 
         document.documentElement.style.overflow = "hidden"; 
         
-        preview.querySelector(".footer-image-title").innerText = data.titleText; 
-        preview.querySelector(".header-site-name").innerText = data.siteName; 
-        preview.querySelector(".visit-link").href = data.pageUrl; 
+        // Atur Gambar Kiri (Prev), Tengah (Current), Kanan (Next) untuk Efek Slide
+        const prevData = extractDataFromElement(allItems[index - 1]);
+        const nextData = extractDataFromElement(allItems[index + 1]);
+
+        prevImg.src = prevData ? prevData.imgSrc : "";
+        currImg.src = currentData.imgSrc;
+        nextImg.src = nextData ? nextData.imgSrc : "";
+
+        // Reset Transform Track ke Tengah (-100%)
+        track.style.transition = animateDirection !== 0 ? "transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)" : "none";
+        track.style.transform = `translateX(-100%)`;
+
+        // Update Info Text Header & Footer
+        preview.querySelector(".footer-image-title").innerText = currentData.titleText; 
+        preview.querySelector(".header-site-name").innerText = currentData.siteName; 
+        preview.querySelector(".visit-link").href = currentData.pageUrl; 
         
-        const hostname = data.pageUrl && data.pageUrl !== "#" ? new URL(data.pageUrl).hostname : "";
+        const hostname = currentData.pageUrl && currentData.pageUrl !== "#" ? new URL(currentData.pageUrl).hostname : "";
         if (hostname) {
             preview.querySelector(".image-preview__favicon img").src = `https://www.google.com/s2/favicons?domain=${hostname}&sz=32`;
         }
-        
-        const mainImg = preview.querySelector(".image-preview__thumbnail img");
-        mainImg.src = data.imgSrc; 
-        mainImg.alt = data.titleText; 
 
-        // Update indikator 4 titik
         updateDots(index, allItems.length);
-
-        // Ambil 10 gambar berikutnya dari DOM (tanpa fetch API)
         renderLocalRelatedImages(index, allItems);
     }
 
-    // Pembaruan Indikator Titik
     function updateDots(index, totalItems) {
         const dots = preview.querySelectorAll(".preview-dot");
         dots.forEach(d => d.classList.remove("active"));
 
         let activeDotIndex = 0;
-        if (index === 0) {
-            activeDotIndex = 0; // Gambar 1 -> Titik 1
-        } else if (index === 1) {
-            activeDotIndex = 1; // Gambar 2 -> Titik 2
-        } else if (index >= totalItems - 1) {
-            activeDotIndex = 3; // Gambar Terakhir -> Titik 4
-        } else {
-            activeDotIndex = 2; // Gambar 3 hingga n-1 -> Titik 3
-        }
+        if (index === 0) activeDotIndex = 0;
+        else if (index === 1) activeDotIndex = 1;
+        else if (index >= totalItems - 1) activeDotIndex = 3;
+        else activeDotIndex = 2;
 
         if (dots[activeDotIndex]) {
             dots[activeDotIndex].classList.add("active");
         }
     }
 
-    // Tampilkan 10 Gambar Berikutnya dari Array DOM
     function renderLocalRelatedImages(currentIndex, allItems) {
         const relatedGrid = preview.querySelector(".related-grid");
         if (!relatedGrid) return;
 
         relatedGrid.innerHTML = "";
-
-        // Ambil 10 item setelah indeks saat ini
         const nextItems = allItems.slice(currentIndex + 1, currentIndex + 11);
 
         if (nextItems.length === 0) {
@@ -460,26 +470,53 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         });
     }
 
-    // Fitur Swipe / Scroll Slide (Kiri - Kanan)
-    const thumbContainer = preview.querySelector(".image-preview__thumbnail");
+    // Touch Swipe Drag dengan Animasi Geser Nyata
+    const thumbWrapper = preview.querySelector(".image-preview__thumbnail");
 
-    thumbContainer.addEventListener("touchstart", (e) => {
-        touchStartX = e.changedTouches[0].screenX;
+    thumbWrapper.addEventListener("touchstart", (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchMoveX = touchStartX;
+        isSwiping = true;
+        track.style.transition = "none";
     }, { passive: true });
 
-    thumbContainer.addEventListener("touchend", (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
+    thumbWrapper.addEventListener("touchmove", (e) => {
+        if (!isSwiping) return;
+        touchMoveX = e.touches[0].clientX;
+        const diffX = touchMoveX - touchStartX;
+        
+        // Geser track secara eksplisit saat jari diseret
+        const containerWidth = thumbWrapper.clientWidth;
+        const currentOffsetPercent = -100 + (diffX / containerWidth) * 100;
+        track.style.transform = `translateX(${currentOffsetPercent}%)`;
     }, { passive: true });
 
-    function handleSwipe() {
-        const swipeThreshold = 40; // Batas minimum usapan piksel
-        if (touchStartX - touchEndX > swipeThreshold) {
+    thumbWrapper.addEventListener("touchend", () => {
+        if (!isSwiping) return;
+        isSwiping = false;
+
+        const diffX = touchMoveX - touchStartX;
+        const threshold = 50; // Jarak minimum geser
+
+        if (diffX < -threshold) {
             // Swipe ke Kiri -> Gambar Selanjutnya
-            showPreviewByIndex(currentImageIndex + 1);
-        } else if (touchEndX - touchStartX > swipeThreshold) {
+            track.style.transition = "transform 0.25s ease-out";
+            track.style.transform = "translateX(-200%)";
+            setTimeout(() => {
+                showPreviewByIndex(currentImageIndex + 1, 1);
+            }, 200);
+        } else if (diffX > threshold) {
             // Swipe ke Kanan -> Gambar Sebelumnya
-            showPreviewByIndex(currentImageIndex - 1);
+            track.style.transition = "transform 0.25s ease-out";
+            track.style.transform = "translateX(0%)";
+            setTimeout(() => {
+                showPreviewByIndex(currentImageIndex - 1, -1);
+            }, 200);
+        } else {
+            // Kembali ke Posisi Semula jika seretan tidak cukup jauh
+            track.style.transition = "transform 0.2s ease-out";
+            track.style.transform = "translateX(-100%)";
         }
-    }
+    }, { passive: true });
 }
+
