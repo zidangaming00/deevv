@@ -86,7 +86,7 @@
 
 .result-card .link {
   color: #222222;
-  font-size: 14px;
+  font-size: var(--dtext-small);
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
@@ -97,7 +97,7 @@
 
 .result-card .snippet {
   color: #474747;
-  font-size: 14px;
+  font-size: var(--dtext-small);
   line-height: 20px;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -190,7 +190,7 @@
 }
 
 .instant-answer__subtitle {
-  font-size: 14px;
+  font-size: var(--dtext-small);
   color: #4d5156;
   margin-bottom: 12px;
   line-height: 1.4;
@@ -227,7 +227,7 @@ body.dark .instant-answer__subtitle {
 }
 
 .instant-answer .summary-text {
-  font-size: 14px;
+  font-size: var(--dtext-small);
   color: var(--color-text);
   line-height: 1.5;
   /* -webkit-line-clamp DIHAPUS agar teks link Wikipedia tidak tertelan/hilang */
@@ -237,7 +237,7 @@ body.dark .instant-answer__subtitle {
   color: var(--color-title);
   text-decoration: none;
   font-weight: 500;
-  font-size: 14px;
+  font-size: var(--dtext-small);
   white-space: nowrap;
 }
 
@@ -262,7 +262,7 @@ body.dark .instant-answer__subtitle {
 }
 
 .instant-answer .infobox-item__value {
-  font-size: 14px;
+  font-size: var(--dtext-small);
   font-weight: 500;
   color: var(--color-text-dark);
   display: -webkit-box;
@@ -412,7 +412,7 @@ body.dark .ai-sub-title {
   display: list-item; 
   margin-bottom: 8px;
   color: var(--color-text, #4d5156);
-  font-size: 14px;
+  font-size: var(--dtext-small);
   line-height: 1.5;
 }
 
@@ -423,7 +423,7 @@ body.dark .ai-sub-title {
 
 /* Style khusus teks AI agar tidak dibatasi 3 baris */
 .ai-overview-card .ai-summary-text {
-  font-size: 14px;
+  font-size: var(--dtext-small);
   color: var(--color-text, #4d5156);
   line-height: 1.5;
   display: block;
@@ -475,7 +475,7 @@ body.dark .ai-overview-card ul.dynamic-list li strong {
   width: 100%;
   margin-top: 14px;
   padding: 8px 0;
-  font-size: 14px;
+  font-size: var(--dtext-small);
   font-weight: 500;
   color: var(--color-text-dark, #202124);
   background-color: var(--color-bg-alt, #f1f3f4);
@@ -596,7 +596,7 @@ body.dark .btn-show-more {
 
 /* Judul Berita */
 .news-card .title {
-  font-size: 14px !important;
+  font-size: var(--dtext-small) !important;
   line-height: 1.3 !important;
   font-weight: 500 !important;
   color: var(--color-title, #1a0dab) !important;
@@ -636,10 +636,6 @@ body.dark .btn-show-more {
   .news-card__content {
     width: 88px;
     height: 88px !important; /* Disamakan 88px di tampilan mobile */
-  }
-
-  .news-card .title {
-    font-size: 13.5px !important;
   }
 }
 
@@ -826,4 +822,4 @@ body.dark .instant-answer .infobox span { border-color: #24282B; }
 
 .information { display: flex; margin: 8px 0; }
 .information img { width: 70px; }
-.information .label { margin: 0 10px; font-size: 14px; display: flex; flex-direction: column; }
+.information .label { margin: 0 10px; font-size: var(--dtext-small); display: flex; flex-direction: column; }
