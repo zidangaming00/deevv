@@ -279,7 +279,6 @@ function isMobile() {
     return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent); 
 } 
 
-// Memastikan overlay dibuat baik untuk mobile maupun desktop bila elemen container ada
 const targetContainer = document.querySelector(".cbKRN") || document.body;
 
 if (targetContainer && !document.querySelector(".image-preview")) { 
@@ -300,7 +299,19 @@ if (targetContainer && !document.querySelector(".image-preview")) {
                 </div> 
             </div> 
             <div class="image-preview__body">
-                <div class="image-preview__thumbnail"><img src="" alt="Preview"></div> 
+                <!-- Main Preview Image Slider Container -->
+                <div class="image-preview__thumbnail">
+                    <img src="" alt="Preview">
+                </div> 
+                
+                <!-- Indikator 4 Titik -->
+                <div class="preview-dots">
+                    <div class="preview-dot active"></div>
+                    <div class="preview-dot"></div>
+                    <div class="preview-dot"></div>
+                    <div class="preview-dot"></div>
+                </div>
+
                 <div class="image-preview__footer"> 
                     <div class="left"> 
                         <div class="title footer-image-title"></div> 
@@ -311,7 +322,7 @@ if (targetContainer && !document.querySelector(".image-preview")) {
                     </div> 
                 </div> 
                 
-                <!-- SECTION RELATED IMAGES -->
+                <!-- SECTION RELATED IMAGES (Dari DOM lokal) -->
                 <div class="image-preview__related">
                     <div class="related-grid"></div>
                 </div>
@@ -320,6 +331,9 @@ if (targetContainer && !document.querySelector(".image-preview")) {
     `); 
 
     const preview = document.querySelector(".image-preview"); 
+    let currentImageIndex = -1;
+    let touchStartX = 0;
+    let touchEndX = 0;
     
     function hidePreview() { 
         if (preview) preview.style.display = "none"; 
@@ -329,7 +343,7 @@ if (targetContainer && !document.querySelector(".image-preview")) {
     const closeBtn = document.querySelector(".close-preview");
     if (closeBtn) closeBtn.addEventListener("click", hidePreview); 
     
-    // Event listener delegasi klik gambar di main grid
+    // Delegasi Klik Elemen Gambar
     document.body.addEventListener("click", (event) => { 
         const img = event.target.closest(".image-item__thumb img"); 
         if (!img) return; 
@@ -338,18 +352,31 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         const parent = img.closest(".image-item"); 
         if (!parent) return;
 
-        const titleText = parent.querySelector(".image-item__info .title")?.innerText || "";
-        const siteName = parent.querySelector(".image-item__desc span")?.innerText || "";
-        const pageUrl = parent.querySelector(".image-item__info")?.href || "#";
-        const imgSrc = img.src;
+        const allItems = Array.from(document.querySelectorAll(".main-result .image-item"));
+        const index = allItems.indexOf(parent);
 
-        showPreview({ titleText, siteName, pageUrl, imgSrc }); 
+        showPreviewByIndex(index); 
     }); 
-    
-    function showPreview(data) { 
-        if (!preview) return; 
-        
-        // Reset scroll position ke atas setiap kali preview dibuka
+
+    function extractDataFromElement(itemEl) {
+        if (!itemEl) return null;
+        const img = itemEl.querySelector(".image-item__thumb img");
+        return {
+            titleText: itemEl.querySelector(".image-item__info .title")?.innerText || "",
+            siteName: itemEl.querySelector(".image-item__desc span")?.innerText || "",
+            pageUrl: itemEl.querySelector(".image-item__info")?.href || "#",
+            imgSrc: img ? img.src : ""
+        };
+    }
+
+    function showPreviewByIndex(index) {
+        const allItems = Array.from(document.querySelectorAll(".main-result .image-item"));
+        if (index < 0 || index >= allItems.length) return;
+
+        currentImageIndex = index;
+        const data = extractDataFromElement(allItems[index]);
+        if (!data) return;
+
         const bodyElem = preview.querySelector(".image-preview__body");
         if (bodyElem) bodyElem.scrollTop = 0;
 
@@ -369,61 +396,90 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         mainImg.src = data.imgSrc; 
         mainImg.alt = data.titleText; 
 
-        // Muat Gambar Terkait berdasarkan judul
-        fetchRelatedImages(data.titleText);
+        // Update indikator 4 titik
+        updateDots(index, allItems.length);
+
+        // Ambil 10 gambar berikutnya dari DOM (tanpa fetch API)
+        renderLocalRelatedImages(index, allItems);
     }
 
-    // Fungsi Fetch untuk Related Images
-    function fetchRelatedImages(queryText) {
+    // Pembaruan Indikator Titik
+    function updateDots(index, totalItems) {
+        const dots = preview.querySelectorAll(".preview-dot");
+        dots.forEach(d => d.classList.remove("active"));
+
+        let activeDotIndex = 0;
+        if (index === 0) {
+            activeDotIndex = 0; // Gambar 1 -> Titik 1
+        } else if (index === 1) {
+            activeDotIndex = 1; // Gambar 2 -> Titik 2
+        } else if (index >= totalItems - 1) {
+            activeDotIndex = 3; // Gambar Terakhir -> Titik 4
+        } else {
+            activeDotIndex = 2; // Gambar 3 hingga n-1 -> Titik 3
+        }
+
+        if (dots[activeDotIndex]) {
+            dots[activeDotIndex].classList.add("active");
+        }
+    }
+
+    // Tampilkan 10 Gambar Berikutnya dari Array DOM
+    function renderLocalRelatedImages(currentIndex, allItems) {
         const relatedGrid = preview.querySelector(".related-grid");
         if (!relatedGrid) return;
 
-        relatedGrid.innerHTML = `<div class="related-loader">Memuat gambar terkait...</div>`;
+        relatedGrid.innerHTML = "";
 
-        const fetchUrl = `${NEW_API_URL}?q=${encodeURIComponent(queryText)}&type=images&start=0&num=10`;
-        
-        fetch(fetchUrl)
-            .then(res => res.json())
-            .then(response => {
-                let list = Array.isArray(response) ? response : (response.results || response.images || []);
-                relatedGrid.innerHTML = "";
+        // Ambil 10 item setelah indeks saat ini
+        const nextItems = allItems.slice(currentIndex + 1, currentIndex + 11);
 
-                if (list.length === 0) {
-                    relatedGrid.innerHTML = `<div class="related-empty">Tidak ada gambar terkait.</div>`;
-                    return;
-                }
+        if (nextItems.length === 0) {
+            relatedGrid.innerHTML = `<div class="related-empty">Tidak ada gambar berikutnya.</div>`;
+            return;
+        }
 
-                list.forEach(item => {
-                    const thumb = item.thumbnail || item.thumbnailUrl || item.image || item.imageUrl;
-                    const fullImg = item.image || item.imageUrl || thumb;
-                    const itemTitle = item.title || queryText;
-                    const itemSite = item.source || item.domain || "Web";
-                    const itemPage = item.pageUrl || item.link || "#";
+        nextItems.forEach((itemEl) => {
+            const data = extractDataFromElement(itemEl);
+            const itemIndex = allItems.indexOf(itemEl);
 
-                    const card = document.createElement("div");
-                    card.className = "related-card";
-                    card.innerHTML = `
-                        <div class="related-card__thumb">
-                            <img src="${thumb}" loading="lazy" alt="${itemTitle}">
-                        </div>
-                        <div class="related-card__title">${itemTitle}</div>
-                    `;
+            const card = document.createElement("div");
+            card.className = "related-card";
+            card.innerHTML = `
+                <div class="related-card__thumb">
+                    <img src="${data.imgSrc}" loading="lazy" alt="${data.titleText}">
+                </div>
+                <div class="related-card__title">${data.titleText}</div>
+            `;
 
-                    // Klik pada gambar terkait akan memperbarui tampilan preview
-                    card.addEventListener("click", () => {
-                        showPreview({
-                            titleText: itemTitle,
-                            siteName: itemSite,
-                            pageUrl: itemPage,
-                            imgSrc: fullImg
-                        });
-                    });
-
-                    relatedGrid.appendChild(card);
-                });
-            })
-            .catch(() => {
-                relatedGrid.innerHTML = `<div class="related-empty">Gagal memuat gambar terkait.</div>`;
+            card.addEventListener("click", () => {
+                showPreviewByIndex(itemIndex);
             });
+
+            relatedGrid.appendChild(card);
+        });
+    }
+
+    // Fitur Swipe / Scroll Slide (Kiri - Kanan)
+    const thumbContainer = preview.querySelector(".image-preview__thumbnail");
+
+    thumbContainer.addEventListener("touchstart", (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    thumbContainer.addEventListener("touchend", (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+        const swipeThreshold = 40; // Batas minimum usapan piksel
+        if (touchStartX - touchEndX > swipeThreshold) {
+            // Swipe ke Kiri -> Gambar Selanjutnya
+            showPreviewByIndex(currentImageIndex + 1);
+        } else if (touchEndX - touchStartX > swipeThreshold) {
+            // Swipe ke Kanan -> Gambar Sebelumnya
+            showPreviewByIndex(currentImageIndex - 1);
+        }
     }
 }
