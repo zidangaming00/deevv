@@ -568,26 +568,29 @@ body.dark .btn-show-more {
   flex-direction: column;
 }
 
-/* Header Situs / Publisher */
-.news-card .top {
+/* Header Situs / Publisher (Ditambah spesifisitas agar mengalahkan .result-card .top) */
+.result-card.news-card .top {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 2px; /* DIRAPATKAN: Jarak situs ke judul hanya 2px */
+  margin: 0 0 2px 0 !important;
+  padding: 0 !important; /* MENGHAPUS padding 11px dari .result-card .top */
   line-height: 1;
 }
 
-.news-card .top .favicon {
+.result-card.news-card .top .favicon {
   width: 16px;
   height: 16px;
+  padding: 0;
   border-radius: 4px;
 }
 
-.news-card .top .link {
+.result-card.news-card .top .link {
   font-size: 12px;
   font-weight: 500;
   color: var(--color-text-dark, #202124);
   line-height: 1.2;
+  margin: 0;
 }
 
 /* Judul Berita */
