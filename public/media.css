@@ -420,6 +420,45 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
 }
 .image-preview__footer button a { color: #fff; text-decoration: none; }
 
+/* Container Indikator 4 Titik */
+.preview-dots {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 0 8px 0;
+    width: 100%;
+    background: #ffffff;
+}
+
+/* Base Element Titik (Default) */
+.preview-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #dadce0;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Indikator Aktif (Melebar Dinamis) */
+.preview-dot.active {
+    width: 20px;
+    height: 6px;
+    border-radius: 4px;
+    background-color: #1a73e8; /* Warna biru khas Google */
+}
+
+/* Dark Mode Alignment */
+body.dark .preview-dots {
+    background: #202125;
+}
+body.dark .preview-dot {
+    background-color: #5f6368;
+}
+body.dark .preview-dot.active {
+    background-color: #8ab4f8;
+}
+
 /* Related Images Section */
 .image-preview__related {
   padding: 6px 6px 32px;
