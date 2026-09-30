@@ -513,12 +513,12 @@ body.dark .btn-show-more {
 
 
 /* --------------------------------------------------------------------
-   Layout Berita (Thumbnail Kotak Presisi & Jarak Rapat)
+   Layout Berita (Gap Domain-Judul & Publishtime Sejajar Bawah Thumb)
    -------------------------------------------------------------------- */
 
 .news-card {
   padding: 0;
-  margin-bottom: 6px; /* Gap antar kartu berita */
+  margin-bottom: 6px;
   overflow: hidden;
   border-radius: 12px;
   transition: background-color 0.2s ease;
@@ -529,21 +529,21 @@ body.dark .btn-show-more {
 }
 
 .news-card a.news-card__body {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 12px; /* Dikecilkan agar thumbnail & teks lebih dekat */
-  padding: 10px 12px;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important; /* Paksa tinggi konten sama dengan thumbnail */
+  gap: 12px !important;
+  padding: 10px 12px !important;
   color: inherit;
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* THUMBNAIL KOTAK (SQUARE 1:1) & LEBIH BESAR */
+/* THUMBNAIL KOTAK (SQUARE 1:1) */
 .news-card__thumb-wrap {
   flex-shrink: 0;
   width: 108px;
-  height: 108px; /* Rasio 1:1 (Presisi Kotak) */
+  height: 108px;
   border-radius: 12px;
   overflow: hidden;
   background-color: var(--color-bg-alt, #f1f3f4);
@@ -560,83 +560,89 @@ body.dark .btn-show-more {
   display: none;
 }
 
-/* KONTEN TEKS & MERAPATKAN JARAK */
+/* KONTEN TEKS */
 .news-card__content {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
+  flex: 1 !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 108px !important; /* Disamakan dengan tinggi thumbnail agar publishtime bisa nempel bawah */
 }
 
-/* Header Situs / Publisher (Ditambah spesifisitas agar mengalahkan .result-card .top) */
+/* Header Situs / Publisher */
 .result-card.news-card .top {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0 0 2px 0 !important;
-  padding: 0 !important; /* MENGHAPUS padding 11px dari .result-card .top */
-  line-height: 1;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin: 0 0 6px 0 !important; /* GAP DOMAIN KE JUDUL: Diberi jarak 6px */
+  padding: 0 !important;
+  line-height: 1 !important;
 }
 
 .result-card.news-card .top .favicon {
-  width: 16px;
-  height: 16px;
-  padding: 0;
-  border-radius: 4px;
+  width: 16px !important;
+  height: 16px !important;
+  padding: 0 !important;
+  border-radius: 4px !important;
 }
 
 .result-card.news-card .top .link {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--color-text-dark, #202124);
-  line-height: 1.2;
-  margin: 0;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: var(--color-text-dark, #202124) !important;
+  line-height: 1.2 !important;
+  margin: 0 !important;
 }
 
 /* Judul Berita */
 .news-card .title {
-  font-size: 15px;
-  line-height: 1.3;
-  font-weight: 500;
-  color: var(--color-title, #1a0dab);
-  margin-bottom: 3px; /* DIRAPATKAN */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  font-size: 14px !important;
+  line-height: 1.3 !important;
+  font-weight: 500 !important;
+  color: var(--color-title, #1a0dab) !important;
+  margin: 0 0 4px 0 !important;
+  padding: 0 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
 }
 
 /* Snippet Ringkasan */
 .news-card .snippet {
-  font-size: 13px;
-  line-height: 1.35;
-  color: var(--color-text, #4d5156);
-  margin-bottom: 4px; /* DIRAPATKAN */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+  color: var(--color-text, #4d5156) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
 }
 
-/* Waktu Publikasi */
+/* Waktu Publikasi (Sejajar Ujung Bawah Thumbnail) */
 .news-card .publishtime {
-  font-size: 12px;
-  color: #70757a;
-  margin-top: 2px;
+  font-size: 11px !important;
+  color: #70757a !important;
+  margin-top: auto !important; /* Mendorong teks langsung ke dasar kontainer */
+  padding: 0 !important;
+  line-height: 1 !important;
 }
 
 /* PENYESUAIAN MOBILE */
 @media (max-width: 480px) {
-  .news-card__thumb-wrap {
+  .news-card__thumb-wrap,
+  .news-card__content {
     width: 88px;
-    height: 88px; /* Tetap Kotak 1:1 di HP */
-    border-radius: 8px;
+    height: 88px !important; /* Disamakan 88px di tampilan mobile */
   }
 
   .news-card .title {
-    font-size: 14px;
+    font-size: 13.5px !important;
   }
 }
+
 
 /* --------------------------------------------------------------------
    Widget video di dalam hasil web (dulu Dxcgd/Jhtm/vidbung/viditem/...)
