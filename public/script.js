@@ -1001,12 +1001,11 @@ function renderVideos(res) {
 }
 
 // ==========================================
-// MAIN EXECUTION & RENDER LOGIC
+// RENDER BERITA (NEWS RESULTS)
 // ==========================================
 function renderNews(res) {
     const container = document.querySelector(".main-result");
     
-    // Ambil array berita dari res.results atau res.news
     const newsItems = res.results || res.news || res.items;
     
     if (!newsItems || !newsItems.length) { 
@@ -1019,25 +1018,39 @@ function renderNews(res) {
         const link = item.link || "#";
         const publisher = Utils.escapeHTML(item.publisher || item.domain || "Berita");
         
-        // Pembacaan Waktu Publikasi (publishedAt dari API baru)
-        const rawPubTime = item.publishedAt || item.published_at || item.pubDate || item.date;
-        // Pembersihan karakter ' · · ' dari string waktu jika ada
-        const cleanPubTime = rawPubTime ? rawPubTime.replace(/[\s·]/g, '').trim() : "";
-        const timeStr = cleanPubTime ? Utils.dateConversion(cleanPubTime) : "";
+        // ----------------------------------------------------------------
+        // FIX DATE INVALID: Bersihkan simbol '·' dan spasi dari string API
+        // Contoh " ·  · 12h" -> "12h" / "12j yang lalu"
+        // ----------------------------------------------------------------
+        const rawPubTime = item.publishedAt || item.published_at || item.pubDate || item.date || "";
+        let timeStr = "";
 
-        // Pembacaan Thumbnail (thumbnailUrl dari API baru)
+        if (rawPubTime) {
+            // Hapus karakter non-alphanumeric selain spasi bawaan (menghilangkan '·')
+            const cleanedTime = rawPubTime.replace(/[·•]/g, '').trim();
+
+            // Jika berformat tanggal ISO /Timestamp baku, gunakan Utils.dateConversion
+            // Jika formatnya sudah relatif seperti "12h" atau "1d", tampilkan langsung
+            if (cleanedTime.includes('T') || cleanedTime.includes('-') || !isNaN(Date.parse(cleanedTime))) {
+                timeStr = typeof Utils.dateConversion === 'function' ? Utils.dateConversion(cleanedTime) : cleanedTime;
+            } else {
+                timeStr = cleanedTime; // Tampilkan teks relatif bersih "12h", "1d", dll.
+            }
+        }
+
+        // Gambar Thumbnail
         const thumbUrl = item.thumbnailUrl || item.thumbnail || item.image || item.og_image || "";
         const thumbHtml = thumbUrl 
             ? `<div class="news-card__thumb-wrap"><img class="thumb" src="${thumbUrl}" alt="${title}" loading="lazy"></div>` 
             : `<div class="news-card__thumb-wrap news-card__thumb-placeholder"></div>`;
 
-        // Ringkasan Berita
+        // Snippet Berita
         const snippetText = item.snippet || item.description || "";
         const snippetHtml = (Config.windowWidth > 780 && snippetText) 
             ? `<div class="snippet">${Utils.escapeHTML(snippetText)}</div>` 
             : "";
 
-        // Favicon Publisher
+        // Favicon
         const faviconUrl = item.favicon || `https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(link)}&size=64`;
 
         container.insertAdjacentHTML('beforeend', `
@@ -1059,6 +1072,10 @@ function renderNews(res) {
     });
 
     if (Config.startIndex === 1 && typeof UI !== 'undefined' && UI.renderFooter) {
+        // Hapus footer lama jika ada agar tidak terduplikasi
+        const existingFooter = document.querySelector(".search-footer");
+        if (existingFooter) existingFooter.remove();
+
         UI.renderFooter();
     }
 }
