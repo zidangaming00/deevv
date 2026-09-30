@@ -40,6 +40,9 @@
   /* Layout */
   --page-max-width: 630px;
   --page-gutter: 130px;
+
+   /* font size */
+   --dtext-small: 14px;
 }
 
 /* dark mode */
