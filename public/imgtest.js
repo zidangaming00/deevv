@@ -280,54 +280,21 @@ function isMobile() {
 } 
 
 // ==========================================
-// MOBILE PREVIEW OVERLAY + REAL SLIDE CAROUSEL + FLOATING DOTS
+// MOBILE PREVIEW OVERLAY (FULL CARD SLIDE ALA GOOGLE IMAGES)
 // ==========================================
 const targetContainer = document.querySelector(".cbKRN") || document.body;
 
 if (targetContainer && !document.querySelector(".image-preview")) { 
     targetContainer.insertAdjacentHTML("beforeend", ` 
         <div class="image-preview" style="display:none;"> 
-            <div class="image-preview__header"> 
-                <div class="left"> 
-                    <div class="image-preview__favicon"><img src="" alt="Favicon"></div> 
-                    <div class="title header-site-name"></div> 
-                </div> 
-                <div class="right"> 
-                    <div class="image-preview__favicon close-preview" style="cursor:pointer;"> 
-                        <svg viewBox="0 0 24 24" focusable="false" height="24" width="24"> 
-                            <path d="M0 0h24v24H0z" fill="none"></path> 
-                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path> 
-                        </svg> 
-                    </div> 
-                </div> 
-            </div> 
-            <div class="image-preview__body">
-                <!-- Track Carousel untuk Slide nyata antar Gambar -->
-                <div class="image-preview__thumbnail">
-                    <div class="preview-carouselTrack">
-                        <div class="preview-slide prev-slide"><img src="" alt="Prev"></div>
-                        <div class="preview-slide current-slide"><img src="" alt="Current"></div>
-                        <div class="preview-slide next-slide"><img src="" alt="Next"></div>
-                    </div>
-                </div> 
-
-                <div class="image-preview__footer"> 
-                    <div class="left"> 
-                        <div class="title footer-image-title"></div> 
-                        <div class="site">Gambar mungkin memiliki hak cipta.</div> 
-                    </div> 
-                    <div class="right"> 
-                        <button><a href="" target="_blank" rel="noopener" class="visit-link">Kunjungi</a></button> 
-                    </div> 
-                </div> 
-                
-                <!-- SECTION RELATED IMAGES (Local DOM) -->
-                <div class="image-preview__related">
-                    <div class="related-grid"></div>
-                </div>
+            <!-- Track yang menggeser 3 Seluruh Halaman Kartu Sekaligus -->
+            <div class="preview-card-track">
+                <div class="preview-card-page prev-page"></div>
+                <div class="preview-card-page current-page"></div>
+                <div class="preview-card-page next-page"></div>
             </div>
 
-            <!-- Indikator 4 Titik Melayang Ala Google -->
+            <!-- Indikator 4 Titik Melayang -->
             <div class="preview-dots">
                 <div class="preview-dot active"></div>
                 <div class="preview-dot"></div>
@@ -338,25 +305,65 @@ if (targetContainer && !document.querySelector(".image-preview")) {
     `); 
 
     const preview = document.querySelector(".image-preview"); 
-    const track = preview.querySelector(".preview-carouselTrack");
-    const prevImg = preview.querySelector(".prev-slide img");
-    const currImg = preview.querySelector(".current-slide img");
-    const nextImg = preview.querySelector(".next-slide img");
+    const track = preview.querySelector(".preview-card-track");
+    const prevPage = preview.querySelector(".prev-page");
+    const currPage = preview.querySelector(".current-page");
+    const nextPage = preview.querySelector(".next-page");
 
     let currentImageIndex = -1;
     let touchStartX = 0;
+    let touchStartY = 0;
     let touchMoveX = 0;
-    let isSwiping = false;
-    
-    function hidePreview() { 
-        if (preview) preview.style.display = "none"; 
-        document.documentElement.style.overflow = "auto"; 
-    } 
-    
-    const closeBtn = document.querySelector(".close-preview");
-    if (closeBtn) closeBtn.addEventListener("click", hidePreview); 
-    
-    // Delegasi Klik Gambar Utama
+    let touchMoveY = 0;
+    let isHorizontalSwipe = false;
+    let isTouchActive = false;
+
+    // Template Generator untuk Seluruh Isi 1 Kartu
+    function createCardHTML(data) {
+        if (!data) return `<div style="height:100vh;"></div>`;
+        const hostname = data.pageUrl && data.pageUrl !== "#" ? new URL(data.pageUrl).hostname : "";
+        const faviconSrc = hostname ? `https://www.google.com/s2/favicons?domain=${hostname}&sz=32` : "";
+
+        return `
+            <div class="image-preview__header"> 
+                <div class="left"> 
+                    <div class="image-preview__favicon"><img src="${faviconSrc}" alt="Fav"></div> 
+                    <div class="title header-site-name">${data.siteName}</div> 
+                </div> 
+                <div class="right"> 
+                    <div class="image-preview__favicon close-preview" style="cursor:pointer;"> 
+                        <svg viewBox="0 0 24 24" height="24" width="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg> 
+                    </div> 
+                </div> 
+            </div> 
+            <div class="image-preview__thumbnail">
+                <img src="${data.imgSrc}" alt="${data.titleText}">
+            </div> 
+            <div class="image-preview__footer"> 
+                <div class="left"> 
+                    <div class="title footer-image-title">${data.titleText}</div> 
+                    <div class="site">Gambar mungkin memiliki hak cipta.</div> 
+                </div> 
+                <div class="right"> 
+                    <button><a href="${data.pageUrl}" target="_blank" rel="noopener">Kunjungi</a></button> 
+                </div> 
+            </div> 
+            <div class="image-preview__related">
+                <div class="related-title">Gambar Terkait</div>
+                <div class="related-grid"></div>
+            </div>
+        `;
+    }
+
+    // Event Listener Close Button via Delegasi
+    preview.addEventListener("click", (e) => {
+        if (e.target.closest(".close-preview")) {
+            preview.style.display = "none";
+            document.documentElement.style.overflow = "auto";
+        }
+    });
+
+    // Delegasi Klik Gambar Utama di Grid
     document.body.addEventListener("click", (event) => { 
         const img = event.target.closest(".image-item__thumb img"); 
         if (!img) return; 
@@ -382,44 +389,36 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         };
     }
 
-    function showPreviewByIndex(index, animateDirection = 0) {
+    function showPreviewByIndex(index) {
         const allItems = Array.from(document.querySelectorAll(".main-result .image-item"));
         if (index < 0 || index >= allItems.length) return;
 
         currentImageIndex = index;
-        const currentData = extractDataFromElement(allItems[index]);
-        if (!currentData) return;
-
-        const bodyElem = preview.querySelector(".image-preview__body");
-        if (bodyElem && animateDirection === 0) bodyElem.scrollTop = 0;
-
-        preview.style.display = "flex"; 
+        preview.style.display = "block"; 
         document.documentElement.style.overflow = "hidden"; 
-        
-        // Atur Gambar Kiri (Prev), Tengah (Current), Kanan (Next) untuk Efek Slide
+
+        // Isi Halaman Kiri, Tengah, dan Kanan
         const prevData = extractDataFromElement(allItems[index - 1]);
+        const currData = extractDataFromElement(allItems[index]);
         const nextData = extractDataFromElement(allItems[index + 1]);
 
-        prevImg.src = prevData ? prevData.imgSrc : "";
-        currImg.src = currentData.imgSrc;
-        nextImg.src = nextData ? nextData.imgSrc : "";
+        prevPage.innerHTML = createCardHTML(prevData);
+        currPage.innerHTML = createCardHTML(currData);
+        nextPage.innerHTML = createCardHTML(nextData);
 
-        // Reset Transform Track ke Tengah (-100%)
-        track.style.transition = animateDirection !== 0 ? "transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)" : "none";
+        // Render Related Images di masing-masing halaman
+        renderLocalRelatedImages(index - 1, allItems, prevPage);
+        renderLocalRelatedImages(index, allItems, currPage);
+        renderLocalRelatedImages(index + 1, allItems, nextPage);
+
+        // Reset Transform Track Ke Posisi Tengah (-100%)
+        track.style.transition = "none";
         track.style.transform = `translateX(-100%)`;
 
-        // Update Info Text Header & Footer
-        preview.querySelector(".footer-image-title").innerText = currentData.titleText; 
-        preview.querySelector(".header-site-name").innerText = currentData.siteName; 
-        preview.querySelector(".visit-link").href = currentData.pageUrl; 
-        
-        const hostname = currentData.pageUrl && currentData.pageUrl !== "#" ? new URL(currentData.pageUrl).hostname : "";
-        if (hostname) {
-            preview.querySelector(".image-preview__favicon img").src = `https://www.google.com/s2/favicons?domain=${hostname}&sz=32`;
-        }
+        // Reset Scroll Vertikal ke Puncak
+        currPage.scrollTop = 0;
 
         updateDots(index, allItems.length);
-        renderLocalRelatedImages(index, allItems);
     }
 
     function updateDots(index, totalItems) {
@@ -437,8 +436,9 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         }
     }
 
-    function renderLocalRelatedImages(currentIndex, allItems) {
-        const relatedGrid = preview.querySelector(".related-grid");
+    function renderLocalRelatedImages(currentIndex, allItems, pageElem) {
+        if (currentIndex < 0 || !pageElem) return;
+        const relatedGrid = pageElem.querySelector(".related-grid");
         if (!relatedGrid) return;
 
         relatedGrid.innerHTML = "";
@@ -470,52 +470,64 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         });
     }
 
-    // Touch Swipe Drag dengan Animasi Geser Nyata
-    const thumbWrapper = preview.querySelector(".image-preview__thumbnail");
-
-    thumbWrapper.addEventListener("touchstart", (e) => {
+    // Touch Handling untuk Swiping Keseluruhan Halaman
+    preview.addEventListener("touchstart", (e) => {
         touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
         touchMoveX = touchStartX;
-        isSwiping = true;
+        touchMoveY = touchStartY;
+        isHorizontalSwipe = false;
+        isTouchActive = true;
         track.style.transition = "none";
     }, { passive: true });
 
-    thumbWrapper.addEventListener("touchmove", (e) => {
-        if (!isSwiping) return;
+    preview.addEventListener("touchmove", (e) => {
+        if (!isTouchActive) return;
         touchMoveX = e.touches[0].clientX;
+        touchMoveY = e.touches[0].clientY;
+
         const diffX = touchMoveX - touchStartX;
-        
-        // Geser track secara eksplisit saat jari diseret
-        const containerWidth = thumbWrapper.clientWidth;
-        const currentOffsetPercent = -100 + (diffX / containerWidth) * 100;
-        track.style.transform = `translateX(${currentOffsetPercent}%)`;
+        const diffY = touchMoveY - touchStartY;
+
+        // Deteksi apakah gerakannya dominan horizontal
+        if (!isHorizontalSwipe && Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
+            isHorizontalSwipe = true;
+        }
+
+        if (isHorizontalSwipe) {
+            const containerWidth = preview.clientWidth;
+            const currentOffsetPercent = -100 + (diffX / containerWidth) * 100;
+            track.style.transform = `translateX(${currentOffsetPercent}%)`;
+        }
     }, { passive: true });
 
-    thumbWrapper.addEventListener("touchend", () => {
-        if (!isSwiping) return;
-        isSwiping = false;
+    preview.addEventListener("touchend", () => {
+        if (!isTouchActive) return;
+        isTouchActive = false;
 
-        const diffX = touchMoveX - touchStartX;
-        const threshold = 50; // Jarak minimum geser
+        if (isHorizontalSwipe) {
+            const diffX = touchMoveX - touchStartX;
+            const threshold = 60; // Batas geser
 
-        if (diffX < -threshold) {
-            // Swipe ke Kiri -> Gambar Selanjutnya
-            track.style.transition = "transform 0.25s ease-out";
-            track.style.transform = "translateX(-200%)";
-            setTimeout(() => {
-                showPreviewByIndex(currentImageIndex + 1, 1);
-            }, 200);
-        } else if (diffX > threshold) {
-            // Swipe ke Kanan -> Gambar Sebelumnya
-            track.style.transition = "transform 0.25s ease-out";
-            track.style.transform = "translateX(0%)";
-            setTimeout(() => {
-                showPreviewByIndex(currentImageIndex - 1, -1);
-            }, 200);
-        } else {
-            // Kembali ke Posisi Semula jika seretan tidak cukup jauh
-            track.style.transition = "transform 0.2s ease-out";
-            track.style.transform = "translateX(-100%)";
+            if (diffX < -threshold) {
+                // Swipe Kiri -> Slide Halaman Selanjutnya
+                track.style.transition = "transform 0.25s ease-out";
+                track.style.transform = "translateX(-200%)";
+                setTimeout(() => {
+                    showPreviewByIndex(currentImageIndex + 1);
+                }, 220);
+            } else if (diffX > threshold) {
+                // Swipe Kanan -> Slide Halaman Sebelumnya
+                track.style.transition = "transform 0.25s ease-out";
+                track.style.transform = "translateX(0%)";
+                setTimeout(() => {
+                    showPreviewByIndex(currentImageIndex - 1);
+                }, 220);
+            } else {
+                // Batal geser -> Kembali ke tengah
+                track.style.transition = "transform 0.2s ease-out";
+                track.style.transform = "translateX(-100%)";
+            }
         }
     }, { passive: true });
 }
