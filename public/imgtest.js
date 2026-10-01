@@ -22,10 +22,25 @@ let scrollCount = 0;
 const maxScrolls = 2;
 
 // Helper hapus loader
+let isWaiting = false; // jeda sebelum fetch
+
+function showLoader() {
+    if (!shwrapper) return;
+    shwrapper.innerHTML = `<div class="loader"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="4" stroke-miterlimit="10"/></svg></div>`;
+    // Tengah bawah container
+    shwrapper.style.position = 'absolute';
+    shwrapper.style.left = '0';
+    shwrapper.style.bottom = '0';
+    shwrapper.style.width = '100%';
+    shwrapper.style.display = 'flex';
+    shwrapper.style.justifyContent = 'center';
+    shwrapper.style.alignItems = 'center';
+    shwrapper.style.height = '80px';
+}
+
 function clearLoader() {
     if (shwrapper) {
-        shwrapper.innerHTML = ''; 
-        shwrapper.style.position = 'absolute'; 
+        shwrapper.innerHTML = '';
     }
 }
 
@@ -255,19 +270,21 @@ function loadImage(imgElement, thumbnailSrc, fullSrc) {
 // ==========================================
 // INFINITE SCROLL (BATAS SCROLL MAX 2X)
 // ==========================================
-window.addEventListener("scroll", function() { 
-    if (isLoading || scrollCount >= maxScrolls) return; 
+window.addEventListener("scroll", function () {
+    if (isLoading || isWaiting || scrollCount >= maxScrolls) return;
 
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) { 
-        scrollCount++; 
-        
-        if (shwrapper) {
-            shwrapper.innerHTML = `<div class="loader"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="4" stroke-miterlimit="10"/></svg></div>`; 
-            shwrapper.style.position = 'static';
-        }
-        fetchData(); 
-    } 
-}); 
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
+        scrollCount++;
+        isWaiting = true;
+        showLoader();
+
+        // Jeda dulu biar loader kelihatan, baru fetch
+        setTimeout(() => {
+            isWaiting = false;
+            fetchData();
+        }, 700);
+    }
+});
 
 // Eksekusi Pemuatan Pertama
 fetchData();
