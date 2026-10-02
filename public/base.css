@@ -404,33 +404,37 @@ input[type="search"]::-webkit-search-results-decoration {
    DESKTOP RESPONSIVE (min-width: 780px)
    ========================================================================== */
 @media (min-width: 780px) {
-  /* 1. Menjajarkan Logo & Search Box secara horizontal */
+  /* 1. Mencegah Logo naik ke atas & memberi padding dari tepi layar kiri */
   .page-header {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Baris 1: Logo + Search Box, Baris 2: Search Menu */
     align-items: center;
-    padding: 16px 24px 0 24px;
+    padding: 16px 24px 0 24px; /* Jarak aman dari pinggir layar kiri & kanan */
   }
 
   .logo-slot {
     width: auto !important;
     padding: 0 !important;
-    margin-right: 20px;
+    margin-right: 24px; /* Jarak antara Logo dan Search Box */
+    flex-shrink: 0;
     justify-content: flex-start !important;
   }
 
   .logo-slot img {
     width: 92px;
-    height: 36px;
+    height: 33px;
   }
 
+  /* min-width: 0 penting agar elemen flex tidak meluap ke baris baru */
   .header {
     flex: 1;
+    min-width: 0;
+    width: auto !important;
     padding: 0 !important;
     background: transparent;
   }
 
-  /* 2. Membatasi Lebar Input Box (Presisi Google Desktop: 692px) */
+  /* 2. Membatasi Input Box (Presisi Google Desktop: 692px) */
   .search-box {
     padding: 0;
     max-width: 692px;
@@ -442,7 +446,6 @@ input[type="search"]::-webkit-search-results-decoration {
     border: 1px solid #dfe1e5;
     box-shadow: none;
     padding-left: 20px;
-    max-width: 692px;
   }
 
   .search-box .search-toggle { 
@@ -460,24 +463,25 @@ input[type="search"]::-webkit-search-results-decoration {
     border-color: transparent;
   }
 
-  /* 3. Menyesuaikan posisi Tab Nav agar sejajar dengan Input Box */
+  /* 3. Menjajarkan Tab Navigasi (Semua, Gambar, dll) tepat di bawah Search Box */
   .search-menu {
     width: 100%;
-    padding-left: 112px !important; /* Dorong tab agar lurus vertikal dengan awal Search Box */
+    padding-left: 116px !important; /* Offset lurus tegak lurus dengan awal kotak pencarian */
     margin: 12px 0 0 0;
     box-shadow: none;
+    border-bottom: 1px solid var(--color-border-alt);
   }
 
   .tab-wrapper {
-    padding: 8px 16px 12px 0; /* Hapus padding kiri tab pertama */
+    padding: 8px 16px 12px 0;
   }
 
-  /* 4. Posisi Hasil Pencarian (Result Wrapper) */
+  /* 4. Posisi Utama Hasil Pencarian */
   .result-wrapper {
     display: flex;
     background: var(--color-white);
-    padding-left: 136px;
-    padding-top: 5px;
+    padding-left: 140px; /* Offset lurus dengan input box desktop */
+    padding-top: 12px;
   }
 
   .main-result {
@@ -485,11 +489,15 @@ input[type="search"]::-webkit-search-results-decoration {
     max-width: var(--page-max-width);
   }
 
-  .result-stats {
-    display: block;
-    color: var(--color-text-muted);
-    font-size: 14px;
-    margin: 10px 0 0 0;
+  /* 5. Menghilangkan Border & Garis Pembatas Hasil Pencarian di Desktop */
+  .result-card,
+  .main-result > div,
+  .main-result article,
+  .result-item {
+    border: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
   }
 }
 
