@@ -491,7 +491,7 @@ input[type="search"]::-webkit-search-results-decoration {
      ========================================================================== */
   .search-menu {
     width: 100% !important;
-    padding-left: 120px !important; 
+    padding-left: 136px !important; 
     padding-right: 0 !important;
     margin-left: 0 !important;
     margin-top: 12px !important;
@@ -528,6 +528,14 @@ input[type="search"]::-webkit-search-results-decoration {
   }
 }
 
+@media (min-width: 780px) and (max-width: 1024px) {
+  .search-menu {
+    padding-left: 24px !important;
+  }
+  .result-wrapper {
+    padding-left: 24px !important;
+  }
+}
 
 /* Penyesuaian layar besar (Desktop XL) */
 @media (min-width: 992px) {
