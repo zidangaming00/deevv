@@ -513,9 +513,7 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
   border-radius: 20px;
   border: none;
   background: #e8f0fe;
-  color: #1a73e8;
-  font-family: 'Google Sans', Roboto, sans-serif;
-  font-size: 13.5px;
+  font-size: var(dtext-small);
   font-weight: 500;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
