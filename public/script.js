@@ -1075,6 +1075,7 @@ function renderNews(res) {
 
 
 function renderWebResults(res) {
+  document.querySelector(".main-result").style.cssText = "min-width: var(--page-max-width); max-width: var(--page-max-width);";
   const container = document.querySelector(".main-result .results-list");
   const isFirstPage = Config.startIndex === 1;
   if (!res.items) {
