@@ -583,7 +583,6 @@ footer {
   }
 
   .result-card,
-  .main-result > div,
   .main-result article,
   .result-item {
     border: none !important;
