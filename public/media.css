@@ -1,26 +1,16 @@
 /* ==========================================================================
    MEDIA.CSS
-   Tab Gambar (grid + preview) & tab Video (grid kartu).
-   Gabungan dari i2025.css + g2079.css + m2095.css.
    ========================================================================== */
 
-/* ==========================================================================
-   Tab Video — Clean, High-Density 2-Column Grid (4px Whitespace)
-   ========================================================================== */
-
+/* --- Video Grid & Cards --- */
 .video-grid {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  /* Grid 2 kolom seimbang */
   grid-template-columns: repeat(2, 1fr);
-  
-  /* WHITESPACE / GAP: 4px antar kartu */
   gap: 4px; 
-  /* PADDING KIRI-KANAN: 4px dari tepi layar */
   padding: 8px 6px 0 6px; 
-  
   background: var(--color-white, #ffffff);
   box-sizing: border-box;
 }
@@ -38,7 +28,6 @@
   position: relative;
 }
 
-/* Neutral Hover/Hold (Tanpa Efek 3D/Angkat) */
 .video-card:active,
 .video-card:hover {
   border-color: rgba(0, 0, 0, 0.12);
@@ -53,7 +42,6 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Thumbnail Wrapper (16:9 Standard) */
 .video-card__thumb-wrapper {
   position: relative;
   width: 100%;
@@ -72,13 +60,11 @@
   transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1); 
 }
 
-/* 3. Efek Zoom saat di-hold (di-touch) atau di-hover */
 .video-card:active .thumbnail,
 .video-card:hover .thumbnail {
-  transform: scale(1.12); /* Pembesaran 12% (pas & tidak berlebihan) */
+  transform: scale(1.12); 
 }
 
-/* Play Badge Overlay — Tetap Konsisten Tanpa Berganti Warna */
 .video-card__play-badge {
   position: absolute;
   top: 50%;
@@ -101,7 +87,6 @@
   margin-left: 2px;
 }
 
-/* Content Area */
 .video-card__content {
   padding: 8px 6px 10px;
   display: flex;
@@ -110,7 +95,6 @@
   justify-content: space-between;
 }
 
-/* Badge Durasi Video (Pojok Kanan Bawah Thumbnail) */
 .video-card__duration {
   position: absolute;
   bottom: 6px;
@@ -142,7 +126,6 @@
    min-height: 35.1px;
 }
 
-/* Source & Meta */
 .video-card .source {
   font-size: 11px;
   color: #5f6368;
@@ -176,122 +159,9 @@
   font-size: 10.5px;
 }
 
-/* Responsive Grid untuk Tablet & Desktop */
-@media (min-width: 600px) {
-  .video-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    padding: 12px;
-  }
-}
-
-@media (min-width: 900px) {
-  .video-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .video-grid {
-    grid-template-columns: repeat(5, 1fr);
-  }
-}
-
-/* Dark Mode Alignment */
-body.dark .video-grid {
-  background: #121212;
-}
-
-body.dark .video-card {
-  background: #1e1e1e;
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: none;
-}
-
-body.dark .video-card .title {
-  color: #e8eaed;
-}
-
-body.dark .video-card .channel-name {
-  color: #bdc1c6;
-}
-
-body.dark .video-card .time-ago {
-  color: #9aa0a6;
-}
-
-/* ==========================================================================
-   Responsive Adjustment
-   ========================================================================== */
-
-/* Tablet ke atas: Mengembalikan layout grid normal (tanpa featured lebar berlebih jika tidak perlu) */
-@media (min-width: 600px) {
-  .video-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    padding: 12px;
-  }
-  
-  .video-card:first-child {
-    grid-column: auto;
-    margin-bottom: 0;
-  }
-  
-  .video-card:first-child .video-card__content {
-    padding: 8px 6px 10px;
-  }
-
-  .video-card:first-child .title {
-    font-size: 13px;
-    font-weight: 500;
-  }
-}
-
-@media (min-width: 900px) {
-  .video-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .video-grid {
-    grid-template-columns: repeat(5, 1fr);
-  }
-}
-
-/* Dark Mode Alignment */
-body.dark .video-grid {
-  background: #121212;
-}
-
-body.dark .video-card {
-  background: #1e1e1e;
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: none;
-}
-
-body.dark .video-card .title {
-  color: #e8eaed;
-}
-
-body.dark .video-card .channel-name {
-  color: #bdc1c6;
-}
-
-body.dark .video-card .time-ago {
-  color: #9aa0a6;
-}
-
-/* --------------------------------------------------------------------
-   Tab gambar — grid hasil (dulu i2025.css)
-   -------------------------------------------------------------------- */
-/* ======================================================
-   FIX LAYOUT — WAJIB untuk absolute positioning yang benar
-   ====================================================== */
+/* --- Image Results & Grid --- */
 .main-result {
-  position: relative;      /* acuan absolute untuk .image-item — INI PALING PENTING */
+  position: relative;     
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -301,14 +171,13 @@ body.dark .video-card .time-ago {
 }
 
 .image-item {
-  position: absolute;      /* default eksplisit, akan tetap di-set ulang oleh JS */
+  position: absolute;     
   box-sizing: border-box;
   transition: all 0.3s ease;
-  /* width: 250px; -> DIHAPUS, karena lebar sekarang full dikontrol oleh JS (px per kolom) */
 }
 .image-item__box {
   padding-top: 0px;
-  box-sizing: border-box;  /* padding masuk hitungan width, gak nambah lebar keluar */
+  box-sizing: border-box;  
 }
 .image-item__thumb {
   overflow: hidden;
@@ -318,7 +187,7 @@ body.dark .video-card .time-ago {
   cursor: pointer;
   display: flex;
   box-sizing: border-box;
-  width: 100%;              /* ikut lebar .image-item__box (yang sudah dikurangi padding) */
+  width: 100%;             
   transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
 }
@@ -331,7 +200,6 @@ body.dark .video-card .time-ago {
 a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: column; gap: 2px; text-decoration: none; }
 .image-item__info p { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Grid mosaik (thumbnail utama + 2 sisi) — dulu g2079.css */
 .image-grid { display: grid; grid-template-rows: 1fr 1fr; gap: 4px; overflow: hidden; border-radius: 12px; grid-auto-flow: column; }
 .image-grid__main { grid-column: span 2; grid-row: 1 / -1; }
 .image-grid__cell { background: #ededed; }
@@ -339,66 +207,7 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
 .image-grid__caption { padding: 0 16px 4px 16px; }
 .image-grid__cell img { width: 100%; height: 100%; object-fit: cover; }
 
-/* --------------------------------------------------------------------
-   Preview gambar fullscreen ala Google + Related Images (Updated)
-   -------------------------------------------------------------------- */
-
-@media (min-width: 1024px) {
-    /* Kontainer panel berada melayang di kanan */
-    .image-preview {
-        position: fixed;
-        top: 0;
-        right: 0;
-        left: auto;
-        width: 440px;
-        height: 100vh;
-        background: #ffffff;
-        border-left: 1px solid #dadce0;
-        box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
-        z-index: 999;
-        overflow: hidden; /* Menghindari double scrollbar pada wrapper luar */
-    }
-
-    /* Track pembungkus kartu */
-    .preview-card-track {
-        display: flex;
-        height: 100%;
-        width: 300%; /* Untuk 3 kartu (prev, current, next) */
-    }
-
-    /* Masing-masing kartu panel memiliki scrollbar vertikal sendiri */
-    .preview-card-page {
-        width: 100%;
-        height: 100vh;
-        overflow-y: auto; /* Scrollbar khusus untuk isi panel (detail & related images) */
-        -webkit-overflow-scrolling: touch;
-    }
-
-    /* Kustomisasi Scrollbar Panel Samping (opsional ala Google) */
-    .preview-card-page::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    .preview-card-page::-webkit-scrollbar-thumb {
-        background-color: rgba(0, 0, 0, 0.2);
-        border-radius: 4px;
-    }
-
-    .preview-card-page::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    /* Support Dark Mode */
-    body.dark .image-preview {
-        background: #202125;
-        border-left-color: #3c4043;
-    }
-
-    body.dark .preview-card-page::-webkit-scrollbar-thumb {
-        background-color: rgba(255, 255, 255, 0.2);
-    }
-}
-
+/* --- Image Preview & Carousel --- */
 .image-preview {
   width: 100%; 
   height: 100dvh;
@@ -408,7 +217,7 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
   top: 0; 
   z-index: 9999;
   font-family: 'Google Sans', Roboto, sans-serif;
-  overflow: hidden; /* Scroll dikontrol di dalam slide masing-masing */
+  overflow: hidden; 
 }
 
 .preview-card-track {
@@ -419,14 +228,13 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
   will-change: transform;
 }
 
-/* Setiap Slide adalah 1 Halaman Lengkap (Header, Gambar, Footer, Related) */
 .preview-card-page {
   min-width: 100%;
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow-y: auto; /* Tiap halaman bisa di-scroll sendiri secara vertikal */
+  overflow-y: auto; 
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   background: #ffffff;
@@ -447,10 +255,9 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
 .image-preview__favicon { width: 30px; height: 30px; border: 1px solid #ededed; background: #f9f9f9; border-radius: 50%; display: grid; place-items: center; }
 .image-preview__favicon img { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; }
 
-/* Scrollable Container untuk Konten Preview & Related */
 .image-preview__body {
   flex: 1;
-  min-height: 0;           /* KUNCI: tanpa ini flex item melebar sesuai isi & tidak bisa di-scroll */
+  min-height: 0;           
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
@@ -475,7 +282,6 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
   display: block;
 }
 
-/* Track Carousel untuk animasi slide horizontal */
 .preview-carouselTrack {
     display: flex;
     width: 100%;
@@ -513,7 +319,6 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
 }
 .image-preview__footer button a { color: #fff; text-decoration: none; }
 
-/* Indikator 4 Titik Melayang di Bawah Layar (Abu-abu ala Google) */
 .preview-dots {
   position: fixed;
   bottom: 6px;
@@ -532,18 +337,15 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
   pointer-events: none;
 }
 
-/* Base Dot */
 .preview-dot {
-  width: 6px; /* Lebar dasar (minimum) */
+  width: 6px; 
   height: 6px;
   border-radius: 3px;
   background-color: rgba(255, 255, 255, 0.4);
-  /* Hilangkan transition kaku saat dragging, gunakan transition tipis untuk snapping halus */
   transition: width 0.1s linear, background-color 0.1s linear;
   will-change: width, background-color;
 }
 
-/* Active Dot (Putih/Abu-abu Terang melebar) */
 .preview-dot.active {
     width: 16px;
     height: 6px;
@@ -551,7 +353,6 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
     background-color: #ffffff;
 }
 
-/* image action button */
 .image-preview__actions {
   display: flex;
   gap: 10px;
@@ -584,20 +385,6 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
   fill: currentColor;
 }
 
-/* Support Dark Mode */
-body.dark .image-preview__actions {
-  background: #202125;
-}
-
-body.dark .action-btn {
-  background: #2d2e31;
-}
-
-body.dark .action-btn:active {
-  background: #3c4043;
-}
-
-/* Related Images Section */
 .image-preview__related {
   padding: 12px 6px 32px;
   border-top: 8px solid #f1f3f4;
@@ -652,7 +439,124 @@ body.dark .action-btn:active {
   text-align: center;
 }
 
-/* Dark Mode Support */
+.related-note {
+  grid-column: span 2;
+  font-size: 12px;
+  color: #70757a;
+  padding: 2px 10px 6px;
+}
+
+
+/* --- Consolidated Media Queries & Dark Mode --- */
+
+@media (min-width: 600px) {
+  .video-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 12px;
+  }
+  
+  .video-card:first-child {
+    grid-column: auto;
+    margin-bottom: 0;
+  }
+  
+  .video-card:first-child .video-card__content {
+    padding: 8px 6px 10px;
+  }
+
+  .video-card:first-child .title {
+    font-size: 13px;
+    font-weight: 500;
+  }
+}
+
+@media (min-width: 900px) {
+  .video-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .video-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+    .image-preview {
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: auto;
+        width: 440px;
+        height: 100vh;
+        background: #ffffff;
+        border-left: 1px solid #dadce0;
+        box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+        z-index: 999;
+        overflow: hidden; 
+    }
+
+    .preview-card-track {
+        display: flex;
+        height: 100%;
+        width: 300%; 
+    }
+
+    .preview-card-page {
+        width: 100%;
+        height: 100vh;
+        overflow-y: auto; 
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .preview-card-page::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .preview-card-page::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+    }
+
+    .preview-card-page::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    body.dark .image-preview {
+        background: #202125;
+        border-left-color: #3c4043;
+    }
+
+    body.dark .preview-card-page::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+}
+
+body.dark .video-grid {
+  background: #121212;
+}
+
+body.dark .video-card {
+  background: #1e1e1e;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+}
+
+body.dark .video-card .title {
+  color: #e8eaed;
+}
+
+body.dark .video-card .channel-name {
+  color: #bdc1c6;
+}
+
+body.dark .video-card .time-ago {
+  color: #9aa0a6;
+}
+
 body.dark .image-preview { background: #171717; }
 body.dark .image-preview__header, 
 body.dark .image-preview__footer, 
@@ -661,9 +565,14 @@ body.dark .image-preview .title,
 body.dark .image-preview__related .related-title,
 body.dark .related-card__title { color: #e8eaed; }
 
-.related-note {
-  grid-column: span 2;
-  font-size: 12px;
-  color: #70757a;
-  padding: 2px 10px 6px;
+body.dark .image-preview__actions {
+  background: #202125;
+}
+
+body.dark .action-btn {
+  background: #2d2e31;
+}
+
+body.dark .action-btn:active {
+  background: #3c4043;
 }
