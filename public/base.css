@@ -431,7 +431,8 @@ input[type="search"]::-webkit-search-results-decoration {
 .show-wrapper {
   width: 100%;
   /* Border top terpisah + padding rapat agar tidak gap ke footer */
-  border-top: 1px solid var(--color-border, #ededed);
+  border: 1px solid var(--color-border, #ededed);
+  border-width: 1px 0;
   padding: 12px 16px 12px;
   display: flex;
   position: relative;
