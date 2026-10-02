@@ -591,20 +591,20 @@ const UI = {
                   <div role="button" class="cleartext inpbtun" style="display:none" id="Chasprn" title="Hapus"></div> 
                 </div> 
               </div> 
-              <div class="search-menu"> 
-                ${createTab("all", "", "all", 0)} 
-                ${createTab("images", "&tbm=isch", "images", 1)} 
-                ${createTab("videos", "&tbm=vid", "videos", 2)} 
-                ${createTab("news", "&tbm=nws", "news", 3)} 
-                ${createTab("maps", "", "maps", 4)} 
-              </div> 
             </div> 
+          </div> 
+          <div class="search-menu"> 
+            ${createTab("all", "", "all", 0)} 
+            ${createTab("images", "&tbm=isch", "images", 1)} 
+            ${createTab("videos", "&tbm=vid", "videos", 2)} 
+            ${createTab("news", "&tbm=nws", "news", 3)} 
+            ${createTab("maps", "", "maps", 4)} 
           </div> 
         </div> 
         <div class="results-section"> 
           <div class="result-wrapper">${existingMainResult || '<div class="main-result"></div>'}</div> 
         </div> 
-      </div> `; 
+      </div> `;
     UI.setupEventListeners(); 
   },
 
