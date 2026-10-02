@@ -450,6 +450,10 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
 /* --- Consolidated Media Queries & Dark Mode --- */
 
 @media (min-width: 600px) {
+   .result-wrapper {
+    padding: 12px;
+  }
+   
   .video-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
@@ -468,13 +472,6 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
   .video-card:first-child .title {
     font-size: 13px;
     font-weight: 500;
-  }
-}
-
-@media (min-width: 900px) {
-  .video-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
   }
 }
 
