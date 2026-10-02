@@ -309,43 +309,63 @@ body.dark .instant-answer .logo {
 
 .related-search {
   width: 100%;
-  border: 1px solid var(--color-border);
-  border-width: 1px 0;
-  padding: 16px 16px 0;
+  border-top: 1px solid var(--color-border, #ededed);
+  border-bottom: 1px solid var(--color-border, #ededed);
+  padding: 16px;
   position: relative;
-  background: var(--color-white);
-  font-family: 'Verio Sans', Roboto-Medium, sans-serif;
-  font-weight: 500;
-   margin-bottom: 8px;
+  background: var(--color-white, #ffffff);
+  margin-bottom: 12px;
 }
-.related-search .title { font-size: 20px; margin: 5px 0; }
 
-.search-list { width: 100%; margin-top: 10px; font-size: 16px; display: flex; flex-wrap: wrap; }
+.related-search .title {
+  font-size: 16px; /* Diubah dari 20px agar proporsional */
+  font-weight: 500;
+  color: var(--color-text-dark, #101518);
+  margin: 0 0 12px 0;
+}
+
+.search-list {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
 .search-list .related {
   display: flex;
-  padding: 14px 0;
-  padding-right: 40px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background-color: var(--color-bg-alt, #f1f3f4);
+  border-radius: 20px; /* Bikin pill shape ala Google */
   text-decoration: none;
-  position: relative;
-  color: #3f3f3f;
-  border-top: 1px solid var(--color-border);
-  -webkit-tap-highlight-color: rgba(0,0,0,.10);
+  color: var(--color-text-dark, #1f1f1f);
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  transition: background-color 0.2s;
 }
+
+.search-list .related:hover {
+  background-color: #e4e7eb;
+}
+
 .related:after {
   content: "";
-  width: 35px;
-  height: 35px;
-  background-color: #F4F4F4;
-  border-radius: 100%;
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  background-image: url("images/search.png");
-  background-size: 18px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-left: 8px;
+  background-color: transparent;
+  border-radius: 0;
+  position: static;
+  transform: none;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2370757a"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>');
+  background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
 }
+
 
 @media (max-width: 780px) { .search-list { flex-direction: column; } }
 @media (min-width: 780px) {

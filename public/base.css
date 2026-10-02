@@ -430,39 +430,65 @@ input[type="search"]::-webkit-search-results-decoration {
 
 .show-wrapper {
   width: 100%;
-  padding: 8px 18px;
-  height: 58px;
+  padding: 16px;
   display: flex;
   font-size: 14px;
   position: relative;
   align-items: center;
   justify-content: center;
+  margin: 12px 0 20px 0;
+}
+
+.pagination-divider {
+  background-color: var(--color-border-alt, #dadce0);
+  height: 1px;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 0; /* Bikin garis tetap di layer bawah */
 }
 
 .show-wrapper .more {
   width: 100%;
-  height: 44px;
-  border-radius: 22px;
-  box-shadow: var(--card-shadow);
+  max-width: 360px;
+  height: 40px;
+  border-radius: 20px;
+  border: 1px solid var(--color-border-alt, #dadce0);
+  background: var(--color-white, #ffffff);
+  color: var(--color-text-dark, #1f1f1f);
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   user-select: none;
   position: relative;
-  border: none;
-  background: var(--color-white);
-  -webkit-tap-highlight-color: transparent;
+  z-index: 1; /* ANGAT TOMBOL DI ATAS GARIS agar garis tidak melintas */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 20px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  transition: background-color 0.2s, box-shadow 0.2s;
 }
 
-.show-wrapper .more:before {
-  content: "";
-  width: 20px;
-  height: 15px;
-  position: absolute;
-  left: 12px;
-  background-image: url('data:image/svg+xml,<svg focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path></svg>');
-  background-size: 20px;
-  background-position: center;
-  background-repeat: no-repeat;
+.show-wrapper .more:hover {
+  background-color: var(--color-bg-alt, #f8f9fa);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
 }
+
+.show-wrapper .more::after {
+  content: "";
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2370757a"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
 
 .show-wrapper .more:active { animation: hoverAnim .5s; }
 
@@ -572,12 +598,25 @@ body.dark .search-item.selected .label svg { fill: #E9EAEE; }
 body.dark .search-menu { border-color: #24282B; }
 body.dark .header { background: #202125; }
 
-body.dark .show-wrapper .more {
-  color: #E9EAEE;
-  border-color: transparent;
-  background: #303135;
+body.dark .pagination-divider {
+  background-color: #3c4043;
 }
-body.dark .show-wrapper .more:before { filter: invert(100%); }
+
+body.dark .show-wrapper .more {
+  color: #e8eaed;
+  border-color: #3c4043;
+  background-color: #303134;
+  box-shadow: none;
+}
+
+body.dark .show-wrapper .more:hover {
+  background-color: #3c4043;
+}
+
+body.dark .show-wrapper .more::after {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23bdc1c4"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>');
+}
+
 body.dark .show-wrapper .more:active { animation-name: hoverAnimDark; }
 @keyframes hoverAnimDark { from { background: #3C4043; } to { background: #202125; } }
 
