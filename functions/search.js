@@ -144,7 +144,7 @@ export async function onRequestGet(context) {
           </div> 
         </div> 
         <div class="results-section"> 
-          <div class="result-wrapper"><div class="main-result" style="min-width:var(--page-max-width)">${mainResultInner}</div></div> 
+          <div class="result-wrapper"><div class="main-result" style="min-width:var(--page-max-width);max-width:var(--page-max-width)">${mainResultInner}</div></div> 
         </div> 
       </div> `;
 
