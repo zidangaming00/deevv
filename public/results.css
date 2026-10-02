@@ -309,13 +309,12 @@ body.dark .instant-answer .logo {
 
 .related-search {
   width: 100%;
-  /* Border tipis 1px sebagai pemisah bersih */
   border-top: 1px solid var(--color-border, #ededed);
   border-bottom: 1px solid var(--color-border, #ededed);
   padding: 16px 16px 8px;
   position: relative;
   background: var(--color-white, #ffffff);
-  margin-bottom: 16px;
+  margin-bottom: 12px; /* Space standar deevv */
 }
 
 /* Judul Standar 20px */
@@ -353,7 +352,7 @@ body.dark .instant-answer .logo {
   border-bottom: none;
 }
 
-/* Ikon Kaca Pembesar di Bulatan Abu-Abu Kanan */
+/* Ikon Kaca Pembesar */
 .related:after {
   content: "";
   width: 36px;
