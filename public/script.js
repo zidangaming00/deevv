@@ -1011,7 +1011,7 @@ function renderVideos(res) {
 // ==========================================
 function renderNews(res) {
     const container = document.querySelector(".main-result");
-    container.style.cssText = "min-width:var(--page-max-width);max-width:var(--page-max-width)";
+    container.style.cssText = !isMobile ? "min-width:var(--page-max-width);max-width:var(--page-max-width)" : "";
     const newsItems = res.results || res.news || res.items;
     
     if (!newsItems || !newsItems.length) { 
