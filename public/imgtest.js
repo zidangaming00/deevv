@@ -503,7 +503,7 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         touchMoveX = e.touches[0].clientX;
         touchMoveY = e.touches[0].clientY;
 
-        const diffX = touchMoveX - touchStartX;
+        let diffX = touchMoveX - touchStartX;
         const diffY = touchMoveY - touchStartY;
 
         // Deteksi apakah gerakannya dominan horizontal
@@ -513,6 +513,13 @@ if (targetContainer && !document.querySelector(".image-preview")) {
 
         if (isHorizontalSwipe) {
             const containerWidth = preview.clientWidth;
+            const allItems = Array.from(document.querySelectorAll(".main-result .image-item"));
+
+            // Beri efek hambatan (resistance) jika berada di paling awal (index 0) atau paling akhir
+            if ((currentImageIndex === 0 && diffX > 0) || (currentImageIndex === allItems.length - 1 && diffX < 0)) {
+                diffX = diffX * 0.2; 
+            }
+
             const currentOffsetPercent = -100 + (diffX / containerWidth) * 100;
             track.style.transform = `translateX(${currentOffsetPercent}%)`;
         }
@@ -525,23 +532,24 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         if (isHorizontalSwipe) {
             const diffX = touchMoveX - touchStartX;
             const threshold = 60; // Batas geser
+            const allItems = Array.from(document.querySelectorAll(".main-result .image-item"));
 
-            if (diffX < -threshold) {
-                // Swipe Kiri -> Slide Halaman Selanjutnya
+            if (diffX < -threshold && currentImageIndex < allItems.length - 1) {
+                // Swipe Kiri -> Slide Halaman Selanjutnya (hanya jika ada halaman berikutnya)
                 track.style.transition = "transform 0.25s ease-out";
                 track.style.transform = "translateX(-200%)";
                 setTimeout(() => {
                     showPreviewByIndex(currentImageIndex + 1);
                 }, 220);
-            } else if (diffX > threshold) {
-                // Swipe Kanan -> Slide Halaman Sebelumnya
+            } else if (diffX > threshold && currentImageIndex > 0) {
+                // Swipe Kanan -> Slide Halaman Sebelumnya (hanya jika ada halaman sebelumnya)
                 track.style.transition = "transform 0.25s ease-out";
                 track.style.transform = "translateX(0%)";
                 setTimeout(() => {
                     showPreviewByIndex(currentImageIndex - 1);
                 }, 220);
             } else {
-                // Batal geser -> Kembali ke tengah
+                // Batal geser / Jika sudah berada di batas ujung -> Membal kembali ke tengah
                 track.style.transition = "transform 0.2s ease-out";
                 track.style.transform = "translateX(-100%)";
             }
