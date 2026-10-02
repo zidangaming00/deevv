@@ -489,6 +489,7 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         const activeDotIndex = getDotIndex(index, totalItems);
 
         dots.forEach((d, i) => {
+            d.style.transition = "";
             d.style.width = "";
             d.style.backgroundColor = "";
             d.classList.toggle("active", i === activeDotIndex);
@@ -565,6 +566,10 @@ if (targetContainer && !document.querySelector(".image-preview")) {
             const currentOffsetPercent = -100 + (diffX / containerWidth) * 100;
             track.style.transform = `translateX(${currentOffsetPercent}%)`;
 
+            // Matikan transisi CSS dot agar instan mengikuti gerakan jari
+            const dots = preview.querySelectorAll(".preview-dot");
+            dots.forEach(d => d.style.transition = "none");
+
             // Animasi dot real-time saat jari bergeser
             updateDotsRealtime(diffX, containerWidth, currentImageIndex, allItems.length);
         }
@@ -578,23 +583,36 @@ if (targetContainer && !document.querySelector(".image-preview")) {
             const diffX = touchMoveX - touchStartX;
             const threshold = 60; // Batas geser
             const allItems = Array.from(document.querySelectorAll(".main-result .image-item"));
+            const containerWidth = preview.clientWidth;
+
+            // Beri transisi pada dot agar meluncur mulus bersamaan dengan slide gambar
+            const dots = preview.querySelectorAll(".preview-dot");
+            dots.forEach(d => {
+                d.style.transition = "width 0.25s ease-out, background-color 0.25s ease-out";
+            });
 
             if (diffX < -threshold && currentImageIndex < allItems.length - 1) {
-                // Swipe Kiri -> Slide Halaman Selanjutnya (hanya jika ada halaman berikutnya)
+                // Animasikan dot langsung menuju ukuran target penuh (slide berikutnya)
+                updateDotsRealtime(-containerWidth, containerWidth, currentImageIndex, allItems.length);
+
                 track.style.transition = "transform 0.25s ease-out";
                 track.style.transform = "translateX(-200%)";
                 setTimeout(() => {
                     showPreviewByIndex(currentImageIndex + 1);
                 }, 220);
             } else if (diffX > threshold && currentImageIndex > 0) {
-                // Swipe Kanan -> Slide Halaman Sebelumnya (hanya jika ada halaman sebelumnya)
+                // Animasikan dot langsung menuju ukuran target penuh (slide sebelumnya)
+                updateDotsRealtime(containerWidth, containerWidth, currentImageIndex, allItems.length);
+
                 track.style.transition = "transform 0.25s ease-out";
                 track.style.transform = "translateX(0%)";
                 setTimeout(() => {
                     showPreviewByIndex(currentImageIndex - 1);
                 }, 220);
             } else {
-                // Batal geser / Jika sudah berada di batas ujung -> Membal kembali ke tengah
+                // Membal kembali ke posisi semula jika gesture dibatalkan
+                updateDotsRealtime(0, containerWidth, currentImageIndex, allItems.length);
+
                 track.style.transition = "transform 0.2s ease-out";
                 track.style.transform = "translateX(-100%)";
             }
