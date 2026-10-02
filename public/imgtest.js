@@ -438,19 +438,61 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         updateDots(index, allItems.length);
     }
 
+    function getDotIndex(idx, totalItems) {
+        if (idx <= 0) return 0;
+        if (idx === 1) return 1;
+        if (idx >= totalItems - 1) return 3;
+        return 2;
+    }
+
+    function updateDotsRealtime(diffX, containerWidth, currentIndex, totalItems) {
+        const dots = preview.querySelectorAll(".preview-dot");
+        if (!dots.length) return;
+
+        const direction = diffX < 0 ? 1 : -1;
+        const targetIndex = currentIndex + direction;
+        const progress = Math.min(Math.abs(diffX) / containerWidth, 1);
+
+        const fromDotIdx = getDotIndex(currentIndex, totalItems);
+        const toDotIdx = getDotIndex(targetIndex, totalItems);
+
+        dots.forEach((dot, idx) => {
+            if (fromDotIdx === toDotIdx) {
+                if (idx === fromDotIdx) {
+                    dot.style.width = "16px";
+                    dot.style.backgroundColor = "rgba(255, 255, 255, 1)";
+                } else {
+                    dot.style.width = "6px";
+                    dot.style.backgroundColor = "rgba(255, 255, 255, 0.4)";
+                }
+            } else {
+                if (idx === fromDotIdx) {
+                    const w = 16 - (10 * progress);
+                    const op = 1 - (0.6 * progress);
+                    dot.style.width = `${w}px`;
+                    dot.style.backgroundColor = `rgba(255, 255, 255, ${op})`;
+                } else if (idx === toDotIdx) {
+                    const w = 6 + (10 * progress);
+                    const op = 0.4 + (0.6 * progress);
+                    dot.style.width = `${w}px`;
+                    dot.style.backgroundColor = `rgba(255, 255, 255, ${op})`;
+                } else {
+                    dot.style.width = "6px";
+                    dot.style.backgroundColor = "rgba(255, 255, 255, 0.4)";
+                }
+            }
+        });
+    }
+
     function updateDots(index, totalItems) {
         const dots = preview.querySelectorAll(".preview-dot");
-        dots.forEach(d => d.classList.remove("active"));
+        const activeDotIndex = getDotIndex(index, totalItems);
 
-        let activeDotIndex = 0;
-        if (index === 0) activeDotIndex = 0;
-        else if (index === 1) activeDotIndex = 1;
-        else if (index >= totalItems - 1) activeDotIndex = 3;
-        else activeDotIndex = 2;
-
-        if (dots[activeDotIndex]) {
-            dots[activeDotIndex].classList.add("active");
-        }
+        dots.forEach((d, i) => {
+            d.style.width = "";
+            d.style.backgroundColor = "";
+            d.classList.toggle("active", i === activeDotIndex);
+        });
     }
 
     function renderLocalRelatedImages(currentIndex, allItems, pageElem) {
@@ -522,6 +564,9 @@ if (targetContainer && !document.querySelector(".image-preview")) {
 
             const currentOffsetPercent = -100 + (diffX / containerWidth) * 100;
             track.style.transform = `translateX(${currentOffsetPercent}%)`;
+
+            // Animasi dot real-time saat jari bergeser
+            updateDotsRealtime(diffX, containerWidth, currentImageIndex, allItems.length);
         }
     }, { passive: true });
 

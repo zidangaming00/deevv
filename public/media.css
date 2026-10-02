@@ -460,15 +460,15 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
 /* Indikator 4 Titik Melayang di Bawah Layar (Abu-abu ala Google) */
 .preview-dots {
   position: fixed;
-  bottom: 6px; /* Posisi lebih dekat ke tepi bawah */
+  bottom: 6px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10001;
   display: flex !important;
   justify-content: center;
   align-items: center;
-  gap: 5px;
-  padding: 4px 8px;
+  gap: 6px;
+  padding: 6px 10px;
   background: rgba(32, 33, 36, 0.75);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -476,13 +476,15 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
   pointer-events: none;
 }
 
-/* Base Dot (Abu-abu redup) */
+/* Base Dot */
 .preview-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.4);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 6px; /* Lebar dasar (minimum) */
+  height: 6px;
+  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.4);
+  /* Hilangkan transition kaku saat dragging, gunakan transition tipis untuk snapping halus */
+  transition: width 0.1s linear, background-color 0.1s linear;
+  will-change: width, background-color;
 }
 
 /* Active Dot (Putih/Abu-abu Terang melebar) */
