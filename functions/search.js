@@ -153,6 +153,7 @@ export async function onRequestGet(context) {
     isIdLang,
     bodyHtml,
     initialDataJson: ssrData ? JSON.stringify(ssrData) : "null",
+    tbm,
   });
 
   return new Response(html, {
