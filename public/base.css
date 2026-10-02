@@ -487,11 +487,11 @@ input[type="search"]::-webkit-search-results-decoration {
   }
 
   /* ==========================================================================
-     TAB SEARCH MENU (Border melebar ke 0px, Konten tetap di 144px)
+     TAB SEARCH MENU (120px + 24px padding header = 144px pas sejajar input box)
      ========================================================================== */
   .search-menu {
     width: 100% !important;
-    padding-left: 144px !important; /* Menyelaraskan tab secara presisi sejajar dengan input box */
+    padding-left: 120px !important; 
     padding-right: 0 !important;
     margin-left: 0 !important;
     margin-top: 12px !important;
@@ -527,6 +527,7 @@ input[type="search"]::-webkit-search-results-decoration {
     border-radius: 0 !important;
   }
 }
+
 
 /* Penyesuaian layar besar (Desktop XL) */
 @media (min-width: 992px) {
