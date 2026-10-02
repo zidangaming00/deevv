@@ -309,13 +309,13 @@ body.dark .instant-answer .logo {
 
 .related-search {
   width: 100%;
-  /* Sekat tebal 8px abu-abu sebagai pemisah antar-section */
-  border-top: 8px solid var(--color-bg-alt, #f1f3f4);
-  border-bottom: 8px solid var(--color-bg-alt, #f1f3f4);
+  /* Border tipis 1px sebagai pemisah bersih */
+  border-top: 1px solid var(--color-border, #ededed);
+  border-bottom: 1px solid var(--color-border, #ededed);
   padding: 16px 16px 8px;
   position: relative;
   background: var(--color-white, #ffffff);
-  margin-bottom: 0;
+  margin-bottom: 16px;
 }
 
 /* Judul Standar 20px */
