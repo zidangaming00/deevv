@@ -314,7 +314,7 @@ body.dark .instant-answer .logo {
   padding: 16px 16px 8px;
   position: relative;
   background: var(--color-white, #ffffff);
-  margin-bottom: 12px; /* Space standar deevv */
+  margin-bottom: 8px;
 }
 
 /* Judul Standar 20px */
