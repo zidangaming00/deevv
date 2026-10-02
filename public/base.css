@@ -406,6 +406,23 @@ input[type="search"]::-webkit-search-results-decoration {
 
 
 @media (min-width: 780px) {
+  .search-menu {
+    /* Tarik border-bottom ke paling kiri layar (0px) */
+    margin-left: -144px;
+    width: calc(100% + 144px);
+    
+    /* Dorong isi tab ke kanan sejauh 144px agar sejajar lurus dengan Input Box */
+    padding-left: 144px !important;
+    
+    margin-top: 12px;
+    box-shadow: none;
+    border-bottom: 1px solid var(--color-border-alt);
+  }
+
+  .tab-wrapper {
+    justify-content: flex-start;
+    padding: 8px 16px 12px 0;
+  }
 
   /* Header utama - Jarak logo dari tepi kiri layar (24px) */
   .page-header {
@@ -533,8 +550,7 @@ input[type="search"]::-webkit-search-results-decoration {
   }
   
   /* Hilangkan override padding-left acak agar tidak menggeser layout */
-  .header,
-  .search-menu {
+  .header {
     padding-left: 0 !important;
   }
 }
