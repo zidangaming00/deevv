@@ -1075,7 +1075,6 @@ function renderNews(res) {
 
 
 function renderWebResults(res) {
-  document.querySelector(".main-result").style.minWidth = "var(--page-max-width)";
   const container = document.querySelector(".main-result .results-list");
   const isFirstPage = Config.startIndex === 1;
   if (!res.items) {
@@ -1085,6 +1084,7 @@ function renderWebResults(res) {
   if (isFirstPage) {
     if (Config.windowWidth > 700) {
       document.querySelector(".main-result").insertAdjacentHTML('afterbegin', `<div class="result-stats">${isIdLang ? `Sekitar ${res.searchInformation.formattedTotalResults} hasil (${res.searchInformation.formattedSearchTime} detik)` : `Approximately ${res.searchInformation.formattedTotalResults} result (${res.searchInformation.formattedSearchTime} seconds)`}</div>`);
+      document.querySelector(".main-result").style.minWidth = "var(--page-max-width)";
     }
     if (res.spelling) {
       container.insertAdjacentHTML('beforeend', `<div class="corrected-word result-card result-card--flat"><div class="snippet">${getText("correct")} <a href="/search?q=${encodeURIComponent(res.spelling.correctedQuery)}${searchLangParam}">${res.spelling.correctedQuery}</a><span>?</span></div></div>`);
