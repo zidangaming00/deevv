@@ -400,22 +400,97 @@ input[type="search"]::-webkit-search-results-decoration {
   justify-content: center;
 }
 
+/* ==========================================================================
+   DESKTOP RESPONSIVE (min-width: 780px)
+   ========================================================================== */
 @media (min-width: 780px) {
-  .header,
-  .search-menu,
-  .result-wrapper {
-    padding-left: 130px;
+  /* 1. Menjajarkan Logo & Search Box secara horizontal */
+  .page-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 16px 24px 0 24px;
+  }
+
+  .logo-slot {
+    width: auto !important;
+    padding: 0 !important;
+    margin-right: 20px;
+    justify-content: flex-start !important;
+  }
+
+  .logo-slot img {
+    width: 92px;
+    height: 36px;
+  }
+
+  .header {
+    flex: 1;
+    padding: 0 !important;
+    background: transparent;
+  }
+
+  /* 2. Membatasi Lebar Input Box (Presisi Google Desktop: 692px) */
+  .search-box {
+    padding: 0;
+    max-width: 692px;
+    width: 100%;
+  }
+
+  .search-input {
+    height: 46px;
+    border: 1px solid #dfe1e5;
+    box-shadow: none;
+    padding-left: 20px;
+    max-width: 692px;
+  }
+
+  .search-box .search-toggle { 
+    left: auto; 
+    right: 12px; 
+  }
+
+  .search-box .cleartext { 
+    right: 44px; 
+  }
+
+  .search-input:hover,
+  .search-input:focus {
+    box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+    border-color: transparent;
+  }
+
+  /* 3. Menyesuaikan posisi Tab Nav agar sejajar dengan Input Box */
+  .search-menu {
+    width: 100%;
+    padding-left: 112px !important; /* Dorong tab agar lurus vertikal dengan awal Search Box */
+    margin: 12px 0 0 0;
     box-shadow: none;
   }
-  .result-wrapper { display: flex; background: var(--color-white); padding-top: 5px; }
-  .main-result { min-width: var(--page-max-width); max-width: var(--page-max-width); }
-  .header { padding-top: 13px; }
-  .search-input { border: 1px solid #F8F8F8; padding-left: 20px; }
-  .search-box .search-toggle { left: auto; right: 8px; }
-  .search-box .cleartext { right: 40px; }
-  .search-menu { margin: 8px 0; }
-  .tab-wrapper { padding: 8px 16px 12px 16px; }
-  .result-stats { display: block; color: var(--color-text-muted); font-size: 16px; margin: 10px 0 0 15px; }
+
+  .tab-wrapper {
+    padding: 8px 16px 12px 0; /* Hapus padding kiri tab pertama */
+  }
+
+  /* 4. Posisi Hasil Pencarian (Result Wrapper) */
+  .result-wrapper {
+    display: flex;
+    background: var(--color-white);
+    padding-left: 136px;
+    padding-top: 5px;
+  }
+
+  .main-result {
+    min-width: var(--page-max-width);
+    max-width: var(--page-max-width);
+  }
+
+  .result-stats {
+    display: block;
+    color: var(--color-text-muted);
+    font-size: 14px;
+    margin: 10px 0 0 0;
+  }
 }
 
 @media (min-width: 992px) {
