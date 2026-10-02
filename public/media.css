@@ -465,7 +465,7 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
     margin-bottom: 0;
   }
   
-  .video-card:first-child .video-card__content {
+  .video-card .video-card__content {
     padding: 14px;
   }
 
