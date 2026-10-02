@@ -432,63 +432,49 @@ input[type="search"]::-webkit-search-results-decoration {
   width: 100%;
   padding: 16px;
   display: flex;
-  font-size: 14px;
   position: relative;
   align-items: center;
   justify-content: center;
-  margin: 12px 0 20px 0;
+  margin: 8px 0 16px 0;
 }
 
+/* Sembunyikan garis pembatas di belakang tombol agar sesuai Google asli */
 .pagination-divider {
-  background-color: var(--color-border-alt, #dadce0);
-  height: 1px;
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  width: 100%;
-  z-index: 0; /* Bikin garis tetap di layer bawah */
+  display: none;
 }
 
+/* Tombol Kapsul Abu-abu Solid Tanpa Border (Tinggi 48px) */
 .show-wrapper .more {
   width: 100%;
-  max-width: 360px;
-  height: 40px;
-  border-radius: 20px;
-  border: 1px solid var(--color-border-alt, #dadce0);
-  background: var(--color-white, #ffffff);
-  color: var(--color-text-dark, #1f1f1f);
-  font-size: 14px;
+  height: 48px;
+  border-radius: 24px;
+  border: none;
+  background: var(--color-bg-alt, #f1f3f4);
+  color: var(--color-text-dark, #202124);
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   user-select: none;
-  position: relative;
-  z-index: 1; /* ANGAT TOMBOL DI ATAS GARIS agar garis tidak melintas */
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   padding: 0 20px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  transition: background-color 0.2s, box-shadow 0.2s;
-}
-
-.show-wrapper .more:hover {
-  background-color: var(--color-bg-alt, #f8f9fa);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  box-shadow: none;
+  transition: background-color 0.2s;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .show-wrapper .more::after {
   content: "";
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   display: inline-block;
-  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2370757a"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>');
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%235f6368"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
 }
-
 
 .show-wrapper .more:active { animation: hoverAnim .5s; }
 
