@@ -404,25 +404,7 @@ input[type="search"]::-webkit-search-results-decoration {
    DESKTOP RESPONSIVE (min-width: 780px)
    ========================================================================== */
 
-
 @media (min-width: 780px) {
-  .search-menu {
-    /* Tarik border-bottom ke paling kiri layar (0px) */
-    margin-left: -144px;
-    width: calc(100% + 144px);
-    
-    /* Dorong isi tab ke kanan sejauh 144px agar sejajar lurus dengan Input Box */
-    padding-left: 144px !important;
-    
-    margin-top: 12px;
-    box-shadow: none;
-    border-bottom: 1px solid var(--color-border-alt);
-  }
-
-  .tab-wrapper {
-    justify-content: flex-start;
-    padding: 8px 16px 12px 0;
-  }
 
   /* Header utama - Jarak logo dari tepi kiri layar (24px) */
   .page-header {
@@ -445,9 +427,9 @@ input[type="search"]::-webkit-search-results-decoration {
     display: flex;
     flex: 0 0 92px;
     width: 92px !important;
-    height: 46px; /* Tinggi sejajar dengan search input */
+    height: 46px;
     justify-content: flex-start !important;
-    align-items: center; /* Center logo di dalam kotak 46px */
+    align-items: center;
     padding: 0 !important;
     margin: 0;
     background: transparent;
@@ -504,11 +486,19 @@ input[type="search"]::-webkit-search-results-decoration {
     border-color: transparent;
   }
 
-  /* Tab pencarian (Search Menu) - Nolkan padding agar persis sejajar kiri input box */
+  /* ==========================================================================
+     TAB SEARCH MENU (Border melebar ke 0px, Konten tetap di 144px)
+     ========================================================================== */
   .search-menu {
-    width: 100%;
-    padding: 0 !important; /* Dihapus padding 112px agar tidak ke tengah */
-    margin: 12px 0 0 0;
+    /* Tarik border-bottom ke paling kiri layar (0px) */
+    margin-left: -144px !important;
+    width: calc(100% + 144px) !important;
+    
+    /* Dorong isi tab kembali ke kanan sejauh 144px agar sejajar Input Box */
+    padding-left: 144px !important;
+    padding-right: 0 !important;
+    
+    margin-top: 12px !important;
     box-shadow: none;
     border-bottom: 1px solid var(--color-border-alt);
   }
@@ -519,7 +509,6 @@ input[type="search"]::-webkit-search-results-decoration {
   }
 
   /* Area Hasil Web (Result Wrapper) */
-  /* Hitungan offset kiri: Padding Header (24px) + Lebar Logo (92px) + Gap (28px) = 144px */
   .result-wrapper {
     display: flex;
     width: 100%;
