@@ -1,10 +1,8 @@
 /* ==========================================================================
    BASE.CSS
-   Reset, design tokens, dan layout shell (header, search box, tab nav, footer).
-   File ini SELALU dimuat di semua mode/tab — jangan taruh style spesifik
-   satu tab di sini. Lihat results.css / media.css / home.css.
    ========================================================================== */
 
+/* --- Fonts & Reset --- */
 @font-face {
   font-family: 'Verio Sans';
   font-style: normal;
@@ -22,8 +20,23 @@
   font-family: 'Verio Sans', Roboto, sans-serif;
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+}
+
+::-webkit-scrollbar { width: 0; height: 0; }
+::-webkit-scrollbar-track { border-radius: 0; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 10px; }
+
+/* --- Tokens & Dark Mode Variables --- */
 :root {
-  /* Warna */
   --color-title: #1558D6;
   --color-text: #494949;
   --color-text-muted: #70757a;
@@ -33,19 +46,12 @@
   --color-bg: #ffffff;
   --color-bg-alt: #f4f6f7;
   --color-white: #ffffff;
-
-  /* Dark mode (di-override oleh body.dark di bawah) */
   --card-shadow: 0 0 0 1px rgba(235, 237, 239, 1);
-
-  /* Layout */
   --page-max-width: 630px;
   --page-gutter: 130px;
-
-   /* font size */
    --dtext-small: 14px;
 }
 
-/* dark mode */
 body.dark {
   --color-title: #8ab4f8;
   --color-text: #BDC1C4;
@@ -64,38 +70,11 @@ body.dark .result-card .favicon img {
 }
 
 body.dark .related:after { 
-  background: #303134; /* Warna abu-abu gelap khas mode gelap */
-  color: #e8eaed;      /* Warna ikon di dalamnya agar tetap terlihat */
+  background: #303134; 
+  color: #e8eaed;     
 }
 
-/* dark mode end */
-
-@media (min-width: 780px) {
-  :root { --color-title: #1A0DAB; }
-}
-@media (min-width: 992px) {
-  :root { --page-max-width: 650px; }
-}
-
-html, body {
-  overflow-x: hidden;
-}
-
-input[type="search"]::-webkit-search-decoration,
-input[type="search"]::-webkit-search-cancel-button,
-input[type="search"]::-webkit-search-results-button,
-input[type="search"]::-webkit-search-results-decoration {
-  -webkit-appearance: none;
-}
-
-::-webkit-scrollbar { width: 0; height: 0; }
-::-webkit-scrollbar-track { border-radius: 0; }
-::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 10px; }
-
-/* --------------------------------------------------------------------
-   Shell layout
-   -------------------------------------------------------------------- */
-
+/* --- Shell Layout --- */
 .app { width: 100%; }
 
 .logo-slot {
@@ -120,14 +99,7 @@ input[type="search"]::-webkit-search-results-decoration {
   /* pembungkus seluruh area hasil (result-wrapper + footer) */
 }
 
-@media (min-width: 780px) {
-  .logo-slot { justify-content: flex-start !important; padding-left: 16px; }
-}
-
-/* --------------------------------------------------------------------
-   Search box
-   -------------------------------------------------------------------- */
-
+/* --- Search Box & Input --- */
 .search-box { padding: 5px 15px; }
 .search-field { position: relative; }
 
@@ -168,9 +140,7 @@ input[type="search"]::-webkit-search-results-decoration {
   min-width: 0;
 }
 
-/* ==========================================
-   DESKTOP SUGGESTION DROPDOWN
-   ========================================== */
+/* --- Suggestion Dropdown & Overlay --- */
 .search-field {
   position: relative;
 }
@@ -224,9 +194,6 @@ input[type="search"]::-webkit-search-results-decoration {
   color: var(--color-text-dark);
 }
 
-/* ==========================================
-   MOBILE FULLSCREEN SUGGESTION OVERLAY
-   ========================================== */
 .sug-mobile-overlay {
   display: none;
   position: fixed;
@@ -314,11 +281,7 @@ input[type="search"]::-webkit-search-results-decoration {
   color: var(--color-text-muted);
 }
 
-
-/* --------------------------------------------------------------------
-   Tab nav (search-menu)
-   -------------------------------------------------------------------- */
-
+/* --- Tab Navigation --- */
 .tab-wrapper {
   padding: 12px 12px 16px 12px;
   display: flex;
@@ -373,21 +336,7 @@ input[type="search"]::-webkit-search-results-decoration {
   left: 0; right: 0;
 }
 
-@media (max-width: 780px) {
-  .tab-wrapper svg { display: none; }
-  .search-box .search-toggle { pointer-events: none; }
-}
-
-@media (min-width: 780px) {
-  .search-item.selected span { color: #1558d6; }
-  .search-item.selected .label svg { fill: #1558d6; }
-  .search-item.selected .label:before { background: #1558d6; bottom: -12px; }
-}
-
-/* --------------------------------------------------------------------
-   Result wrapper (dipakai semua mode: web/news/gambar/video)
-   -------------------------------------------------------------------- */
-
+/* --- Results & Pagination --- */
 .result-wrapper { width: 100%; padding: 0 0 }
 
 .main-result {
@@ -400,171 +349,10 @@ input[type="search"]::-webkit-search-results-decoration {
   justify-content: center;
 }
 
-/* ==========================================================================
-   DESKTOP RESPONSIVE (min-width: 780px)
-   ========================================================================== */
-
-@media (min-width: 780px) {
-
-  /* Header utama - Jarak logo dari tepi kiri layar (24px) */
-  .page-header {
-    display: block;
-    padding: 16px 0 0 24px;
-    background: var(--color-white);
-  }
-
-  /* Alignment sejajar atas antara logo & input box */
-  .page-header__inner {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 28px; /* Jarak horizontal logo ke input box */
-    width: 100%;
-  }
-
-  /* Logo slot disamakan tingginya dengan input box (46px) agar sejajar vertikal */
-  .logo-slot {
-    display: flex;
-    flex: 0 0 92px;
-    width: 92px !important;
-
-    justify-content: flex-start !important;
-    align-items: center;
-    padding: 0 !important;
-    margin: 0;
-    background: transparent;
-  }
-
-  .logo-slot img {
-    display: block;
-    width: 92px;
-    height: 33px;
-    object-fit: contain;
-  }
-
-  /* Container Input & Tab */
-  .header {
-    flex: 1;
-    min-width: 0;
-    width: auto !important;
-    padding: 0 !important;
-    background: transparent;
-  }
-
-  .search-box {
-    width: 100%;
-    max-width: 652px; /* Lebar standar input box Google Desktop */
-    padding: 0;
-  }
-
-  .search-field {
-    position: relative;
-    width: 100%;
-  }
-
-  .search-input {
-    width: 100%;
-    height: 46px;
-    padding: 0 75px 0 20px;
-    border: 1px solid #dfe1e5;
-    border-radius: 24px;
-    box-shadow: none;
-  }
-
-  .search-box .search-toggle {
-    left: auto;
-    right: 12px;
-  }
-
-  .search-box .cleartext {
-    right: 44px;
-  }
-
-  .search-input:hover,
-  .search-input:focus {
-    box-shadow: 0 1px 6px rgba(32, 33, 36, .28);
-    border-color: transparent;
-  }
-
-  /* ==========================================================================
-     TAB SEARCH MENU (120px + 24px padding header = 144px pas sejajar input box)
-     ========================================================================== */
-  .search-menu {
-    width: 100% !important;
-    padding-left: 136px !important; 
-    padding-right: 0 !important;
-    margin-left: 0 !important;
-    margin-top: 12px !important;
-    box-shadow: none;
-    border-bottom: 1px solid var(--color-border-alt);
-  }
-
-  .tab-wrapper {
-    justify-content: flex-start;
-    padding: 8px 16px 12px 0;
-  }
-
-  /* Area Hasil Web (Result Wrapper) */
-  .result-wrapper {
-    display: flex;
-    width: 100%;
-    padding: 12px 0 0 144px; /* Sejajar lurus dengan tepi kiri input box & tab */
-    background: var(--color-white);
-  }
-
-  .main-result {
-    min-width: var(--page-max-width);
-    max-width: var(--page-max-width);
-  }
-
-  .result-card,
-  .main-result > div,
-  .main-result article,
-  .result-item {
-    border: none !important;
-    border-bottom: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-  }
-}
-
-@media (min-width: 780px) and (max-width: 1024px) {
-  .search-menu {
-    padding-left: 24px !important;
-  }
-  .result-wrapper {
-    padding-left: 24px !important;
-  }
-}
-
-/* Penyesuaian layar besar (Desktop XL) */
-@media (min-width: 992px) {
-  :root { 
-    --page-max-width: 652px; 
-  }
-  
-  /* Hilangkan override padding-left acak agar tidak menggeser layout */
-  .header {
-    padding-left: 0 !important;
-  }
-}
-
-/* Dark mode */
-@media (min-width: 780px) {
-  body.dark .header {
-    background: transparent;
-  }
-}
-
 .result-stats { display: none; }
-
-/* --------------------------------------------------------------------
-   Pagination ("Tampilkan lebih banyak") & loader
-   -------------------------------------------------------------------- */
 
 .show-wrapper {
   width: 100%;
-  
   padding: 12px 16px 12px;
   display: flex;
   position: relative;
@@ -578,7 +366,6 @@ input[type="search"]::-webkit-search-results-decoration {
   display: none;
 }
 
-/* Tombol Proporsional 44px */
 .show-wrapper .more {
   width: 100%;
   height: 44px;
@@ -622,8 +409,6 @@ input[type="search"]::-webkit-search-results-decoration {
 
 @keyframes hoverAnim { from { background: #ededed; } to { background: white; } }
 
-@media (min-width: 780px) { .show-wrapper .more { width: 50%; } }
-
 .loader { width: 46px; }
 .circular {
   width: 80%; height: 80%; margin: auto;
@@ -642,10 +427,7 @@ input[type="search"]::-webkit-search-results-decoration {
   100% { stroke-dasharray: 89, 200; stroke-dashoffset: -124px; }
 }
 
-/* ==========================================================================
-   FOOTER (Versi Disesuaikan untuk results.css)
-   ========================================================================== */
-
+/* --- Footer --- */
 footer {
   width: 100%;
   padding: 24px 16px;
@@ -662,12 +444,12 @@ footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px; /* Jarak dirapatkan karena sudah ada titik pemisah */
+  gap: 12px; 
 }
 
 .footer-link {
   color: var(--color-title, #1a73e8); 
-  font-size: 15px; /* Ukuran diperbesar dari 13px */
+  font-size: 15px; 
   font-weight: 500;
   text-decoration: none;
   transition: opacity 0.2s;
@@ -685,29 +467,160 @@ footer {
 }
 
 .footer-copy {
-  font-size: 13px; /* Ukuran diperbesar dari 11px */
+  font-size: 13px; 
   color: var(--color-text-muted, #70757a);
   font-weight: 400;
 }
 
-/* Dukungan Dark Mode yang disesuaikan dengan results.css */
-body.dark footer {
-  border-top-color: var(--color-border, #3c4043);
+
+/* ==========================================================================
+   Consolidated Media Queries & Dark Mode Overrides
+   ========================================================================== */
+
+@media (max-width: 780px) {
+  .tab-wrapper svg { display: none; }
+  .search-box .search-toggle { pointer-events: none; }
 }
 
-body.dark .footer-link {
-  color: #8bb4f4; /* Biru terang standar dark mode */
+@media (min-width: 780px) {
+  :root { --color-title: #1A0DAB; }
+
+  .page-header {
+    display: block;
+    padding: 16px 0 0 24px;
+    background: var(--color-white);
+  }
+
+  .page-header__inner {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 28px; 
+    width: 100%;
+  }
+
+  .logo-slot {
+    display: flex;
+    flex: 0 0 92px;
+    width: 92px !important;
+    justify-content: flex-start !important;
+    align-items: center;
+    padding: 0 !important;
+    margin: 0;
+    background: transparent;
+  }
+
+  .logo-slot img {
+    display: block;
+    width: 92px;
+    height: 33px;
+    object-fit: contain;
+  }
+
+  .header {
+    flex: 1;
+    min-width: 0;
+    width: auto !important;
+    padding: 0 !important;
+    background: transparent;
+  }
+
+  .search-box {
+    width: 100%;
+    max-width: 652px; 
+    padding: 0;
+  }
+
+  .search-field {
+    position: relative;
+    width: 100%;
+  }
+
+  .search-input {
+    width: 100%;
+    height: 46px;
+    padding: 0 75px 0 20px;
+    border: 1px solid #dfe1e5;
+    border-radius: 24px;
+    box-shadow: none;
+  }
+
+  .search-box .search-toggle {
+    left: auto;
+    right: 12px;
+  }
+
+  .search-box .cleartext {
+    right: 44px;
+  }
+
+  .search-input:hover,
+  .search-input:focus {
+    box-shadow: 0 1px 6px rgba(32, 33, 36, .28);
+    border-color: transparent;
+  }
+
+  .search-menu {
+    width: 100% !important;
+    padding-left: 136px !important; 
+    padding-right: 0 !important;
+    margin-left: 0 !important;
+    margin-top: 12px !important;
+    box-shadow: none;
+    border-bottom: 1px solid var(--color-border-alt);
+  }
+
+  .tab-wrapper {
+    justify-content: flex-start;
+    padding: 8px 16px 12px 0;
+  }
+
+  .result-wrapper {
+    display: flex;
+    width: 100%;
+    padding: 12px 0 0 144px; 
+    background: var(--color-white);
+  }
+
+  .main-result {
+    min-width: var(--page-max-width);
+    max-width: var(--page-max-width);
+  }
+
+  .result-card,
+  .main-result > div,
+  .main-result article,
+  .result-item {
+    border: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  .search-item.selected span { color: #1558d6; }
+  .search-item.selected .label svg { fill: #1558d6; }
+  .search-item.selected .label:before { background: #1558d6; bottom: -12px; }
+
+  .show-wrapper .more { width: 50%; }
+
+  body.dark .header {
+    background: transparent;
+  }
+
+  body.dark .header { background: #171717; }
 }
 
-body.dark .footer-separator,
-body.dark .footer-copy {
-  color: #bdc1c4; /* Abu-abu terang dark mode */
+@media (min-width: 992px) {
+  :root { 
+    --page-max-width: 652px; 
+  }
+
+  .header {
+    padding-left: 0 !important;
+  }
+
+  :root { --page-max-width: 650px; }
 }
-
-
-/* --------------------------------------------------------------------
-   Dark mode
-   -------------------------------------------------------------------- */
 
 body.dark, body.dark .result-wrapper { background: #171717; }
 body.dark .search-input { border: none; color: #E9EAEE; background: #3C4043; }
@@ -741,6 +654,15 @@ body.dark .show-wrapper .more::after {
 body.dark .show-wrapper .more:active { animation-name: hoverAnimDark; }
 @keyframes hoverAnimDark { from { background: #3C4043; } to { background: #202125; } }
 
-@media (min-width: 780px) {
-  body.dark .header { background: #171717; }
+body.dark footer {
+  border-top-color: var(--color-border, #3c4043);
+}
+
+body.dark .footer-link {
+  color: #8bb4f4; 
+}
+
+body.dark .footer-separator,
+body.dark .footer-copy {
+  color: #bdc1c4; 
 }
