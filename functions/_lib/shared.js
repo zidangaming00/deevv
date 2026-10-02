@@ -63,10 +63,15 @@ export function buildResultCardHtml(item, isFaviconDisabled) {
   `;
 }
 
-// Struktur head diambil dari search.html yang kamu upload.
-// searchQuery WAJIB sudah di-escape sebelum dipanggil ke sini.
-export function buildPageShell({ q, isIdLang, bodyHtml, initialDataJson }) {
+export function buildPageShell({ q, isIdLang, bodyHtml, initialDataJson, tbm }) {
   const title = isIdLang ? `${q} - Penelusuran` : `${q} - Search`;
+
+  // Daftar tbm yang ingin di-exclude (tidak memasukkan media.css)
+  const excludedTbm = ["isch", "nws", "vid"];
+  
+  // Tentukan apakah media.css perlu dimuat (jika tbm kosong atau bukan salah satu dari excludedTbm)
+  const shouldIncludeMediaCss = !tbm || !excludedTbm.includes(tbm);
+  const mediaCssTag = shouldIncludeMediaCss ? '<link rel="stylesheet" href="/media.css">' : '';
 
   return `<!DOCTYPE html><html lang="${isIdLang ? "id" : "en"}"><head>
 <meta charset="UTF-8">
@@ -77,7 +82,7 @@ export function buildPageShell({ q, isIdLang, bodyHtml, initialDataJson }) {
 <meta name="referrer" content="origin">
 <link rel="stylesheet" href="/base.css">
 <link rel="stylesheet" href="/results.css">
-<link rel="stylesheet" href="/media.css">
+${mediaCssTag}
 <link rel="icon" type="image/png" href="images/search.png">
 </head>
 <body id="rslt-m">
