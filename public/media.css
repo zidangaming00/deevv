@@ -478,7 +478,7 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
 
 /* Base Dot (Abu-abu redup) */
 .preview-dot {
-    width: 5px;
+    width: 6px;
     height: 6px;
     border-radius: 50%;
     background-color: rgba(255, 255, 255, 0.4);
