@@ -676,10 +676,36 @@
   }
   .results-list .instant-answer { display: none; }
 
-  .related-search { border: none; max-width: 600px; }
-  .related:after { background-color: transparent; }
-  .search-list { gap: 10px 12px; }
-  .search-list .related { width: calc(50% - 10px); border-radius: 8px; padding: 10px; border: none; background: #ececec; }
+  .related-search {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Ubah susunan list menjadi Grid 2 Kolom */
+  .search-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  /* Style kartu item agar lebih elegan & rounded */
+  .search-list .related {
+    width: 100%;
+    border-radius: 14px;
+    padding: 12px 18px;
+    background-color: var(--color-bg-alt, #f8f9fa);
+    border: 1px solid var(--color-border, #e0e0e0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease-in-out;
+  }
+
+  /* Efek Hover Desktop */
+  .search-list .related:hover {
+    background-color: #ffffff;
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+  }
 
   .wrpl { border: 1px solid var(--color-border); }
   .trnsl { border: none; padding: 16px; }
