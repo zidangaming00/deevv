@@ -138,6 +138,41 @@ to{opacity:1;transform:translateY(0)}
 }
 .sheet-content.switching-out{animation:panelFadeOut .14s ease forwards}
 .sheet-content.switching-in{animation:panelFadeIn .2s ease forwards}
+
+/* Responsive Desktop Mode Ala Google Maps */
+@media (min-width: 768px) {
+  .top-container {
+    left: 16px;
+    right: auto;
+    width: 412px;
+    padding: 0;
+  }
+  .bottom-sheet {
+    left: 16px;
+    right: auto;
+    top: 130px;
+    bottom: 24px;
+    height: auto !important;
+    max-height: calc(100vh - 154px);
+    width: 412px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.18);
+  }
+  .sheet-handle-area {
+    cursor: default;
+  }
+  .sheet-handle {
+    display: none;
+  }
+  .fab-group {
+    right: 24px;
+    bottom: 24px !important;
+    flex-direction: column;
+  }
+  .saved-mode .sheet-handle-area {
+    padding: 16px;
+  }
+}
 </style>
 </head>
 
@@ -702,13 +737,11 @@ if(savedMode){
 savedMode=false;
 closingSaved=false;
 $('sheet').classList.remove('saved-mode');
-$('tab-saved').classList.remove('active');
-$('tab-explore').classList.add('active');
+$('tab-saved').classList.remove('active');$('tab-explore').classList.add('active');
 }
 
 $('panel-close').style.display='flex';
-$('sheet-title').textContent=cat.label+' terdekat';
-$('sheet-detail').innerHTML='<div class="hint">Mencari tempat di sekitar kamu...</div>';
+$('sheet-title').textContent=cat.label+' terdekat';$('sheet-detail').innerHTML='<div class="hint">Mencari tempat di sekitar kamu...</div>';
 
 setSheet(300);
 routeLayer.clearLayers();
@@ -877,8 +910,7 @@ if(savedMode){
 savedMode=false;
 closingSaved=false;
 $('sheet').classList.remove('saved-mode');
-$('tab-saved').classList.remove('active');
-$('tab-explore').classList.add('active');
+$('tab-saved').classList.remove('active');$('tab-explore').classList.add('active');
 }
 
 showDetail(p);
@@ -926,12 +958,10 @@ if(savedMode){
 savedMode=false;
 closingSaved=false;
 $('sheet').classList.remove('saved-mode');
-$('tab-saved').classList.remove('active');
-$('tab-explore').classList.add('active');
+$('tab-saved').classList.remove('active');$('tab-explore').classList.add('active');
 }
 
-$('panel-close').style.display='flex';
-$('sheet-title').textContent=`Hasil: "${q}"`;
+$('panel-close').style.display='flex';$('sheet-title').textContent=`Hasil: "${q}"`;
 $('sheet-detail').innerHTML='<div class="hint">Mencari...</div>';
 
 setSheet(300);
@@ -996,8 +1026,7 @@ item.onclick=()=>showDetail(p);
 list.appendChild(item);
 });
 
-$('sheet-detail').innerHTML='';
-$('sheet-detail').appendChild(list);
+$('sheet-detail').innerHTML='';$('sheet-detail').appendChild(list);
 
 if(places.length>1){
 map.fitBounds(L.latLngBounds(places.map(p=>[p.lat,p.lon])).pad(.15));
@@ -1138,8 +1167,7 @@ closeSavedToDetail(p);
 wrapper.appendChild(item);
 });
 
-$('sheet-detail').innerHTML='';
-$('sheet-detail').appendChild(wrapper);
+$('sheet-detail').innerHTML='';$('sheet-detail').appendChild(wrapper);
 }
 }
 
@@ -1155,8 +1183,7 @@ savedMode=false;
 closingSaved=false;
 
 $('sheet').classList.remove('saved-mode');
-$('tab-saved').classList.remove('active');
-$('tab-explore').classList.add('active');
+$('tab-saved').classList.remove('active');$('tab-explore').classList.add('active');
 
 content.classList.remove('switching-out');
 
@@ -1176,8 +1203,7 @@ closingSaved=false;
 savedMode=true;
 
 $('panel-close').style.display='none';
-$('tab-explore').classList.remove('active');
-$('tab-saved').classList.add('active');
+$('tab-explore').classList.remove('active');$('tab-saved').classList.add('active');
 
 renderSavedList();
 
@@ -1280,8 +1306,7 @@ routeLayer.clearLayers();
 searchInput.value='';
 updateClearButton();
 
-$('panel-close').style.display='none';
-$('sheet-title').textContent='Suasana lokal';
+$('panel-close').style.display='none';$('sheet-title').textContent='Suasana lokal';
 
 $('sheet-detail').innerHTML=`
 <div class="welcome-card">
@@ -1325,8 +1350,7 @@ if(!closingSaved)return;
 savedMode=false;
 $('sheet').classList.remove('saved-mode');
 
-$('tab-saved').classList.remove('active');
-$('tab-explore').classList.add('active');
+$('tab-saved').classList.remove('active');$('tab-explore').classList.add('active');
 
 content.classList.remove('switching-out');
 
@@ -1358,8 +1382,7 @@ $('panel-close').onclick=resetToWelcome;
 
 async function routeTo(p){
 if(!p){
-$('sheet-title').textContent='Rute';
-$('sheet-detail').innerHTML='<div class="hint">Pilih tempat tujuan dulu, lalu ketuk tombol Rute.</div>';
+$('sheet-title').textContent='Rute';$('sheet-detail').innerHTML='<div class="hint">Pilih tempat tujuan dulu, lalu ketuk tombol Rute.</div>';
 setSheet(205);
 return;
 }
@@ -1395,8 +1418,7 @@ map.fitBounds(line.getBounds().pad(.2));
 
 const mins=Math.round(rt.duration/60);
 
-$('panel-close').style.display='flex';
-$('sheet-title').textContent=`${fmtDist(rt.distance)} · ${mins>=60?Math.floor(mins/60)+' j '+(mins%60)+' mnt':mins+' mnt'}`;
+$('panel-close').style.display='flex';$('sheet-title').textContent=`${fmtDist(rt.distance)} · ${mins>=60?Math.floor(mins/60)+' j '+(mins%60)+' mnt':mins+' mnt'}`;
 
 $('sheet-detail').innerHTML=`
 <div class="hint" style="margin-bottom:10px">Rute mobil menuju <b>${esc(p.name)}</b>.</div>
@@ -1563,6 +1585,42 @@ animate:false
 initializeMapView();
 resetToWelcome();
 updateClearButton();
+
+// Handle URL parameter ?q=...
+const urlParams = new URLSearchParams(window.location.search);
+const qParam = urlParams.get('q');
+if(qParam){
+  searchInput.value = qParam;
+  updateClearButton();
+  setTimeout(() => {
+    const query = qParam.trim();
+    if(CATS[query.toLowerCase()]){
+      searchNearby(query.toLowerCase());
+    } else {
+      $('suggestions').style.display='none';
+      if(savedMode){
+        savedMode=false;
+        closingSaved=false;
+        $('sheet').classList.remove('saved-mode');
+        $('tab-saved').classList.remove('active');$('tab-explore').classList.add('active');
+      }
+      $('panel-close').style.display='flex';$('sheet-title').textContent=`Hasil: "${query}"`;
+      $('sheet-detail').innerHTML='<div class="hint">Mencari...</div>';
+      setSheet(300);
+      nominatim(query,10).then(list=>{
+        const[lat,lon]=origin();
+        const places=list.map(p=>({...p,d:map.distance([lat,lon],[p.lat,p.lon])}));
+        if(!places.length){
+          $('sheet-detail').innerHTML='<div class="hint">Lokasi tidak ditemukan.</div>';
+          return;
+        }
+        showList(places,query);
+      }).catch(_=>{
+        $('sheet-detail').innerHTML='<div class="hint" style="color:#ea4335">Gagal terhubung ke layanan pencarian.</div>';
+      });
+    }
+  }, 600);
+}
 </script>
 </body>
 </html>
