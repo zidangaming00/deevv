@@ -582,11 +582,6 @@ footer {
     background: var(--color-white);
   }
 
-  .main-result {
-    min-width: var(--page-max-width);
-    max-width: var(--page-max-width);
-  }
-
   .result-card,
   .main-result > div,
   .main-result article,
