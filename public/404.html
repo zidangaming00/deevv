@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>404 - Halaman Tidak Ditemukan | Deevv Search</title>
+  <meta name="description" content="Halaman yang Anda cari tidak ditemukan di Deevv Search.">
+  <link rel="icon" href="images/search.png" type="image/png">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --bg: #f8f9fa;
+      --surface: #ffffff;
+      --text-main: #1f1f1f;
+      --text-muted: #70757a;
+      --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.06);
+      --shadow-hover: 0 6px 24px rgba(0, 0, 0, 0.1);
+      --border-radius: 28px;
+    }
+
+    body.dark {
+      --primary: #8ab4f8;
+      --bg: #f8f5fa;
+      --surface: #1e1e1e;
+      --text-main: #e8eaed;
+      --text-muted: #9aa0a6;
+      --border-color: rgba(255, 255, 255, 0.12);
+      --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+
+    html, body {
+      height: 100%;
+      
+    }
+
+    @font-face {
+      font-family: 'Verio Sans';
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url('/font/BRVQLLXNOS.woff2') format('woff2'),
+           url('/font/JBDCITAYMP.woff2') format('woff2');
+    }
+
+    body {
+      font-family: 'Verio Sans', Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh; /* Dynamic viewport height agar pas di HP */
+      padding: 16px;
+    }
+
+    /* Main Container */
+    .container {
+      width: 100%;
+      max-width: 320px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* Card Error Container */
+    .error-card {
+      width: 100%;
+      background: var(--surface);
+      border-radius: 20px;
+      box-shadow: var(--shadow-soft);
+      padding: 36px 20px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    body.dark .error-card {
+      border-color: var(--border-color);
+    }
+
+    /* Logo Deevv */
+    .img-logo {
+      height: 52px;
+      margin-bottom: 4px;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* Judul 404 & Pesan */
+    .error-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .error-code-text {
+      color: var(--primary);
+      margin-right: 4px;
+    }
+
+    .error-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    /* Tombol Kembali Ala Deevv */
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background-color: var(--primary);
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 10px 24px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-soft);
+      transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+
+    body.dark .btn-back {
+      color: #121212;
+    }
+
+    .btn-back:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-hover);
+      opacity: 0.95;
+    }
+
+    .btn-back svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    /* Desktop Responsive View */
+    @media (min-width: 600px) {
+      .container { max-width: 480px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="error-card">
+      <!-- Logo Deevv -->
+      <a href="/">
+        <img alt="Deevv Search" class="img-logo" src="https://zidangaming00.github.io/images/logo.svg">
+      </a>
+
+      <!-- 404 Menyatu dengan Judul Pesan -->
+      <h1 class="error-title">
+        <span class="error-code-text">404</span> — Halaman tidak ditemukan
+      </h1>
+
+      <p class="error-desc">
+        Tautan yang kamu  tuju mungkin salah, telah dihapus, atau tidak lagi tersedia.
+      </p>
+      
+      <!-- Tombol Kembali -->
+      <a href="/" class="btn-back">
+        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        <span>Kembali ke Deevv</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Script Penyesuaian Tema -->
+  <script src="cookie.js"></script>
+  <script>
+    (function syncTheme() {
+      let theme = 'light';
+      const cookies = document.cookie.split(';');
+      for (let cookie of cookies) {
+        const [key, val] = cookie.trim().split('=');
+        if (key === 'settings') {
+          try {
+            const parsed = JSON.parse(decodeURIComponent(val));
+            if (parsed.theme) theme = parsed.theme;
+          } catch(e) {}
+        }
+      }
+      
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      
+      if (theme === 'dark' || (theme === 'system' && prefersDark)) {
+        document.body.classList.add('dark');
+      } else {
+        document.body.classList.remove('dark');
+      }
+    })();
+  </script>
+</body>
+</html>
