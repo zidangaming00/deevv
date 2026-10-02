@@ -66,11 +66,8 @@ export function buildResultCardHtml(item, isFaviconDisabled) {
 export function buildPageShell({ q, isIdLang, bodyHtml, initialDataJson, tbm }) {
   const title = isIdLang ? `${q} - Penelusuran` : `${q} - Search`;
 
-  // Daftar tbm yang ingin di-exclude (tidak memasukkan media.css)
-  const excludedTbm = ["isch", "nws", "vid"];
-  
-  // Tentukan apakah media.css perlu dimuat (jika tbm kosong atau bukan salah satu dari excludedTbm)
-  const shouldIncludeMediaCss = !tbm || !excludedTbm.includes(tbm);
+  // HANYA muat media.css jika tbm bernilai 'isch' atau 'vid'
+  const shouldIncludeMediaCss = tbm === "isch" || tbm === "vid";
   const mediaCssTag = shouldIncludeMediaCss ? '<link rel="stylesheet" href="/media.css">' : '';
 
   return `<!DOCTYPE html><html lang="${isIdLang ? "id" : "en"}"><head>
