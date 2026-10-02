@@ -427,7 +427,7 @@ input[type="search"]::-webkit-search-results-decoration {
     display: flex;
     flex: 0 0 92px;
     width: 92px !important;
-    height: 46px;
+
     justify-content: flex-start !important;
     align-items: center;
     padding: 0 !important;
