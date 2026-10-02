@@ -435,31 +435,33 @@ input[type="search"]::-webkit-search-results-decoration {
   position: relative;
   align-items: center;
   justify-content: center;
-  margin: 8px 0 16px 0;
+  background: var(--color-white, #ffffff);
+  /* Sekat tebal 8px menuju footer */
+  border-bottom: 8px solid var(--color-bg-alt, #f1f3f4);
+  margin: 0;
 }
 
-/* Sembunyikan garis pembatas di belakang tombol agar sesuai Google asli */
 .pagination-divider {
   display: none;
 }
 
-/* Tombol Kapsul Abu-abu Solid Tanpa Border (Tinggi 48px) */
+/* Tombol Ramping 40px dengan Font 14px Regular */
 .show-wrapper .more {
   width: 100%;
-  height: 48px;
-  border-radius: 24px;
+  height: 40px;
+  border-radius: 20px;
   border: none;
   background: var(--color-bg-alt, #f1f3f4);
   color: var(--color-text-dark, #202124);
-  font-size: 15px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 400;
   cursor: pointer;
   user-select: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 0 20px;
+  gap: 6px;
+  padding: 0 16px;
   box-shadow: none;
   transition: background-color 0.2s;
   -webkit-tap-highlight-color: transparent;
@@ -467,8 +469,8 @@ input[type="search"]::-webkit-search-results-decoration {
 
 .show-wrapper .more::after {
   content: "";
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   display: inline-block;
   background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%235f6368"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>');
   background-size: contain;
