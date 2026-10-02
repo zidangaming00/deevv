@@ -343,6 +343,62 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
    Preview gambar fullscreen ala Google + Related Images (Updated)
    -------------------------------------------------------------------- */
 
+@media (min-width: 1024px) {
+    /* Kontainer panel berada melayang di kanan */
+    .image-preview {
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: auto;
+        width: 440px;
+        height: 100vh;
+        background: #ffffff;
+        border-left: 1px solid #dadce0;
+        box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+        z-index: 999;
+        overflow: hidden; /* Menghindari double scrollbar pada wrapper luar */
+    }
+
+    /* Track pembungkus kartu */
+    .preview-card-track {
+        display: flex;
+        height: 100%;
+        width: 300%; /* Untuk 3 kartu (prev, current, next) */
+    }
+
+    /* Masing-masing kartu panel memiliki scrollbar vertikal sendiri */
+    .preview-card-page {
+        width: 100%;
+        height: 100vh;
+        overflow-y: auto; /* Scrollbar khusus untuk isi panel (detail & related images) */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Kustomisasi Scrollbar Panel Samping (opsional ala Google) */
+    .preview-card-page::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .preview-card-page::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+    }
+
+    .preview-card-page::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    /* Support Dark Mode */
+    body.dark .image-preview {
+        background: #202125;
+        border-left-color: #3c4043;
+    }
+
+    body.dark .preview-card-page::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+}
+
 .image-preview {
   width: 100%; 
   height: 100dvh;

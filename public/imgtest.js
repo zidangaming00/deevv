@@ -409,14 +409,32 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         if (downloadBtn) {
             const imgSrc = downloadBtn.dataset.img;
             const title = downloadBtn.dataset.title || "image";
+            const fileName = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".jpg";
+
             if (imgSrc) {
-                const a = document.createElement("a");
-                a.href = imgSrc;
-                a.download = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".jpg";
-                a.target = "_blank";
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
+                fetch(imgSrc)
+                    .then(response => {
+                        if (!response.ok) throw new Error("Gagal mengunduh gambar.");
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        const blobUrl = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = blobUrl;
+                        a.download = fileName;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(blobUrl);
+                    })
+                    .catch(() => {
+                        // Fallback jika server gambar memblokir akses CORS
+                        const a = document.createElement("a");
+                        a.href = imgSrc;
+                        a.target = "_blank";
+                        a.download = fileName;
+                        a.click();
+                    });
             }
             return;
         }
@@ -454,7 +472,13 @@ if (targetContainer && !document.querySelector(".image-preview")) {
 
         currentImageIndex = index;
         preview.style.display = "block"; 
-        document.documentElement.style.overflow = "hidden"; 
+
+        // Kunci scroll body HANYA jika di layar Mobile (< 1024px)
+        if (window.innerWidth < 1024) {
+            document.documentElement.style.overflow = "hidden";
+        } else {
+            document.documentElement.style.overflow = "auto"; // Desktop tetap bisa scroll grid kiri
+        }
 
         // Isi Halaman Kiri, Tengah, dan Kanan
         const prevData = extractDataFromElement(allItems[index - 1]);
@@ -479,6 +503,7 @@ if (targetContainer && !document.querySelector(".image-preview")) {
 
         updateDots(index, allItems.length);
     }
+
 
     function getDotIndex(idx, totalItems) {
         if (idx <= 0) return 0;
