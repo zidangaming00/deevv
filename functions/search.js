@@ -121,30 +121,32 @@ export async function onRequestGet(context) {
     ? `${resultStatsHtml}<div class="results-list">${resultsListInner}</div>${paginationHtml}`
     : "";
 
-  const bodyHtml = `
-<div class="app" id="main-bx">
-  <div class="page-header">
-    <div class="page-header__inner">
-      <div class="logo-slot"><a title="Kembali" href="/"><img alt="Logo" src="/images/logo.png"></a></div>
-      <div class="header">
-        <div class="search-box">
-          <div class="search-field">
-            <input type="search" id="sear_21829_input" value="${escapeHTML(q)}" name="q" class="search-input" autocomplete="off" placeholder="${getText(
+const bodyHtml = ` 
+      <div class="app" id="main-bx"> 
+        <div class="page-header"> 
+          <div class="page-header__inner"> 
+            <div class="logo-slot"><a title="Kembali" href="/"><img alt="Logo" src="/images/logo.png"></a></div> 
+            <div class="header"> 
+              <div class="search-box"> 
+                <div class="search-field"> 
+                  <input type="search" id="sear_21829_input" value="${escapeHTML(q)}" name="q" class="search-input" autocomplete="off" placeholder="${getText(
     isIdLang,
     "placeholder"
-  )}">
-            <div role="button" class="search-toggle inpbtun" id="xclarGh" title="Cari"></div>
-            <div role="button" class="cleartext inpbtun" style="display:${q ? "block" : "none"}" id="Chasprn" title="Hapus"></div>
-          </div>
-        </div>
-        <div class="search-menu">${tabs}</div>
-      </div>
-    </div>
-  </div>
-  <div class="results-section">
-    <div class="result-wrapper"><div class="main-result">${mainResultInner}</div></div>
-  </div>
-</div>`;
+  )}"> 
+                  <div role="button" class="search-toggle inpbtun" id="xclarGh" title="Cari"></div> 
+                  <div role="button" class="cleartext inpbtun" style="display:none" id="Chasprn" title="Hapus"></div> 
+                </div> 
+              </div> 
+            </div> 
+          </div> 
+          <div class="search-menu"> 
+            ${tabs}
+          </div> 
+        </div> 
+        <div class="results-section"> 
+          <div class="result-wrapper"><div class="main-result">${mainResultInner}</div></div> 
+        </div> 
+      </div> `;
 
   const html = buildPageShell({
     q,
