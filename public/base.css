@@ -360,6 +360,7 @@ body.dark .related:after {
   justify-content: center;
   background: var(--color-white, #ffffff);
   margin-bottom: 8px;
+  height: 56px;
 }
 
 .pagination-divider {
