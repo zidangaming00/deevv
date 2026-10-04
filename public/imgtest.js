@@ -383,7 +383,7 @@ if (targetContainer && !document.querySelector(".image-preview")) {
                 </button>
             </div>
             <div class="image-preview__related">
-                <div class="related-title">Gambar Terkait</div>
+                <div class="related-title">Gambar Berikutnya</div>
                 <div class="related-grid"></div>
             </div>
         `;
