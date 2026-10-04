@@ -106,6 +106,7 @@
   top: 16px;
   bottom: 6px; 
   width: 8px;
+   opacity: .6;
   background-color: #70757a;
   border-radius: 4px;
 }
