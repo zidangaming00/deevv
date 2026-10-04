@@ -42,6 +42,9 @@ function clearLoader() {
     if (shwrapper) {
         shwrapper.innerHTML = '';
     }
+    // Footer baru dirender setelah hasil pertama selesai (berhasil/kosong/gagal),
+    // supaya tidak nongol di bawah loader lalu loncat. UI.renderFooter() aman dipanggil berulang.
+    if (typeof UI !== 'undefined' && UI.renderFooter) UI.renderFooter();
 }
 
 // ==========================================
