@@ -4,8 +4,8 @@
 // Ambil searchQuery dari urlParams yang sudah ada di script utama
 const searchQuery = typeof urlParams !== 'undefined' ? (urlParams.get("q") || "") : "";
 
-// API Backend
-const NEW_API_URL = "https://deevv-api-production.up.railway.app/api/search";
+// API Backend (lewat serverless milik sendiri: functions/api/[[path]].js -> getImages)
+const NEW_API_URL = "/api/images";
 
 // State & Layout Controls
 const container = document.querySelector(".main-result"); 
@@ -686,4 +686,3 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         }
     }, { passive: true });
 }
-
