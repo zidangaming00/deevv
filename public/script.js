@@ -1072,6 +1072,21 @@ const SuggestionsManager = {
 // 7. MAIN EXECUTION & RENDER LOGIC
 // ==========================================
 
+// Tab Gambar: kembali memakai imgtest.js (grid masonry, preview overlay, infinite scroll 2x).
+// imgtest.js dimuat SETELAH UI.renderBase/setupTabStyles selesai, karena ia langsung
+// membaca .main-result dan .show-wrapper saat dijalankan.
+function loadImgTest() {
+    return new Promise((resolve) => {
+        if (window.__imgTestLoaded) return resolve();
+        window.__imgTestLoaded = true;
+        const s = document.createElement("script");
+        s.src = "/imgtest.js";
+        s.onload = () => resolve();
+        s.onerror = () => { UI.renderEmptyState(); resolve(); };
+        document.body.appendChild(s);
+    });
+}
+
 async function performSearch() {
     try {
         if (Config.tbm === "vid") {
@@ -1081,7 +1096,8 @@ async function performSearch() {
             const data = await API.fetchNews(Config.q);
             renderNews(data);
         } else if (Config.tbm === "isch") {
-            await ImageSearch.init();
+            // await ImageSearch.init(); // (versi grid baru, tidak dipakai lagi)
+            await loadImgTest();
         } else {
             const data = await API.fetchWeb(Config.q, Config.startIndex);
             renderWebResults(data);
