@@ -417,9 +417,8 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
 
 .related-card__thumb {
   width: 100%;
-  /* Hapus height: 120px kaku agar tinggi mengikuti gambar */
   height: auto;
-  border-radius: 8px;
+  border-radius: 16px;
   overflow: hidden;
   background: #ededed;
 }
