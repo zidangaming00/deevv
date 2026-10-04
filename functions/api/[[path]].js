@@ -59,6 +59,8 @@ const GET_ROUTES = {
         q,
         page: clampInt(sp.get("page"), 1, 10, 1),
         hl: sp.get("hl"),
+        start: sp.get("start") !== null ? clampInt(sp.get("start"), 0, 200, 0) : null,
+        num: clampInt(sp.get("num"), 1, 40, 20),
       });
     },
   },
