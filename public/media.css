@@ -10,7 +10,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 4px; 
-  padding: 8px 6px 0 6px; 
+  padding: 8px 6px; 
   background: var(--color-white, #ffffff);
   box-sizing: border-box;
 }
