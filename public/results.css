@@ -91,6 +91,13 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  /* eksperimental */
+  background-color: #f1f3f4;
+  padding: 2px 6px;
+  border-radius: 6px;
+  display: inline-block;
+  /* tidak resmi */
 }
 .result-card .link.link--meta { font-size: 12px; margin-top: 1px; }
 
