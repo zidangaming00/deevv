@@ -113,8 +113,10 @@ export function getNews(env, { q, hl }) {
 }
 
 // Tab "Gambar"
-export function getImages(env, { q, page = 1, hl }) {
-  const url = `${scraperBase(env)}/api/search?q=${encodeURIComponent(q)}${langFilter(hl)}&type=images&page=${page}`;
+export function getImages(env, { q, page = 1, hl, start = null, num = 20 }) {
+  // imgtest.js memakai start + num=20; pemanggil lama masih bisa pakai page.
+  const paging = start !== null ? `&start=${start}&num=${num}` : `&page=${page}`;
+  const url = `${scraperBase(env)}/api/search?q=${encodeURIComponent(q)}${langFilter(hl)}&type=images${paging}`;
   return fetchJson(url, { headers: ownHeaders(env), timeoutMs: 20000 });
 }
 
