@@ -41,7 +41,10 @@ function showLoader() {
 function clearLoader() {
     if (shwrapper) {
         shwrapper.innerHTML = '';
+        shwrapper.style.height = '0px';
+        shwrapper.style.display = 'none';
     }
+    positionItems();
     // Footer baru dirender setelah hasil pertama selesai (berhasil/kosong/gagal),
     // supaya tidak nongol di bawah loader lalu loncat. UI.renderFooter() aman dipanggil berulang.
     if (typeof UI !== 'undefined' && UI.renderFooter) UI.renderFooter();
@@ -114,7 +117,8 @@ function positionItems() {
         columnHeights[colIndex] += item.offsetHeight + uniformGap; 
     }); 
 
-    container.style.height = `${Math.max(...columnHeights) + 80}px`; 
+    const extraHeight = (isWaiting || isLoading) ? 80 : 8;
+    container.style.height = `${Math.max(...columnHeights) + extraHeight}px`;
 }
 window.addEventListener("resize", positionItems); 
 
