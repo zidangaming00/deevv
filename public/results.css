@@ -92,14 +92,53 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.result-card .link.link--meta { font-size: 12px; margin-top: 1px; 
-  /* eksperimental */
+.result-card .link.link--meta { font-size: 12px; margin-top: 1px; }
+
+/* desain eksperimental (tes) */
+.result-card .top {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   background-color: #f1f3f4;
-  padding: 2px 6px;
-  border-radius: 6px;
-  display: inline-block;
-  /* tidak resmi */
+  padding: 4px 10px 4px 6px;
+  border-radius: 20px;
+  margin-bottom: 6px;
+  width: fit-content;
 }
+
+.result-card .favicon {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  background: transparent;
+}
+
+.result-card .favicon img {
+  border-radius: 50%;
+  mix-blend-mode: normal;
+}
+
+.result-card .link {
+  display: inline;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.result-card .link.link--meta {
+  font-size: 11px;
+  background-color: transparent;
+  padding: 0;
+  margin-top: 0;
+  color: #70757a;
+}
+
+.result-card .link.link--meta::before {
+  content: "•";
+  margin: 0 4px 0 2px;
+  color: #70757a;
+}
+
+/* eksperimental end */
 
 .result-card .snippet {
   color: #474747;
