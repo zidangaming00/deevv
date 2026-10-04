@@ -584,24 +584,29 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         }
 
         nextItems.forEach((itemEl) => {
-            const data = extractDataFromElement(itemEl);
-            const itemIndex = allItems.indexOf(itemEl);
+    // Ambil data termasuk elemen image-item untuk membaca aspek rasio
+    const data = extractDataFromElement(itemEl);
+    const itemIndex = allItems.indexOf(itemEl);
 
-            const card = document.createElement("div");
-            card.className = "related-card";
-            card.innerHTML = `
-                <div class="related-card__thumb">
-                    <img src="${data.imgSrc}" loading="lazy" alt="${data.titleText}">
-                </div>
-                <div class="related-card__title">${data.titleText}</div>
-            `;
+    // Ambil aspect ratio yang sudah disimpan di dataset item utama
+    const ratio = parseFloat(itemEl.dataset.aspectRatio) || 1.33;
 
-            card.addEventListener("click", () => {
-                showPreviewByIndex(itemIndex);
-            });
+    const card = document.createElement("div");
+    card.className = "related-card";
+    card.innerHTML = `
+        <div class="related-card__thumb">
+            <img src="${data.imgSrc}" loading="lazy" alt="${data.titleText}">
+        </div>
+        <div class="related-card__title">${data.titleText}</div>
+    `;
 
-            relatedGrid.appendChild(card);
-        });
+    card.addEventListener("click", () => {
+        showPreviewByIndex(itemIndex);
+    });
+
+    relatedGrid.appendChild(card);
+});
+
     }
 
     // Touch Handling untuk Swiping Keseluruhan Halaman

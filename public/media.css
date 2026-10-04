@@ -396,10 +396,12 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
   margin: 0 6px 12px;
   color: #202124;
 }
+
+/* --- Modified Related Grid (Masonry / Varied Height) --- */
 .related-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
+  /* Menggunakan CSS Columns untuk efek Masonry 2 Kolom */
+  column-count: 2;
+  column-gap: 6px;
   padding: 0;
   box-sizing: border-box;
 }
@@ -408,19 +410,27 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
   cursor: pointer;
   display: flex;
   flex-direction: column;
+  /* Memastikan card tidak terpotong terpisah antar kolom */
+  break-inside: avoid;
+  margin-bottom: 8px;
 }
+
 .related-card__thumb {
   width: 100%;
-  height: 120px;
+  /* Hapus height: 120px kaku agar tinggi mengikuti gambar */
+  height: auto;
   border-radius: 8px;
   overflow: hidden;
   background: #ededed;
 }
+
 .related-card__thumb img {
   width: 100%;
-  height: 100%;
+  height: auto;        /* Biarkan tinggi proporsional alami */
+  display: block;      /* Mencegah gap margin kecil di bawah img */
   object-fit: cover;
 }
+
 .related-card__title {
   font-size: 12px;
   color: #3c4043;
