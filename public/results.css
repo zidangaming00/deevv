@@ -444,7 +444,6 @@
   padding: 0;
   margin-bottom: 6px;
   overflow: hidden;
-  border-radius: 12px;
   transition: background-color 0.2s ease;
   --news-thumb: 120px;
   --news-ph-bg: #e4e6e9;
