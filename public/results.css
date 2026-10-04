@@ -442,7 +442,7 @@
 /* --- News Layout --- */
 .news-card {
   padding: 0;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   overflow: hidden;
   transition: background-color 0.2s ease;
   --news-thumb: 120px;
