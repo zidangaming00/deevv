@@ -95,14 +95,18 @@
 .result-card .link.link--meta { font-size: 12px; margin-top: 1px; }
 
 /* desain eksperimental (tes) */
+.result-card .tab-link {
+  position: relative;
+}
+
 .result-card .tab-link::before {
   content: "";
   position: absolute;
   left: -2px;
-  top: 16px;    /* Sejajar dengan padding-top .tab-link (area favicon) */
-  bottom: 6px;  /* Sejajar dengan padding-bottom .tab-link (area bawah title) */
+  top: 16px;
+  bottom: 6px; 
   width: 4px;
-  background-color: #70757a; /* Warna garis abu-abu */
+  background-color: #70757a;
   border-radius: 4px;
 }
 
