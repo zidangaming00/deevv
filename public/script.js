@@ -376,9 +376,8 @@ const Widgets = {
         widgetCard.className = "result-card result-card--flat playstore-widget";
         widgetCard.style.cssText = "padding: 16px; display: flex; flex-direction: column; gap: 12px;";
 
-        // Logo Play Store (22px)
         const playStoreLogoSvg = `
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="flex-shrink:0; width:22px; height:22px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex-shrink:0; width:20px; height:20px;">
                 <path d="M3.609 1.814L13.792 12 3.61 22.186a1.99 1.99 0 0 1-.61-1.42V3.234c0-.54.218-1.037.609-1.42z" fill="#2196F3"/>
                 <path d="M17.156 8.636l-3.364 3.364 3.364 3.364 4.093-2.361c.882-.509.882-1.858 0-2.367l-4.093-2.364z" fill="#FFC107"/>
                 <path d="M13.792 12L3.609 1.814A1.97 1.97 0 0 1 4.887 1.4c.54 0 1.038.146 1.488.406l10.781 6.83L13.792 12z" fill="#4CAF50"/>
@@ -386,9 +385,9 @@ const Widgets = {
             </svg>
         `;
 
-        // Judul Tab: 20px, warna hitam, tanpa font-weight khusus
+        // Title Tab pakai --color-text-dark
         const headerHtml = `
-            <div style="display:flex; align-items:center; gap:8px; font-size:20px; color:#000; padding-bottom: 2px;">
+            <div style="display:flex; align-items:center; gap:8px; font-size:16px; color:var(--color-text-dark); padding-bottom: 2px;">
                 ${playStoreLogoSvg}
                 <span>Aplikasi</span>
             </div>
@@ -411,19 +410,19 @@ const Widgets = {
 
             const metaLine = [categoryText, rating ? `⭐ ${rating}` : ''].filter(Boolean).join(' • ');
 
+            // Pembatas pakai --color-border
             const isLast = index === apps.length - 1;
-            const borderStyle = !isLast ? "border-bottom: 1px solid var(--border-color, #f0f0f0); padding-bottom: 12px;" : "";
+            const borderStyle = !isLast ? "border-bottom: 1px solid var(--color-border); padding-bottom: 12px;" : "";
 
             return `
                 <div style="display:flex; align-items:center; gap:12px; ${borderStyle}">
-                    ${icon ? `<img src="${icon}" alt="${title}" style="width:48px; height:48px; border-radius:10px; object-fit:cover; flex-shrink:0;">` : ''}
+                    ${icon ? `<img src="${icon}" alt="${title}" style="width:56px; height:56px; border-radius:12px; object-fit:cover; flex-shrink:0;">` : ''}
                     <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px;">
-                        <!-- Judul Aplikasi: var(--dtext-small) & var(--color-title) -->
+                        <!-- Title pakai --dtext-small & --color-title -->
                         <div style="font-size:var(--dtext-small); color:var(--color-title); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${title}</div>
-                        <!-- Developer -->
-                        <div style="font-size:13px; color:#5f6368; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${developer}</div>
-                        <!-- Genre & Rating -->
-                        ${metaLine ? `<div style="font-size:12px; color:#70757a; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${metaLine}</div>` : ''}
+                        <!-- Subtitle & meta pakai --color-text-muted -->
+                        <div style="font-size:13px; color:var(--color-text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${developer}</div>
+                        ${metaLine ? `<div style="font-size:12px; color:var(--color-text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${metaLine}</div>` : ''}
                     </div>
                     <a href="${url}" target="_blank" rel="noopener" style="background:#01875f; color:#fff; padding:6px 16px; border-radius:18px; text-decoration:none; font-size:13px; font-weight:500; white-space:nowrap; flex-shrink:0;">
                         ${priceText}
