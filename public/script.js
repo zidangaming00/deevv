@@ -331,33 +331,26 @@ const Widgets = {
 
     hitungTriggerApiPlayStore: (query) => {
     const q = query.toLowerCase().trim();
+    if (!q) return false;
 
-    // 1. Daftar keyword intent yang mengindikasikan pencarian aplikasi/game
-    const appKeywords = [
-        "app", "apps", "aplikasi", "game", "games", "apk", 
-        "download", "unduh", "mod", "playstore", "play store", 
-        "simulator", "mobile", "android"
-    ];
-
-    // Cek apakah ada kata kunci aplikasi dalam query
-    const hasAppIntent = appKeywords.some(kw => {
-        const regex = new RegExp(`\\b${kw}\\b`, "i");
-        return regex.test(q);
-    });
-
-    // Kalo emang user jelas-jelas ngetik "game simulator" atau "download apk", izinkan
-    if (hasAppIntent) return true;
-
-    // 2. Deteksi NLP: Kalo query berupa Nama Orang (People), jangan munculin widget
-    if (window.nlp) {
-        const doc = window.nlp(q);
-        if (doc.people().found) {
-            return false;
-        }
+    // 1. Pengecekan NLP awal: Jika mengandung nama orang, batalkan widget
+    if (window.nlp && window.nlp(q).people().found) {
+        return false;
     }
 
-    // Default: Jangan panggil API kalo cuma kata tunggal/pencarian umum tanpa intent app
-    return false;
+    // 2. Abaikan jika kueri mengandung kata kunci non-aplikasi (film, lagu, berita, dll.)
+    const excludeKeywords = ["film", "movie", "series", "lirik", "chord", "lagu", "berita", "news", "resep"];
+    const hasExcludeIntent = excludeKeywords.some(kw => new RegExp(`\\b${kw}\\b`, "i").test(q));
+    if (hasExcludeIntent) return false;
+
+    // 3. Kata kunci yang BENAR-BENAR mengindikasikan pencarian aplikasi/game
+    const appKeywords = [
+        "apk", "playstore", "play store", "download", "unduh", 
+        "mod", "aplikasi", "app", "apps", "game", "games", "simulator"
+    ];
+
+    // 4. Evaluasi kata kunci intent aplikasi
+    return appKeywords.some(kw => new RegExp(`\\b${kw}\\b`, "i").test(q));
 },
 
 formatCount: (numStr) => {
