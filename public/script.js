@@ -359,36 +359,49 @@ checkPlayStoreWidget: async () => {
     try {
         const res = await API.fetchPlayStoreApp(query);
         
-        // Pastikan response berupa array dan ada isinya
         if (!Array.isArray(res) || res.length === 0) return;
 
-        // Ambil hasil pertama (paling relevan)
-        const app = res[0];
-        if (!app.title) return;
+        // Ambil maksimal 3 hasil teratas
+        const apps = res.slice(0, 3);
 
-        const title = Utils.escapeHTML(app.title);
-        const icon = Utils.attrUrl(app.icon);
-        const developer = Utils.escapeHTML(app.developer);
-        const rating = app.rating ? parseFloat(app.rating).toFixed(1) : null;
-        const url = Utils.attrUrl(app.url);
-        const isFree = app.price === "0" || app.price === 0;
+        // Container utama widget dengan padding standar 16px
+        const widgetCard = document.createElement("div");
+        widgetCard.className = "result-card result-card--flat playstore-widget";
+        widgetCard.style.cssText = "padding: 16px; display: flex; flex-direction: column; gap: 12px;";
 
-        const card = document.createElement("div");
-        card.className = "result-card result-card--flat playstore-widget";
-        card.innerHTML = `
-            <div style="display:flex; align-items:center; gap:12px; padding: 4px 0;">
-                ${icon ? `<img src="${icon}" alt="${title}" style="width:48px; height:48px; border-radius:10px; object-fit:cover;">` : ''}
-                <div style="flex:1; min-width:0;">
-                    <div style="font-weight:600; font-size:15px; color:var(--text-color, #1a0dab); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${title}</div>
-                    <div style="font-size:13px; color:#5f6368;">${developer} ${rating ? `• ⭐ ${rating}` : ''}</div>
+        const itemsHtml = apps.map((app, index) => {
+            if (!app.title) return "";
+
+            const title = Utils.escapeHTML(app.title);
+            const icon = Utils.attrUrl(app.icon);
+            const developer = Utils.escapeHTML(app.developer);
+            const rating = app.rating ? parseFloat(app.rating).toFixed(1) : null;
+            const url = Utils.attrUrl(app.url);
+            const isFree = app.price === "0" || app.price === 0;
+            const priceText = isFree ? 'Install' : `Rp ${Number(app.price).toLocaleString('id-ID')}`;
+
+            // Pembatas (divider) antar item kecuali item terakhir
+            const isLast = index === apps.length - 1;
+            const borderStyle = !isLast ? "border-bottom: 1px solid var(--border-color, #f0f0f0); padding-bottom: 12px;" : "";
+
+            return `
+                <div style="display:flex; align-items:center; gap:12px; ${borderStyle}">
+                    ${icon ? `<img src="${icon}" alt="${title}" style="width:48px; height:48px; border-radius:10px; object-fit:cover; flex-shrink:0;">` : ''}
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-weight:600; font-size:15px; color:var(--text-color, #1a0dab); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${title}</div>
+                        <div style="font-size:13px; color:#5f6368;">${developer} ${rating ? `• ⭐ ${rating}` : ''}</div>
+                    </div>
+                    <a href="${url}" target="_blank" rel="noopener" style="background:#01875f; color:#fff; padding:6px 16px; border-radius:18px; text-decoration:none; font-size:13px; font-weight:500; white-space:nowrap; flex-shrink:0;">
+                        ${priceText}
+                    </a>
                 </div>
-                <a href="${url}" target="_blank" rel="noopener" style="background:#01875f; color:#fff; padding:6px 16px; border-radius:18px; text-decoration:none; font-size:13px; font-weight:500; white-space:nowrap;">
-                    ${isFree ? 'Install' : `Rp ${Number(app.price).toLocaleString('id-ID')}`}
-                </a>
-            </div>
-        `;
+            `;
+        }).join("");
 
-        mainResult.insertAdjacentElement('afterbegin', card);
+        if (!itemsHtml.trim()) return;
+
+        widgetCard.innerHTML = itemsHtml;
+        mainResult.insertAdjacentElement('afterbegin', widgetCard);
     } catch (err) {
         console.error("Gagal memuat widget Play Store:", err);
     }
