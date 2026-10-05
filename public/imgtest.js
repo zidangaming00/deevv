@@ -1,583 +1,667 @@
-/* --- Video Grid & Cards --- */
-.video-grid {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 4px; 
-  padding: 8px 6px; 
-  background: var(--color-white, #ffffff);
-  box-sizing: border-box;
-}
+// ==========================================
+// CONFIGURATION & API ENDPOINTS
+// ==========================================
+// Ambil searchQuery dari urlParams yang sudah ada di script utama
+const searchQuery = typeof urlParams !== 'undefined' ? (urlParams.get("q") || "") : "";
 
-.video-card {
-  width: 100%;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-  overflow: hidden;
-  position: relative;
-}
+// API Backend (lewat serverless milik sendiri: functions/api/[[path]].js -> getImages)
+const NEW_API_URL = "/api/images";
 
-.video-card:active,
-.video-card:hover {
-  border-color: rgba(0, 0, 0, 0.12);
-}
+// State & Layout Controls
+const container = document.querySelector(".main-result"); 
+const shwrapper = document.querySelector(".show-wrapper"); 
+const minWidth = 150; 
+const maxColumns = 6; 
+const gap = 0;
 
-.video-card a {
-  text-decoration: none;
-  color: inherit;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  -webkit-tap-highlight-color: transparent;
-}
+let startOffset = 0; 
+let isLoading = false; 
 
-.video-card__thumb-wrapper {
-  position: relative;
-  width: 100%;
-  padding-top: 56.25%;
-  background: #f1f3f4;
-  overflow: hidden;
-}
+// Pembatasan Auto-Scroll (Maksimal 2 kali nambah hasil)
+let scrollCount = 0;
+const maxScrolls = 2;
 
-.video-card .thumbnail {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1); 
-}
+// Helper hapus loader
+let isWaiting = false; // jeda sebelum fetch
 
-.video-card:active .thumbnail,
-.video-card:hover .thumbnail {
-  transform: scale(1.12); 
-}
+function showLoader() {
+    if (!shwrapper) return;
+    shwrapper.innerHTML = `<div class="loader"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="4" stroke-miterlimit="10"/></svg></div>`;
+    
+    shwrapper.style.position = 'relative';
+    shwrapper.style.zIndex = '10';
+    shwrapper.style.width = '100%';
+    shwrapper.style.display = 'flex';
+    shwrapper.style.justifyContent = 'center';
+    shwrapper.style.alignItems = 'center';
+    shwrapper.style.height = '80px';
+    shwrapper.style.marginTop = '16px';
+    shwrapper.style.clear = 'both';
 
-.video-card__play-badge {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 32px;
-  height: 32px;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.video-card__play-badge svg {
-  width: 14px;
-  height: 14px;
-  fill: #ffffff;
-  margin-left: 2px;
-}
-
-.video-card__content {
-  padding: 8px 6px 10px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  justify-content: space-between;
-}
-
-.video-card__duration {
-  position: absolute;
-  bottom: 6px;
-  right: 6px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #ffffff;
-  font-size: 10.5px;
-  font-weight: 500;
-  padding: 2.5px 5px;
-  border-radius: 4px;
-  letter-spacing: 0.3px;
-  line-height: 1;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.video-card .title {
-  color: #202124;
-  margin: 0 0 6px 0;
-  font-size: var(--dtext-small);
-  font-weight: 500;
-  line-height: 1.35;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
-   min-height: 35.1px;
-}
-
-.video-card .source {
-  font-size: 11px;
-  color: #5f6368;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.video-card .info {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.video-card .favicon {
-  width: 12px;
-  height: 12px;
-  flex-shrink: 0;
-}
-
-.video-card .channel-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: #4d5156;
-}
-
-.video-card .time-ago {
-  color: #70757a;
-  font-size: 10.5px;
-}
-
-/* --- Image Results & Grid --- */
-.main-result {
-  position: relative;     
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-.main-result:has(.image-item) {
-  margin-top: 8px !important;
-}
-
-.image-item {
-  position: absolute;     
-  box-sizing: border-box;
-  transition: transform 0.3s ease;
-  will-change: transform;
-}
-.image-item__box {
-  padding-top: 0px;
-  box-sizing: border-box;  
-}
-.image-item__thumb {
-  overflow: hidden;
-  position: relative;
-  border-radius: 16px;
-  background-color: #e9e9ec;
-  cursor: pointer;
-  display: flex;
-  box-sizing: border-box;
-  width: 100%;             
-  -webkit-tap-highlight-color: transparent;
-}
-.image-item__thumb img { width: 100%; }
-.image-item__info { padding: 0 2px; display: flex; flex-direction: column; justify-content: start; }
-.image-item__info p, .image-item__info span { color: var(--color-text); font-size: 12px; font-family: 'Google Sans', Roboto, sans-serif; }
-.image-item__desc { align-items: center; display: flex; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; gap: 6px; }
-.image-item__desc img { width: 16px; border-radius: 50%; }
-.image-item__info .title { font-weight: 500; }
-a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: column; gap: 2px; text-decoration: none; }
-.image-item__info p { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-.image-grid { display: grid; grid-template-rows: 1fr 1fr; gap: 4px; overflow: hidden; border-radius: 12px; grid-auto-flow: column; }
-.image-grid__main { grid-column: span 2; grid-row: 1 / -1; }
-.image-grid__cell { background: #ededed; }
-.image-grid__cell--side { height: 90px; }
-.image-grid__caption { padding: 0 16px 4px 16px; }
-.image-grid__cell img { width: 100%; height: 100%; object-fit: cover; }
-
-/* --- Image Preview & Carousel --- */
-.image-preview {
-  width: 100%; 
-  height: 100dvh;
-  background: #f5f8fa;
-  position: fixed; 
-  left: 0; 
-  top: 0; 
-  z-index: 9999;
-  font-family: 'Google Sans', Roboto, sans-serif;
-  overflow: hidden; 
-  transform: translateZ(0);
-}
-
-.preview-card-track {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-  will-change: transform;
-  transform: translateZ(0);
-}
-
-.preview-card-page {
-  min-width: 100%;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto; 
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  background: #ffffff;
-  box-sizing: border-box;
-  contain: content;
-}
-
-.image-preview__header { 
-  padding: 12px 16px; 
-  display: flex; 
-  align-items: center; 
-  justify-content: space-between; 
-  border-bottom: 1px solid #f1f3f4;
-  background: #fff;
-  flex-shrink: 0;
-}
-.image-preview__header .left { display: flex; gap: 10px; align-items: center; }
-.image-preview .title { font-size: 14px; font-weight: 500; color: #202124; }
-.image-preview__favicon { width: 30px; height: 30px; border: 1px solid #ededed; background: #f9f9f9; border-radius: 50%; display: grid; place-items: center; }
-.image-preview__favicon img { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; }
-
-.image-preview__body {
-  flex: 1;
-  min-height: 0;           
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-.image-preview__thumbnail { 
-  position: relative; 
-  background: #000000;
-  display: flex; 
-  align-items: center; 
-  justify-content: center;
-  width: 100%; 
-  flex-shrink: 0;
-}
-
-.image-preview__thumbnail img { 
-  width: 100%; 
-  height: auto; 
-  max-height: 60vh; 
-  object-fit: contain; 
-  display: block;
-}
-
-.preview-carouselTrack {
-    display: flex;
-    width: 100%;
-    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-    will-change: transform;
-}
-
-.preview-slide {
-    min-width: 100%;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.image-preview__footer { 
-  padding: 12px 16px; 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center;
-  background: #fff;
-}
-.image-preview__footer .left { padding-right: 12px; }
-.image-preview__footer .title { font-size: 15px; font-weight: 500; line-height: 1.3; }
-.image-preview__footer .site { margin-top: 4px; font-size: 12px; color: #70757a; }
-.image-preview__footer button {
-  padding: 8px 18px; 
-  background: #1a73e8; 
-  border: none; 
-  border-radius: 20px; 
-  font-weight: 500; 
-  font-size: 14px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.image-preview__footer button a { color: #fff; text-decoration: none; }
-
-/* OPTIMASI DOTS: Hilangkan backdrop-filter blur agar mulus di HP Kentang */
-.preview-dots {
-  position: fixed;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10001;
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  background: rgba(32, 33, 36, 0.9);
-  border-radius: 10px;
-  pointer-events: none;
-}
-
-.preview-dot {
-  width: 6px; 
-  height: 6px;
-  border-radius: 3px;
-  background-color: #ffffff;
-  opacity: 0.4;
-  transition: width 0.1s linear, opacity 0.1s linear;
-  will-change: width, opacity;
-}
-
-.preview-dot.active {
-    width: 16px;
-    height: 6px;
-    border-radius: 3px;
-    background-color: #ffffff;
-    opacity: 1;
-}
-
-.image-preview__actions {
-  display: flex;
-  gap: 10px;
-  padding: 6px 16px 12px 16px;
-  background: #ffffff;
-}
-
-.action-btn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: 20px;
-  border: none;
-  background: #e8f0fe;
-  font-size: var(dtext-small);
-  font-weight: 500;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: background-color 0.2s ease;
-}
-
-.action-btn:active {
-  background: #d2e3fc;
-}
-
-.action-btn svg {
-  fill: currentColor;
-}
-
-.image-preview__related {
-  padding: 12px 6px 32px;
-  border-top: 8px solid #f1f3f4;
-  background: #fff;
-}
-.image-preview__related .related-title {
-  font-size: 16px;
-  font-weight: 500;
-  margin: 0 6px 12px;
-  color: #202124;
-}
-
-/* --- Modified Related Grid (Masonry / Varied Height) --- */
-.related-grid {
-  column-count: 2;
-  column-gap: 6px;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-.related-card {
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  break-inside: avoid;
-  margin-bottom: 8px;
-}
-
-.related-card__thumb {
-  width: 100%;
-  height: auto;
-  border-radius: 16px;
-  overflow: hidden;
-  background: #ededed;
-}
-
-.related-card__thumb img {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: cover;
-}
-
-.related-card__title {
-  font-size: 12px;
-  color: #3c4043;
-  margin-top: 4px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  line-height: 1.3;
-}
-
-.related-loader, .related-empty {
-  column-span: all;
-  width: 100%;
-  font-size: 13px;
-  color: #70757a;
-  padding: 12px 0;
-  text-align: center;
-}
-
-.related-note {
-  grid-column: span 2;
-  font-size: 12px;
-  color: #70757a;
-  padding: 2px 10px 6px;
-}
-
-/* --- Consolidated Media Queries & Dark Mode --- */
-
-@media (min-width: 600px) {
-   .result-wrapper {
-    padding: 12px;
-  }
-   
-  .video-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    padding: 12px;
-  }
-  
-  .video-card:first-child {
-    grid-column: auto;
-    margin-bottom: 0;
-  }
-  
-  .video-card .video-card__content {
-    padding: 14px;
-  }
-
-  .video-card:first-child .title {
-    font-size: 13px;
-    font-weight: 500;
-  }
-}
-
-@media (min-width: 1200px) {
-  .video-grid {
-    grid-template-columns: repeat(5, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-    .image-preview {
-        position: fixed;
-        top: 0;
-        right: 0;
-        left: auto;
-        width: 440px;
-        height: 100vh;
-        background: #ffffff;
-        border-left: 1px solid #dadce0;
-        box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
-        z-index: 999;
-        overflow: hidden; 
-    }
-
-    .preview-card-track {
-        display: flex;
-        height: 100%;
-        width: 300%; 
-    }
-
-    .preview-card-page {
-        width: 100%;
-        height: 100vh;
-        overflow-y: auto; 
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .preview-card-page::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    .preview-card-page::-webkit-scrollbar-thumb {
-        background-color: rgba(0, 0, 0, 0.2);
-        border-radius: 4px;
-    }
-
-    .preview-card-page::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    body.dark .image-preview {
-        background: #202125;
-        border-left-color: #3c4043;
-    }
-
-    body.dark .preview-card-page::-webkit-scrollbar-thumb {
-        background-color: rgba(255, 255, 255, 0.2);
+    // SOLUSI LOADER: Pindahkan loader ke luar container agar tidak tertimpa elemen absolute
+    if (container && shwrapper.parentNode === container && container.parentNode) {
+        container.parentNode.insertBefore(shwrapper, container.nextSibling);
     }
 }
 
-body.dark .video-grid {
-  background: #121212;
+function clearLoader() {
+    if (shwrapper) {
+        shwrapper.innerHTML = '';
+        shwrapper.style.height = '0px';
+        shwrapper.style.marginTop = '0px';
+        shwrapper.style.display = 'none';
+    }
+    positionItems();
+    if (typeof UI !== 'undefined' && UI.renderFooter) UI.renderFooter();
 }
 
-body.dark .video-card {
-  background: #1e1e1e;
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: none;
+// ==========================================
+// LAYOUT ENGINE (PERFECT EQUAL GAPS)
+// ==========================================
+function positionItems() { 
+    if (!container) return;
+    const items = Array.from(container.querySelectorAll(".image-item")); 
+    if (items.length === 0) return; 
+
+    const containerWidth = container.getBoundingClientRect().width;
+    const uniformGap = 6;
+
+    let cols = Math.floor(containerWidth / (minWidth + uniformGap)); 
+    cols = Math.max(1, Math.min(maxColumns, cols)); 
+
+    const totalGapSpace = (cols + 1) * uniformGap;
+    const availableForItems = containerWidth - totalGapSpace;
+    const baseWidth = Math.floor(availableForItems / cols);
+    const leftoverPixels = availableForItems - baseWidth * cols;
+
+    const columnWidths = new Array(cols).fill(baseWidth);
+    for (let i = 0; i < leftoverPixels; i++) {
+        columnWidths[i] += 1;
+    }
+
+    const columnLeftPositions = new Array(cols);
+    let cursor = uniformGap;
+    for (let i = 0; i < cols; i++) {
+        columnLeftPositions[i] = cursor;
+        cursor += columnWidths[i] + uniformGap;
+    }
+
+    let columnHeights = new Array(cols).fill(0); 
+
+    items.forEach((item) => { 
+        let colIndex = columnHeights.indexOf(Math.min(...columnHeights)); 
+        let itemWidth = columnWidths[colIndex];
+        let imgThumb = item.querySelector(".image-item__thumb"); 
+        
+        item.style.width = `${itemWidth}px`; 
+        
+        if (imgThumb) {
+            const ratio = parseFloat(item.dataset.aspectRatio) || 1.33;
+            imgThumb.style.height = `${Math.floor(itemWidth / ratio)}px`;
+        } 
+
+        let topPos = columnHeights[colIndex]; 
+        let leftPos = columnLeftPositions[colIndex];
+
+        item.style.position = "absolute"; 
+        item.style.left = `${leftPos}px`; 
+        item.style.top = `${topPos}px`; 
+
+        columnHeights[colIndex] += item.offsetHeight + uniformGap; 
+    }); 
+
+    container.style.height = `${Math.max(...columnHeights) + 8}px`;
 }
+window.addEventListener("resize", positionItems); 
 
-body.dark .video-card .title {
-  color: #e8eaed;
-}
+// ==========================================
+// DATA FETCHING
+// ==========================================
+function fetchData(retryCount = 0) { 
+    if (isLoading || !searchQuery) return; 
+    isLoading = true; 
+    
+    const fetchUrl = `${NEW_API_URL}?q=${encodeURIComponent(searchQuery)}&type=images&start=${startOffset}&num=20`;
+    
+    fetch(fetchUrl)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP Status ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(response => { 
+        let imageList = [];
+        if (Array.isArray(response)) {
+            imageList = response;
+        } else if (response.results && Array.isArray(response.results)) {
+            imageList = response.results;
+        } else if (response.images && Array.isArray(response.images)) {
+            imageList = response.images;
+        }
 
-body.dark .video-card .channel-name {
-  color: #bdc1c6;
-}
+        if (imageList.length === 0) {
+            clearLoader();
+            isLoading = false;
+            return;
+        }
 
-body.dark .video-card .time-ago {
-  color: #9aa0a6;
-}
+        renderResults(imageList); 
+        startOffset += imageList.length; 
+        clearLoader();
+    })
+    .catch(error => { 
+        isLoading = false; 
+        
+        if (retryCount < 2) {
+            setTimeout(() => {
+                fetchData(retryCount + 1);
+            }, 1500);
+        } else {
+            clearLoader();
+        }
+    }); 
+} 
 
-body.dark .image-preview { background: #171717; }
-body.dark .image-preview__header, 
-body.dark .image-preview__footer, 
-body.dark .image-preview__related { background: #202125; border-color: #3c4043; }
-body.dark .image-preview .title, 
-body.dark .image-preview__related .related-title,
-body.dark .related-card__title { color: #e8eaed; }
+// ==========================================
+// RENDER & DOM BUILDING
+// ==========================================
+function renderResults(images) { 
+    if (!images || !Array.isArray(images) || images.length === 0) {
+        isLoading = false;
+        return;
+    }
 
-body.dark .image-preview__actions {
-  background: #202125;
-}
+    let fragment = document.createDocumentFragment(); 
 
-body.dark .action-btn {
-  background: #2d2e31;
-}
+    images.forEach((item, i) => {
+        let imgElement = document.createElement("img"); 
+        
+        const thumbSrc = item.thumbnail || item.thumbnailUrl || item.image || item.imageUrl || "";
+        const fullSrc = item.image || item.imageUrl || thumbSrc;
+        const pageUrl = item.pageUrl || item.link || "#";
+        const titleText = item.title || "Image";
 
-body.dark .action-btn:active {
-  background: #3c4043;
+        const imgWidth = item.width || item.imageWidth || 0;
+        const imgHeight = item.height || item.imageHeight || 0;
+        
+        let aspectRatio = 1.33;
+        if (imgWidth > 0 && imgHeight > 0) {
+            aspectRatio = (imgWidth / imgHeight).toFixed(2);
+        }
+
+        imgElement.src = thumbSrc; 
+        imgElement.loading = "lazy"; 
+        imgElement.alt = titleText; 
+        imgElement.style.width = "100%";
+        imgElement.style.height = "100%";
+        imgElement.style.objectFit = "cover";
+        
+        let imgContainer = document.createElement("div"); 
+        imgContainer.classList.add("image-item"); 
+        imgContainer.dataset.aspectRatio = aspectRatio; 
+        
+        let hostname = "";
+        if (pageUrl && pageUrl !== "#") {
+            try { hostname = new URL(pageUrl).hostname.replace(/^www\./, ''); } catch (e) {}
+        }
+        
+        const siteName = item.source || item.domain || hostname || "Web";
+
+        imgContainer.innerHTML = ` 
+            <div class="image-item__box"> 
+                <div class="image-item__dt"> 
+                    <div class="image-item__thumb"></div> 
+                    <a class="image-item__info" href="${pageUrl}" target="_blank" rel="noopener"> 
+                        <p class="title" name="t">${titleText}</p> 
+                        <p class="image-item__desc"> 
+                            <span>${siteName}</span> 
+                        </p> 
+                    </a> 
+                </div> 
+            </div>`;
+
+        loadImage(imgElement, thumbSrc, fullSrc); 
+        imgContainer.querySelector(".image-item__thumb").appendChild(imgElement); 
+        
+        imgElement.onerror = function() { 
+            let parent = imgElement.closest(".image-item"); 
+            if (parent) parent.remove(); 
+            positionItems(); 
+        }; 
+        
+        fragment.appendChild(imgContainer); 
+    }); 
+
+    if (container) {
+        container.appendChild(fragment);
+    }
+
+    isLoading = false; 
+    positionItems(); 
+} 
+
+function loadImage(imgElement, thumbnailSrc, fullSrc) { 
+    imgElement.src = thumbnailSrc; 
+    
+    if (fullSrc && fullSrc !== thumbnailSrc) {
+        const fullImage = new Image(); 
+        fullImage.src = fullSrc; 
+        fullImage.onload = function() { 
+            imgElement.src = fullSrc; 
+        };
+    }
+} 
+
+// ==========================================
+// INFINITE SCROLL
+// ==========================================
+window.addEventListener("scroll", function () {
+    if (isLoading || isWaiting || scrollCount >= maxScrolls) return;
+
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
+        scrollCount++;
+        isWaiting = true;
+        showLoader();
+
+        setTimeout(() => {
+            isWaiting = false;
+            fetchData();
+        }, 700);
+    }
+});
+
+fetchData();
+
+// ==========================================
+// MOBILE PREVIEW OVERLAY
+// ==========================================
+const targetContainer = document.querySelector(".cbKRN") || document.body;
+
+if (targetContainer && !document.querySelector(".image-preview")) { 
+    targetContainer.insertAdjacentHTML("beforeend", ` 
+        <div class="image-preview" style="display:none;"> 
+            <div class="preview-card-track">
+                <div class="preview-card-page prev-page"></div>
+                <div class="preview-card-page current-page"></div>
+                <div class="preview-card-page next-page"></div>
+            </div>
+
+            <div class="preview-dots">
+                <div class="preview-dot active"></div>
+                <div class="preview-dot"></div>
+                <div class="preview-dot"></div>
+                <div class="preview-dot"></div>
+            </div>
+        </div> 
+    `); 
+
+    const preview = document.querySelector(".image-preview"); 
+    const track = preview.querySelector(".preview-card-track");
+    const prevPage = preview.querySelector(".prev-page");
+    const currPage = preview.querySelector(".current-page");
+    const nextPage = preview.querySelector(".next-page");
+
+    let currentImageIndex = -1;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchMoveX = 0;
+    let touchMoveY = 0;
+    let isHorizontalSwipe = false;
+    let isTouchActive = false;
+
+    function createCardHTML(data) {
+        if (!data) return `<div style="height:100vh;"></div>`;
+        const hostname = data.pageUrl && data.pageUrl !== "#" ? new URL(data.pageUrl).hostname : "";
+        const faviconSrc = hostname ? `https://www.google.com/s2/favicons?domain=${hostname}&sz=32` : "";
+
+        return `
+            <div class="image-preview__header"> 
+                <div class="left"> 
+                    <div class="image-preview__favicon"><img src="${faviconSrc}" alt="Fav"></div> 
+                    <div class="title header-site-name">${data.siteName}</div> 
+                </div> 
+                <div class="right"> 
+                    <div class="image-preview__favicon close-preview" style="cursor:pointer;"> 
+                        <svg viewBox="0 0 24 24" height="24" width="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg> 
+                    </div> 
+                </div> 
+            </div> 
+            <div class="image-preview__thumbnail">
+                <img src="${data.imgSrc}" alt="${data.titleText}">
+            </div> 
+            <div class="image-preview__footer"> 
+                <div class="left"> 
+                    <div class="title footer-image-title">${data.titleText}</div> 
+                    <div class="site">Gambar mungkin memiliki hak cipta.</div> 
+                </div> 
+                <div class="right"> 
+                    <button><a href="${data.pageUrl}" target="_blank" rel="noopener">Kunjungi</a></button> 
+                </div> 
+            </div> 
+            <div class="image-preview__actions">
+                <button class="action-btn share-btn" data-url="${data.pageUrl}" data-title="${data.titleText}">
+                    <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                    <span>Bagikan</span>
+                </button>
+                <button class="action-btn download-btn" data-img="${data.imgSrc}" data-title="${data.titleText}">
+                    <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                    <span>Unduh</span>
+                </button>
+            </div>
+            <div class="image-preview__related">
+                <div class="related-title">Gambar Berikutnya</div>
+                <div class="related-grid"></div>
+            </div>
+        `;
+    }
+
+    preview.addEventListener("click", (e) => {
+        if (e.target.closest(".close-preview")) {
+            preview.style.display = "none";
+            document.documentElement.style.overflow = "auto";
+            return;
+        }
+
+        const shareBtn = e.target.closest(".share-btn");
+        if (shareBtn) {
+            const url = shareBtn.dataset.url;
+            const title = shareBtn.dataset.title;
+            if (navigator.share) {
+                navigator.share({ title: title, url: url }).catch(() => {});
+            } else if (navigator.clipboard) {
+                navigator.clipboard.writeText(url);
+                alert("Tautan berhasil disalin!");
+            }
+            return;
+        }
+
+        const downloadBtn = e.target.closest(".download-btn");
+        if (downloadBtn) {
+            const imgSrc = downloadBtn.dataset.img;
+            const title = downloadBtn.dataset.title || "image";
+            const fileName = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".jpg";
+
+            if (imgSrc) {
+                fetch(imgSrc)
+                    .then(response => {
+                        if (!response.ok) throw new Error("Gagal mengunduh gambar.");
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        const blobUrl = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = blobUrl;
+                        a.download = fileName;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(blobUrl);
+                    })
+                    .catch(() => {
+                        const a = document.createElement("a");
+                        a.href = imgSrc;
+                        a.target = "_blank";
+                        a.download = fileName;
+                        a.click();
+                    });
+            }
+            return;
+        }
+    });
+
+    document.body.addEventListener("click", (event) => { 
+        const img = event.target.closest(".image-item__thumb img"); 
+        if (!img) return; 
+        event.preventDefault(); 
+        
+        const parent = img.closest(".image-item"); 
+        if (!parent) return;
+
+        const allItems = Array.from(document.querySelectorAll(".main-result .image-item"));
+        const index = allItems.indexOf(parent);
+
+        showPreviewByIndex(index); 
+    }); 
+
+    function extractDataFromElement(itemEl) {
+        if (!itemEl) return null;
+        const img = itemEl.querySelector(".image-item__thumb img");
+        return {
+            titleText: itemEl.querySelector(".image-item__info .title")?.innerText || "",
+            siteName: itemEl.querySelector(".image-item__desc span")?.innerText || "",
+            pageUrl: itemEl.querySelector(".image-item__info")?.href || "#",
+            imgSrc: img ? img.src : ""
+        };
+    }
+
+    let cachedAllItems = [];
+
+    // OPTIMASI SLIDE: Render halaman utama dulu, halaman sampingan ditunda (deferred)
+    function showPreviewByIndex(index) {
+        cachedAllItems = Array.from(document.querySelectorAll(".main-result .image-item"));
+        if (index < 0 || index >= cachedAllItems.length) return;
+
+        currentImageIndex = index;
+        preview.style.display = "block"; 
+
+        if (window.innerWidth < 1024) {
+            document.documentElement.style.overflow = "hidden";
+        }
+
+        const currData = extractDataFromElement(cachedAllItems[index]);
+
+        // 1. Render Halaman Utama Dulu Biar Cepat Terlihat
+        currPage.innerHTML = createCardHTML(currData);
+        renderLocalRelatedImages(index, cachedAllItems, currPage);
+
+        track.style.transition = "none";
+        track.style.transform = `translateX(-100%)`;
+        currPage.scrollTop = 0;
+
+        updateDots(index, cachedAllItems.length);
+
+        // 2. Tunda Render Halaman Kiri dan Kanan agar HP Kentang Tidak Beban Heavy DOM Render
+        setTimeout(() => {
+            if (currentImageIndex !== index) return;
+            const prevData = extractDataFromElement(cachedAllItems[index - 1]);
+            const nextData = extractDataFromElement(cachedAllItems[index + 1]);
+
+            prevPage.innerHTML = createCardHTML(prevData);
+            nextPage.innerHTML = createCardHTML(nextData);
+
+            renderLocalRelatedImages(index - 1, cachedAllItems, prevPage);
+            renderLocalRelatedImages(index + 1, cachedAllItems, nextPage);
+        }, 30);
+    }
+
+    function getDotIndex(idx, totalItems) {
+        if (idx <= 0) return 0;
+        if (idx === 1) return 1;
+        if (idx >= totalItems - 1) return 3;
+        return 2;
+    }
+
+    // OPTIMASI: Sederhanakan Dot Realtime agar ringan saat Touchmove
+    function updateDotsRealtime(diffX, containerWidth, currentIndex, totalItems) {
+        const dots = preview.querySelectorAll(".preview-dot");
+        if (!dots.length) return;
+
+        const direction = diffX < 0 ? 1 : -1;
+        const targetIndex = currentIndex + direction;
+        const progress = Math.min(Math.abs(diffX) / containerWidth, 1);
+
+        const fromDotIdx = getDotIndex(currentIndex, totalItems);
+        const toDotIdx = getDotIndex(targetIndex, totalItems);
+
+        dots.forEach((dot, idx) => {
+            if (fromDotIdx === toDotIdx) {
+                if (idx === fromDotIdx) {
+                    dot.style.width = "16px";
+                    dot.style.opacity = "1";
+                } else {
+                    dot.style.width = "6px";
+                    dot.style.opacity = "0.4";
+                }
+            } else {
+                if (idx === fromDotIdx) {
+                    const w = 16 - (10 * progress);
+                    dot.style.width = `${w}px`;
+                    dot.style.opacity = `${1 - (0.6 * progress)}`;
+                } else if (idx === toDotIdx) {
+                    const w = 6 + (10 * progress);
+                    dot.style.width = `${w}px`;
+                    dot.style.opacity = `${0.4 + (0.6 * progress)}`;
+                } else {
+                    dot.style.width = "6px";
+                    dot.style.opacity = "0.4";
+                }
+            }
+        });
+    }
+
+    function updateDots(index, totalItems) {
+        const dots = preview.querySelectorAll(".preview-dot");
+        const activeDotIndex = getDotIndex(index, totalItems);
+
+        dots.forEach((d, i) => {
+            d.style.transition = "";
+            d.style.width = "";
+            d.style.opacity = "";
+            d.classList.toggle("active", i === activeDotIndex);
+        });
+    }
+
+    function renderLocalRelatedImages(currentIndex, allItems, pageElem) {
+        if (currentIndex < 0 || !pageElem) return;
+        const relatedGrid = pageElem.querySelector(".related-grid");
+        if (!relatedGrid) return;
+
+        relatedGrid.innerHTML = "";
+        const nextItems = allItems.slice(currentIndex + 1, currentIndex + 11);
+
+        if (nextItems.length === 0) {
+            relatedGrid.innerHTML = `<div class="related-empty">Tidak ada gambar berikutnya.</div>`;
+            return;
+        }
+
+        const fragment = document.createDocumentFragment();
+        nextItems.forEach((itemEl) => {
+            const data = extractDataFromElement(itemEl);
+            const itemIndex = allItems.indexOf(itemEl);
+
+            const card = document.createElement("div");
+            card.className = "related-card";
+            card.innerHTML = `
+                <div class="related-card__thumb">
+                    <img src="${data.imgSrc}" loading="lazy" alt="${data.titleText}">
+                </div>
+                <div class="related-card__title">${data.titleText}</div>
+            `;
+
+            card.addEventListener("click", () => {
+                showPreviewByIndex(itemIndex);
+            });
+
+            fragment.appendChild(card);
+        });
+
+        relatedGrid.appendChild(fragment);
+    }
+
+    // Touch Handling untuk Swiping Keseluruhan Halaman
+    preview.addEventListener("touchstart", (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        touchMoveX = touchStartX;
+        touchMoveY = touchStartY;
+        isHorizontalSwipe = false;
+        isTouchActive = true;
+        track.style.transition = "none";
+    }, { passive: true });
+
+    let ticking = false;
+
+    preview.addEventListener("touchmove", (e) => {
+        if (!isTouchActive) return;
+        touchMoveX = e.touches[0].clientX;
+        touchMoveY = e.touches[0].clientY;
+
+        const diffX = touchMoveX - touchStartX;
+        const diffY = touchMoveY - touchStartY;
+
+        if (!isHorizontalSwipe) {
+            const isHorizontalIntent = Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 8;
+            if (isHorizontalIntent) {
+                isHorizontalSwipe = true;
+            } else {
+                return; 
+            }
+        }
+
+        if (isHorizontalSwipe) {
+            if (e.cancelable) e.preventDefault();
+
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    let moveDiffX = diffX;
+                    const containerWidth = preview.clientWidth;
+                    const totalLen = cachedAllItems.length || 1;
+
+                    if ((currentImageIndex === 0 && moveDiffX > 0) || (currentImageIndex === totalLen - 1 && moveDiffX < 0)) {
+                        moveDiffX = moveDiffX * 0.2; 
+                    }
+
+                    const currentOffsetPercent = -100 + (moveDiffX / containerWidth) * 100;
+                    track.style.transform = `translate3d(${currentOffsetPercent}%, 0, 0)`;
+
+                    updateDotsRealtime(moveDiffX, containerWidth, currentImageIndex, totalLen);
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }
+    }, { passive: false });
+
+    preview.addEventListener("touchend", () => {
+        if (!isTouchActive) return;
+        isTouchActive = false;
+
+        if (isHorizontalSwipe) {
+            const diffX = touchMoveX - touchStartX;
+            const threshold = 60; 
+            const allItems = Array.from(document.querySelectorAll(".main-result .image-item"));
+            const containerWidth = preview.clientWidth;
+
+            const dots = preview.querySelectorAll(".preview-dot");
+            dots.forEach(d => {
+                d.style.transition = "width 0.25s ease-out, opacity 0.25s ease-out";
+            });
+
+            if (diffX < -threshold && currentImageIndex < allItems.length - 1) {
+                updateDotsRealtime(-containerWidth, containerWidth, currentImageIndex, allItems.length);
+
+                track.style.transition = "transform 0.25s ease-out";
+                track.style.transform = "translate3d(-200%, 0, 0)";
+                setTimeout(() => {
+                    showPreviewByIndex(currentImageIndex + 1);
+                }, 220);
+            } else if (diffX > threshold && currentImageIndex > 0) {
+                updateDotsRealtime(containerWidth, containerWidth, currentImageIndex, allItems.length);
+
+                track.style.transition = "transform 0.25s ease-out";
+                track.style.transform = "translate3d(0%, 0, 0)";
+                setTimeout(() => {
+                    showPreviewByIndex(currentImageIndex - 1);
+                }, 220);
+            } else {
+                updateDotsRealtime(0, containerWidth, currentImageIndex, allItems.length);
+
+                track.style.transition = "transform 0.2s ease-out";
+                track.style.transform = "translate3d(-100%, 0, 0)";
+            }
+        }
+        
+        isHorizontalSwipe = false;
+    }, { passive: true });
 }
