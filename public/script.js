@@ -424,7 +424,7 @@ const Widgets = {
                         <div style="font-size:13px; color:var(--color-text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${developer}</div>
                         ${metaLine ? `<div style="font-size:12px; color:var(--color-text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${metaLine}</div>` : ''}
                     </div>
-                    <a href="${url}" target="_blank" rel="noopener" style="background:#01875f; color:#fff; padding:6px 16px; border-radius:18px; text-decoration:none; font-size:13px; font-weight:500; white-space:nowrap; flex-shrink:0;">
+                    <a href="${url}" target="_blank" rel="noopener" style="background:var(--color-title); color:#fff; padding:6px 16px; border-radius:18px; text-decoration:none; font-size:13px; font-weight:500; white-space:nowrap; flex-shrink:0;">
                         ${priceText}
                     </a>
                 </div>
