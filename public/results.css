@@ -582,7 +582,7 @@
 
 /* --- Video Widget (Web Result) --- */
 .video-widget { padding: 0; }
-.title.video-widget__title { color: #000000; margin: 0; padding: 16px 16px 0; }
+.title.video-widget__title { color: #000000; font-size: var(--dtext-medium); margin: 0; padding: 16px 16px 0; }
 
 .video-widget__list { display: block; }
 
