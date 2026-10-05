@@ -330,26 +330,35 @@ const Widgets = {
     },
 
     hitungTriggerApiPlayStore: (query) => {
-        const queryClean = query.trim().toLowerCase();
-        if (!queryClean || !window.nlp) return false;
+    const q = query.toLowerCase().trim();
 
-        let doc = window.nlp(queryClean);
+    // 1. Daftar keyword intent yang mengindikasikan pencarian aplikasi/game
+    const appKeywords = [
+        "app", "apps", "aplikasi", "game", "games", "apk", 
+        "download", "unduh", "mod", "playstore", "play store", 
+        "simulator", "mobile", "android"
+    ];
 
-        // Jalur 1: Negative Intent (Blokir kata kunci tutorial/masalah)
-        const kataKunciBlokir = ['cara', 'tutorial', 'tips', 'trik', 'bagaimana', 'why', 'how', 'uninstall', 'hapus', 'error', 'rusak', 'bug', 'berita', 'artikel'];
-        if (kataKunciBlokir.some(kata => doc.has(kata))) return false;
+    // Cek apakah ada kata kunci aplikasi dalam query
+    const hasAppIntent = appKeywords.some(kw => {
+        const regex = new RegExp(`\\b${kw}\\b`, "i");
+        return regex.test(q);
+    });
 
-        // Jalur 2: Explicit Intent (Langsung lolos jika ada kata kunci aplikasi/game)
-        const kataKunciAplikasi = ['download', 'unduh', 'install', 'pasang', 'dapatkan', 'apk', 'app', 'aplikasi', 'game', 'gim', 'mod'];
-        if (kataKunciAplikasi.some(kata => doc.has(kata))) return true;
+    // Kalo emang user jelas-jelas ngetik "game simulator" atau "download apk", izinkan
+    if (hasAppIntent) return true;
 
-        // Jalur 3: Filtering NLP Entitas
-        if (doc.people().found) return false;
-        if (doc.verbs().found && !doc.has('(download|install|unduh|pasang)')) return false;
-        if (doc.nouns().found) return true;
+    // 2. Deteksi NLP: Kalo query berupa Nama Orang (People), jangan munculin widget
+    if (window.nlp) {
+        const doc = window.nlp(q);
+        if (doc.people().found) {
+            return false;
+        }
+    }
 
-        return false;
-    },
+    // Default: Jangan panggil API kalo cuma kata tunggal/pencarian umum tanpa intent app
+    return false;
+},
 
 checkPlayStoreWidget: async () => {
     const query = Config.q.trim();
@@ -361,13 +370,29 @@ checkPlayStoreWidget: async () => {
         
         if (!Array.isArray(res) || res.length === 0) return;
 
-        // Ambil maksimal 3 hasil teratas
         const apps = res.slice(0, 3);
 
-        // Container utama widget dengan padding standar 16px
         const widgetCard = document.createElement("div");
         widgetCard.className = "result-card result-card--flat playstore-widget";
         widgetCard.style.cssText = "padding: 16px; display: flex; flex-direction: column; gap: 12px;";
+
+        // SVG Logo Google Play Store
+        const playStoreLogoSvg = `
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;">
+                <path d="M3.609 1.814L13.792 12 3.61 22.186a1.99 1.99 0 0 1-.61-1.42V3.234c0-.54.218-1.037.609-1.42z" fill="#2196F3"/>
+                <path d="M17.156 8.636l-3.364 3.364 3.364 3.364 4.093-2.361c.882-.509.882-1.858 0-2.367l-4.093-2.364z" fill="#FFC107"/>
+                <path d="M13.792 12L3.609 1.814A1.97 1.97 0 0 1 4.887 1.4c.54 0 1.038.146 1.488.406l10.781 6.83L13.792 12z" fill="#4CAF50"/>
+                <path d="M13.792 12l3.364 3.364-10.78 6.83a2.91 2.91 0 0 1-1.489.406 1.97 1.97 0 0 1-1.278-.414L13.792 12z" fill="#F44336"/>
+            </svg>
+        `;
+
+        // Header Tab atas
+        const headerHtml = `
+            <div style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:14px; color:var(--text-color, #202124); border-bottom: 1px solid var(--border-color, #f0f0f0); padding-bottom: 10px; margin-bottom: 2px;">
+                ${playStoreLogoSvg}
+                <span>Aplikasi</span>
+            </div>
+        `;
 
         const itemsHtml = apps.map((app, index) => {
             if (!app.title) return "";
@@ -380,7 +405,11 @@ checkPlayStoreWidget: async () => {
             const isFree = app.price === "0" || app.price === 0;
             const priceText = isFree ? 'Install' : `Rp ${Number(app.price).toLocaleString('id-ID')}`;
 
-            // Pembatas (divider) antar item kecuali item terakhir
+            // Format genre dari "GAME_STRATEGY" menjadi "Game Strategy"
+            const categoryText = app.category 
+                ? app.category.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase()) 
+                : '';
+
             const isLast = index === apps.length - 1;
             const borderStyle = !isLast ? "border-bottom: 1px solid var(--border-color, #f0f0f0); padding-bottom: 12px;" : "";
 
@@ -388,8 +417,11 @@ checkPlayStoreWidget: async () => {
                 <div style="display:flex; align-items:center; gap:12px; ${borderStyle}">
                     ${icon ? `<img src="${icon}" alt="${title}" style="width:48px; height:48px; border-radius:10px; object-fit:cover; flex-shrink:0;">` : ''}
                     <div style="flex:1; min-width:0;">
-                        <div style="font-weight:600; font-size:15px; color:var(--text-color, #1a0dab); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${title}</div>
-                        <div style="font-size:13px; color:#5f6368;">${developer} ${rating ? `• ⭐ ${rating}` : ''}</div>
+                        <!-- Font weight diset ke 500 biar gak ketebalan -->
+                        <div style="font-weight:500; font-size:15px; color:var(--text-color, #1a0dab); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${title}</div>
+                        <div style="font-size:13px; color:#5f6368; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
+                            ${developer} ${categoryText ? `• ${categoryText}` : ''} ${rating ? `• ⭐ ${rating}` : ''}
+                        </div>
                     </div>
                     <a href="${url}" target="_blank" rel="noopener" style="background:#01875f; color:#fff; padding:6px 16px; border-radius:18px; text-decoration:none; font-size:13px; font-weight:500; white-space:nowrap; flex-shrink:0;">
                         ${priceText}
@@ -400,7 +432,7 @@ checkPlayStoreWidget: async () => {
 
         if (!itemsHtml.trim()) return;
 
-        widgetCard.innerHTML = itemsHtml;
+        widgetCard.innerHTML = headerHtml + itemsHtml;
         mainResult.insertAdjacentElement('afterbegin', widgetCard);
     } catch (err) {
         console.error("Gagal memuat widget Play Store:", err);
