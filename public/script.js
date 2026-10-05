@@ -1,3 +1,4 @@
+import nlp from "https://esm.sh/compromise";
 /**
  * SEARCH ENGINE CORE - Serverless Edition
  *
@@ -196,6 +197,8 @@ const API = {
 
     fetchSuggestions: (query) => API.get("suggest", { q: query }),
 
+    fetchPlayStoreApp: (query) => API.get("playstore", { q: query, hl: isIdLang ? "id" : "en" }),
+
     translate: async (text, from, to) => {
         const data = await API.post("translate", { text, sl: from, tl: to });
         return data.text || "";
@@ -291,6 +294,69 @@ const Widgets = {
             }).join("");
             if (items) infoboxHtml = `<div class="infobox">${items}</div>`;
         }
+
+    hitungTriggerApiPlayStore: (query) => {
+        const queryClean = query.trim().toLowerCase();
+        if (!queryClean) return false;
+
+        let doc = nlp(queryClean);
+
+        // Jalur 1: Negative Intent (Blokir kata kunci tutorial/masalah)
+        const kataKunciBlokir = ['cara', 'tutorial', 'tips', 'trik', 'bagaimana', 'why', 'how', 'uninstall', 'hapus', 'error', 'rusak', 'bug', 'berita', 'artikel'];
+        if (kataKunciBlokir.some(kata => doc.has(kata))) return false;
+
+        // Jalur 2: Explicit Intent (Langsung lolos jika ada kata kunci aplikasi/game)
+        const kataKunciAplikasi = ['download', 'unduh', 'install', 'pasang', 'dapatkan', 'apk', 'app', 'aplikasi', 'game', 'gim', 'mod'];
+        if (kataKunciAplikasi.some(kata => doc.has(kata))) return true;
+
+        // Jalur 3: Filtering NLP Entitas
+        if (doc.people().found) return false;
+        if (doc.verbs().found && !doc.has('(download|install|unduh|pasang)')) return false;
+        if (doc.nouns().found) return true;
+
+        return false;
+    },
+
+    checkPlayStoreWidget: async () => {
+        const query = Config.q.trim();
+        const mainResult = document.querySelector(".main-result .results-list");
+        if (!mainResult || !query) return;
+
+        // Cek algoritma NLP
+        const butuhPlayStore = Widgets.hitungTriggerApiPlayStore(query);
+        if (!butuhPlayStore) return;
+
+        try {
+            const app = await API.fetchPlayStoreApp(query);
+            if (!app || !app.title) return;
+
+            const icon = Utils.attrUrl(app.icon || app.thumbnail);
+            const title = Utils.escapeHTML(app.title);
+            const developer = Utils.escapeHTML(app.developer || app.author || "Google Play");
+            const score = app.score ? parseFloat(app.score).toFixed(1) : null;
+            const url = Utils.attrUrl(app.url || `https://play.google.com/store/apps/details?id=${app.appId}`);
+
+            const card = document.createElement("div");
+            card.className = "result-card result-card--flat playstore-widget";
+            card.innerHTML = `
+                <div style="display:flex; align-items:center; gap:12px; padding: 4px 0;">
+                    ${icon ? `<img src="${icon}" alt="${title}" style="width:48px; height:48px; border-radius:10px; object-fit:cover;">` : ''}
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-weight:600; font-size:15px; color:var(--text-color, #1a0dab); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${title}</div>
+                        <div style="font-size:13px; color:#5f6368;">${developer} ${score ? `• ⭐ ${score}` : ''}</div>
+                    </div>
+                    <a href="${url}" target="_blank" rel="noopener" style="background:#01875f; color:#fff; padding:6px 16px; border-radius:18px; text-decoration:none; font-size:13px; font-weight:500; white-space:nowrap;">
+                        ${isIdLang ? 'Install' : 'Get'}
+                    </a>
+                </div>
+            `;
+
+            // Sisipkan di paling atas hasil pencarian web
+            mainResult.insertAdjacentElement('afterbegin', card);
+        } catch (err) {
+            console.log("Widget Play Store tidak dimuat:", err);
+        }
+    },
 
         const sourceHref = Utils.attrUrl(res.sourceUrl) || "#";
         const sourceName = Utils.escapeHTML(Utils.stripTags(res.source || ""));
@@ -1438,6 +1504,7 @@ function renderWebResults(res) {
       container.insertAdjacentHTML('beforeend', `<div class="corrected-word result-card result-card--flat"><div class="snippet">${getText("correct")} <a href="/search?q=${encodeURIComponent(corrected)}${searchLangParam}">${Utils.escapeHTML(corrected)}</a><span>?</span></div></div>`);
     }
     Widgets.renderWidgets(res);
+    Widgets.checkPlayStoreWidget();
   }
 
   res.items.forEach((item, i) => {
@@ -1506,6 +1573,7 @@ function hydrateWebResults(res) {
 
   Widgets.renderWidgets(res);
   Widgets.checkVideoWidget();
+  Widgets.checkPlayStoreWidget();
   UI.renderFooter();
   renderRelatedSearches(container);
 
