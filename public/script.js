@@ -376,7 +376,7 @@ const Widgets = {
         widgetCard.className = "result-card result-card--flat playstore-widget";
         widgetCard.style.cssText = "padding: 16px; display: flex; flex-direction: column; gap: 12px;";
 
-        // Logo Play Store diperbesar ke 22px
+        // Logo Play Store (22px)
         const playStoreLogoSvg = `
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="flex-shrink:0; width:22px; height:22px;">
                 <path d="M3.609 1.814L13.792 12 3.61 22.186a1.99 1.99 0 0 1-.61-1.42V3.234c0-.54.218-1.037.609-1.42z" fill="#2196F3"/>
@@ -386,9 +386,9 @@ const Widgets = {
             </svg>
         `;
 
-        // Header tanpa border-bottom, style pakai CSS Variable kamu
+        // Judul Tab: 20px, warna hitam, tanpa font-weight khusus
         const headerHtml = `
-            <div style="display:flex; align-items:center; gap:8px; font-weight:400; font-size:var(--dtext-small); color:var(--color-title); padding-bottom: 2px;">
+            <div style="display:flex; align-items:center; gap:8px; font-size:20px; color:#000; padding-bottom: 2px;">
                 ${playStoreLogoSvg}
                 <span>Aplikasi</span>
             </div>
@@ -411,7 +411,6 @@ const Widgets = {
 
             const metaLine = [categoryText, rating ? `⭐ ${rating}` : ''].filter(Boolean).join(' • ');
 
-            // Garis pembatas cuma ada di antara item 1-2 dan 2-3
             const isLast = index === apps.length - 1;
             const borderStyle = !isLast ? "border-bottom: 1px solid var(--border-color, #f0f0f0); padding-bottom: 12px;" : "";
 
@@ -419,8 +418,8 @@ const Widgets = {
                 <div style="display:flex; align-items:center; gap:12px; ${borderStyle}">
                     ${icon ? `<img src="${icon}" alt="${title}" style="width:48px; height:48px; border-radius:10px; object-fit:cover; flex-shrink:0;">` : ''}
                     <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px;">
-                        <!-- Judul aplikasi: 16px & font-weight: 400 -->
-                        <div style="font-weight:400; font-size:16px; color:var(--text-color, #1a0dab); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${title}</div>
+                        <!-- Judul Aplikasi: var(--dtext-small) & var(--color-title) -->
+                        <div style="font-size:var(--dtext-small); color:var(--color-title); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${title}</div>
                         <!-- Developer -->
                         <div style="font-size:13px; color:#5f6368; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${developer}</div>
                         <!-- Genre & Rating -->
