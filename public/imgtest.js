@@ -27,27 +27,26 @@ let isWaiting = false; // jeda sebelum fetch
 function showLoader() {
     if (!shwrapper) return;
     shwrapper.innerHTML = `<div class="loader"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="4" stroke-miterlimit="10"/></svg></div>`;
-    // Tengah bawah container
-    shwrapper.style.position = 'absolute';
-    shwrapper.style.left = '0';
-    shwrapper.style.bottom = '0';
+    
+    // Gunakan posisi relatif/block biasa di bawah kontainer hasil agar tidak menimpa gambar
+    shwrapper.style.position = 'relative';
     shwrapper.style.width = '100%';
     shwrapper.style.display = 'flex';
     shwrapper.style.justifyContent = 'center';
     shwrapper.style.alignItems = 'center';
     shwrapper.style.height = '80px';
-    shwrapper.style.marginTop = "8px";
+    shwrapper.style.marginTop = '16px';
+    shwrapper.style.clear = 'both';
 }
 
 function clearLoader() {
     if (shwrapper) {
         shwrapper.innerHTML = '';
         shwrapper.style.height = '0px';
+        shwrapper.style.marginTop = '0px';
         shwrapper.style.display = 'none';
     }
     positionItems();
-    // Footer baru dirender setelah hasil pertama selesai (berhasil/kosong/gagal),
-    // supaya tidak nongol di bawah loader lalu loncat. UI.renderFooter() aman dipanggil berulang.
     if (typeof UI !== 'undefined' && UI.renderFooter) UI.renderFooter();
 }
 
@@ -118,8 +117,7 @@ function positionItems() {
         columnHeights[colIndex] += item.offsetHeight + uniformGap; 
     }); 
 
-    const extraHeight = (isWaiting || isLoading) ? 80 : 8;
-    container.style.height = `${Math.max(...columnHeights) + extraHeight}px`;
+    container.style.height = `${Math.max(...columnHeights) + 8}px`;
 }
 window.addEventListener("resize", positionItems); 
 
@@ -474,44 +472,37 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         };
     }
 
-    function showPreviewByIndex(index) {
-        const allItems = Array.from(document.querySelectorAll(".main-result .image-item"));
-        if (index < 0 || index >= allItems.length) return;
+let cachedAllItems = []; // Cache elemen agar tidak query DOM di touchmove
 
-        currentImageIndex = index;
-        preview.style.display = "block"; 
+function showPreviewByIndex(index) {
+    cachedAllItems = Array.from(document.querySelectorAll(".main-result .image-item"));
+    if (index < 0 || index >= cachedAllItems.length) return;
 
-        // Kunci scroll body HANYA jika di layar Mobile (< 1024px)
-        if (window.innerWidth < 1024) {
-            document.documentElement.style.overflow = "hidden";
-        } else {
-            document.documentElement.style.overflow = "auto"; // Desktop tetap bisa scroll grid kiri
-        }
+    currentImageIndex = index;
+    preview.style.display = "block"; 
 
-        // Isi Halaman Kiri, Tengah, dan Kanan
-        const prevData = extractDataFromElement(allItems[index - 1]);
-        const currData = extractDataFromElement(allItems[index]);
-        const nextData = extractDataFromElement(allItems[index + 1]);
-
-        prevPage.innerHTML = createCardHTML(prevData);
-        currPage.innerHTML = createCardHTML(currData);
-        nextPage.innerHTML = createCardHTML(nextData);
-
-        // Render Related Images di masing-masing halaman
-        renderLocalRelatedImages(index - 1, allItems, prevPage);
-        renderLocalRelatedImages(index, allItems, currPage);
-        renderLocalRelatedImages(index + 1, allItems, nextPage);
-
-        // Reset Transform Track Ke Posisi Tengah (-100%)
-        track.style.transition = "none";
-        track.style.transform = `translateX(-100%)`;
-
-        // Reset Scroll Vertikal ke Puncak
-        currPage.scrollTop = 0;
-
-        updateDots(index, allItems.length);
+    if (window.innerWidth < 1024) {
+        document.documentElement.style.overflow = "hidden";
     }
 
+    const prevData = extractDataFromElement(cachedAllItems[index - 1]);
+    const currData = extractDataFromElement(cachedAllItems[index]);
+    const nextData = extractDataFromElement(cachedAllItems[index + 1]);
+
+    prevPage.innerHTML = createCardHTML(prevData);
+    currPage.innerHTML = createCardHTML(currData);
+    nextPage.innerHTML = createCardHTML(nextData);
+
+    renderLocalRelatedImages(index - 1, cachedAllItems, prevPage);
+    renderLocalRelatedImages(index, cachedAllItems, currPage);
+    renderLocalRelatedImages(index + 1, cachedAllItems, nextPage);
+
+    track.style.transition = "none";
+    track.style.transform = `translateX(-100%)`;
+    currPage.scrollTop = 0;
+
+    updateDots(index, cachedAllItems.length);
+}
 
     function getDotIndex(idx, totalItems) {
         if (idx <= 0) return 0;
@@ -621,53 +612,49 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         track.style.transition = "none";
     }, { passive: true });
 
-    preview.addEventListener("touchmove", (e) => {
-        if (!isTouchActive) return;
-        touchMoveX = e.touches[0].clientX;
-        touchMoveY = e.touches[0].clientY;
+let ticking = false;
 
-        const diffX = touchMoveX - touchStartX;
-        const diffY = touchMoveY - touchStartY;
+preview.addEventListener("touchmove", (e) => {
+    if (!isTouchActive) return;
+    touchMoveX = e.touches[0].clientX;
+    touchMoveY = e.touches[0].clientY;
 
-        // Tentukan gesture horizontal vs vertikal berdasarkan dominasi arah geser jari
-        if (!isHorizontalSwipe) {
-            const isHorizontalIntent = Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 8;
-            
-            if (isHorizontalIntent) {
-                // Pengguna menggeser mendatar (horizontal) -> Aktifkan mode slide
-                isHorizontalSwipe = true;
-            } else {
-                // Pengguna menggeser vertikal -> Biarkan browser menangani scroll vertikal
-                return; 
-            }
+    const diffX = touchMoveX - touchStartX;
+    const diffY = touchMoveY - touchStartY;
+
+    if (!isHorizontalSwipe) {
+        const isHorizontalIntent = Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 8;
+        if (isHorizontalIntent) {
+            isHorizontalSwipe = true;
+        } else {
+            return; 
         }
+    }
 
-        // Jika mode slide horizontal aktif, KUNCI SCROLL VERTIKAL agar tidak bisa scroll & slide barengan
-        if (isHorizontalSwipe) {
-            if (e.cancelable) {
-                e.preventDefault(); // Menghentikan scroll vertikal halaman saat slide berjalan
-            }
+    if (isHorizontalSwipe) {
+        if (e.cancelable) e.preventDefault();
 
-            let moveDiffX = diffX;
-            const containerWidth = preview.clientWidth;
-            const allItems = Array.from(document.querySelectorAll(".main-result .image-item"));
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                let moveDiffX = diffX;
+                const containerWidth = preview.clientWidth;
+                const totalLen = cachedAllItems.length || 1;
 
-            // Beri efek hambatan (resistance) jika berada di paling awal atau paling akhir
-            if ((currentImageIndex === 0 && moveDiffX > 0) || (currentImageIndex === allItems.length - 1 && moveDiffX < 0)) {
-                moveDiffX = moveDiffX * 0.2; 
-            }
+                if ((currentImageIndex === 0 && moveDiffX > 0) || (currentImageIndex === totalLen - 1 && moveDiffX < 0)) {
+                    moveDiffX = moveDiffX * 0.2; 
+                }
 
-            const currentOffsetPercent = -100 + (moveDiffX / containerWidth) * 100;
-            track.style.transform = `translateX(${currentOffsetPercent}%)`;
+                const currentOffsetPercent = -100 + (moveDiffX / containerWidth) * 100;
+                track.style.transform = `translate3d(${currentOffsetPercent}%, 0, 0)`;
 
-            // Matikan transisi CSS dot agar instan mengikuti gerakan jari
-            const dots = preview.querySelectorAll(".preview-dot");
-            dots.forEach(d => d.style.transition = "none");
-
-            // Animasi dot real-time saat jari bergeser
-            updateDotsRealtime(moveDiffX, containerWidth, currentImageIndex, allItems.length);
+                updateDotsRealtime(moveDiffX, containerWidth, currentImageIndex, totalLen);
+                ticking = false;
+            });
+            ticking = true;
         }
-    }, { passive: false });
+    }
+}, { passive: false });
+
 
     preview.addEventListener("touchend", () => {
         if (!isTouchActive) return;

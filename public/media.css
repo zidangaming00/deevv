@@ -226,6 +226,7 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
   height: 100%;
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   will-change: transform;
+  transform: translateZ(0);
 }
 .preview-card-track, .preview-dot {
     will-change: transform, opacity;
@@ -243,6 +244,7 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
   -webkit-overflow-scrolling: touch;
   background: #ffffff;
   box-sizing: border-box;
+  contain: strict;
 }
 
 .image-preview__header { 
