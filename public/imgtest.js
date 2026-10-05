@@ -641,8 +641,12 @@ if (targetContainer && !document.querySelector(".image-preview")) {
             }
         }
 
-        // Jika mode slide horizontal aktif
+        // Jika mode slide horizontal aktif, KUNCI SCROLL VERTIKAL agar tidak bisa scroll & slide barengan
         if (isHorizontalSwipe) {
+            if (e.cancelable) {
+                e.preventDefault(); // Menghentikan scroll vertikal halaman saat slide berjalan
+            }
+
             let moveDiffX = diffX;
             const containerWidth = preview.clientWidth;
             const allItems = Array.from(document.querySelectorAll(".main-result .image-item"));
@@ -662,8 +666,7 @@ if (targetContainer && !document.querySelector(".image-preview")) {
             // Animasi dot real-time saat jari bergeser
             updateDotsRealtime(moveDiffX, containerWidth, currentImageIndex, allItems.length);
         }
-    }, { passive: true });
-
+    }, { passive: false });
 
     preview.addEventListener("touchend", () => {
         if (!isTouchActive) return;
