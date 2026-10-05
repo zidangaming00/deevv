@@ -375,7 +375,7 @@ formatCount = (numStr) => {
     }
 
     return num.toString();
-};
+},
 
   checkPlayStoreWidget: async () => {
     const query = Config.q.trim();
