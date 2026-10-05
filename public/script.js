@@ -351,56 +351,48 @@ const Widgets = {
         return false;
     },
 
-    checkPlayStoreWidget: async () => {
-        const query = Config.q.trim();
-        const mainResult = document.querySelector(".main-result .results-list");
-        if (!mainResult || !query) return;
+checkPlayStoreWidget: async () => {
+    const query = Config.q.trim();
+    const mainResult = document.querySelector(".main-result .results-list");
+    if (!mainResult || !query) return;
 
-        // 1. Load library otomatis lewat JS kalau belum dimuat
-        if (!window.nlp) {
-            await new Promise(resolve => {
-                const s = document.createElement("script");
-                s.src = "https://unpkg.com/compromise";
-                s.onload = resolve;
-                document.head.appendChild(s);
-            });
-        }
+    try {
+        const res = await API.fetchPlayStoreApp(query);
+        
+        // Pastikan response berupa array dan ada isinya
+        if (!Array.isArray(res) || res.length === 0) return;
 
-        // 2. Eksekusi logika NLP
-        const butuhPlayStore = Widgets.hitungTriggerApiPlayStore(query);
-        if (!butuhPlayStore) return;
+        // Ambil hasil pertama (paling relevan)
+        const app = res[0];
+        if (!app.title) return;
 
-        // 3. Fetch API & render HTML widget
-        try {
-            const app = await API.fetchPlayStoreApp(query);
-            if (!app || !app.title) return;
+        const title = Utils.escapeHTML(app.title);
+        const icon = Utils.attrUrl(app.icon);
+        const developer = Utils.escapeHTML(app.developer);
+        const rating = app.rating ? parseFloat(app.rating).toFixed(1) : null;
+        const url = Utils.attrUrl(app.url);
+        const isFree = app.price === "0" || app.price === 0;
 
-            const icon = Utils.attrUrl(app.icon || app.thumbnail);
-            const title = Utils.escapeHTML(app.title);
-            const developer = Utils.escapeHTML(app.developer || app.author || "Google Play");
-            const score = app.score ? parseFloat(app.score).toFixed(1) : null;
-            const url = Utils.attrUrl(app.url || `https://play.google.com/store/apps/details?id=${app.appId}`);
-
-            const card = document.createElement("div");
-            card.className = "result-card result-card--flat playstore-widget";
-            card.innerHTML = `
-                <div style="display:flex; align-items:center; gap:12px; padding: 4px 0;">
-                    ${icon ? `<img src="${icon}" alt="${title}" style="width:48px; height:48px; border-radius:10px; object-fit:cover;">` : ''}
-                    <div style="flex:1; min-width:0;">
-                        <div style="font-weight:600; font-size:15px; color:var(--text-color, #1a0dab); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${title}</div>
-                        <div style="font-size:13px; color:#5f6368;">${developer} ${score ? `• ⭐ ${score}` : ''}</div>
-                    </div>
-                    <a href="${url}" target="_blank" rel="noopener" style="background:#01875f; color:#fff; padding:6px 16px; border-radius:18px; text-decoration:none; font-size:13px; font-weight:500; white-space:nowrap;">
-                        ${isIdLang ? 'Install' : 'Get'}
-                    </a>
+        const card = document.createElement("div");
+        card.className = "result-card result-card--flat playstore-widget";
+        card.innerHTML = `
+            <div style="display:flex; align-items:center; gap:12px; padding: 4px 0;">
+                ${icon ? `<img src="${icon}" alt="${title}" style="width:48px; height:48px; border-radius:10px; object-fit:cover;">` : ''}
+                <div style="flex:1; min-width:0;">
+                    <div style="font-weight:600; font-size:15px; color:var(--text-color, #1a0dab); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${title}</div>
+                    <div style="font-size:13px; color:#5f6368;">${developer} ${rating ? `• ⭐ ${rating}` : ''}</div>
                 </div>
-            `;
+                <a href="${url}" target="_blank" rel="noopener" style="background:#01875f; color:#fff; padding:6px 16px; border-radius:18px; text-decoration:none; font-size:13px; font-weight:500; white-space:nowrap;">
+                    ${isFree ? 'Install' : `Rp ${Number(app.price).toLocaleString('id-ID')}`}
+                </a>
+            </div>
+        `;
 
-            mainResult.insertAdjacentElement('afterbegin', card);
-        } catch (err) {
-            console.log("Widget Play Store tidak dimuat:", err);
-        }
-    },
+        mainResult.insertAdjacentElement('afterbegin', card);
+    } catch (err) {
+        console.error("Gagal memuat widget Play Store:", err);
+    }
+},
 
     renderWidgets: (res) => {
         const query = Config.q.toLowerCase();
