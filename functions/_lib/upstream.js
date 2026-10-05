@@ -177,3 +177,111 @@ WAJIB berikan jawaban dengan format persis seperti ini (gunakan '---' sebagai pe
 
   return { text: String(data?.choices?.[0]?.message?.content || "").trim() };
 }
+
+// ------------------------------------------------------------------
+// Play Store Scraper (Pure Fetch - Tanpa NPM Package)
+// ------------------------------------------------------------------
+
+/**
+ * Mengambil detail game/aplikasi berdasarkan package ID dari Play Store
+ */
+export async function getPlayStoreDetails(env, { id, hl = "id" }) {
+  if (!id) return null;
+  const targetUrl = `https://play.google.com/store/apps/details?id=${encodeURIComponent(id)}&hl=${hl}`;
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 10000);
+
+  try {
+    const res = await fetch(targetUrl, {
+      signal: ctrl.signal,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
+      }
+    });
+
+    if (!res.ok) return null;
+    const html = await res.text();
+
+    // Ekstrak data JSON-LD yang tertanam di HTML Play Store
+    const ldMatch = html.match(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/i);
+    let ldData = null;
+    if (ldMatch && ldMatch[1]) {
+      try {
+        ldData = JSON.parse(ldMatch[1]);
+      } catch (e) {}
+    }
+
+    if (ldData) {
+      return {
+        appId: id,
+        title: ldData.name || null,
+        url: ldData.url || targetUrl,
+        icon: ldData.image || null,
+        developer: ldData.author?.name || null,
+        rating: ldData.aggregateRating?.ratingValue ? parseFloat(ldData.aggregateRating.ratingValue).toFixed(1) : null,
+        ratingCount: ldData.aggregateRating?.ratingCount || null,
+        price: ldData.offers?.[0]?.price || "Free",
+        category: ldData.applicationCategory || null,
+        description: ldData.description || null
+      };
+    }
+
+    return null;
+  } catch (err) {
+    console.error("[PlayStoreDetails]", err);
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * Mencari game di Play Store dan mengembalikan N hasil teratas lengkap
+ */
+export async function getPlayStoreSearch(env, { q, limit = 3, hl = "id" }) {
+  const searchUrl = `https://play.google.com/store/search?q=${encodeURIComponent(q)}&c=apps&hl=${hl}`;
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 12000);
+
+  try {
+    const res = await fetch(searchUrl, {
+      signal: ctrl.signal,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
+      }
+    });
+
+    if (!res.ok) return [];
+    const html = await res.text();
+
+    // Cari ID aplikasi (/store/apps/details?id=...) dari HTML hasil pencarian
+    const appRegex = /\/store\/apps\/details\?id=([a-zA-Z0-9_.]+)/g;
+    const foundIds = new Set();
+    let match;
+
+    while ((match = appRegex.exec(html)) !== null) {
+      if (match[1]) {
+        foundIds.add(match[1]);
+      }
+    }
+
+    // Ambil sejumlah limit (default 3 ID teratas)
+    const topIds = Array.from(foundIds).slice(0, limit);
+
+    // Fetch detail paralel untuk hasil pencarian teratas
+    const results = await Promise.all(
+      topIds.map(id => getPlayStoreDetails(env, { id, hl }))
+    );
+
+    return results.filter(Boolean);
+  } catch (err) {
+    console.error("[PlayStoreSearch]", err);
+    return [];
+  } finally {
+    clearTimeout(timer);
+  }
+}
