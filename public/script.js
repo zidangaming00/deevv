@@ -306,8 +306,9 @@ const PlayIntent = {
     // dua kata dianggap sama: identik, awalan (sedang mengetik), atau typo 1 huruf
     same: (a, b) => {
         if (a === b) return true;
-        const min = Math.min(a.length, b.length);
-        if (min >= 4 && (a.startsWith(b) || b.startsWith(a))) return true;
+        const min = Math.min(a.length, b.length), max = Math.max(a.length, b.length);
+        // awalan = user sedang mengetik; harus sepadan ("minecra" ~ "minecraft", tapi "word" !~ "wordscapes")
+        if (min >= 4 && min / max >= 0.6 && (a.startsWith(b) || b.startsWith(a))) return true;
         return min >= 5 && PlayIntent.within1(a, b);
     },
 
@@ -349,8 +350,17 @@ const PlayIntent = {
         return name * (0.35 + 0.65 * PlayIntent.popularity(app));
     },
 
-    // Mengembalikan app yang lolos, urut dari paling relevan. Kosong = bukan niat cari aplikasi.
-    filter: (query, apps) => {
+    // Satu panggilan API dipakai bersama oleh widget Play Store dan widget Video
+    _cache: {},
+    lookup: (query) => {
+        if (!PlayIntent._cache[query]) {
+            PlayIntent._cache[query] = API.fetchPlayStoreApp(query).catch(() => []);
+        }
+        return PlayIntent._cache[query];
+    },
+
+    // App yang lolos beserta skornya, urut dari paling relevan. Kosong = bukan niat cari aplikasi.
+    rank: (query, apps) => {
         if (!Array.isArray(apps)) return [];
         const qTokens = PlayIntent.tokens(query);
         const qCompact = PlayIntent.compact(query);
@@ -362,12 +372,51 @@ const PlayIntent = {
             .sort((a, b) => b.score - a.score);
 
         if (urlParams.get("debug") === "1") {
-            console.table(scored.map(r => ({ title: r.app.title, ratings: r.app.ratingCount, score: +r.score.toFixed(3) })));
+            console.table(scored.map(r => ({ title: r.app.title, category: r.app.category, ratings: r.app.ratingCount, score: +r.score.toFixed(3) })));
         }
 
-        // Hasil terbaik harus lolos dulu; kalau tidak, widget tidak tampil sama sekali
+        // Hasil terbaik harus lolos dulu; kalau tidak, tidak ada yang ditampilkan
         if (!scored.length || scored[0].score < PlayIntent.MIN_SCORE) return [];
-        return scored.filter(r => r.score >= PlayIntent.MIN_SCORE).slice(0, PlayIntent.MAX_SHOW).map(r => r.app);
+        return scored.filter(r => r.score >= PlayIntent.MIN_SCORE).slice(0, PlayIntent.MAX_SHOW);
+    },
+
+    filter: (query, apps) => PlayIntent.rank(query, apps).map(r => r.app)
+};
+
+// ==========================================
+// VIDEO INTENT (tanpa daftar kata)
+// ==========================================
+// Dua sinyal, keduanya dari data:
+//  1. Kalau query ternyata sebuah aplikasi (lewat PlayIntent), kategori Play Store-nya menentukan:
+//     game/hiburan -> orang biasanya cari video (gameplay, trailer); alat kerja -> tidak.
+//     Kategori ini taksonomi bawaan Play Store, bukan kata dari user.
+//  2. Video yang dikembalikan harus benar-benar tentang query: kata query yang muncul di
+//     minimal sebagian judul/channel dianggap "inti"; kata yang tidak muncul di mana pun
+//     (mis. "download", "terbaru") dianggap kata niat dan diabaikan.
+const VideoIntent = {
+    VIDEO_CATEGORIES: /^(game|entertainment|music|video)/i, // sesuaikan dengan format kategori dari API-mu
+    MIN_CORE_DF: 0.4,     // sebuah kata dianggap inti kalau ada di >= 40% video
+    MIN_CORE_RATIO: 0.5,  // minimal separuh kata query harus inti
+
+    isEntertainmentApp: (ranked) => {
+        const total = ranked.reduce((sum, r) => sum + r.score, 0);
+        if (!total) return false;
+        const fun = ranked.reduce((sum, r) => sum + (VideoIntent.VIDEO_CATEGORIES.test(String(r.app.category || "")) ? r.score : 0), 0);
+        return fun / total >= 0.5;
+    },
+
+    relevant: (query, items) => {
+        const qTokens = Array.from(new Set(PlayIntent.tokens(query)));
+        if (!qTokens.length || !Array.isArray(items) || !items.length) return false;
+        const docs = items.map(it => PlayIntent.tokens(`${it?.snippet?.title || ""} ${it?.snippet?.channelTitle || ""}`));
+        const core = qTokens.filter(t => docs.filter(d => d.some(w => PlayIntent.same(t, w))).length / docs.length >= VideoIntent.MIN_CORE_DF);
+        return core.length / qTokens.length >= VideoIntent.MIN_CORE_RATIO;
+    },
+
+    decide: (query, apps, items) => {
+        const ranked = PlayIntent.rank(query, apps);
+        if (ranked.length && !VideoIntent.isEntertainmentApp(ranked)) return false; // app alat kerja (Word, Excel, ...)
+        return VideoIntent.relevant(query, items);
     }
 };
 
@@ -461,7 +510,7 @@ const Widgets = {
     if (!mainResult || !query) return;
 
     try {
-        const res = await API.fetchPlayStoreApp(query);
+        const res = await PlayIntent.lookup(query);
         
         if (!Array.isArray(res) || res.length === 0) return;
 
@@ -474,7 +523,12 @@ const Widgets = {
         widgetCard.style.cssText = "padding: 16px; display: flex; flex-direction: column; gap: 12px;";
 
         const playStoreLogoSvg = `
-            <img width="20px" height="20px" src="https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://play.google.com/&size=32" />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex-shrink:0; width:20px; height:20px;">
+                <path d="M3.609 1.814L13.792 12 3.61 22.186a1.99 1.99 0 0 1-.61-1.42V3.234c0-.54.218-1.037.609-1.42z" fill="#2196F3"/>
+                <path d="M17.156 8.636l-3.364 3.364 3.364 3.364 4.093-2.361c.882-.509.882-1.858 0-2.367l-4.093-2.364z" fill="#FFC107"/>
+                <path d="M13.792 12L3.609 1.814A1.97 1.97 0 0 1 4.887 1.4c.54 0 1.038.146 1.488.406l10.781 6.83L13.792 12z" fill="#4CAF50"/>
+                <path d="M13.792 12l3.364 3.364-10.78 6.83a2.91 2.91 0 0 1-1.489.406 1.97 1.97 0 0 1-1.278-.414L13.792 12z" fill="#F44336"/>
+            </svg>
         `;
 
         // Title Tab pakai --color-text-dark
@@ -720,8 +774,12 @@ const Widgets = {
         const slot = document.getElementById("dynamic-video-widget-slot");
         if (!slot) return;
         try {
-            const data = await API.fetchVideo(Config.q, 4);
-            if (!data.items || !data.items.length) {
+            // Ambil 8 video (tampil 4) supaya relevansi bisa dinilai; Play Store dicek paralel
+            const [data, playApps] = await Promise.all([
+                API.fetchVideo(Config.q, 8),
+                PlayIntent.lookup(Config.q)
+            ]);
+            if (!data.items || !data.items.length || !VideoIntent.decide(Config.q, playApps, data.items)) {
                 slot.remove();
                 return;
             }
