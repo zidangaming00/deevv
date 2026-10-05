@@ -360,7 +360,7 @@ const Widgets = {
     return false;
 },
 
-formatCount = (numStr) => {
+formatCount: (numStr) => {
     const num = Number(numStr);
     if (!num) return '';
 
@@ -420,7 +420,7 @@ formatCount = (numStr) => {
             const url = Utils.attrUrl(app.url);
             const isFree = app.price === "0" || app.price === 0;
             const priceText = isFree ? 'Install' : `Rp ${Number(app.price).toLocaleString('id-ID')}`;
-            const countText = app.ratingCount ? `(${formatCount(app.ratingCount)})` : '';
+            const countText = app.ratingCount ? `(${Widgets.formatCount(app.ratingCount)})` : '';
 
             const categoryText = app.category 
                 ? app.category.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase()) 
