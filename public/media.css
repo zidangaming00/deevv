@@ -227,6 +227,10 @@ a.image-item__info { padding: 6px 6px 0 6px; display: flex; flex-direction: colu
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   will-change: transform;
 }
+.preview-card-track, .preview-dot {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+}
 
 .preview-card-page {
   min-width: 100%;

@@ -27,15 +27,16 @@ let isWaiting = false; // jeda sebelum fetch
 function showLoader() {
     if (!shwrapper) return;
     shwrapper.innerHTML = `<div class="loader"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="4" stroke-miterlimit="10"/></svg></div>`;
-    // Tengah bawah container
-    shwrapper.style.position = 'absolute';
+    
+    // Ubah ke relative agar mengambil ruang tersendiri di bawah container gambar
+    shwrapper.style.position = 'relative';
     shwrapper.style.left = '0';
-    shwrapper.style.bottom = '0';
     shwrapper.style.width = '100%';
     shwrapper.style.display = 'flex';
     shwrapper.style.justifyContent = 'center';
     shwrapper.style.alignItems = 'center';
     shwrapper.style.height = '80px';
+    shwrapper.style.marginTop = '8px'; // Beri jarak aman dari gambar paling bawah
 }
 
 function clearLoader() {
@@ -118,7 +119,7 @@ function positionItems() {
     }); 
 
     const extraHeight = (isWaiting || isLoading) ? 80 : 8;
-    container.style.height = `${Math.max(...columnHeights) + extraHeight}px`;
+    container.style.height = `${Math.max(...columnHeights) + 8}px`;
 }
 window.addEventListener("resize", positionItems); 
 
@@ -519,6 +520,8 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         return 2;
     }
 
+    let rafId = null;
+
     function updateDotsRealtime(diffX, containerWidth, currentIndex, totalItems) {
         const dots = preview.querySelectorAll(".preview-dot");
         if (!dots.length) return;
@@ -533,26 +536,26 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         dots.forEach((dot, idx) => {
             if (fromDotIdx === toDotIdx) {
                 if (idx === fromDotIdx) {
-                    dot.style.width = "16px";
-                    dot.style.backgroundColor = "rgba(255, 255, 255, 1)";
+                    dot.style.transform = "scaleX(2.66)"; // Gunakan scale agar diakselerasi GPU
+                    dot.style.opacity = "1";
                 } else {
-                    dot.style.width = "6px";
-                    dot.style.backgroundColor = "rgba(255, 255, 255, 0.4)";
+                    dot.style.transform = "scaleX(1)";
+                    dot.style.opacity = "0.4";
                 }
             } else {
                 if (idx === fromDotIdx) {
-                    const w = 16 - (10 * progress);
-                    const op = 1 - (0.6 * progress);
-                    dot.style.width = `${w}px`;
-                    dot.style.backgroundColor = `rgba(255, 255, 255, ${op})`;
+                    const scale = 2.66 - (1.66 * progress);
+                    const opacity = 1 - (0.6 * progress);
+                    dot.style.transform = `scaleX(${scale})`;
+                    dot.style.opacity = opacity;
                 } else if (idx === toDotIdx) {
-                    const w = 6 + (10 * progress);
-                    const op = 0.4 + (0.6 * progress);
-                    dot.style.width = `${w}px`;
-                    dot.style.backgroundColor = `rgba(255, 255, 255, ${op})`;
+                    const scale = 1 + (1.66 * progress);
+                    const opacity = 0.4 + (0.6 * progress);
+                    dot.style.transform = `scaleX(${scale})`;
+                    dot.style.opacity = opacity;
                 } else {
-                    dot.style.width = "6px";
-                    dot.style.backgroundColor = "rgba(255, 255, 255, 0.4)";
+                    dot.style.transform = "scaleX(1)";
+                    dot.style.opacity = "0.4";
                 }
             }
         });
@@ -628,43 +631,37 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         const diffX = touchMoveX - touchStartX;
         const diffY = touchMoveY - touchStartY;
 
-        // Tentukan gesture horizontal vs vertikal berdasarkan dominasi arah geser jari
         if (!isHorizontalSwipe) {
             const isHorizontalIntent = Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 8;
-            
             if (isHorizontalIntent) {
-                // Pengguna menggeser mendatar (horizontal) -> Aktifkan mode slide
                 isHorizontalSwipe = true;
             } else {
-                // Pengguna menggeser vertikal -> Biarkan browser menangani scroll vertikal
-                return; 
+                return;
             }
         }
 
-        // Jika mode slide horizontal aktif, KUNCI SCROLL VERTIKAL agar tidak bisa scroll & slide barengan
         if (isHorizontalSwipe) {
-            if (e.cancelable) {
-                e.preventDefault(); // Menghentikan scroll vertikal halaman saat slide berjalan
-            }
+            if (e.cancelable) e.preventDefault();
 
             let moveDiffX = diffX;
             const containerWidth = preview.clientWidth;
             const allItems = Array.from(document.querySelectorAll(".main-result .image-item"));
 
-            // Beri efek hambatan (resistance) jika berada di paling awal atau paling akhir
             if ((currentImageIndex === 0 && moveDiffX > 0) || (currentImageIndex === allItems.length - 1 && moveDiffX < 0)) {
                 moveDiffX = moveDiffX * 0.2; 
             }
 
-            const currentOffsetPercent = -100 + (moveDiffX / containerWidth) * 100;
-            track.style.transform = `translateX(${currentOffsetPercent}%)`;
+            // Gunakan requestAnimationFrame untuk render 60fps/120fps mulus
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => {
+                const currentOffsetPercent = -100 + (moveDiffX / containerWidth) * 100;
+                track.style.transform = `translate3d(${currentOffsetPercent}%, 0, 0)`; // GPU 3D transform
 
-            // Matikan transisi CSS dot agar instan mengikuti gerakan jari
-            const dots = preview.querySelectorAll(".preview-dot");
-            dots.forEach(d => d.style.transition = "none");
+                const dots = preview.querySelectorAll(".preview-dot");
+                dots.forEach(d => d.style.transition = "none");
 
-            // Animasi dot real-time saat jari bergeser
-            updateDotsRealtime(moveDiffX, containerWidth, currentImageIndex, allItems.length);
+                updateDotsRealtime(moveDiffX, containerWidth, currentImageIndex, allItems.length);
+            });
         }
     }, { passive: false });
 
