@@ -628,22 +628,20 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         const diffX = touchMoveX - touchStartX;
         const diffY = touchMoveY - touchStartY;
 
-        // Cek jika pengguna sedang melakukan scroll vertikal di dalam halaman preview
-        const currentPageElem = preview.querySelector(".current-page");
-        const isScrollingDown = diffY < 0; // Usap ke atas (scroll ke bawah)
-        const isNotAtTop = currentPageElem && currentPageElem.scrollTop > 0;
-
-        // Jika dominan gerakan vertikal ATAU sedang tidak di posisi paling atas halaman preview,
-        // utamakan scroll atas-bawah biasa dan JANGAN kunci/geser slide horizontal.
+        // Tentukan gesture horizontal vs vertikal berdasarkan dominasi arah geser jari
         if (!isHorizontalSwipe) {
-            if (Math.abs(diffY) > Math.abs(diffX) || isNotAtTop) {
-                return; // Biarkan browser handle scroll vertikal bawaan
-            }
-            if (Math.abs(diffX) > 10) {
+            const isHorizontalIntent = Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 8;
+            
+            if (isHorizontalIntent) {
+                // Pengguna menggeser mendatar (horizontal) -> Aktifkan mode slide
                 isHorizontalSwipe = true;
+            } else {
+                // Pengguna menggeser vertikal -> Biarkan browser menangani scroll vertikal
+                return; 
             }
         }
 
+        // Jika mode slide horizontal aktif
         if (isHorizontalSwipe) {
             let moveDiffX = diffX;
             const containerWidth = preview.clientWidth;
@@ -665,6 +663,7 @@ if (targetContainer && !document.querySelector(".image-preview")) {
             updateDotsRealtime(moveDiffX, containerWidth, currentImageIndex, allItems.length);
         }
     }, { passive: true });
+
 
     preview.addEventListener("touchend", () => {
         if (!isTouchActive) return;
