@@ -360,6 +360,23 @@ const Widgets = {
     return false;
 },
 
+formatCount = (numStr) => {
+    const num = Number(numStr);
+    if (!num) return '';
+
+    // Jika jutaan (>= 1.000.000): Ambil angka paling depan saja + "+"
+    if (num >= 1000000) {
+        return `${Math.floor(num / 1000000)}jt`;
+    }
+
+    // Jika ribuan (>= 1.000): Tampilkan ribuan
+    if (num >= 1000) {
+        return `${Math.floor(num / 1000)}rb`;
+    }
+
+    return num.toString();
+};
+
   checkPlayStoreWidget: async () => {
     const query = Config.q.trim();
     const mainResult = document.querySelector(".main-result .results-list");
@@ -403,12 +420,13 @@ const Widgets = {
             const url = Utils.attrUrl(app.url);
             const isFree = app.price === "0" || app.price === 0;
             const priceText = isFree ? 'Install' : `Rp ${Number(app.price).toLocaleString('id-ID')}`;
+            const countText = app.ratingCount ? `(${formatCount(app.ratingCount)})` : '';
 
             const categoryText = app.category 
                 ? app.category.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase()) 
                 : '';
 
-            const metaLine = [categoryText, rating ? `⭐ ${rating}` : ''].filter(Boolean).join(' • ');
+            const metaLine = rating ? `${rating} ⭐ ${countText}`.trim() : '';
 
             // Pembatas pakai --color-border
             const isLast = index === apps.length - 1;
@@ -421,14 +439,14 @@ const Widgets = {
                         <!-- Title pakai --dtext-small & --color-title -->
                         <div style="font-size:var(--dtext-small); color:var(--color-title); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${title}</div>
                         <!-- Subtitle & meta pakai --color-text-muted -->
-                        <div style="font-size:13px; color:var(--color-text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${developer}</div>
-                        ${metaLine ? `<div style="font-size:12px; color:var(--color-text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${metaLine}</div>` : ''}
+                        ${metaLine ? `<div style="font-size:13px; color:var(--color-text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${metaLine}</div>` : ''}
+                        <div style="font-size:13px; color:var(--color-text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${developer} • ${categoryText}</div>
                     </div>
                     <a href="${url}" target="_blank" rel="noopener" style="background:var(--color-title); color:#fff; padding:6px 16px; border-radius:18px; text-decoration:none; font-size:13px; font-weight:500; white-space:nowrap; flex-shrink:0;">
                         ${priceText}
                     </a>
                 </div>
-            `;
+Dengan pop`;
         }).join("");
 
         if (!itemsHtml.trim()) return;
