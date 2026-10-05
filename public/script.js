@@ -330,27 +330,36 @@ const Widgets = {
     },
 
     hitungTriggerApiPlayStore: (query) => {
+    if (!query) return false;
     const q = query.toLowerCase().trim();
-    if (!q) return false;
 
-    // 1. Pengecekan NLP awal: Jika mengandung nama orang, batalkan widget
-    if (window.nlp && window.nlp(q).people().found) {
-        return false;
-    }
+    // 1. Daftar aplikasi populer (langsung lolos tanpa perlu kata "download/apk")
+    const knownApps = [
+        "whatsapp", "instagram", "tiktok", "facebook", "twitter", 
+        "mobile legends", "pubg", "free fire", "roblox", "shopee", "tokopedia"
+    ];
+    if (knownApps.includes(q)) return true;
 
-    // 2. Abaikan jika kueri mengandung kata kunci non-aplikasi (film, lagu, berita, dll.)
-    const excludeKeywords = ["film", "movie", "series", "lirik", "chord", "lagu", "berita", "news", "resep"];
-    const hasExcludeIntent = excludeKeywords.some(kw => new RegExp(`\\b${kw}\\b`, "i").test(q));
-    if (hasExcludeIntent) return false;
-
-    // 3. Kata kunci yang BENAR-BENAR mengindikasikan pencarian aplikasi/game
+    // 2. Kata kunci WAJIB (Intent Aplikasi/Game)
     const appKeywords = [
         "apk", "playstore", "play store", "download", "unduh", 
         "mod", "aplikasi", "app", "apps", "game", "games", "simulator"
     ];
 
-    // 4. Evaluasi kata kunci intent aplikasi
-    return appKeywords.some(kw => new RegExp(`\\b${kw}\\b`, "i").test(q));
+    // Cek apakah ada kata kunci intent aplikasi dengan batas kata utuh (\b)
+    const hasAppKeyword = appKeywords.some(kw => {
+        const regex = new RegExp(`\\b${kw}\\b`, "i");
+        return regex.test(q);
+    });
+
+    // Jika TIDAK ADA kata kunci aplikasi, LANGSUNG TOLAK (termasuk nama orang/topik umum)
+    if (!hasAppKeyword) return false;
+
+    // 3. Kata penolak (jika ada kata ini, batalkan widget)
+    const excludeKeywords = ["film", "movie", "lirik", "chord", "lagu", "berita", "news", "resep", "biografi", "profil"];
+    const hasExcludeIntent = excludeKeywords.some(kw => new RegExp(`\\b${kw}\\b`, "i").test(q));
+
+    return !hasExcludeIntent;
 },
 
 formatCount: (numStr) => {
