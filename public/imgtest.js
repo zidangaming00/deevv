@@ -32,6 +32,8 @@ function getLoader() {
     loaderEl = document.createElement("div");
     loaderEl.className = "img-loader";
     loaderEl.setAttribute("role", "status");
+    // Top-layer: tampil di atas SEMUA elemen (tidak terpengaruh z-index/transform kontainer)
+    if ("popover" in HTMLElement.prototype) loaderEl.setAttribute("popover", "manual");
     loaderEl.innerHTML = '<div class="img-loader__spin"></div>';
     document.body.appendChild(loaderEl);
     return loaderEl;
@@ -43,13 +45,21 @@ function showLoader(center) {
     const el = getLoader();
     el.classList.toggle("is-center", !!center);
     el.classList.add("is-visible");
+    if (el.showPopover) {
+        try { if (!el.matches(":popover-open")) el.showPopover(); } catch (e) {}
+    }
 }
 
 function clearLoader() {
     const wait = Math.max(0, LOADER_MIN_MS - (Date.now() - loaderShownAt));
     clearTimeout(loaderHideTimer);
     loaderHideTimer = setTimeout(() => {
-        if (loaderEl) loaderEl.classList.remove("is-visible");
+        if (loaderEl) {
+            loaderEl.classList.remove("is-visible");
+            if (loaderEl.hidePopover) {
+                try { if (loaderEl.matches(":popover-open")) loaderEl.hidePopover(); } catch (e) {}
+            }
+        }
     }, wait);
     schedulePosition();
     if (typeof UI !== 'undefined' && UI.renderFooter) UI.renderFooter();
@@ -324,6 +334,7 @@ if (targetContainer && !document.querySelector(".image-preview")) {
     const prevPage = preview.querySelector(".prev-page");
     const currPage = preview.querySelector(".current-page");
     const nextPage = preview.querySelector(".next-page");
+    const dotEls = preview.querySelectorAll(".preview-dot"); // di-cache, dulu di-query tiap frame
 
     let currentImageIndex = -1;
     let touchStartX = 0;
@@ -476,6 +487,11 @@ if (targetContainer && !document.querySelector(".image-preview")) {
     let settleTimer = 0;
     const RELATED_COUNT = 6; // dulu 10 x 3 halaman
 
+    // HP low-end: jangan swap ke gambar full-res yang terlalu besar (decode + upload GPU-nya berat)
+    const LOW_END = (navigator.deviceMemory && navigator.deviceMemory <= 2) ||
+                    (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
+    const MAX_SWAP_PIXELS = LOW_END ? 2500000 : Infinity; // ~2.5 MP, cukup untuk layar HP
+
     // Isi 1 halaman (prev/curr/next dipakai bergantian, tidak dibuat ulang semua)
     function fillPage(page, idx) {
         page.innerHTML = createCardHTML(extractDataFromElement(cachedAllItems[idx]));
@@ -489,9 +505,12 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         clearTimeout(settleTimer);
         settleTimer = setTimeout(() => {
             const page = track.children[1];
-            upgradeToFull(page);
-            renderRelated(page);
-        }, 120);
+            // Dipisah beda frame/idle supaya decode gambar besar & render "gambar terkait" tidak menumpuk
+            requestAnimationFrame(() => { if (track.children[1] === page) upgradeToFull(page); });
+            const doRelated = () => { if (track.children[1] === page) renderRelated(page); };
+            if (window.requestIdleCallback) requestIdleCallback(doRelated, { timeout: 700 });
+            else setTimeout(doRelated, 250);
+        }, 200);
     }
 
     function upgradeToFull(page) {
@@ -503,7 +522,11 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         const hi = new Image();
         hi.decoding = "async";
         hi.src = full;
-        const swap = () => { if (img.isConnected) img.src = full; };
+        const swap = () => {
+            if (!img.isConnected) return;
+            if (hi.naturalWidth * hi.naturalHeight > MAX_SWAP_PIXELS) return; // terlalu besar -> tetap thumbnail
+            img.src = full;
+        };
         if (hi.decode) hi.decode().then(swap).catch(() => {});
         else hi.onload = swap;
     }
@@ -615,7 +638,7 @@ if (targetContainer && !document.querySelector(".image-preview")) {
     }
 
     function updateDotsRealtime(diffX, containerWidth, currentIndex, totalItems) {
-        const dots = preview.querySelectorAll(".preview-dot");
+        const dots = dotEls;
         if (!dots.length) return;
 
         const direction = diffX < 0 ? 1 : -1;
@@ -643,7 +666,7 @@ if (targetContainer && !document.querySelector(".image-preview")) {
     }
 
     function updateDots(index, totalItems) {
-        const dots = preview.querySelectorAll(".preview-dot");
+        const dots = dotEls;
         const activeDotIndex = getDotIndex(index, totalItems);
         dots.forEach((d, i) => {
             d.style.transition = "";
@@ -697,7 +720,7 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         if (dragRaf) { cancelAnimationFrame(dragRaf); dragRaf = 0; }
 
         const total = cachedAllItems.length;
-        preview.querySelectorAll(".preview-dot").forEach((d) => {
+        dotEls.forEach((d) => {
             d.style.transition = "width 0.25s ease-out, background-color 0.25s ease-out";
         });
 

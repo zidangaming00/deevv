@@ -620,3 +620,48 @@ body.dark .img-loader__spin { border-color: #5f6368; border-top-color: #8ab4f8; 
 @media (max-width: 1023px) {
   html.preview-open .main-result { visibility: hidden; }
 }
+
+
+/* ==========================================================================
+   FIX LAG PREVIEW (HP low-end) + LOADER SELALU TERLIHAT
+   (hanya tambahan di akhir file, tidak ada aturan lama yang diubah)
+   ========================================================================== */
+
+/* Bagian "Gambar Berikutnya" tidak dihitung layout/cat-nya sampai mendekati layar.
+   flex-shrink:0 wajib: tanpa itu section bisa menciut saat di-skip. */
+.image-preview__related {
+  flex-shrink: 0;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 520px;
+}
+
+/* Titik indikator: layer sendiri, perubahan lebar tiap frame tidak ikut repaint area lain */
+.preview-dots {
+  contain: layout paint style;
+  will-change: transform;
+}
+
+/* Di HP, hanya halaman tengah yang perlu bisa di-scroll; halaman kiri/kanan tidak jadi scroller sendiri */
+@media (max-width: 1023px) {
+  .preview-card-page:not(:nth-child(2)) { overflow-y: hidden; }
+}
+
+/* Loader: di atas header/footer/kontainer mana pun, tapi di bawah preview */
+.img-loader {
+  z-index: 9000;
+  will-change: transform;
+}
+html.preview-open .img-loader { display: none !important; }
+
+/* Mode top-layer (popover): reset gaya bawaan browser */
+.img-loader[popover] {
+  inset: auto;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  margin: 0 0 0 -20px;
+  padding: 0;
+  border: 0;
+  overflow: visible;
+}
+.img-loader[popover].is-center { top: 45%; bottom: auto; }
+
