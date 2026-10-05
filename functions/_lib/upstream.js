@@ -49,12 +49,7 @@ export function guardRequest(request) {
   const deny = () => jsonResponse({ error: "forbidden" }, { status: 403 });
   const url = new URL(request.url);
 
-  const site = request.headers.get("sec-fetch-site");
-  if (site && site !== "same-origin") return deny();
-
-  const mode = request.headers.get("sec-fetch-mode");
-  if (mode === "navigate") return deny();
-
+  // Cek origin jika request datang dari domain lain (CORS)
   const origin = request.headers.get("origin");
   if (origin) {
     try {
@@ -63,8 +58,11 @@ export function guardRequest(request) {
       return deny();
     }
   }
+
+  // Bagian sec-fetch-mode & sec-fetch-site dihapus agar bisa dites via browser address bar
   return null;
 }
+
 
 function ownHeaders(env) {
   const h = { Accept: "application/json" };
