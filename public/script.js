@@ -262,6 +262,115 @@ const SafeMath = {
     }
 };
 
+// ==========================================
+// PLAY STORE INTENT (tanpa daftar kata / hardcode)
+// ==========================================
+// Prinsip: jangan menebak dari query, tapi NILAI HASIL yang dikembalikan API.
+// Widget hanya tampil kalau ada aplikasi yang:
+//   (a) namanya cocok dengan apa yang diketik user, DAN
+//   (b) cukup populer (jumlah rating) untuk dianggap "aplikasi yang memang dicari".
+// Contoh:
+//   "Minecraft"          -> judul "Minecraft" cocok penuh + jutaan rating      -> tampil
+//   "Download Minecraft" -> kata "download" tidak ada di judul, tapi seluruh
+//                           judul app tercakup query                          -> tampil
+//   "Prabowo"            -> hanya ada app asal-asalan yang menyebut namanya,
+//                           rating sedikit                                    -> tidak tampil
+//   Query seksual        -> tidak ada app yang namanya cocok & populer          -> tidak tampil
+const PlayIntent = {
+    MIN_SCORE: 0.6,   // ambang lolos (0..1); naikkan = lebih ketat
+    POP_FULL: 6.5,    // log10(jumlah rating) yang dianggap "sangat populer" (~3 juta)
+    POP_UNKNOWN: 0.4, // dipakai kalau API tidak mengirim ratingCount
+    MAX_SHOW: 3,
+
+    normalize: (s) => String(s || "").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, ""),
+    tokens: (s) => PlayIntent.normalize(s).split(/[^a-z0-9]+/).filter(t => t.length > 1),
+    compact: (s) => PlayIntent.normalize(s).replace(/[^a-z0-9]+/g, ""),
+
+    // "Minecraft: Play with friends" / "Roblox - Mobile" / "App (Beta)" -> nama inti saja
+    coreTitle: (title) => String(title || "").split(/\s[-–—|]\s|[:(]/)[0].trim(),
+
+    // selisih paling banyak 1 huruf (typo ringan)
+    within1: (a, b) => {
+        if (Math.abs(a.length - b.length) > 1) return false;
+        let i = 0, j = 0, edits = 0;
+        while (i < a.length && j < b.length) {
+            if (a[i] === b[j]) { i++; j++; continue; }
+            if (++edits > 1) return false;
+            if (a.length > b.length) i++;
+            else if (a.length < b.length) j++;
+            else { i++; j++; }
+        }
+        return edits + (a.length - i) + (b.length - j) <= 1;
+    },
+
+    // dua kata dianggap sama: identik, awalan (sedang mengetik), atau typo 1 huruf
+    same: (a, b) => {
+        if (a === b) return true;
+        const min = Math.min(a.length, b.length);
+        if (min >= 4 && (a.startsWith(b) || b.startsWith(a))) return true;
+        return min >= 5 && PlayIntent.within1(a, b);
+    },
+
+    // berapa porsi kata di "needles" yang ada di "haystack"
+    coverage: (needles, haystack) => {
+        if (!needles.length) return 0;
+        const hit = needles.filter(n => haystack.some(h => PlayIntent.same(n, h))).length;
+        return hit / needles.length;
+    },
+
+    // 0..1 dari jumlah rating (skala log supaya 1 juta vs 10 juta tidak terlalu jauh)
+    popularity: (app) => {
+        const n = Number(app.ratingCount);
+        if (!Number.isFinite(n) || n < 0) return PlayIntent.POP_UNKNOWN;
+        return Math.min(1, Math.log10(1 + n) / PlayIntent.POP_FULL);
+    },
+
+    score: (qTokens, qCompact, app) => {
+        const core = PlayIntent.coreTitle(app.title);
+        const tTokens = PlayIntent.tokens(core);
+        if (!tTokens.length) return 0;
+        const dTokens = PlayIntent.tokens(app.developer);
+
+        // tCover: seberapa judul app "dijelaskan" oleh query (kata tambahan di query = niat, diabaikan)
+        const tCover = PlayIntent.coverage(tTokens, qTokens);
+        // qCover: seberapa query tercakup di judul; qDev: idem, boleh lewat nama developer
+        const qCover = PlayIntent.coverage(qTokens, tTokens);
+        const qDev = PlayIntent.coverage(qTokens, tTokens.concat(dTokens));
+        // "free fire" vs "freefire"
+        const coreCompact = PlayIntent.compact(core);
+        const compactHit = coreCompact.length >= 3 && qCompact.includes(coreCompact);
+
+        let name;
+        if (tCover === 1 || compactHit) name = 1;              // seluruh nama app disebut user
+        else if (qCover === 1) name = 0.55 + 0.35 * tCover;    // query ada di judul ("minecraft" -> "Minecraft Education")
+        else name = 0.6 * qDev;                                // cocok sebagian / lewat developer ("google" -> Gmail)
+
+        // nama cocok saja tidak cukup; app asal-asalan yang numpang nama tokoh harus tersaring
+        return name * (0.35 + 0.65 * PlayIntent.popularity(app));
+    },
+
+    // Mengembalikan app yang lolos, urut dari paling relevan. Kosong = bukan niat cari aplikasi.
+    filter: (query, apps) => {
+        if (!Array.isArray(apps)) return [];
+        const qTokens = PlayIntent.tokens(query);
+        const qCompact = PlayIntent.compact(query);
+        if (!qTokens.length) return [];
+
+        const scored = apps
+            .filter(app => app && app.title)
+            .map(app => ({ app, score: PlayIntent.score(qTokens, qCompact, app) }))
+            .sort((a, b) => b.score - a.score);
+
+        if (urlParams.get("debug") === "1") {
+            console.table(scored.map(r => ({ title: r.app.title, ratings: r.app.ratingCount, score: +r.score.toFixed(3) })));
+        }
+
+        // Hasil terbaik harus lolos dulu; kalau tidak, widget tidak tampil sama sekali
+        if (!scored.length || scored[0].score < PlayIntent.MIN_SCORE) return [];
+        return scored.filter(r => r.score >= PlayIntent.MIN_SCORE).slice(0, PlayIntent.MAX_SHOW).map(r => r.app);
+    }
+};
+
 const Widgets = {
     renderInstantCard: (res) => {
         const snippetText = Utils.stripTags(res.snippet || "");
@@ -329,40 +438,7 @@ const Widgets = {
         }
     },
 
-    hitungTriggerApiPlayStore: (query) => {
-    if (!query) return false;
-    const q = query.toLowerCase().trim();
-
-    // 1. Daftar aplikasi populer (langsung lolos tanpa perlu kata "download/apk")
-    const knownApps = [
-        "whatsapp", "instagram", "tiktok", "facebook", "twitter", 
-        "mobile legends", "pubg", "free fire", "roblox", "shopee", "tokopedia"
-    ];
-    if (knownApps.includes(q)) return true;
-
-    // 2. Kata kunci WAJIB (Intent Aplikasi/Game)
-    const appKeywords = [
-        "apk", "playstore", "play store", "download", "unduh", 
-        "mod", "aplikasi", "app", "apps", "game", "games", "simulator"
-    ];
-
-    // Cek apakah ada kata kunci intent aplikasi dengan batas kata utuh (\b)
-    const hasAppKeyword = appKeywords.some(kw => {
-        const regex = new RegExp(`\\b${kw}\\b`, "i");
-        return regex.test(q);
-    });
-
-    // Jika TIDAK ADA kata kunci aplikasi, LANGSUNG TOLAK (termasuk nama orang/topik umum)
-    if (!hasAppKeyword) return false;
-
-    // 3. Kata penolak (jika ada kata ini, batalkan widget)
-    const excludeKeywords = ["film", "movie", "lirik", "chord", "lagu", "berita", "news", "resep", "biografi", "profil"];
-    const hasExcludeIntent = excludeKeywords.some(kw => new RegExp(`\\b${kw}\\b`, "i").test(q));
-
-    return !hasExcludeIntent;
-},
-
-formatCount: (numStr) => {
+    formatCount: (numStr) => {
     const num = Number(numStr);
     if (!num) return '';
 
@@ -389,7 +465,9 @@ formatCount: (numStr) => {
         
         if (!Array.isArray(res) || res.length === 0) return;
 
-        const apps = res.slice(0, 3);
+        // Hanya tampil kalau user memang mencari aplikasi (dinilai dari hasil API, bukan daftar kata)
+        const apps = PlayIntent.filter(query, res);
+        if (apps.length === 0) return;
 
         const widgetCard = document.createElement("div");
         widgetCard.className = "result-card result-card--flat playstore-widget";
