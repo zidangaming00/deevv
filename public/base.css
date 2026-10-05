@@ -49,7 +49,8 @@ input[type="search"]::-webkit-search-results-decoration {
   --card-shadow: 0 0 0 1px rgba(235, 237, 239, 1);
   --page-max-width: 630px;
   --page-gutter: 130px;
-   --dtext-small: 14px;
+  --dtext-small: 14px;
+  --dtext-medium: 18px;
 }
 
 body.dark {
