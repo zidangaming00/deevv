@@ -387,7 +387,7 @@ const Widgets = {
 
         // Title Tab pakai --color-text-dark
         const headerHtml = `
-            <div style="display:flex; align-items:center; gap:8px; font-size:16px; color:var(--color-text-dark); padding-bottom: 2px;">
+            <div style="display:flex; align-items:center; gap:8px; font-size: var(--dtext-medium); color:var(--color-text-dark); padding-bottom: 2px;">
                 ${playStoreLogoSvg}
                 <span>Aplikasi</span>
             </div>
@@ -416,7 +416,7 @@ const Widgets = {
 
             return `
                 <div style="display:flex; align-items:center; gap:12px; ${borderStyle}">
-                    ${icon ? `<img src="${icon}" alt="${title}" style="width:56px; height:56px; border-radius:12px; object-fit:cover; flex-shrink:0;">` : ''}
+                    ${icon ? `<img src="${icon}" alt="${title}" style="width:60px; height:60px; border-radius:12px; object-fit:cover; flex-shrink:0;">` : ''}
                     <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px;">
                         <!-- Title pakai --dtext-small & --color-title -->
                         <div style="font-size:var(--dtext-small); color:var(--color-title); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${title}</div>
