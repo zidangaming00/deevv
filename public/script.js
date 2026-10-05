@@ -474,12 +474,7 @@ const Widgets = {
         widgetCard.style.cssText = "padding: 16px; display: flex; flex-direction: column; gap: 12px;";
 
         const playStoreLogoSvg = `
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex-shrink:0; width:20px; height:20px;">
-                <path d="M3.609 1.814L13.792 12 3.61 22.186a1.99 1.99 0 0 1-.61-1.42V3.234c0-.54.218-1.037.609-1.42z" fill="#2196F3"/>
-                <path d="M17.156 8.636l-3.364 3.364 3.364 3.364 4.093-2.361c.882-.509.882-1.858 0-2.367l-4.093-2.364z" fill="#FFC107"/>
-                <path d="M13.792 12L3.609 1.814A1.97 1.97 0 0 1 4.887 1.4c.54 0 1.038.146 1.488.406l10.781 6.83L13.792 12z" fill="#4CAF50"/>
-                <path d="M13.792 12l3.364 3.364-10.78 6.83a2.91 2.91 0 0 1-1.489.406 1.97 1.97 0 0 1-1.278-.414L13.792 12z" fill="#F44336"/>
-            </svg>
+            <img width="20px" height="20px" src="https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://play.google.com/&size=32" />
         `;
 
         // Title Tab pakai --color-text-dark
