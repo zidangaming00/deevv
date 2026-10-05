@@ -625,24 +625,36 @@ if (targetContainer && !document.querySelector(".image-preview")) {
         touchMoveX = e.touches[0].clientX;
         touchMoveY = e.touches[0].clientY;
 
-        let diffX = touchMoveX - touchStartX;
+        const diffX = touchMoveX - touchStartX;
         const diffY = touchMoveY - touchStartY;
 
-        // Deteksi apakah gerakannya dominan horizontal
-        if (!isHorizontalSwipe && Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
-            isHorizontalSwipe = true;
+        // Cek jika pengguna sedang melakukan scroll vertikal di dalam halaman preview
+        const currentPageElem = preview.querySelector(".current-page");
+        const isScrollingDown = diffY < 0; // Usap ke atas (scroll ke bawah)
+        const isNotAtTop = currentPageElem && currentPageElem.scrollTop > 0;
+
+        // Jika dominan gerakan vertikal ATAU sedang tidak di posisi paling atas halaman preview,
+        // utamakan scroll atas-bawah biasa dan JANGAN kunci/geser slide horizontal.
+        if (!isHorizontalSwipe) {
+            if (Math.abs(diffY) > Math.abs(diffX) || isNotAtTop) {
+                return; // Biarkan browser handle scroll vertikal bawaan
+            }
+            if (Math.abs(diffX) > 10) {
+                isHorizontalSwipe = true;
+            }
         }
 
         if (isHorizontalSwipe) {
+            let moveDiffX = diffX;
             const containerWidth = preview.clientWidth;
             const allItems = Array.from(document.querySelectorAll(".main-result .image-item"));
 
-            // Beri efek hambatan (resistance) jika berada di paling awal (index 0) atau paling akhir
-            if ((currentImageIndex === 0 && diffX > 0) || (currentImageIndex === allItems.length - 1 && diffX < 0)) {
-                diffX = diffX * 0.2; 
+            // Beri efek hambatan (resistance) jika berada di paling awal atau paling akhir
+            if ((currentImageIndex === 0 && moveDiffX > 0) || (currentImageIndex === allItems.length - 1 && moveDiffX < 0)) {
+                moveDiffX = moveDiffX * 0.2; 
             }
 
-            const currentOffsetPercent = -100 + (diffX / containerWidth) * 100;
+            const currentOffsetPercent = -100 + (moveDiffX / containerWidth) * 100;
             track.style.transform = `translateX(${currentOffsetPercent}%)`;
 
             // Matikan transisi CSS dot agar instan mengikuti gerakan jari
@@ -650,7 +662,7 @@ if (targetContainer && !document.querySelector(".image-preview")) {
             dots.forEach(d => d.style.transition = "none");
 
             // Animasi dot real-time saat jari bergeser
-            updateDotsRealtime(diffX, containerWidth, currentImageIndex, allItems.length);
+            updateDotsRealtime(moveDiffX, containerWidth, currentImageIndex, allItems.length);
         }
     }, { passive: true });
 
@@ -671,7 +683,6 @@ if (targetContainer && !document.querySelector(".image-preview")) {
             });
 
             if (diffX < -threshold && currentImageIndex < allItems.length - 1) {
-                // Animasikan dot langsung menuju ukuran target penuh (slide berikutnya)
                 updateDotsRealtime(-containerWidth, containerWidth, currentImageIndex, allItems.length);
 
                 track.style.transition = "transform 0.25s ease-out";
@@ -680,7 +691,6 @@ if (targetContainer && !document.querySelector(".image-preview")) {
                     showPreviewByIndex(currentImageIndex + 1);
                 }, 220);
             } else if (diffX > threshold && currentImageIndex > 0) {
-                // Animasikan dot langsung menuju ukuran target penuh (slide sebelumnya)
                 updateDotsRealtime(containerWidth, containerWidth, currentImageIndex, allItems.length);
 
                 track.style.transition = "transform 0.25s ease-out";
@@ -689,12 +699,13 @@ if (targetContainer && !document.querySelector(".image-preview")) {
                     showPreviewByIndex(currentImageIndex - 1);
                 }, 220);
             } else {
-                // Membal kembali ke posisi semula jika gesture dibatalkan
                 updateDotsRealtime(0, containerWidth, currentImageIndex, allItems.length);
 
                 track.style.transition = "transform 0.2s ease-out";
                 track.style.transform = "translateX(-100%)";
             }
         }
+        
+        isHorizontalSwipe = false;
     }, { passive: true });
 }
