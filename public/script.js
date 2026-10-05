@@ -445,8 +445,7 @@ formatCount: (numStr) => {
                     <a href="${url}" target="_blank" rel="noopener" style="background:var(--color-title); color:#fff; padding:6px 16px; border-radius:18px; text-decoration:none; font-size:13px; font-weight:500; white-space:nowrap; flex-shrink:0;">
                         ${priceText}
                     </a>
-                </div>
-Dengan pop`;
+                </div>`;
         }).join("");
 
         if (!itemsHtml.trim()) return;
