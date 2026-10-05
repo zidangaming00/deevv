@@ -1,4 +1,3 @@
-import nlp from "https://esm.sh/compromise";
 /**
  * SEARCH ENGINE CORE - Serverless Edition
  *
@@ -317,17 +316,28 @@ const Widgets = {
         return false;
     },
 
-    checkPlayStoreWidget: async () => {
-        const query = Config.q.trim();
-        const mainResult = document.querySelector(".main-result .results-list");
-        if (!mainResult || !query) return;
+checkPlayStoreWidget: async () => {
+    const query = Config.q.trim();
+    const mainResult = document.querySelector(".main-result .results-list");
+    if (!mainResult || !query) return;
 
-        // Cek algoritma NLP
-        const butuhPlayStore = Widgets.hitungTriggerApiPlayStore(query);
-        if (!butuhPlayStore) return;
+    // 1. Load library otomatis lewat JS kalau belum dimuat
+    if (!window.nlp) {
+        await new Promise(resolve => {
+            const s = document.createElement("script");
+            s.src = "https://unpkg.com/compromise";
+            s.onload = resolve;
+            document.head.appendChild(s);
+        });
+    }
 
-        try {
-            const app = await API.fetchPlayStoreApp(query);
+    // 2. Eksekusi logika NLP
+    const butuhPlayStore = Widgets.hitungTriggerApiPlayStore(query);
+    if (!butuhPlayStore) return;
+
+    // 3. Sisa kode fetch API & render HTML widget
+  try {
+    const app = await API.fetchPlayStoreApp(query);
             if (!app || !app.title) return;
 
             const icon = Utils.attrUrl(app.icon || app.thumbnail);
