@@ -26,7 +26,7 @@ input[type="search"]::-webkit-search-results-decoration {
 ::-webkit-scrollbar-track { border-radius: 0; }
 ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 10px; }
 
-/* --- Tokens & Dark Mode Variables --- */
+/* --- Variables --- */
 :root {
   --color-title: #1558D6;
   --color-text: #494949;
