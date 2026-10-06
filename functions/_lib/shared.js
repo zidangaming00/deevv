@@ -89,7 +89,11 @@ ${mediaCssTag}
 <body id="rslt-m">
 ${bodyHtml}
 <script>window.__SSR_DATA__ = ${initialDataJson};</script>
-<script type="text/javascript" src="./script.js"></script>
-<script type="text/javascript" src="./cookie.js"></script>
+<div class="scr-hdr">
+<div id="svr-wrp">
+<script type="text/javascript" src="/cookie.js"></script>
+<script type="text/javascript" src="/script.js"></script>
+</div>
+</div>
 </body></html>`;
 }
