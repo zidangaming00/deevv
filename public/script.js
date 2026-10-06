@@ -950,7 +950,7 @@ initCalculator: () => {
 
     const isOp = (v) => ["%", "÷", "×", "-", "+"].includes(v);
 
-    // Format Tampilan Visual (Menangani Spasi Dinamis Seperti Google)
+    // Format Tampilan Visual Spasi Dinamis
     const formatDisplay = (str) => {
         if (!str) return "";
         let formatted = str.replace(/([0-9\)\%πe])([÷×\-\+])/g, "$1 $2");
@@ -981,7 +981,7 @@ initCalculator: () => {
             .replace(/π/g, "Math.PI")
             .replace(/e/g, "Math.E");
 
-        // Tangani perkalian implisit: (2+4)2 -> (2+4)*2 atau 2(3) -> 2*(3)
+        // Perkalian Implisit: 2(3) -> 2*(3), (2+2)2 -> (2+2)*2, (2)(2) -> (2)*(2)
         clean = clean.replace(/(\d|\))\s*\(/g, "$1*(");
         clean = clean.replace(/\)\s*(\d)/g, ")*$1");
         clean = clean.replace(/\)\s*\(/g, ")*(");
@@ -994,12 +994,10 @@ initCalculator: () => {
             const val = e.currentTarget.dataset.value;
             if (!val) return;
 
-            if (rawOutput === "Error" && val !== "AC") {
-                rawOutput = "";
-                if (history) history.textContent = "";
-            }
+            // 1. Penanganan Tombol Sama Dengan (=)
+            if (val === "=") {
+                if (rawOutput === "" || rawOutput === "Error") return; // Abaikan jika input kosong
 
-            if (val === "=" && rawOutput !== "") {
                 try {
                     const parsedExpr = prepareExpression(rawOutput);
                     const result = SafeMath.evaluate(parsedExpr);
@@ -1012,25 +1010,43 @@ initCalculator: () => {
                     rawOutput = "Error";
                     justEvaluated = false;
                 }
-            } else if (val === "AC") {
+                
+                display.value = formatDisplay(rawOutput);
+                display.blur();
+                return; // Cegah '=' masuk ke rawOutput
+            }
+
+            // 2. Penanganan Tombol AC
+            if (val === "AC") {
                 rawOutput = "";
                 if (history) history.textContent = "";
                 justEvaluated = false;
-            } else {
-                if (justEvaluated) {
-                    if (!isOp(val)) {
-                        rawOutput = "";
-                        if (history) history.textContent = "";
-                    }
-                    justEvaluated = false;
-                }
+                display.value = "";
+                display.blur();
+                return;
+            }
 
-                const lastChar = rawOutput.slice(-1);
-                if (isOp(val) && isOp(lastChar)) {
-                    rawOutput = rawOutput.slice(0, -1) + val;
-                } else {
-                    rawOutput += val;
+            // Reset dari keadaan Error jika menekan angka/operator
+            if (rawOutput === "Error") {
+                rawOutput = "";
+                if (history) history.textContent = "";
+            }
+
+            // Jika baru selesai evaluasi (=) lalu menekan angka baru
+            if (justEvaluated) {
+                if (!isOp(val)) {
+                    rawOutput = "";
+                    if (history) history.textContent = "";
                 }
+                justEvaluated = false;
+            }
+
+            // Cegah operator ganda berturut-turut (replace operator terakhir)
+            const lastChar = rawOutput.slice(-1);
+            if (isOp(val) && isOp(lastChar)) {
+                rawOutput = rawOutput.slice(0, -1) + val;
+            } else {
+                rawOutput += val;
             }
 
             display.value = formatDisplay(rawOutput);

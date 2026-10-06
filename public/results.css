@@ -640,7 +640,7 @@
 .info-label { color: #000; font-size: 12px; border-radius: 5px; margin-left: 5px; padding: 0 2px; border: 1px solid #ccc; }
 
 /* ==========================================================================
-   EXACT GOOGLE SEARCH CALCULATOR (MATERIAL YOU DESIGN)
+  SEARCH CALCULATOR
    ========================================================================== */
 
 .calculator {
@@ -662,7 +662,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 84px;
+  min-height: 80px;
   box-sizing: border-box;
 }
 
@@ -702,9 +702,9 @@
   box-shadow: none !important;
 }
 
-/* Ketinggian Kontainer Grid Dibuat Tetap */
+/* Container Grid Ketinggian Stabil */
 .calculator .calc-grid-wrapper {
-  min-height: 304px;
+  min-height: 292px;
 }
 
 /* Grid Tombol */
@@ -714,10 +714,10 @@
   gap: 8px;
 }
 
-/* Ukuran & Bentuk Tombol Khas Google */
+/* Ukuran Tombol Dikurangi 2px (Height: 42px) */
 .calculator .buttons button {
-  height: 44px; /* Tinggi tombol ditingkatkan */
-  border-radius: 22px; /* Lonjong sempurna */
+  height: 42px;
+  border-radius: 21px;
   border: none;
   font-size: 16px;
   font-weight: 500;
@@ -764,13 +764,13 @@
   background-color: #1557b0;
 }
 
-/* Tombol Mode 123 / Fx (Pill Kiri Bawah) */
+/* Switcher Mode 123 / Fx Kiri Bawah */
 .calculator .calc-mode-switch {
   display: flex;
   align-items: center;
-  height: 44px;
+  height: 42px;
   border: 1px solid #dadce0;
-  border-radius: 22px;
+  border-radius: 21px;
   overflow: hidden;
   background-color: #ffffff;
   padding: 2px;
@@ -781,7 +781,7 @@
   flex: 1;
   height: 100%;
   border: none;
-  border-radius: 18px;
+  border-radius: 17px;
   background: transparent;
   font-size: 13px;
   font-weight: 500;
@@ -795,14 +795,14 @@
   font-weight: 600;
 }
 
-/* Tombol Deg | Rad */
+/* Sub-switch Deg / Rad */
 .calculator .btn-deg-rad {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  height: 44px;
+  height: 42px;
   background-color: #e2e7f8;
-  border-radius: 22px;
+  border-radius: 21px;
   padding: 0 12px;
 }
 
@@ -825,7 +825,6 @@
   color: #bdc1c6;
   font-size: 12px;
 }
-
 
 /* Dark Mode Support */
 body.dark .calculator .calc-display-wrapper {
