@@ -93,6 +93,7 @@ ${bodyHtml}
 <div id="svr-wrp">
 <script type="text/javascript" src="/cookie.js"></script>
 <script type="text/javascript" src="/script.js"></script>
+<script>(function(){try{const _={a:"; ",b:"=",c:"theme",d:"(prefers-color-scheme: dark)",e:"dark",f:"system"};var c=document.cookie.split(_.a).reduce(function(a,b){var d=b.split(_.b);a[d[0]]=d[1];return a},{});var t=c[_.c],p=window.matchMedia(_.d).matches;if(t===_.e||(t===_.f&&p))document.documentElement.classList.add(_.e)}catch(e){}})();</script>
 </div>
 </div>
 </body></html>`;
