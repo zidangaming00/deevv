@@ -127,34 +127,60 @@ export function getSuggest(env, { q }) {
   return fetchJson(`${webBase(env)}/suggest?q=${encodeURIComponent(q)}`, { headers: ownHeaders(env), timeoutMs: 5000 });
 }
 
-// Widget penerjemah
-export async function translateText({ text, sl, tl }) {
+// Widget penerjemah (MyMemory, tanpa API key)
+const MM_MAX_BYTES = 450; // batas MyMemory sekitar 500 byte per request
+
+const byteLen = (s) => new TextEncoder().encode(s).length;
+
+// Pecah teks panjang per kalimat supaya tiap potongan <= MM_MAX_BYTES
+function splitForMyMemory(text) {
+  const sentences = text.match(/[^.!?。！？\n]+[.!?。！？]*\s*/g) || [text];
+  const chunks = [];
+  let cur = "";
+  const push = () => { if (cur.trim()) chunks.push(cur.trim()); cur = ""; };
+
+  for (const s of sentences) {
+    if (byteLen(cur + s) <= MM_MAX_BYTES) { cur += s; continue; }
+    push();
+    if (byteLen(s) <= MM_MAX_BYTES) { cur = s; continue; }
+    // satu kalimat terlalu panjang: potong paksa per karakter
+    let piece = "";
+    for (const ch of s) {
+      if (byteLen(piece + ch) > MM_MAX_BYTES) { chunks.push(piece.trim()); piece = ""; }
+      piece += ch;
+    }
+    cur = piece;
+  }
+  push();
+  return chunks;
+}
+
+const decodeEntities = (s) =>
+  s.replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n))
+   .replace(/&quot;/g, '"').replace(/&apos;/g, "'")
+   .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+
+async function myMemoryChunk(chunk, sl, tl, email) {
+  const code = (c) => (c === "zh" ? "zh-CN" : c);
+  let url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=${encodeURIComponent(code(sl) + "|" + code(tl))}`;
+  if (email) url += `&de=${encodeURIComponent(email)}`;
+
+  const data = await fetchJson(url, { timeoutMs: 8000 });
+  const status = Number(data?.responseStatus);
+  const out = data?.responseData?.translatedText;
+  if (status === 429 || data?.quotaFinished) throw new Error("mymemory_quota");
+  if (status !== 200 || !out) throw new Error(`mymemory_${status || "empty"}`);
+  return decodeEntities(String(out));
+}
+
+export async function translateText({ text, sl, tl, env }) {
   if (!ALLOWED_LANGS.has(sl) || !ALLOWED_LANGS.has(tl)) throw new Error("bad_lang");
   if (sl === tl) return { text };
-  const code = (c) => (c === "zh" ? "zh-CN" : c);
 
-  try {
-    const url =
-      `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${code(sl)}&tl=${code(tl)}&dt=t&q=${encodeURIComponent(text)}`;
-    const data = await fetchJson(url, {
-      headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        Accept: "*/*",
-      },
-      timeoutMs: 8000,
-    });
-    const out = (Array.isArray(data?.[0]) ? data[0] : []).map((s) => (s && s[0]) || "").join("");
-    if (!out) throw new Error("google_empty");
-    return { text: out };
-  } catch (googleErr) {
-    // Fallback MyMemory (batas sekitar 500 karakter)
-    if (text.length > 450) throw googleErr;
-    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${code(sl)}|${code(tl)}`;
-    const data = await fetchJson(url, { timeoutMs: 8000 });
-    const out = data?.responseData?.translatedText;
-    if (Number(data?.responseStatus) !== 200 || !out) throw new Error(`fallback_failed(${googleErr.message})`);
-    return { text: out };
-  }
+  const email = env?.MYMEMORY_EMAIL || ""; // opsional: kuota 5.000 -> 50.000 karakter/hari
+  const chunks = splitForMyMemory(text);
+  const parts = await Promise.all(chunks.map((c) => myMemoryChunk(c, sl, tl, email)));
+  return { text: parts.join(" ") };
 }
 
 // AI Overview (kunci Groq hanya ada di server)
