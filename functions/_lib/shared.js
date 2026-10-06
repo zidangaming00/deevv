@@ -77,7 +77,9 @@ export function buildPageShell({ q, isIdLang, bodyHtml, initialDataJson, tbm }) 
 <meta name="description" content="Search and explore anything on the internet, you can explore web pages, videos, news and much more.">
 <title>${escapeHTML(title)}</title>
 <meta name="referrer" content="origin">
-<link rel="preload" href="/font/BRVQLLXNOS.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="/base.css">
 <link rel="stylesheet" href="/results.css">
