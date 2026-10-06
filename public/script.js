@@ -643,15 +643,29 @@ const Widgets = {
         }
         else if (isCalc) {
             Widgets.placeTopWidget(mainResult, `
-                <div class="calculator">
-                    <input type="text" inputmode="none" class="display" />
+                <div class="calculator result-card result-card--flat">
+                    <input type="text" inputmode="none" class="display" readonly placeholder="0" />
                     <div class="buttons">
-                        <button class="operator" data-value="AC">AC</button><button class="operator" data-value="DEL">DEL</button>
-                        <button class="operator" data-value="%">%</button><button class="operator" data-value=" ÷ ">÷</button>
-                        <button data-value="7">7</button><button data-value="8">8</button><button data-value="9">9</button><button class="operator" data-value=" × ">×</button>
-                        <button data-value="4">4</button><button data-value="5">5</button><button data-value="6">6</button><button class="operator" data-value=" - ">-</button>
-                        <button data-value="1">1</button><button data-value="2">2</button><button data-value="3">3</button><button class="operator" data-value=" + ">+</button>
-                        <button data-value="0">0</button><button data-value="00">00</button><button data-value=".">.</button><button class="operator" data-value="=" th="true">=</button>
+                        <button class="operator" data-value="AC">AC</button>
+                        <button class="operator" data-value="DEL">DEL</button>
+                        <button class="operator" data-value="%">%</button>
+                        <button class="operator" data-value=" ÷ ">÷</button>
+                        <button data-value="7">7</button>
+                        <button data-value="8">8</button>
+                        <button data-value="9">9</button>
+                        <button class="operator" data-value=" × ">×</button>
+                        <button data-value="4">4</button>
+                        <button data-value="5">5</button>
+                        <button data-value="6">6</button>
+                        <button class="operator" data-value=" - ">-</button>
+                        <button data-value="1">1</button>
+                        <button data-value="2">2</button>
+                        <button data-value="3">3</button>
+                        <button class="operator" data-value=" + ">+</button>
+                        <button data-value="0">0</button>
+                        <button data-value="00">00</button>
+                        <button data-value=".">.</button>
+                        <button class="operator btn-equals" data-value="=" th="true">=</button>
                     </div>
                 </div>`);
             Widgets.initCalculator();
@@ -865,48 +879,62 @@ const Widgets = {
     },
 
     initCalculator: () => {
-        const calculatorBox = document.querySelector(".calculator");
-        if (!calculatorBox) return;
-        const display = calculatorBox.querySelector(".display");
-        let output = "";
-        let justEvaluated = false;
+    const calculatorBox = document.querySelector(".calculator");
+    if (!calculatorBox) return;
+    const display = calculatorBox.querySelector(".display");
+    let output = "";
+    let justEvaluated = false;
 
-        calculatorBox.querySelectorAll("button").forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                const val = e.currentTarget.dataset.value;
-                const isOperatorKey = ["%", " ÷ ", " × ", " - ", " + ", "="].includes(val);
+    const isOp = (v) => ["%", " ÷ ", " × ", " - ", " + "].includes(v);
 
-                if (output === "Error" && val !== "AC") {
-                    output = "";
+    calculatorBox.querySelectorAll("button").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const val = e.currentTarget.dataset.value;
+
+            if (output === "Error" && val !== "AC") {
+                output = "";
+            }
+
+            if (val === "=" && output !== "") {
+                try {
+                    const result = SafeMath.evaluate(output);
+                    output = String(parseFloat(result.toPrecision(12)));
+                    justEvaluated = true;
+                } catch (err) {
+                    output = "Error";
+                    justEvaluated = false;
+                }
+            } else if (val === "AC") {
+                output = "";
+                justEvaluated = false;
+            } else if (val === "DEL") {
+                // Hapus sekaligus 3 Karakter jika di akhir adalah operator berspasi (misal " + ")
+                if (/\s[\+\-\u00D7\u00F7%]\s$/.test(output)) {
+                    output = output.slice(0, -3);
+                } else {
+                    output = output.slice(0, -1);
+                }
+                justEvaluated = false;
+            } else if (val !== "=") {
+                if (output === "" && isOp(val)) return;
+
+                if (justEvaluated) {
+                    if (!isOp(val)) output = "";
+                    justEvaluated = false;
                 }
 
-                if (val === "=" && output !== "") {
-                    try {
-                        const result = SafeMath.evaluate(output);
-                        output = String(parseFloat(result.toPrecision(12)));
-                        justEvaluated = true;
-                    } catch (err) {
-                        output = "Error";
-                        justEvaluated = false;
-                    }
-                } else if (val === "AC") {
-                    output = "";
-                    justEvaluated = false;
-                } else if (val === "DEL") {
-                    output = output.toString().slice(0, -1).trimEnd();
-                    justEvaluated = false;
-                } else if (val !== "=") {
-                    if (output === "" && isOperatorKey) return;
-                    // Mengetik angka setelah hasil "=" memulai perhitungan baru
-                    if (justEvaluated && !isOperatorKey) output = "";
-                    justEvaluated = false;
+                // Jika sudah ada operator di akhir, ganti operator tersebut (mencegah penumpukan " +  - ")
+                if (isOp(val) && /\s[\+\-\u00D7\u00F7%]\s$/.test(output)) {
+                    output = output.slice(0, -3) + val;
+                } else {
                     output += val;
                 }
-                display.value = output;
-                display.blur();
-            });
+            }
+            display.value = output;
+            display.blur();
         });
-    },
+    });
+},
 
     initTranslator: () => {
         const countries = { en: "English", id: "Indonesian", es: "Spanish", fr: "French", de: "German", ja: "Japanese", ko: "Korean", zh: "Chinese" };
