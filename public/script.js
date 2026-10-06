@@ -521,6 +521,19 @@ const Widgets = {
     else container.insertAdjacentElement('afterbegin', card);
   },
 
+  // Widget alat (jam, tanggal, kalkulator, translator) selalu di paling atas hasil,
+  // tepat di bawah "Maksud kamu ...?" kalau ada. Dipasang lewat DOM langsung (bukan 'beforeend'),
+  // jadi posisinya sama untuk render client maupun SSR (di SSR kartu hasil sudah ada duluan).
+  placeTopWidget: (container, html) => {
+    const tpl = document.createElement("template");
+    tpl.innerHTML = String(html).trim();
+    const el = tpl.content.firstElementChild;
+    if (!el) return null;
+    el.setAttribute("data-top-widget", "1");
+    Widgets.placeByPriority(container, el, ['.corrected-word']);
+    return el;
+  },
+
   checkPlayStoreWidget: async () => {
     const query = Config.q.trim();
     const mainResult = document.querySelector(".main-result .results-list");
@@ -592,7 +605,7 @@ const Widgets = {
         if (!itemsHtml.trim()) return;
 
         widgetCard.innerHTML = headerHtml + itemsHtml;
-        Widgets.placeByPriority(mainResult, widgetCard, ['.corrected-word', '.ai-overview-card']);
+        Widgets.placeByPriority(mainResult, widgetCard, ['.corrected-word', '[data-top-widget]', '.ai-overview-card']);
     } catch (err) {
         console.error("Gagal memuat widget Play Store:", err);
     }
@@ -619,13 +632,13 @@ const Widgets = {
                 tzName = new Intl.DateTimeFormat(localLang, { timeZoneName: 'short' }).formatToParts(d).find(part => part.type === 'timeZoneName')?.value || "";
             } catch (e) {}
             const dateStr = `${d.toLocaleDateString(localLang, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}${tzName ? `, ${tzName}` : ""}`;
-            mainResult.insertAdjacentHTML('beforeend', `<div class="result-card result-card--flat result-card--empty"><div class="big-title">${timeStr}</div><div class="snippet-info">${dateStr}</div></div>`);
+            Widgets.placeTopWidget(mainResult, `<div class="result-card result-card--flat result-card--empty"><div class="big-title">${timeStr}</div><div class="snippet-info">${dateStr}</div></div>`);
         }
         else if (isDate) {
-            mainResult.insertAdjacentHTML('beforeend', `<div class="result-card result-card--flat result-card--empty"><div class="big-title">${d.toLocaleDateString(localLang, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div></div>`);
+            Widgets.placeTopWidget(mainResult, `<div class="result-card result-card--flat result-card--empty"><div class="big-title">${d.toLocaleDateString(localLang, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div></div>`);
         }
         else if (isCalc) {
-            mainResult.insertAdjacentHTML('beforeend', `
+            Widgets.placeTopWidget(mainResult, `
                 <div class="calculator">
                     <input type="text" inputmode="none" class="display" />
                     <div class="buttons">
@@ -640,7 +653,7 @@ const Widgets = {
             Widgets.initCalculator();
         }
         else if (isTranslate) {
-            mainResult.insertAdjacentHTML('beforeend', `
+            Widgets.placeTopWidget(mainResult, `
                 <div class="trnsl"><div class="wrpl"><ul class="controls">
                     <li class="row from"><div class="icons"><i class="fas fa-volume-up"></i><i class="fas fa-copy"></i></div><select></select></li>
                     <li class="exchange"><i class="fas fa-exchange-alt"></i></li>
@@ -683,7 +696,7 @@ const Widgets = {
             </div>
         `;
 
-        Widgets.placeByPriority(mainResult, card, ['.corrected-word']);
+        Widgets.placeByPriority(mainResult, card, ['.corrected-word', '[data-top-widget]']);
 
         const contextSnippets = res?.items
             ? res.items.slice(0, 4).map(item => `- ${item.title}: ${item.snippet}`).join("\n")
