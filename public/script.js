@@ -644,11 +644,10 @@ const Widgets = {
 else if (isCalc) {
     Widgets.placeTopWidget(mainResult, `
         <div class="calculator result-card result-card--flat">
-            <!-- Display Box khas Google dengan Ikon Riwayat & Border Rounded -->
             <div class="calc-display-wrapper">
                 <div class="calc-top-bar">
                     <span class="calc-history-icon" title="History">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                             <path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8z"/>
                         </svg>
                     </span>
@@ -657,8 +656,8 @@ else if (isCalc) {
                 <input type="text" inputmode="none" class="display" readonly placeholder="0" />
             </div>
 
-            <!-- Grid Tombol Persis Layout Google -->
-            <div class="buttons">
+            <!-- Panel Mode 123 (Angka) -->
+            <div class="buttons grid-123">
                 <button class="btn-op" data-value="(">(</button>
                 <button class="btn-op" data-value=")">)</button>
                 <button class="btn-op" data-value="%">%</button>
@@ -667,28 +666,51 @@ else if (isCalc) {
                 <button class="btn-num" data-value="7">7</button>
                 <button class="btn-num" data-value="8">8</button>
                 <button class="btn-num" data-value="9">9</button>
-                <button class="btn-op" data-value=" ÷ ">÷</button>
+                <button class="btn-op" data-value="÷">÷</button>
 
                 <button class="btn-num" data-value="4">4</button>
                 <button class="btn-num" data-value="5">5</button>
                 <button class="btn-num" data-value="6">6</button>
-                <button class="btn-op" data-value=" × ">×</button>
+                <button class="btn-op" data-value="×">×</button>
 
                 <button class="btn-num" data-value="1">1</button>
                 <button class="btn-num" data-value="2">2</button>
                 <button class="btn-num" data-value="3">3</button>
-                <button class="btn-op" data-value=" - ">-</button>
+                <button class="btn-op" data-value="-">-</button>
 
                 <button class="btn-num" data-value="0">0</button>
                 <button class="btn-num" data-value=".">.</button>
                 <button class="btn-equals" data-value="=">=</button>
-                <button class="btn-op" data-value=" + ">+</button>
+                <button class="btn-op" data-value="+">+</button>
             </div>
 
-            <!-- Switch Mode 123 | Fx di Bagian Bawah -->
+            <!-- Panel Mode Fx (Sains) -->
+            <div class="buttons grid-fx" style="display: none;">
+                <button class="btn-op" data-value="Deg">Deg</button>
+                <button class="btn-op" data-value="Rad">Rad</button>
+                <button class="btn-op" data-value="!">x!</button>
+                <button class="btn-op" data-value="Inv">Inv</button>
+
+                <button class="btn-op" data-value="sin">sin</button>
+                <button class="btn-op" data-value="ln">ln</button>
+                <button class="btn-op" data-value="π">π</button>
+                <button class="btn-op" data-value="cos">cos</button>
+
+                <button class="btn-op" data-value="log">log</button>
+                <button class="btn-op" data-value="e">e</button>
+                <button class="btn-op" data-value="tan">tan</button>
+                <button class="btn-op" data-value="√">√</button>
+
+                <button class="btn-op" data-value="Ans">Ans</button>
+                <button class="btn-op" data-value="EXP">EXP</button>
+                <button class="btn-op" data-value="^">xʸ</button>
+                <button class="btn-equals" data-value="=">=</button>
+            </div>
+
+            <!-- Switch Mode Bawah -->
             <div class="calc-mode-switch">
-                <button class="active">123</button>
-                <button>Fx</button>
+                <button class="btn-switch switch-123 active">123</button>
+                <button class="btn-switch switch-fx">Fx</button>
             </div>
         </div>`);
     Widgets.initCalculator();
@@ -905,16 +927,54 @@ else if (isCalc) {
 initCalculator: () => {
     const calculatorBox = document.querySelector(".calculator");
     if (!calculatorBox) return;
+
     const display = calculatorBox.querySelector(".display");
     const history = calculatorBox.querySelector(".calc-history");
+    const switch123 = calculatorBox.querySelector(".switch-123");
+    const switchFx = calculatorBox.querySelector(".switch-fx");
+    const grid123 = calculatorBox.querySelector(".grid-123");
+    const gridFx = calculatorBox.querySelector(".grid-fx");
+
     let output = "";
     let justEvaluated = false;
 
-    const isOp = (v) => ["%", " ÷ ", " × ", " - ", " + "].includes(v);
+    const isOp = (v) => ["%", "÷", "×", "-", "+"].includes(v);
+
+    // Switcher Mode 123 | Fx
+    if (switch123 && switchFx) {
+        switch123.addEventListener("click", () => {
+            switch123.classList.add("active");
+            switchFx.classList.remove("active");
+            grid123.style.display = "grid";
+            gridFx.style.display = "none";
+        });
+
+        switchFx.addEventListener("click", () => {
+            switchFx.classList.add("active");
+            switch123.classList.remove("active");
+            grid123.style.display = "none";
+            gridFx.style.display = "grid";
+        });
+    }
+
+    // Pembersih ekspresi agar (2+4)×2 dan ekspresi implisit bisa dihitung
+    const prepareExpression = (expr) => {
+        let clean = expr
+            .replace(/×/g, "*")
+            .replace(/÷/g, "/")
+            .replace(/π/g, "Math.PI")
+            .replace(/e/g, "Math.E");
+
+        // Tangani perkalian implisit seperti (2+4)2 -> (2+4)*2 atau 2(3) -> 2*(3)
+        clean = clean.replace(/(\d|\))\s*\(/g, "$1*(");
+        clean = clean.replace(/\)\s*(\d)/g, ")*$1");
+        return clean;
+    };
 
     calculatorBox.querySelectorAll(".buttons button").forEach(btn => {
         btn.addEventListener("click", (e) => {
             const val = e.currentTarget.dataset.value;
+            if (!val) return;
 
             if (output === "Error" && val !== "AC") {
                 output = "";
@@ -923,7 +983,9 @@ initCalculator: () => {
 
             if (val === "=" && output !== "") {
                 try {
-                    const result = SafeMath.evaluate(output);
+                    const parsedExpr = prepareExpression(output);
+                    const result = SafeMath.evaluate(parsedExpr);
+
                     if (history) history.textContent = output + " =";
                     output = String(parseFloat(result.toPrecision(12)));
                     justEvaluated = true;
@@ -945,8 +1007,10 @@ initCalculator: () => {
                     justEvaluated = false;
                 }
 
-                if (isOp(val) && /\s[\+\-\u00D7\u00F7%]\s$/.test(output)) {
-                    output = output.slice(0, -3) + val;
+                // Ganti operator jika ditekan berturut-turut
+                const lastChar = output.slice(-1);
+                if (isOp(val) && isOp(lastChar)) {
+                    output = output.slice(0, -1) + val;
                 } else {
                     output += val;
                 }

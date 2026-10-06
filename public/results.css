@@ -644,24 +644,25 @@
    ========================================================================== */
 
 .calculator {
-  padding: 16px;
-  max-width: 600px;
+  padding: 12px;
+  max-width: 380px; /* Ukuran pas untuk seluler */
   width: 100%;
   box-sizing: border-box;
   font-family: Google Sans, Roboto, sans-serif;
+  margin: 0 auto;
 }
 
-/* Outer Display Box */
+/* Display Box */
 .calculator .calc-display-wrapper {
   border: 1px solid #dadce0;
-  border-radius: 20px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
+  border-radius: 16px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 104px;
+  min-height: 80px;
   box-sizing: border-box;
 }
 
@@ -679,7 +680,7 @@
 }
 
 .calculator .calc-history {
-  font-size: 14px;
+  font-size: 13px;
   color: #70757a;
   text-align: right;
   white-space: nowrap;
@@ -692,38 +693,38 @@
   border: none !important;
   outline: none !important;
   background: transparent !important;
-  font-size: 38px;
+  font-size: 32px;
   font-weight: 400;
   color: #202124;
   text-align: right;
   padding: 0;
-  margin-top: 4px;
+  margin: 0;
   box-shadow: none !important;
 }
 
-/* Grid Tombol Google */
+/* Ringkaskan Ukuran Grid Tombol */
 .calculator .buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-bottom: 14px;
+  gap: 6px; /* Gap lebih rapat */
+  margin-bottom: 10px;
 }
 
 .calculator .buttons button {
-  height: 48px;
-  border-radius: 24px; /* Bentuk lonjong / pill Material You */
+  height: 38px; /* Lebih pendek & compact khas Google Mobile */
+  border-radius: 19px;
   border: none;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   outline: none;
-  transition: background-color 0.15s ease;
+  transition: background-color 0.12s ease;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Tombol Angka (0-9, .) -> Soft Gray */
+/* Warna Tombol */
 .calculator .buttons button.btn-num {
   background-color: #f1f3f4;
   color: #1f1f1f;
@@ -733,7 +734,6 @@
   background-color: #e8eaed;
 }
 
-/* Tombol Operator & Fungsi ( (, ), %, AC, ÷, ×, -, + ) -> Soft Blue/Purple Tint */
 .calculator .buttons button.btn-op,
 .calculator .buttons button.btn-func {
   background-color: #e2e7f8;
@@ -745,7 +745,6 @@
   background-color: #d3dbe8;
 }
 
-/* Tombol Sama Dengan (=) -> Google Blue Solid */
 .calculator .buttons button.btn-equals {
   background-color: #1b6ef3;
   color: #ffffff;
@@ -756,22 +755,23 @@
   background-color: #1557b0;
 }
 
-/* Switch Mode Bawah [123 | Fx] */
+/* Switcher Mode 123 | Fx */
 .calculator .calc-mode-switch {
   display: flex;
-  width: 140px;
-  height: 36px;
+  width: 120px;
+  height: 32px;
   border: 1px solid #dadce0;
-  border-radius: 18px;
+  border-radius: 16px;
   overflow: hidden;
   background-color: #ffffff;
+  margin: 0 auto;
 }
 
 .calculator .calc-mode-switch button {
   flex: 1;
   border: none;
   background: transparent;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: #5f6368;
   cursor: pointer;
@@ -782,6 +782,7 @@
   color: #1b6ef3;
   font-weight: 600;
 }
+
 
 /* Dark Mode Support */
 body.dark .calculator .calc-display-wrapper {
