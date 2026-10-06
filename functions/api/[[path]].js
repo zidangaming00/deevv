@@ -106,9 +106,16 @@ const GET_ROUTES = {
 
 const POST_ROUTES = {
   translate: async (env, body) => {
-    const text = String(body?.text || "").slice(0, 1000).trim();
+    const text = String(body?.text || "").slice(0, 2000).trim();
     if (!text) return null;
-    return translateText({ text, sl: String(body?.sl || ""), tl: String(body?.tl || "") });
+
+    // Pastikan `env` diteruskan di sini
+    return translateText({
+      text,
+      sl: String(body?.sl || ""),
+      tl: String(body?.tl || ""),
+      env,
+    });
   },
   ai: async (env, body) => {
     const q = cleanQuery(body?.q, 200);
