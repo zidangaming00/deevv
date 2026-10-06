@@ -656,61 +656,73 @@ else if (isCalc) {
                 <input type="text" inputmode="none" class="display" readonly placeholder="0" />
             </div>
 
-            <!-- Panel Mode 123 (Angka) -->
-            <div class="buttons grid-123">
-                <button class="btn-op" data-value="(">(</button>
-                <button class="btn-op" data-value=")">)</button>
-                <button class="btn-op" data-value="%">%</button>
-                <button class="btn-func" data-value="AC">AC</button>
+            <div class="calc-grid-wrapper">
+                <!-- Panel Grid 123 -->
+                <div class="buttons grid-123">
+                    <button class="btn-op" data-value="(">(</button>
+                    <button class="btn-op" data-value=")">)</button>
+                    <button class="btn-op" data-value="%">%</button>
+                    <button class="btn-func" data-value="AC">AC</button>
 
-                <button class="btn-num" data-value="7">7</button>
-                <button class="btn-num" data-value="8">8</button>
-                <button class="btn-num" data-value="9">9</button>
-                <button class="btn-op" data-value="÷">÷</button>
+                    <button class="btn-num" data-value="7">7</button>
+                    <button class="btn-num" data-value="8">8</button>
+                    <button class="btn-num" data-value="9">9</button>
+                    <button class="btn-op" data-value="÷">÷</button>
 
-                <button class="btn-num" data-value="4">4</button>
-                <button class="btn-num" data-value="5">5</button>
-                <button class="btn-num" data-value="6">6</button>
-                <button class="btn-op" data-value="×">×</button>
+                    <button class="btn-num" data-value="4">4</button>
+                    <button class="btn-num" data-value="5">5</button>
+                    <button class="btn-num" data-value="6">6</button>
+                    <button class="btn-op" data-value="×">×</button>
 
-                <button class="btn-num" data-value="1">1</button>
-                <button class="btn-num" data-value="2">2</button>
-                <button class="btn-num" data-value="3">3</button>
-                <button class="btn-op" data-value="-">-</button>
+                    <button class="btn-num" data-value="1">1</button>
+                    <button class="btn-num" data-value="2">2</button>
+                    <button class="btn-num" data-value="3">3</button>
+                    <button class="btn-op" data-value="-">-</button>
 
-                <button class="btn-num" data-value="0">0</button>
-                <button class="btn-num" data-value=".">.</button>
-                <button class="btn-equals" data-value="=">=</button>
-                <button class="btn-op" data-value="+">+</button>
-            </div>
+                    <button class="btn-num" data-value="0">0</button>
+                    <button class="btn-num" data-value=".">.</button>
+                    <button class="btn-equals" data-value="=">=</button>
+                    <button class="btn-op" data-value="+">+</button>
 
-            <!-- Panel Mode Fx (Sains) -->
-            <div class="buttons grid-fx" style="display: none;">
-                <button class="btn-op" data-value="Deg">Deg</button>
-                <button class="btn-op" data-value="Rad">Rad</button>
-                <button class="btn-op" data-value="!">x!</button>
-                <button class="btn-op" data-value="Inv">Inv</button>
+                    <!-- Switcher 123/Fx Kiri Bawah -->
+                    <div class="calc-mode-switch span-2">
+                        <button class="btn-switch switch-123 active">123</button>
+                        <button class="btn-switch switch-fx">Fx</button>
+                    </div>
+                </div>
 
-                <button class="btn-op" data-value="sin">sin</button>
-                <button class="btn-op" data-value="ln">ln</button>
-                <button class="btn-op" data-value="π">π</button>
-                <button class="btn-op" data-value="cos">cos</button>
+                <!-- Panel Grid Fx -->
+                <div class="buttons grid-fx" style="display: none;">
+                    <div class="btn-deg-rad span-2">
+                        <button class="btn-sub active">Deg</button>
+                        <span class="divider">|</span>
+                        <button class="btn-sub">Rad</button>
+                    </div>
+                    <button class="btn-op" data-value="!">x!</button>
+                    <button class="btn-op" data-value="Inv">Inv</button>
 
-                <button class="btn-op" data-value="log">log</button>
-                <button class="btn-op" data-value="e">e</button>
-                <button class="btn-op" data-value="tan">tan</button>
-                <button class="btn-op" data-value="√">√</button>
+                    <button class="btn-op" data-value="sin">sin</button>
+                    <button class="btn-op" data-value="ln">ln</button>
 
-                <button class="btn-op" data-value="Ans">Ans</button>
-                <button class="btn-op" data-value="EXP">EXP</button>
-                <button class="btn-op" data-value="^">xʸ</button>
-                <button class="btn-equals" data-value="=">=</button>
-            </div>
+                    <button class="btn-op" data-value="π">π</button>
+                    <button class="btn-op" data-value="cos">cos</button>
 
-            <!-- Switch Mode Bawah -->
-            <div class="calc-mode-switch">
-                <button class="btn-switch switch-123 active">123</button>
-                <button class="btn-switch switch-fx">Fx</button>
+                    <button class="btn-op" data-value="log">log</button>
+                    <button class="btn-op" data-value="e">e</button>
+                    <button class="btn-op" data-value="tan">tan</button>
+                    <button class="btn-op" data-value="√">√</button>
+
+                    <button class="btn-op" data-value="Ans">Ans</button>
+                    <button class="btn-op" data-value="EXP">EXP</button>
+                    <button class="btn-op" data-value="^">xʸ</button>
+                    <button class="btn-equals" data-value="=">=</button>
+
+                    <!-- Switcher 123/Fx Kiri Bawah (Posisi Tetap Presisi) -->
+                    <div class="calc-mode-switch span-2">
+                        <button class="btn-switch switch-123">123</button>
+                        <button class="btn-switch switch-fx active">Fx</button>
+                    </div>
+                </div>
             </div>
         </div>`);
     Widgets.initCalculator();
@@ -930,34 +942,38 @@ initCalculator: () => {
 
     const display = calculatorBox.querySelector(".display");
     const history = calculatorBox.querySelector(".calc-history");
-    const switch123 = calculatorBox.querySelector(".switch-123");
-    const switchFx = calculatorBox.querySelector(".switch-fx");
     const grid123 = calculatorBox.querySelector(".grid-123");
     const gridFx = calculatorBox.querySelector(".grid-fx");
 
-    let output = "";
+    let rawOutput = "";
     let justEvaluated = false;
 
     const isOp = (v) => ["%", "÷", "×", "-", "+"].includes(v);
 
-    // Switcher Mode 123 | Fx
-    if (switch123 && switchFx) {
-        switch123.addEventListener("click", () => {
-            switch123.classList.add("active");
-            switchFx.classList.remove("active");
+    // Format Tampilan Visual (Menangani Spasi Dinamis Seperti Google)
+    const formatDisplay = (str) => {
+        if (!str) return "";
+        let formatted = str.replace(/([0-9\)\%πe])([÷×\-\+])/g, "$1 $2");
+        formatted = formatted.replace(/([÷×\-\+])([0-9\(\πe])/g, "$1 $2");
+        return formatted;
+    };
+
+    // Tab Switcher 123 | Fx
+    calculatorBox.querySelectorAll(".switch-123").forEach(btn => {
+        btn.addEventListener("click", () => {
             grid123.style.display = "grid";
             gridFx.style.display = "none";
         });
+    });
 
-        switchFx.addEventListener("click", () => {
-            switchFx.classList.add("active");
-            switch123.classList.remove("active");
+    calculatorBox.querySelectorAll(".switch-fx").forEach(btn => {
+        btn.addEventListener("click", () => {
             grid123.style.display = "none";
             gridFx.style.display = "grid";
         });
-    }
+    });
 
-    // Pembersih ekspresi agar (2+4)×2 dan ekspresi implisit bisa dihitung
+    // Pembersih Ekspresi Matematika
     const prepareExpression = (expr) => {
         let clean = expr
             .replace(/×/g, "*")
@@ -965,61 +981,64 @@ initCalculator: () => {
             .replace(/π/g, "Math.PI")
             .replace(/e/g, "Math.E");
 
-        // Tangani perkalian implisit seperti (2+4)2 -> (2+4)*2 atau 2(3) -> 2*(3)
+        // Tangani perkalian implisit: (2+4)2 -> (2+4)*2 atau 2(3) -> 2*(3)
         clean = clean.replace(/(\d|\))\s*\(/g, "$1*(");
         clean = clean.replace(/\)\s*(\d)/g, ")*$1");
+        clean = clean.replace(/\)\s*\(/g, ")*(");
+
         return clean;
     };
 
-    calculatorBox.querySelectorAll(".buttons button").forEach(btn => {
+    calculatorBox.querySelectorAll(".buttons button[data-value]").forEach(btn => {
         btn.addEventListener("click", (e) => {
             const val = e.currentTarget.dataset.value;
             if (!val) return;
 
-            if (output === "Error" && val !== "AC") {
-                output = "";
+            if (rawOutput === "Error" && val !== "AC") {
+                rawOutput = "";
                 if (history) history.textContent = "";
             }
 
-            if (val === "=" && output !== "") {
+            if (val === "=" && rawOutput !== "") {
                 try {
-                    const parsedExpr = prepareExpression(output);
+                    const parsedExpr = prepareExpression(rawOutput);
                     const result = SafeMath.evaluate(parsedExpr);
 
-                    if (history) history.textContent = output + " =";
-                    output = String(parseFloat(result.toPrecision(12)));
+                    if (history) history.textContent = formatDisplay(rawOutput) + " =";
+                    rawOutput = String(parseFloat(result.toPrecision(12)));
                     justEvaluated = true;
                 } catch (err) {
                     if (history) history.textContent = "";
-                    output = "Error";
+                    rawOutput = "Error";
                     justEvaluated = false;
                 }
             } else if (val === "AC") {
-                output = "";
+                rawOutput = "";
                 if (history) history.textContent = "";
                 justEvaluated = false;
             } else {
                 if (justEvaluated) {
                     if (!isOp(val)) {
-                        output = "";
+                        rawOutput = "";
                         if (history) history.textContent = "";
                     }
                     justEvaluated = false;
                 }
 
-                // Ganti operator jika ditekan berturut-turut
-                const lastChar = output.slice(-1);
+                const lastChar = rawOutput.slice(-1);
                 if (isOp(val) && isOp(lastChar)) {
-                    output = output.slice(0, -1) + val;
+                    rawOutput = rawOutput.slice(0, -1) + val;
                 } else {
-                    output += val;
+                    rawOutput += val;
                 }
             }
-            display.value = output;
+
+            display.value = formatDisplay(rawOutput);
             display.blur();
         });
     });
 },
+
     initTranslator: () => {
         const countries = { en: "English", id: "Indonesian", es: "Spanish", fr: "French", de: "German", ja: "Japanese", ko: "Korean", zh: "Chinese" };
         const container = document.querySelector(".trnsl");
