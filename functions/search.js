@@ -156,8 +156,27 @@ export async function onRequestGet(context) {
         </div>  
       </div>`;
 
-  // "<" di-escape supaya data JSON tidak bisa menutup tag <script> di halaman.
-  const initialDataJson = ssrData ? JSON.stringify(ssrData).replace(/</g, "\\u003c") : "null";
+  // ssr data
+const cleanItems = (ssrData?.items || []).map(item =>
+  Object.fromEntries(
+    Object.entries(item).filter(([_, value]) => typeof value !== 'object' || value === null)
+  )
+);
+
+// 2. Format struktur akhir sesuai kebutuhan
+const transformedData = {
+  engine: "tbm",
+  query: ssrData?.query || "",
+  searchInformation: {
+    searchTime: ssrData?.searchInformation?.formattedSearchTime || "",
+    totalResults: ssrData?.searchInformation?.formattedTotalResults || ""
+  },
+  results_data: cleanItems
+};
+
+// 3. Stringify untuk SSR
+const initialDataJson = transformedData ? JSON.stringify(transformedData).replace(/</g, "\\u003c") : "null";
+
 
   const html = buildPageShell({
     q,
