@@ -128,29 +128,45 @@ export function getSuggest(env, { q }) {
 }
 
 export async function translateText({ text, sl, tl, env }) {
-  // Izinkan 'auto' untuk sl (source language) jika pengguna memilih otodeteksi
-  const validSl = sl === "auto" || ALLOWED_LANGS.has(sl);
-  if (!validSl || !ALLOWED_LANGS.has(tl)) throw new Error("bad_lang");
-  if (sl === tl) return { text };
+  // 1. Normalisasi kode bahasa (misal "en-US" -> "en", "ID" -> "id")
+  const srcLang = String(sl || "").toLowerCase().trim().split("-")[0];
+  const tgtLang = String(tl || "").toLowerCase().trim().split("-")[0];
 
-  // Pembuatan URL Google Translate GTX
-  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(sl)}&tl=${encodeURIComponent(tl)}&dt=t&q=${encodeURIComponent(text)}`;
+  // 2. Izinkan 'auto' untuk bahasa asal jika pengguna memilih deteksi otomatis
+  const isSrcValid = srcLang === "auto" || ALLOWED_LANGS.has(srcLang);
+  const isTgtValid = ALLOWED_LANGS.has(tgtLang);
 
-  // Ambil data menggunakan fetchJson helper yang sudah ada
-  const data = await fetchJson(url, { timeoutMs: 10000 });
-
-  // Google Translate mengembalikan array bersarang:
-  // [[[ "Hasil terjemahan kalimat 1", "Teks asli 1", ... ], [ "Hasil kalimat 2", "Teks asli 2", ... ]]]
-  if (Array.isArray(data) && Array.isArray(data[0])) {
-    const translatedText = data[0]
-      .map((item) => item[0])
-      .filter(Boolean)
-      .join("");
-
-    return { text: translatedText };
+  if (!isSrcValid || !isTgtValid) {
+    throw new Error(`bad_lang (sl: '${sl}', tl: '${tl}')`);
   }
 
-  throw new Error("translate_failed");
+  if (srcLang === tgtLang) return { text };
+
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(srcLang)}&tl=${encodeURIComponent(tgtLang)}&dt=t&q=${encodeURIComponent(text)}`;
+
+  try {
+    // 3. Tambahkan User-Agent Browser agar tidak diblokir oleh Google
+    const data = await fetchJson(url, {
+      timeoutMs: 10000,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9,id;q=0.8"
+      }
+    });
+
+    if (Array.isArray(data) && Array.isArray(data[0])) {
+      const translatedText = data[0]
+        .map((item) => item[0])
+        .filter(Boolean)
+        .join("");
+
+      if (translatedText) return { text: translatedText };
+    }
+
+    throw new Error("empty_google_response");
+  } catch (err) {
+    throw new Error(`gtx_fetch_failed: ${err.message}`);
+  }
 }
 
 // AI Overview (kunci Groq hanya ada di server)
