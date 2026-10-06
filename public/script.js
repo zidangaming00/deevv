@@ -504,6 +504,23 @@ const Widgets = {
     return num.toString();
 },
 
+  // Urutan atas hasil: kata terkoreksi > AI overview > Play Store.
+  // Widget async (AI, Play Store) selesai kapan saja, jadi posisinya TIDAK boleh ditentukan
+  // oleh siapa yang duluan selesai. Tiap widget disisipkan tepat di bawah widget yang
+  // prioritasnya lebih tinggi (kalau ada), bukan selalu 'afterbegin'.
+  placeByPriority: (container, card, higherSelectors) => {
+    let anchor = null;
+    for (const sel of higherSelectors) {
+      let el = container.querySelector(sel);
+      while (el && el.parentElement !== container) el = el.parentElement;
+      if (!el) continue;
+      // ambil yang paling bawah di antara widget berprioritas lebih tinggi
+      if (!anchor || (anchor.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)) anchor = el;
+    }
+    if (anchor) anchor.insertAdjacentElement('afterend', card);
+    else container.insertAdjacentElement('afterbegin', card);
+  },
+
   checkPlayStoreWidget: async () => {
     const query = Config.q.trim();
     const mainResult = document.querySelector(".main-result .results-list");
@@ -523,12 +540,7 @@ const Widgets = {
         widgetCard.style.cssText = "padding: 16px; display: flex; flex-direction: column; gap: 12px;";
 
         const playStoreLogoSvg = `
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex-shrink:0; width:20px; height:20px;">
-                <path d="M3.609 1.814L13.792 12 3.61 22.186a1.99 1.99 0 0 1-.61-1.42V3.234c0-.54.218-1.037.609-1.42z" fill="#2196F3"/>
-                <path d="M17.156 8.636l-3.364 3.364 3.364 3.364 4.093-2.361c.882-.509.882-1.858 0-2.367l-4.093-2.364z" fill="#FFC107"/>
-                <path d="M13.792 12L3.609 1.814A1.97 1.97 0 0 1 4.887 1.4c.54 0 1.038.146 1.488.406l10.781 6.83L13.792 12z" fill="#4CAF50"/>
-                <path d="M13.792 12l3.364 3.364-10.78 6.83a2.91 2.91 0 0 1-1.489.406 1.97 1.97 0 0 1-1.278-.414L13.792 12z" fill="#F44336"/>
-            </svg>
+            <img src="https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://play.google.com/&size=64" width="20px" height="20px" />
         `;
 
         // Title Tab pakai --color-text-dark
@@ -580,7 +592,7 @@ const Widgets = {
         if (!itemsHtml.trim()) return;
 
         widgetCard.innerHTML = headerHtml + itemsHtml;
-        mainResult.insertAdjacentElement('afterbegin', widgetCard);
+        Widgets.placeByPriority(mainResult, widgetCard, ['.corrected-word', '.ai-overview-card']);
     } catch (err) {
         console.error("Gagal memuat widget Play Store:", err);
     }
@@ -671,7 +683,7 @@ const Widgets = {
             </div>
         `;
 
-        mainResult.insertAdjacentElement('afterbegin', card);
+        Widgets.placeByPriority(mainResult, card, ['.corrected-word']);
 
         const contextSnippets = res?.items
             ? res.items.slice(0, 4).map(item => `- ${item.title}: ${item.snippet}`).join("\n")
