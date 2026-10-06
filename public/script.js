@@ -216,48 +216,137 @@ const API = {
 
 // Evaluator kalkulator yang aman (menggantikan eval)
 const SafeMath = {
-    evaluate: (expression) => {
-        const s = String(expression).replace(/\s+/g, "").replace(/×/g, "*").replace(/÷/g, "/");
-        if (!/^[0-9.+\-*/%]+$/.test(s)) throw new Error("bad");
-        let i = 0;
-        const peek = () => s[i];
+    // opts: { deg: true|false, ans: number }
+    evaluate: (expression, opts = {}) => {
+        const deg = opts.deg !== false;
+        const ans = Number(opts.ans) || 0;
+        const s = String(expression).replace(/\s+/g, "");
 
-        const number = () => {
-            const start = i;
-            while (i < s.length && /[0-9.]/.test(s[i])) i++;
-            const token = s.slice(start, i);
-            if (!token || token === "." || (token.match(/\./g) || []).length > 1) throw new Error("bad");
-            return parseFloat(token);
+        // ---------- Tokenizer ----------
+        const NAMES = ["asin", "acos", "atan", "sin", "cos", "tan", "ln", "log", "Ans", "e"];
+        const tokens = [];
+        for (let i = 0; i < s.length;) {
+            const rest = s.slice(i);
+            let m;
+            if ((m = rest.match(/^(\d+\.?\d*|\.\d+)(E[+-]?\d+)?/))) {
+                if (rest[m[0].length] === ".") throw new Error("bad"); // cegah "2..3"
+                tokens.push({ t: "num", v: parseFloat(m[0]) });
+                i += m[0].length;
+            } else if (rest[0] === "π") { tokens.push({ t: "num", v: Math.PI }); i++; }
+            else if ("+-*/×÷^%!()√".includes(rest[0])) {
+                const c = rest[0] === "×" ? "*" : rest[0] === "÷" ? "/" : rest[0];
+                tokens.push({ t: c }); i++;
+            } else {
+                const name = NAMES.find(n => rest.startsWith(n));
+                if (!name) throw new Error("bad");
+                if (name === "e") tokens.push({ t: "num", v: Math.E });
+                else if (name === "Ans") tokens.push({ t: "num", v: ans });
+                else tokens.push({ t: "fn", v: name });
+                i += name.length;
+            }
+        }
+
+        // ---------- Parser ----------
+        let p = 0;
+        const peek = () => tokens[p] && tokens[p].t;
+        const startsPrimary = () => ["num", "fn", "(", "√"].includes(peek());
+
+        const toRad = (x) => (deg ? x * Math.PI / 180 : x);
+        const fromRad = (x) => (deg ? x * 180 / Math.PI : x);
+        const clean = (x) => (Math.abs(x) < 1e-12 ? 0 : x);
+
+        const factorial = (n) => {
+            if (!Number.isInteger(n) || n < 0 || n > 170) throw new Error("bad");
+            let r = 1;
+            for (let k = 2; k <= n; k++) r *= k;
+            return r;
         };
+
+        const FUNCS = {
+            sin: (x) => clean(Math.sin(toRad(x))),
+            cos: (x) => clean(Math.cos(toRad(x))),
+            tan: (x) => {
+                if (Math.abs(Math.cos(toRad(x))) < 1e-12) throw new Error("bad");
+                return clean(Math.tan(toRad(x)));
+            },
+            asin: (x) => { if (x < -1 || x > 1) throw new Error("bad"); return fromRad(Math.asin(x)); },
+            acos: (x) => { if (x < -1 || x > 1) throw new Error("bad"); return fromRad(Math.acos(x)); },
+            atan: (x) => fromRad(Math.atan(x)),
+            ln: (x) => { if (x <= 0) throw new Error("bad"); return Math.log(x); },
+            log: (x) => { if (x <= 0) throw new Error("bad"); return clean(Math.log10(x)); },
+            "√": (x) => { if (x < 0) throw new Error("bad"); return Math.sqrt(x); }
+        };
+
+        const parenthesized = () => {
+            p++; // lewati "("
+            const v = expr();
+            if (peek() === ")") p++;
+            else if (p < tokens.length) throw new Error("bad"); // kurung tutup hilang di akhir = auto-close
+            return v;
+        };
+
+        const primary = () => {
+            const tok = tokens[p];
+            if (!tok) throw new Error("bad");
+            if (tok.t === "num") { p++; return tok.v; }
+            if (tok.t === "(") return parenthesized();
+            if (tok.t === "fn" || tok.t === "√") {
+                p++;
+                const name = tok.t === "√" ? "√" : tok.v;
+                const arg = peek() === "(" ? parenthesized() : postfix();
+                return FUNCS[name](arg);
+            }
+            throw new Error("bad");
+        };
+
+        const postfix = () => {
+            let v = primary();
+            while (peek() === "!" || peek() === "%") {
+                v = tokens[p++].t === "!" ? factorial(v) : v / 100;
+            }
+            return v;
+        };
+
+        const power = () => {
+            const base = postfix();
+            if (peek() === "^") { p++; return Math.pow(base, unary()); } // right-associative
+            return base;
+        };
+
         const unary = () => {
-            if (peek() === "-") { i++; return -unary(); }
-            if (peek() === "+") { i++; return unary(); }
-            let value = number();
-            while (peek() === "%") { i++; value = value / 100; }
-            return value;
-        };
-        const term = () => {
-            let value = unary();
-            while (peek() === "*" || peek() === "/") {
-                const op = s[i++];
-                const right = unary();
-                if (op === "/" && right === 0) throw new Error("div0");
-                value = op === "*" ? value * right : value / right;
-            }
-            return value;
-        };
-        const expr = () => {
-            let value = term();
-            while (peek() === "+" || peek() === "-") {
-                const op = s[i++];
-                const right = term();
-                value = op === "+" ? value + right : value - right;
-            }
-            return value;
+            if (peek() === "-") { p++; return -unary(); }
+            if (peek() === "+") { p++; return unary(); }
+            return power();
         };
 
+        const term = () => {
+            let v = unary();
+            while (true) {
+                if (peek() === "*" || peek() === "/") {
+                    const op = tokens[p++].t;
+                    const r = unary();
+                    if (op === "/" && r === 0) throw new Error("div0");
+                    v = op === "*" ? v * r : v / r;
+                } else if (startsPrimary()) { // implisit: 2(3), (2+2)2, 2π, 2sin(30)
+                    v = v * unary();
+                } else break;
+            }
+            return v;
+        };
+
+        const expr = () => {
+            let v = term();
+            while (peek() === "+" || peek() === "-") {
+                const op = tokens[p++].t;
+                const r = term();
+                v = op === "+" ? v + r : v - r;
+            }
+            return v;
+        };
+
+        if (!tokens.length) throw new Error("bad");
         const result = expr();
-        if (i !== s.length || !Number.isFinite(result)) throw new Error("bad");
+        if (p !== tokens.length || !Number.isFinite(result)) throw new Error("bad");
         return result;
     }
 };
@@ -947,10 +1036,23 @@ initCalculator: () => {
 
     let rawOutput = "";
     let justEvaluated = false;
+    let isDeg = true;      // mode Deg / Rad
+    let isInv = false;     // tombol Inv (sin -> asin, dst)
+    let lastAnswer = 0;    // untuk tombol Ans
 
-    const isOp = (v) => ["%", "÷", "×", "-", "+"].includes(v);
+    const isBinary = (v) => ["÷", "×", "-", "+", "^"].includes(v);
+    const isPostfix = (v) => ["%", "!"].includes(v);
 
-    // Format Tampilan Visual Spasi Dinamis
+    // Tombol fungsi otomatis diikuti "(" ; versi Inv di indeks kedua
+    const FUNC_MAP = {
+        sin: ["sin(", "asin("],
+        cos: ["cos(", "acos("],
+        tan: ["tan(", "atan("],
+        ln:  ["ln(",  "e^("],
+        log: ["log(", "10^("],
+        "√": ["√(",   "^2"]
+    };
+
     const formatDisplay = (str) => {
         if (!str) return "";
         let formatted = str.replace(/([0-9\)\%πe])([÷×\-\+])/g, "$1 $2");
@@ -965,7 +1067,6 @@ initCalculator: () => {
             gridFx.style.display = "none";
         });
     });
-
     calculatorBox.querySelectorAll(".switch-fx").forEach(btn => {
         btn.addEventListener("click", () => {
             grid123.style.display = "none";
@@ -973,50 +1074,55 @@ initCalculator: () => {
         });
     });
 
-    // Pembersih Ekspresi Matematika
-    const prepareExpression = (expr) => {
-        let clean = expr
-            .replace(/×/g, "*")
-            .replace(/÷/g, "/")
-            .replace(/π/g, "Math.PI")
-            .replace(/e/g, "Math.E");
+    // Deg / Rad
+    const subBtns = calculatorBox.querySelectorAll(".btn-deg-rad .btn-sub");
+    subBtns.forEach((btn, idx) => {
+        btn.addEventListener("click", () => {
+            isDeg = idx === 0;
+            subBtns.forEach((b, i) => b.classList.toggle("active", i === idx));
+        });
+    });
 
-        // Perkalian Implisit: 2(3) -> 2*(3), (2+2)2 -> (2+2)*2, (2)(2) -> (2)*(2)
-        clean = clean.replace(/(\d|\))\s*\(/g, "$1*(");
-        clean = clean.replace(/\)\s*(\d)/g, ")*$1");
-        clean = clean.replace(/\)\s*\(/g, ")*(");
-
-        return clean;
+    // Label tombol berubah saat Inv aktif
+    const refreshInvLabels = () => {
+        calculatorBox.querySelectorAll(".btn-op[data-value='Inv']").forEach(b => b.style.fontWeight = isInv ? "700" : "");
+        const labels = {
+            sin: ["sin", "sin⁻¹"], cos: ["cos", "cos⁻¹"], tan: ["tan", "tan⁻¹"],
+            ln: ["ln", "eˣ"], log: ["log", "10ˣ"], "√": ["√", "x²"]
+        };
+        calculatorBox.querySelectorAll(".grid-fx button[data-value]").forEach(b => {
+            const l = labels[b.dataset.value];
+            if (l) b.textContent = l[isInv ? 1 : 0];
+        });
     };
 
     calculatorBox.querySelectorAll(".buttons button[data-value]").forEach(btn => {
         btn.addEventListener("click", (e) => {
-            const val = e.currentTarget.dataset.value;
+            let val = e.currentTarget.dataset.value;
             if (!val) return;
 
-            // 1. Penanganan Tombol Sama Dengan (=)
+            if (val === "Inv") { isInv = !isInv; refreshInvLabels(); return; }
+
+            // "="
             if (val === "=") {
-                if (rawOutput === "" || rawOutput === "Error") return; // Abaikan jika input kosong
-
+                if (rawOutput === "" || rawOutput === "Error") return;
                 try {
-                    const parsedExpr = prepareExpression(rawOutput);
-                    const result = SafeMath.evaluate(parsedExpr);
-
+                    const result = SafeMath.evaluate(rawOutput, { deg: isDeg, ans: lastAnswer });
                     if (history) history.textContent = formatDisplay(rawOutput) + " =";
-                    rawOutput = String(parseFloat(result.toPrecision(12)));
+                    lastAnswer = parseFloat(result.toPrecision(12));
+                    rawOutput = String(lastAnswer).replace("e", "E"); // 1e-7 -> 1E-7 agar terbaca parser
                     justEvaluated = true;
                 } catch (err) {
                     if (history) history.textContent = "";
                     rawOutput = "Error";
                     justEvaluated = false;
                 }
-                
                 display.value = formatDisplay(rawOutput);
                 display.blur();
-                return; // Cegah '=' masuk ke rawOutput
+                return;
             }
 
-            // 2. Penanganan Tombol AC
+            // "AC"
             if (val === "AC") {
                 rawOutput = "";
                 if (history) history.textContent = "";
@@ -1026,24 +1132,31 @@ initCalculator: () => {
                 return;
             }
 
-            // Reset dari keadaan Error jika menekan angka/operator
             if (rawOutput === "Error") {
                 rawOutput = "";
                 if (history) history.textContent = "";
             }
 
-            // Jika baru selesai evaluasi (=) lalu menekan angka baru
+            if (FUNC_MAP[val]) {
+                val = FUNC_MAP[val][isInv ? 1 : 0];
+                isInv = false;
+                refreshInvLabels();
+            }
+            if (val === "EXP") val = "E";
+
+            // Setelah "=": operator/postfix melanjutkan hasil, selain itu mulai baru
             if (justEvaluated) {
-                if (!isOp(val)) {
+                const continues = isBinary(val) || isPostfix(val) || val === "^2" || val === "E";
+                if (!continues) {
                     rawOutput = "";
                     if (history) history.textContent = "";
                 }
                 justEvaluated = false;
             }
 
-            // Cegah operator ganda berturut-turut (replace operator terakhir)
+            // Operator biner ganda -> ganti yang terakhir (% dan ! tidak ikut diganti)
             const lastChar = rawOutput.slice(-1);
-            if (isOp(val) && isOp(lastChar)) {
+            if (isBinary(val) && isBinary(lastChar)) {
                 rawOutput = rawOutput.slice(0, -1) + val;
             } else {
                 rawOutput += val;

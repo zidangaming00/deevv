@@ -711,7 +711,16 @@
 .calculator .buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(6, 42px); /* tinggi sama di 123 & Fx */
   gap: 8px;
+}
+.calculator .calc-mode-switch {
+  grid-row: 6;              /* selalu terkunci di baris bawah */
+  grid-column: 1 / span 2;
+}
+.calculator .btn-deg-rad {
+  grid-row: 1;
+  grid-column: 1 / span 2;
 }
 
 /* Ukuran Tombol Dikurangi 2px (Height: 42px) */
