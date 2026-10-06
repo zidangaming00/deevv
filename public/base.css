@@ -37,6 +37,7 @@ input[type="search"]::-webkit-search-results-decoration {
   --color-bg: #ffffff;
   --color-bg-alt: #f4f6f7;
   --color-white: #ffffff;
+  --color-wblue: var(--color-white);
   --card-shadow: 0 0 0 1px rgba(235, 237, 239, 1);
   --page-max-width: 630px;
   --page-gutter: 130px;
@@ -54,6 +55,7 @@ body.dark {
   --color-bg: #171717;
   --color-bg-alt: #202125;
   --color-white: #202125;
+  --color-wblue: #19407f;
   --card-shadow: none;
 }
 
