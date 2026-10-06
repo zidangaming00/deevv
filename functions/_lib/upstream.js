@@ -127,12 +127,19 @@ export function getSuggest(env, { q }) {
   return fetchJson(`${webBase(env)}/suggest?q=${encodeURIComponent(q)}`, { headers: ownHeaders(env), timeoutMs: 5000 });
 }
 
-export async function translateText({ text, sl, tl, env }) {
-  // 1. Normalisasi kode bahasa (misal "en-US" -> "en", "ID" -> "id")
+// Helper pembersih karakter HTML entity
+const decodeEntities = (s) =>
+  s.replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n))
+   .replace(/&quot;/g, '"').replace(/&apos;/g, "'")
+   .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+
+// ==================================================================
+// Widget Penerjemah (Google Translate Mobile - Cloudflare Safe)
+// ==================================================================
+export async function translateText({ text, sl, tl }) {
   const srcLang = String(sl || "").toLowerCase().trim().split("-")[0];
   const tgtLang = String(tl || "").toLowerCase().trim().split("-")[0];
 
-  // 2. Izinkan 'auto' untuk bahasa asal jika pengguna memilih deteksi otomatis
   const isSrcValid = srcLang === "auto" || ALLOWED_LANGS.has(srcLang);
   const isTgtValid = ALLOWED_LANGS.has(tgtLang);
 
@@ -142,30 +149,38 @@ export async function translateText({ text, sl, tl, env }) {
 
   if (srcLang === tgtLang) return { text };
 
-  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(srcLang)}&tl=${encodeURIComponent(tgtLang)}&dt=t&q=${encodeURIComponent(text)}`;
+  // Tembak halaman Google Translate versi Mobile Web
+  const url = `https://translate.google.com/m?sl=${encodeURIComponent(srcLang)}&tl=${encodeURIComponent(tgtLang)}&q=${encodeURIComponent(text)}`;
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 10000);
 
   try {
-    // 3. Tambahkan User-Agent Browser agar tidak diblokir oleh Google
-    const data = await fetchJson(url, {
-      timeoutMs: 10000,
+    const res = await fetch(url, {
+      signal: ctrl.signal,
       headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Accept-Language": "en-US,en;q=0.9,id;q=0.8"
+        "User-Agent": "Mozilla/5.0 (Android 10; Mobile; rv:120.0) Gecko/120.0 Firefox/120.0",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
       }
     });
 
-    if (Array.isArray(data) && Array.isArray(data[0])) {
-      const translatedText = data[0]
-        .map((item) => item[0])
-        .filter(Boolean)
-        .join("");
+    if (!res.ok) throw new Error(`upstream_${res.status}`);
 
-      if (translatedText) return { text: translatedText };
+    const html = await res.text();
+
+    // Ekstrak teks hasil terjemahan dari div khusus
+    const match = html.match(/<div class="(?:result-container|t0)">([\s\S]*?)<\/div>/i);
+
+    if (match && match[1]) {
+      const cleanText = decodeEntities(match[1].trim());
+      return { text: cleanText };
     }
 
-    throw new Error("empty_google_response");
+    throw new Error("parse_failed");
   } catch (err) {
     throw new Error(`gtx_fetch_failed: ${err.message}`);
+  } finally {
+    clearTimeout(timer);
   }
 }
 
