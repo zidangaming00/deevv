@@ -171,7 +171,8 @@ const transformedData = {
     search_time: ssrData?.searchInformation?.formattedSearchTime || "",
     total_results: ssrData?.searchInformation?.formattedTotalResults || ""
   },
-  results_data: cleanItems
+  results_data: cleanItems,
+  queries: ssrData?.queries || null
 };
 
 // 3. Stringify untuk SSR
