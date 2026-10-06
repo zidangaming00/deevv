@@ -179,7 +179,11 @@ export async function translateText({ text, sl, tl, env }) {
 
   const email = env?.MYMEMORY_EMAIL || ""; // opsional: kuota 5.000 -> 50.000 karakter/hari
   const chunks = splitForMyMemory(text);
-  const parts = await Promise.all(chunks.map((c) => myMemoryChunk(c, sl, tl, email)));
+  const parts = await Promise.all(
+  chunks.map((c) =>
+    myMemoryChunk(c, sl, tl, email).catch((e) => { throw new Error("mymemory:" + e.message); })
+  )
+);
   return { text: parts.join(" ") };
 }
 
