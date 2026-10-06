@@ -163,6 +163,7 @@
 
 /* --- Empty State & Corrections --- */
 .result-card--empty,
+.corrected-word { padding: 16px }
 .corrected-word a { color: var(--color-title) }
 
 /* --- Instant Answer --- */
