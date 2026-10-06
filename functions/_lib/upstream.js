@@ -130,11 +130,31 @@ export function getSuggest(env, { q }) {
 // Widget penerjemah
 export async function translateText({ text, sl, tl }) {
   if (!ALLOWED_LANGS.has(sl) || !ALLOWED_LANGS.has(tl)) throw new Error("bad_lang");
-  const url =
-    `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`;
-  const data = await fetchJson(url, { timeoutMs: 8000 });
-  const out = (Array.isArray(data?.[0]) ? data[0] : []).map((s) => (s && s[0]) || "").join("");
-  return { text: out };
+  if (sl === tl) return { text };
+  const code = (c) => (c === "zh" ? "zh-CN" : c);
+
+  try {
+    const url =
+      `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${code(sl)}&tl=${code(tl)}&dt=t&q=${encodeURIComponent(text)}`;
+    const data = await fetchJson(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        Accept: "*/*",
+      },
+      timeoutMs: 8000,
+    });
+    const out = (Array.isArray(data?.[0]) ? data[0] : []).map((s) => (s && s[0]) || "").join("");
+    if (!out) throw new Error("google_empty");
+    return { text: out };
+  } catch (googleErr) {
+    // Fallback MyMemory (batas sekitar 500 karakter)
+    if (text.length > 450) throw googleErr;
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${code(sl)}|${code(tl)}`;
+    const data = await fetchJson(url, { timeoutMs: 8000 });
+    const out = data?.responseData?.translatedText;
+    if (Number(data?.responseStatus) !== 200 || !out) throw new Error(`fallback_failed(${googleErr.message})`);
+    return { text: out };
+  }
 }
 
 // AI Overview (kunci Groq hanya ada di server)
