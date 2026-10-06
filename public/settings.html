@@ -18,6 +18,7 @@
       --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.04);
       --radius-card: 18px;
       --radius-btn: 12px;
+      --bg-card: #ffffff;
     }
 
     /* Mode Gelap (Dark Mode) */
@@ -29,6 +30,7 @@
       --text-muted: #9aa0a6;     /* Teks sekunder abu-abu */
       --border-color: rgba(255, 255, 255, 0.08); /* Garis tepi subtle */
       --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.4);
+      --bg-card: #1e1f23;
     }
 
     /* Penyesuaian kecil untuk elemen form di dark mode */
@@ -64,26 +66,24 @@
       padding: 0;
     }
 
-    .back-btn {
+    .btn-back {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: var(--surface);
+      background: var(--bg-card);
       border: 1px solid var(--border-color);
       color: var(--text-main);
       cursor: pointer;
       text-decoration: none;
       transition: transform 0.2s ease;
-      /* Box shadow diperhalus agar sesuai standar privasi */
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
     }
 
-    .back-btn:hover {
-      transform: translateX(-2px);
-      background: #f1f3f4;
+    .btn-back:active {
+      transform: scale(0.95);
     }
 
     .page-title {
