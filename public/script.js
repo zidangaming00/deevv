@@ -619,23 +619,27 @@ const Widgets = {
         // Panggil Widget AI Overview (menggunakan Regex internal di checkAIOverview)
         Widgets.checkAIOverview(res);
 
-        const isTime = /jam|waktu|time|clock/.test(query) && query.length < 15 && query.split(" ").length < 4;
-        const isDate = /tanggal|date/.test(query) && query.length < 15 && query.split(" ").length < 4;
+        // Gabungkan deteksi jam dan tanggal ke satu variabel
+        const isTimeOrDate = /jam|waktu|time|clock|tanggal|date/.test(query) && query.length < 20 && query.split(" ").length < 5;
         const isCalc = (/kalkulator|calculator/.test(query) && query.split(" ").length <= 2) || (/calculator\s+online|kalkulator\s+online/.test(query) && query.split(" ").length <= 3);
         const isTranslate = /translate|terjemah|terjemahan/.test(query);
         const d = new Date();
 
-        if (isTime) {
-            const timeStr = `${String(d.getHours()).padStart(2, '0')}.${String(d.getMinutes()).padStart(2, '0')}`;
+        if (isTimeOrDate) {
+            const timeStr = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
             let tzName = "";
             try {
                 tzName = new Intl.DateTimeFormat(localLang, { timeZoneName: 'short' }).formatToParts(d).find(part => part.type === 'timeZoneName')?.value || "";
             } catch (e) {}
-            const dateStr = `${d.toLocaleDateString(localLang, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}${tzName ? `, ${tzName}` : ""}`;
-            Widgets.placeTopWidget(mainResult, `<div class="result-card result-card--flat result-card--empty"><div class="big-title">${timeStr}</div><div class="snippet-info">${dateStr}</div></div>`);
-        }
-        else if (isDate) {
-            Widgets.placeTopWidget(mainResult, `<div class="result-card result-card--flat result-card--empty"><div class="big-title">${d.toLocaleDateString(localLang, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div></div>`);
+            
+            const dateStr = `${d.toLocaleDateString(localLang, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}${tzName ? ` (${tzName})` : ""}`;
+
+            Widgets.placeTopWidget(mainResult, `
+                <div class="result-card result-card--flat" style="padding: 16px 20px; display: flex; flex-direction: column; gap: 4px;">
+                    <div style="font-size: 36px; font-weight: 500; color: var(--color-title); line-height: 1.1;">${timeStr}</div>
+                    <div style="font-size: 14px; color: var(--color-text-dark); font-weight: 400;">${dateStr}</div>
+                </div>
+            `);
         }
         else if (isCalc) {
             Widgets.placeTopWidget(mainResult, `
