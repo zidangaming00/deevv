@@ -95,20 +95,22 @@
 .result-card .link.link--meta { font-size: 12px; margin-top: 1px; }
 
 /* desain eksperimental (tes) */
-.result-card .tab-link {
-  position: relative;
-}
-
-.result-card .tab-link::before {
-  content: "";
-  position: absolute;
-  left: -4px;
-  top: 16px;
-  bottom: 6px; 
-  width: 8px;
-   opacity: .9;
-  background-color: #c2c9d1;
-  border-radius: 4px;
+@media (max-width: 780px) {
+   .result-card .tab-link {
+      position: relative;
+   }
+   
+   .result-card .tab-link::before {
+      content: "";
+      position: absolute;
+      left: -4px;
+      top: 16px;
+      bottom: 6px; 
+      width: 8px;
+      opacity: .9;
+      background-color: #c2c9d1;
+      border-radius: 4px;
+   }
 }
 
 /* eksperimental end */
@@ -161,8 +163,7 @@
 
 /* --- Empty State & Corrections --- */
 .result-card--empty,
-.corrected-word { padding: 16px; }
-.corrected-word .spelling { color: var(--color-title); -webkit-tap-highlight-color: rgba(0,0,0,.10); }
+.corrected-word { color: var(--color-title); padding: 16px; }
 
 /* --- Instant Answer --- */
 .instant-answer {
