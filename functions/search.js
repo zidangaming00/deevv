@@ -168,6 +168,10 @@ export async function onRequestGet(context) {
   });
 
   return new Response(html, {
-    headers: { "Content-Type": "text/html; charset=UTF-8" },
-  });
+  headers: {
+    "Content-Type": "text/html; charset=UTF-8",
+    "Link": "</font/BRVQLLXNOS.woff2>; rel=preload; as=font; crossorigin, </font/JBDCITAYMP.woff2>; rel=preload; as=font; crossorigin",
+  },
+});
+  
 }
