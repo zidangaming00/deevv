@@ -641,35 +641,43 @@ const Widgets = {
                 </div>
             `);
         }
-        else if (isCalc) {
-            Widgets.placeTopWidget(mainResult, `
-                <div class="calculator result-card result-card--flat">
-                    <input type="text" inputmode="none" class="display" readonly placeholder="0" />
-                    <div class="buttons">
-                        <button class="operator" data-value="AC">AC</button>
-                        <button class="operator" data-value="DEL">DEL</button>
-                        <button class="operator" data-value="%">%</button>
-                        <button class="operator" data-value=" ÷ ">÷</button>
-                        <button data-value="7">7</button>
-                        <button data-value="8">8</button>
-                        <button data-value="9">9</button>
-                        <button class="operator" data-value=" × ">×</button>
-                        <button data-value="4">4</button>
-                        <button data-value="5">5</button>
-                        <button data-value="6">6</button>
-                        <button class="operator" data-value=" - ">-</button>
-                        <button data-value="1">1</button>
-                        <button data-value="2">2</button>
-                        <button data-value="3">3</button>
-                        <button class="operator" data-value=" + ">+</button>
-                        <button data-value="0">0</button>
-                        <button data-value="00">00</button>
-                        <button data-value=".">.</button>
-                        <button class="operator btn-equals" data-value="=" th="true">=</button>
-                    </div>
-                </div>`);
-            Widgets.initCalculator();
-        }
+else if (isCalc) {
+    Widgets.placeTopWidget(mainResult, `
+        <div class="calculator result-card result-card--flat">
+            <!-- Pembungkus Display dengan Border khas Google -->
+            <div class="calc-display-wrapper">
+                <div class="calc-history"></div>
+                <input type="text" inputmode="none" class="display" readonly placeholder="0" />
+            </div>
+            <div class="buttons">
+                <button class="operator btn-func" data-value="AC">AC</button>
+                <button class="operator btn-func" data-value="DEL">DEL</button>
+                <button class="operator btn-func" data-value="%">%</button>
+                <button class="operator btn-op" data-value=" ÷ ">÷</button>
+
+                <button data-value="7">7</button>
+                <button data-value="8">8</button>
+                <button data-value="9">9</button>
+                <button class="operator btn-op" data-value=" × ">×</button>
+
+                <button data-value="4">4</button>
+                <button data-value="5">5</button>
+                <button data-value="6">6</button>
+                <button class="operator btn-op" data-value=" - ">-</button>
+
+                <button data-value="1">1</button>
+                <button data-value="2">2</button>
+                <button data-value="3">3</button>
+                <button class="operator btn-op" data-value=" + ">+</button>
+
+                <button data-value="0">0</button>
+                <button data-value="00">00</button>
+                <button data-value=".">.</button>
+                <button class="btn-equals" data-value="=">=</button>
+            </div>
+        </div>`);
+    Widgets.initCalculator();
+}
         else if (isTranslate) {
             Widgets.placeTopWidget(mainResult, `
                 <div class="trnsl"><div class="wrpl"><ul class="controls">
@@ -878,10 +886,11 @@ const Widgets = {
         }
     },
 
-    initCalculator: () => {
+initCalculator: () => {
     const calculatorBox = document.querySelector(".calculator");
     if (!calculatorBox) return;
     const display = calculatorBox.querySelector(".display");
+    const history = calculatorBox.querySelector(".calc-history");
     let output = "";
     let justEvaluated = false;
 
@@ -893,22 +902,26 @@ const Widgets = {
 
             if (output === "Error" && val !== "AC") {
                 output = "";
+                if (history) history.textContent = "";
             }
 
             if (val === "=" && output !== "") {
                 try {
                     const result = SafeMath.evaluate(output);
+                    // Tampilkan ekspresi sebelumnya di riwayat atas
+                    if (history) history.textContent = output + " =";
                     output = String(parseFloat(result.toPrecision(12)));
                     justEvaluated = true;
                 } catch (err) {
+                    if (history) history.textContent = "";
                     output = "Error";
                     justEvaluated = false;
                 }
             } else if (val === "AC") {
                 output = "";
+                if (history) history.textContent = "";
                 justEvaluated = false;
             } else if (val === "DEL") {
-                // Hapus sekaligus 3 Karakter jika di akhir adalah operator berspasi (misal " + ")
                 if (/\s[\+\-\u00D7\u00F7%]\s$/.test(output)) {
                     output = output.slice(0, -3);
                 } else {
@@ -919,11 +932,13 @@ const Widgets = {
                 if (output === "" && isOp(val)) return;
 
                 if (justEvaluated) {
-                    if (!isOp(val)) output = "";
+                    if (!isOp(val)) {
+                        output = "";
+                        if (history) history.textContent = "";
+                    }
                     justEvaluated = false;
                 }
 
-                // Jika sudah ada operator di akhir, ganti operator tersebut (mencegah penumpukan " +  - ")
                 if (isOp(val) && /\s[\+\-\u00D7\u00F7%]\s$/.test(output)) {
                     output = output.slice(0, -3) + val;
                 } else {
@@ -935,7 +950,6 @@ const Widgets = {
         });
     });
 },
-
     initTranslator: () => {
         const countries = { en: "English", id: "Indonesian", es: "Spanish", fr: "French", de: "German", ja: "Japanese", ko: "Korean", zh: "Chinese" };
         const container = document.querySelector(".trnsl");

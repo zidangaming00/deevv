@@ -640,112 +640,142 @@
 .info-label { color: #000; font-size: 12px; border-radius: 5px; margin-left: 5px; padding: 0 2px; border: 1px solid #ccc; }
 
 /* ==========================================================================
-   CALCULATOR (Google Style Precision Fix)
+   GOOGLE STYLE CALCULATOR WIDGET
    ========================================================================== */
 
 .calculator {
+  padding: 16px;
+  max-width: 652px;
   width: 100%;
-  padding: 12px 16px 16px;
-  background: var(--color-white, #ffffff);
-  border-bottom: 1px solid var(--color-border, #e0e0e0);
-  margin-bottom: 8px;
   box-sizing: border-box;
 }
 
-/* 1. KOTAK DISPLAY (Membuat Border Kotak seperti Google) */
-.calculator .display-container {
-  width: 100%;
-  border: 1px solid #dadce0; /* Border abu-abu tipis khas Google */
-  border-radius: 18px;      /* Sudut melengkung */
-  padding: 10px 14px;
-  margin-top: 4px;
+/* --- Pembungkus Input dengan Border khas Google --- */
+.calculator .calc-display-wrapper {
+  border: 1px solid var(--color-border, #dadce0);
+  border-radius: 8px;
+  padding: 8px 14px;
   margin-bottom: 12px;
-  background: #ffffff;
-  box-sizing: border-box;
+  background-color: var(--color-bg-alt, #f8f9fa);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  min-height: 76px; /* Tinggi kotak display */
-  position: relative;
+  align-items: flex-end;
+  min-height: 72px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Teks angka utama */
+/* Efek Sorot Border seperti Google saat di-hover / aktif */
+.calculator .calc-display-wrapper:hover,
+.calculator .calc-display-wrapper:focus-within {
+  border-color: #1a73e8;
+}
+
+/* Teks Riwayat Perhitungan di Atas */
+.calculator .calc-history {
+  font-size: 13px;
+  color: var(--color-text-muted, #70757a);
+  min-height: 18px;
+  line-height: 18px;
+  text-align: right;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Input Angka Utama */
 .calculator .display {
   width: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  text-align: right;
-  font-size: 32px;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  font-size: 30px;
   font-weight: 400;
-  color: #202124;
+  color: var(--color-title, #202124);
+  text-align: right;
   padding: 0;
   margin: 0;
-  box-sizing: border-box;
+  font-family: inherit;
+  box-shadow: none !important;
 }
 
-/* 2. GRID TOMBOL */
+/* --- Layout Grid Tombol --- */
 .calculator .buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px 8px; /* Jarak antar tombol dibuat lebih rapi */
+  gap: 8px;
 }
 
-/* 3. UKURAN TOMBOL (Dibuat lebih pendek & proporsional) */
 .calculator .buttons button {
-  height: 38px; /* Diperkecil dari 46px+ agar tidak terlalu besar */
-  border-radius: 20px; /* Bentuk pill oval */
-  border: none;
-  font-size: 15px;
+  height: 44px;
+  border: 1px solid var(--color-border, #dadce0);
+  border-radius: 4px;
+  background-color: #f1f3f4;
+  color: #202124;
+  font-size: 16px;
   font-weight: 500;
   cursor: pointer;
+  outline: none;
   user-select: none;
-  background-color: #f1f3f4; /* Warna tombol angka */
-  color: #202124;
+  transition: background-color 0.1s ease, border-color 0.1s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.1s ease, transform 0.05s ease;
-  -webkit-tap-highlight-color: transparent;
+}
+
+.calculator .buttons button:hover {
+  background-color: #e8eaed;
+  border-color: #bdc1c6;
 }
 
 .calculator .buttons button:active {
-  background-color: #e8eaed;
-  transform: scale(0.96);
+  background-color: #dadce0;
 }
 
-/* Tombol Operator & Fungsi (Biru Muda) */
-.calculator .buttons button.operator,
-.calculator .buttons button.func {
-  background-color: #e8f0fe;
-  color: #1a73e8;
+/* Tombol Fungsi & Operator Khas Google (AC, DEL, %, ÷, ×, -, +) */
+.calculator .buttons button.btn-func,
+.calculator .buttons button.btn-op {
+  background-color: #dadce0;
+  color: #3c4043;
 }
 
-.calculator .buttons button.operator:active,
-.calculator .buttons button.func:active {
-  background-color: #d2e3fc;
+.calculator .buttons button.btn-func:hover,
+.calculator .buttons button.btn-op:hover {
+  background-color: #bdc1c6;
 }
 
-/* Tombol Sama Dengan (=) */
-.calculator .buttons button.equals {
+/* Tombol Sama Dengan (=) Warna Biru khas Google */
+.calculator .buttons button.btn-equals {
   background-color: #1a73e8;
   color: #ffffff;
+  border-color: #1a73e8;
   font-weight: 600;
 }
 
-.calculator .buttons button.equals:active {
+.calculator .buttons button.btn-equals:hover {
   background-color: #1557b0;
+  border-color: #1557b0;
 }
 
-/* Support Dark Mode */
-body.dark .calculator {
-  background: #202125;
-  border-color: #3c4043;
+.calculator .buttons button.btn-equals:active {
+  background-color: #104388;
 }
 
-body.dark .calculator .display-container {
-  border-color: #3c4043;
-  background: #202125;
+/* --- Dark Mode Support --- */
+body.dark .calculator .calc-display-wrapper {
+  background-color: #202124;
+  border-color: #5f6368;
+}
+
+body.dark .calculator .calc-display-wrapper:hover,
+body.dark .calculator .calc-display-wrapper:focus-within {
+  border-color: #8ab4f8;
+}
+
+body.dark .calculator .calc-history {
+  color: #9aa0a6;
 }
 
 body.dark .calculator .display {
@@ -753,21 +783,35 @@ body.dark .calculator .display {
 }
 
 body.dark .calculator .buttons button {
-  background-color: #303134;
+  background-color: #3c4043;
+  border-color: #5f6368;
   color: #e8eaed;
 }
 
-body.dark .calculator .buttons button.operator,
-body.dark .calculator .buttons button.func {
-  background-color: #2c384a;
-  color: #8ab4f8;
+body.dark .calculator .buttons button:hover {
+  background-color: #4a4e51;
 }
 
-body.dark .calculator .buttons button.equals {
+body.dark .calculator .buttons button.btn-func,
+body.dark .calculator .buttons button.btn-op {
+  background-color: #5f6368;
+  color: #e8eaed;
+}
+
+body.dark .calculator .buttons button.btn-func:hover,
+body.dark .calculator .buttons button.btn-op:hover {
+  background-color: #70757a;
+}
+
+body.dark .calculator .buttons button.btn-equals {
   background-color: #8ab4f8;
   color: #202124;
+  border-color: #8ab4f8;
 }
 
+body.dark .calculator .buttons button.btn-equals:hover {
+  background-color: #a6c5fa;
+}
 
 /* --- Translator --- */
 .trnsl { width: 100%; border: 1px solid var(--color-border); border-style: solid none; margin: 4px 0; background: var(--color-white); }
