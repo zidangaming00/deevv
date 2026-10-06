@@ -711,7 +711,7 @@ const Widgets = {
         // Gabungkan deteksi jam dan tanggal ke satu variabel
         const isTimeOrDate = /jam|waktu|time|clock|tanggal|date/.test(query) && query.length < 20 && query.split(" ").length < 5;
         const isCalc = (/kalkulator|calculator/.test(query) && query.split(" ").length <= 2) || (/calculator\s+online|kalkulator\s+online/.test(query) && query.split(" ").length <= 3);
-        const isTranslate = /translate|terjemah|terjemahan/.test(query);
+        const isTranslate = false;
         const d = new Date();
 
         if (isTimeOrDate) {
