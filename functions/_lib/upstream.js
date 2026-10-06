@@ -127,64 +127,46 @@ export function getSuggest(env, { q }) {
   return fetchJson(`${webBase(env)}/suggest?q=${encodeURIComponent(q)}`, { headers: ownHeaders(env), timeoutMs: 5000 });
 }
 
-// Widget penerjemah (MyMemory, tanpa API key)
-const MM_MAX_BYTES = 450; // batas MyMemory sekitar 500 byte per request
-
-const byteLen = (s) => new TextEncoder().encode(s).length;
-
-// Pecah teks panjang per kalimat supaya tiap potongan <= MM_MAX_BYTES
-function splitForMyMemory(text) {
-  const sentences = text.match(/[^.!?。！？\n]+[.!?。！？]*\s*/g) || [text];
-  const chunks = [];
-  let cur = "";
-  const push = () => { if (cur.trim()) chunks.push(cur.trim()); cur = ""; };
-
-  for (const s of sentences) {
-    if (byteLen(cur + s) <= MM_MAX_BYTES) { cur += s; continue; }
-    push();
-    if (byteLen(s) <= MM_MAX_BYTES) { cur = s; continue; }
-    // satu kalimat terlalu panjang: potong paksa per karakter
-    let piece = "";
-    for (const ch of s) {
-      if (byteLen(piece + ch) > MM_MAX_BYTES) { chunks.push(piece.trim()); piece = ""; }
-      piece += ch;
-    }
-    cur = piece;
-  }
-  push();
-  return chunks;
-}
-
-const decodeEntities = (s) =>
-  s.replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n))
-   .replace(/&quot;/g, '"').replace(/&apos;/g, "'")
-   .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
-
-async function myMemoryChunk(chunk, sl, tl, email) {
-  const code = (c) => (c === "zh" ? "zh-CN" : c);
-  let url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=${encodeURIComponent(code(sl) + "|" + code(tl))}`;
-  if (email) url += `&de=${encodeURIComponent(email)}`;
-
-  const data = await fetchJson(url, { timeoutMs: 8000 });
-  const status = Number(data?.responseStatus);
-  const out = data?.responseData?.translatedText;
-  if (status === 429 || data?.quotaFinished) throw new Error("mymemory_quota");
-  if (status !== 200 || !out) throw new Error(`mymemory_${status || "empty"}`);
-  return decodeEntities(String(out));
-}
-
 export async function translateText({ text, sl, tl, env }) {
-  if (!ALLOWED_LANGS.has(sl) || !ALLOWED_LANGS.has(tl)) throw new Error("bad_lang");
-  if (sl === tl) return { text };
+  // 1. Normalisasi kode bahasa (misal "en-US" -> "en", "ID" -> "id")
+  const srcLang = String(sl || "").toLowerCase().trim().split("-")[0];
+  const tgtLang = String(tl || "").toLowerCase().trim().split("-")[0];
 
-  const email = env?.MYMEMORY_EMAIL || ""; // opsional: kuota 5.000 -> 50.000 karakter/hari
-  const chunks = splitForMyMemory(text);
-  const parts = await Promise.all(
-  chunks.map((c) =>
-    myMemoryChunk(c, sl, tl, email).catch((e) => { throw new Error("mymemory:" + e.message); })
-  )
-);
-  return { text: parts.join(" ") };
+  // 2. Izinkan 'auto' untuk bahasa asal jika pengguna memilih deteksi otomatis
+  const isSrcValid = srcLang === "auto" || ALLOWED_LANGS.has(srcLang);
+  const isTgtValid = ALLOWED_LANGS.has(tgtLang);
+
+  if (!isSrcValid || !isTgtValid) {
+    throw new Error(`bad_lang (sl: '${sl}', tl: '${tl}')`);
+  }
+
+  if (srcLang === tgtLang) return { text };
+
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(srcLang)}&tl=${encodeURIComponent(tgtLang)}&dt=t&q=${encodeURIComponent(text)}`;
+
+  try {
+    // 3. Tambahkan User-Agent Browser agar tidak diblokir oleh Google
+    const data = await fetchJson(url, {
+      timeoutMs: 10000,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9,id;q=0.8"
+      }
+    });
+
+    if (Array.isArray(data) && Array.isArray(data[0])) {
+      const translatedText = data[0]
+        .map((item) => item[0])
+        .filter(Boolean)
+        .join("");
+
+      if (translatedText) return { text: translatedText };
+    }
+
+    throw new Error("empty_google_response");
+  } catch (err) {
+    throw new Error(`gtx_fetch_failed: ${err.message}`);
+  }
 }
 
 // AI Overview (kunci Groq hanya ada di server)
