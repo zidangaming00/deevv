@@ -640,178 +640,190 @@
 .info-label { color: #000; font-size: 12px; border-radius: 5px; margin-left: 5px; padding: 0 2px; border: 1px solid #ccc; }
 
 /* ==========================================================================
-   GOOGLE STYLE CALCULATOR WIDGET
+   EXACT GOOGLE SEARCH CALCULATOR (MATERIAL YOU DESIGN)
    ========================================================================== */
 
 .calculator {
   padding: 16px;
-  max-width: 652px;
+  max-width: 600px;
   width: 100%;
   box-sizing: border-box;
+  font-family: Google Sans, Roboto, sans-serif;
 }
 
-/* --- Pembungkus Input dengan Border khas Google --- */
+/* Outer Display Box */
 .calculator .calc-display-wrapper {
-  border: 1px solid var(--color-border, #dadce0);
-  border-radius: 8px;
-  padding: 8px 14px;
-  margin-bottom: 12px;
-  background-color: var(--color-bg-alt, #f8f9fa);
+  border: 1px solid #dadce0;
+  border-radius: 20px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  align-items: flex-end;
-  min-height: 72px;
+  justify-content: space-between;
+  min-height: 104px;
   box-sizing: border-box;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Efek Sorot Border seperti Google saat di-hover / aktif */
-.calculator .calc-display-wrapper:hover,
-.calculator .calc-display-wrapper:focus-within {
-  border-color: #1a73e8;
-}
-
-/* Teks Riwayat Perhitungan di Atas */
-.calculator .calc-history {
-  font-size: 13px;
-  color: var(--color-text-muted, #70757a);
-  min-height: 18px;
-  line-height: 18px;
-  text-align: right;
+.calculator .calc-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
+}
+
+.calculator .calc-history-icon {
+  display: flex;
+  align-items: center;
+  color: #5f6368;
+}
+
+.calculator .calc-history {
+  font-size: 14px;
+  color: #70757a;
+  text-align: right;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Input Angka Utama */
 .calculator .display {
   width: 100%;
   border: none !important;
   outline: none !important;
   background: transparent !important;
-  font-size: 30px;
+  font-size: 38px;
   font-weight: 400;
-  color: var(--color-title, #202124);
+  color: #202124;
   text-align: right;
   padding: 0;
-  margin: 0;
-  font-family: inherit;
+  margin-top: 4px;
   box-shadow: none !important;
 }
 
-/* --- Layout Grid Tombol --- */
+/* Grid Tombol Google */
 .calculator .buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
 .calculator .buttons button {
-  height: 44px;
-  border: 1px solid var(--color-border, #dadce0);
-  border-radius: 4px;
-  background-color: #f1f3f4;
-  color: #202124;
-  font-size: 16px;
+  height: 48px;
+  border-radius: 24px; /* Bentuk lonjong / pill Material You */
+  border: none;
+  font-size: 18px;
   font-weight: 500;
   cursor: pointer;
   outline: none;
-  user-select: none;
-  transition: background-color 0.1s ease, border-color 0.1s ease;
+  transition: background-color 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.calculator .buttons button:hover {
+/* Tombol Angka (0-9, .) -> Soft Gray */
+.calculator .buttons button.btn-num {
+  background-color: #f1f3f4;
+  color: #1f1f1f;
+}
+
+.calculator .buttons button.btn-num:hover {
   background-color: #e8eaed;
-  border-color: #bdc1c6;
 }
 
-.calculator .buttons button:active {
-  background-color: #dadce0;
+/* Tombol Operator & Fungsi ( (, ), %, AC, ÷, ×, -, + ) -> Soft Blue/Purple Tint */
+.calculator .buttons button.btn-op,
+.calculator .buttons button.btn-func {
+  background-color: #e2e7f8;
+  color: #001d35;
 }
 
-/* Tombol Fungsi & Operator Khas Google (AC, DEL, %, ÷, ×, -, +) */
-.calculator .buttons button.btn-func,
-.calculator .buttons button.btn-op {
-  background-color: #dadce0;
-  color: #3c4043;
+.calculator .buttons button.btn-op:hover,
+.calculator .buttons button.btn-func:hover {
+  background-color: #d3dbe8;
 }
 
-.calculator .buttons button.btn-func:hover,
-.calculator .buttons button.btn-op:hover {
-  background-color: #bdc1c6;
-}
-
-/* Tombol Sama Dengan (=) Warna Biru khas Google */
+/* Tombol Sama Dengan (=) -> Google Blue Solid */
 .calculator .buttons button.btn-equals {
-  background-color: #1a73e8;
+  background-color: #1b6ef3;
   color: #ffffff;
-  border-color: #1a73e8;
   font-weight: 600;
 }
 
 .calculator .buttons button.btn-equals:hover {
   background-color: #1557b0;
-  border-color: #1557b0;
 }
 
-.calculator .buttons button.btn-equals:active {
-  background-color: #104388;
+/* Switch Mode Bawah [123 | Fx] */
+.calculator .calc-mode-switch {
+  display: flex;
+  width: 140px;
+  height: 36px;
+  border: 1px solid #dadce0;
+  border-radius: 18px;
+  overflow: hidden;
+  background-color: #ffffff;
 }
 
-/* --- Dark Mode Support --- */
+.calculator .calc-mode-switch button {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  color: #5f6368;
+  cursor: pointer;
+}
+
+.calculator .calc-mode-switch button.active {
+  background-color: #e2e7f8;
+  color: #1b6ef3;
+  font-weight: 600;
+}
+
+/* Dark Mode Support */
 body.dark .calculator .calc-display-wrapper {
-  background-color: #202124;
-  border-color: #5f6368;
-}
-
-body.dark .calculator .calc-display-wrapper:hover,
-body.dark .calculator .calc-display-wrapper:focus-within {
-  border-color: #8ab4f8;
-}
-
-body.dark .calculator .calc-history {
-  color: #9aa0a6;
+  background-color: #1f1f1f;
+  border-color: #444746;
 }
 
 body.dark .calculator .display {
-  color: #e8eaed;
+  color: #e3e2e6;
 }
 
-body.dark .calculator .buttons button {
-  background-color: #3c4043;
-  border-color: #5f6368;
-  color: #e8eaed;
+body.dark .calculator .calc-history-icon,
+body.dark .calculator .calc-history {
+  color: #c4c7c5;
 }
 
-body.dark .calculator .buttons button:hover {
-  background-color: #4a4e51;
+body.dark .calculator .buttons button.btn-num {
+  background-color: #2d2f31;
+  color: #e3e2e6;
 }
 
-body.dark .calculator .buttons button.btn-func,
-body.dark .calculator .buttons button.btn-op {
-  background-color: #5f6368;
-  color: #e8eaed;
-}
-
-body.dark .calculator .buttons button.btn-func:hover,
-body.dark .calculator .buttons button.btn-op:hover {
-  background-color: #70757a;
+body.dark .calculator .buttons button.btn-op,
+body.dark .calculator .buttons button.btn-func {
+  background-color: #3b4758;
+  color: #d3e3fd;
 }
 
 body.dark .calculator .buttons button.btn-equals {
-  background-color: #8ab4f8;
-  color: #202124;
-  border-color: #8ab4f8;
+  background-color: #a8c7fa;
+  color: #042e6f;
 }
 
-body.dark .calculator .buttons button.btn-equals:hover {
-  background-color: #a6c5fa;
+body.dark .calculator .calc-mode-switch {
+  background-color: #1f1f1f;
+  border-color: #444746;
 }
+
+body.dark .calculator .calc-mode-switch button.active {
+  background-color: #3b4758;
+  color: #a8c7fa;
+}
+
 
 /* --- Translator --- */
 .trnsl { width: 100%; border: 1px solid var(--color-border); border-style: solid none; margin: 4px 0; background: var(--color-white); }

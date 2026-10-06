@@ -644,40 +644,56 @@ const Widgets = {
 else if (isCalc) {
     Widgets.placeTopWidget(mainResult, `
         <div class="calculator result-card result-card--flat">
-            <!-- Pembungkus Display dengan Border khas Google -->
+            <!-- Display Box khas Google dengan Ikon Riwayat & Border Rounded -->
             <div class="calc-display-wrapper">
-                <div class="calc-history"></div>
+                <div class="calc-top-bar">
+                    <span class="calc-history-icon" title="History">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                            <path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8z"/>
+                        </svg>
+                    </span>
+                    <div class="calc-history"></div>
+                </div>
                 <input type="text" inputmode="none" class="display" readonly placeholder="0" />
             </div>
+
+            <!-- Grid Tombol Persis Layout Google -->
             <div class="buttons">
-                <button class="operator btn-func" data-value="AC">AC</button>
-                <button class="operator btn-func" data-value="DEL">DEL</button>
-                <button class="operator btn-func" data-value="%">%</button>
-                <button class="operator btn-op" data-value=" ÷ ">÷</button>
+                <button class="btn-op" data-value="(">(</button>
+                <button class="btn-op" data-value=")">)</button>
+                <button class="btn-op" data-value="%">%</button>
+                <button class="btn-func" data-value="AC">AC</button>
 
-                <button data-value="7">7</button>
-                <button data-value="8">8</button>
-                <button data-value="9">9</button>
-                <button class="operator btn-op" data-value=" × ">×</button>
+                <button class="btn-num" data-value="7">7</button>
+                <button class="btn-num" data-value="8">8</button>
+                <button class="btn-num" data-value="9">9</button>
+                <button class="btn-op" data-value=" ÷ ">÷</button>
 
-                <button data-value="4">4</button>
-                <button data-value="5">5</button>
-                <button data-value="6">6</button>
-                <button class="operator btn-op" data-value=" - ">-</button>
+                <button class="btn-num" data-value="4">4</button>
+                <button class="btn-num" data-value="5">5</button>
+                <button class="btn-num" data-value="6">6</button>
+                <button class="btn-op" data-value=" × ">×</button>
 
-                <button data-value="1">1</button>
-                <button data-value="2">2</button>
-                <button data-value="3">3</button>
-                <button class="operator btn-op" data-value=" + ">+</button>
+                <button class="btn-num" data-value="1">1</button>
+                <button class="btn-num" data-value="2">2</button>
+                <button class="btn-num" data-value="3">3</button>
+                <button class="btn-op" data-value=" - ">-</button>
 
-                <button data-value="0">0</button>
-                <button data-value="00">00</button>
-                <button data-value=".">.</button>
+                <button class="btn-num" data-value="0">0</button>
+                <button class="btn-num" data-value=".">.</button>
                 <button class="btn-equals" data-value="=">=</button>
+                <button class="btn-op" data-value=" + ">+</button>
+            </div>
+
+            <!-- Switch Mode 123 | Fx di Bagian Bawah -->
+            <div class="calc-mode-switch">
+                <button class="active">123</button>
+                <button>Fx</button>
             </div>
         </div>`);
     Widgets.initCalculator();
 }
+
         else if (isTranslate) {
             Widgets.placeTopWidget(mainResult, `
                 <div class="trnsl"><div class="wrpl"><ul class="controls">
@@ -896,7 +912,7 @@ initCalculator: () => {
 
     const isOp = (v) => ["%", " ÷ ", " × ", " - ", " + "].includes(v);
 
-    calculatorBox.querySelectorAll("button").forEach(btn => {
+    calculatorBox.querySelectorAll(".buttons button").forEach(btn => {
         btn.addEventListener("click", (e) => {
             const val = e.currentTarget.dataset.value;
 
@@ -908,7 +924,6 @@ initCalculator: () => {
             if (val === "=" && output !== "") {
                 try {
                     const result = SafeMath.evaluate(output);
-                    // Tampilkan ekspresi sebelumnya di riwayat atas
                     if (history) history.textContent = output + " =";
                     output = String(parseFloat(result.toPrecision(12)));
                     justEvaluated = true;
@@ -921,16 +936,7 @@ initCalculator: () => {
                 output = "";
                 if (history) history.textContent = "";
                 justEvaluated = false;
-            } else if (val === "DEL") {
-                if (/\s[\+\-\u00D7\u00F7%]\s$/.test(output)) {
-                    output = output.slice(0, -3);
-                } else {
-                    output = output.slice(0, -1);
-                }
-                justEvaluated = false;
-            } else if (val !== "=") {
-                if (output === "" && isOp(val)) return;
-
+            } else {
                 if (justEvaluated) {
                     if (!isOp(val)) {
                         output = "";
