@@ -2,22 +2,12 @@
    BASE.CSS
    ========================================================================== */
 
-/* --- Fonts & Reset --- */
-@font-face {
-  font-family: 'Verio Sans';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url('/font/BRVQLLXNOS.woff2') format('woff2'),
-       url('/font/JBDCITAYMP.woff2') format('woff2');
-}
-
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
   text-size-adjust: 100%;
-  font-family: 'Verio Sans', Roboto, sans-serif;
+  font-family: 'Plus Jakarta Sans', Roboto, sans-serif;
 }
 
 html, body {
@@ -305,8 +295,7 @@ body.dark .related:after {
 .search-item {
   display: inline-block;
   text-align: center;
-  font-size: 14px;
-  font-family: 'Verio Sans', Roboto-Medium, sans-serif;
+  font-size: var(dtext-small);
   font-weight: 500;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
