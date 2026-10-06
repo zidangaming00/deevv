@@ -352,19 +352,8 @@ const SafeMath = {
 };
 
 // ==========================================
-// PLAY STORE INTENT (tanpa daftar kata / hardcode)
+// PLAY STORE INTENT
 // ==========================================
-// Prinsip: jangan menebak dari query, tapi NILAI HASIL yang dikembalikan API.
-// Widget hanya tampil kalau ada aplikasi yang:
-//   (a) namanya cocok dengan apa yang diketik user, DAN
-//   (b) cukup populer (jumlah rating) untuk dianggap "aplikasi yang memang dicari".
-// Contoh:
-//   "Minecraft"          -> judul "Minecraft" cocok penuh + jutaan rating      -> tampil
-//   "Download Minecraft" -> kata "download" tidak ada di judul, tapi seluruh
-//                           judul app tercakup query                          -> tampil
-//   "Prabowo"            -> hanya ada app asal-asalan yang menyebut namanya,
-//                           rating sedikit                                    -> tidak tampil
-//   Query seksual        -> tidak ada app yang namanya cocok & populer          -> tidak tampil
 const PlayIntent = {
     MIN_SCORE: 0.6,   // ambang lolos (0..1); naikkan = lebih ketat
     POP_FULL: 6.5,    // log10(jumlah rating) yang dianggap "sangat populer" (~3 juta)
@@ -473,15 +462,8 @@ const PlayIntent = {
 };
 
 // ==========================================
-// VIDEO INTENT (tanpa daftar kata)
+// VIDEO INTENT
 // ==========================================
-// Dua sinyal, keduanya dari data:
-//  1. Kalau query ternyata sebuah aplikasi (lewat PlayIntent), kategori Play Store-nya menentukan:
-//     game/hiburan -> orang biasanya cari video (gameplay, trailer); alat kerja -> tidak.
-//     Kategori ini taksonomi bawaan Play Store, bukan kata dari user.
-//  2. Video yang dikembalikan harus benar-benar tentang query: kata query yang muncul di
-//     minimal sebagian judul/channel dianggap "inti"; kata yang tidak muncul di mana pun
-//     (mis. "download", "terbaru") dianggap kata niat dan diabaikan.
 const VideoIntent = {
     VIDEO_CATEGORIES: /^(game|entertainment|music|video)/i, // sesuaikan dengan format kategori dari API-mu
     MIN_CORE_DF: 0.4,     // sebuah kata dianggap inti kalau ada di >= 40% video
@@ -685,7 +667,7 @@ const Widgets = {
                         ${metaLine ? `<div style="font-size:13px; color:var(--color-text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${metaLine}</div>` : ''}
                         <div style="font-size:13px; color:var(--color-text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${developer} • ${categoryText}</div>
                     </div>
-                    <a href="${url}" target="_blank" rel="noopener" style="background:var(--color-title); color:#fff; padding:6px 16px; border-radius:18px; text-decoration:none; font-size:13px; font-weight:500; white-space:nowrap; flex-shrink:0;">
+                    <a href="${url}" target="_blank" rel="noopener" style="background:var(--color-title); color:var(--color-wblue); padding:6px 16px; border-radius:18px; text-decoration:none; font-size:13px; font-weight:500; white-space:nowrap; flex-shrink:0;">
                         ${priceText}
                     </a>
                 </div>`;
