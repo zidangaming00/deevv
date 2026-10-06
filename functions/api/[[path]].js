@@ -180,6 +180,6 @@ export async function onRequest(context) {
     return jsonResponse({ error: "not_found" }, { status: 404 });
   } catch (err) {
     console.error(`[api/${route}]`, err && err.message ? err.message : err);
-    return jsonResponse({ error: "upstream_error" }, { status: 502 });
+    return jsonResponse({ error: "upstream_error", detail: String(err?.message || err) }, { status: 502 });
   }
 }
