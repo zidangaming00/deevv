@@ -165,11 +165,11 @@ const cleanItems = (ssrData?.items || []).map(item =>
 
 // 2. Format struktur akhir sesuai kebutuhan
 const transformedData = {
-  engine: "tbm",
+  type: ssrData?.engine || "",
   query: ssrData?.query || "",
-  searchInformation: {
-    searchTime: ssrData?.searchInformation?.formattedSearchTime || "",
-    totalResults: ssrData?.searchInformation?.formattedTotalResults || ""
+  searchInfo: {
+    search_time: ssrData?.searchInformation?.formattedSearchTime || "",
+    total_results: ssrData?.searchInformation?.formattedTotalResults || ""
   },
   results_data: cleanItems
 };
