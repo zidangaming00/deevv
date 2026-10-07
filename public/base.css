@@ -297,7 +297,6 @@ body.dark .related:after {
 .search-item {
   display: inline-block;
   text-align: center;
-  background: green;
   font-size: var(--dtext-small);
   font-weight: 500;
   cursor: pointer;
