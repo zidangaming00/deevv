@@ -660,9 +660,7 @@ body.dark .related:after {
   padding: 12px;
   max-width: 380px;
   width: 100%;
-  box-sizing: border-box;
-  font-family: Google Sans, Roboto, sans-serif;
-  margin: 0 auto;
+  margin-bottom: 8px;
 }
 
 /* Display Box */
@@ -724,11 +722,11 @@ body.dark .related:after {
 .calculator .buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(6, 42px); /* tinggi sama di 123 & Fx */
+  grid-template-rows: repeat(6, 42px);
   gap: 8px;
 }
 .calculator .calc-mode-switch {
-  grid-row: 6;              /* selalu terkunci di baris bawah */
+  grid-row: 6;
   grid-column: 1 / span 2;
 }
 .calculator .btn-deg-rad {
@@ -736,10 +734,9 @@ body.dark .related:after {
   grid-column: 1 / span 2;
 }
 
-/* Ukuran Tombol Dikurangi 2px (Height: 42px) */
 .calculator .buttons button {
-  height: 42px;
-  border-radius: 21px;
+  height: 40px;
+  border-radius: 22px;
   border: none;
   font-size: 16px;
   font-weight: 500;
