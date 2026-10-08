@@ -112,7 +112,7 @@
 }
 
 .video-card .title {
-  
+  color: var(--color-title);
   margin: 0 0 6px 0;
   font-size: var(--dtext-small);
   font-weight: 500;
