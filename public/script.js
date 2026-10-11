@@ -1250,19 +1250,12 @@ const UI = {
           <div class="page-header__inner"> 
             
              <div class="logo-slot">
-  <div class="logo-area-wrapper">
-    <a title="Kembali" href="/"><img alt="Logo" src="/images/logo.png"></a>
-    <button type="button" class="app-menu-btn" id="appMenuBtn" title="Menu Lainnya">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-      </svg>
-    </button>
-  </div>
-  <div class="app-dropdown-menu" id="appDropdownMenu">
-    <a href="/" class="app-dropdown-item">🏠 Beranda</a>
-    <a href="/settings" class="app-dropdown-item">⚙️ Pengaturan</a>
-    <a href="https://discord.com" target="_blank" class="app-dropdown-item">💬 Komunitas / Discord</a>
-  </div>
+  <a title="Kembali" href="/"><img alt="Logo" src="/images/logo.png"></a>
+  <button type="button" class="app-menu-btn" id="appMenuBtn" aria-label="Menu">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+    </svg>
+  </button>
 </div>
  
             <div class="header"> 
@@ -1286,6 +1279,44 @@ const UI = {
         <div class="results-section"> 
           <div class="result-wrapper">${existingMainResult || '<div class="main-result"></div>'}</div> 
         </div> 
+
+<!-- Modal Menu Overlay ala Google -->
+<div class="app-menu-overlay" id="appMenuOverlay">
+  <div class="app-menu-modal">
+    <div class="app-menu-header">
+      <button type="button" class="app-menu-close" id="appMenuClose" aria-label="Tutup">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+      </button>
+    </div>
+    <div class="app-menu-body">
+      <a href="/settings" class="app-menu-card">
+        <div class="app-menu-icon">⚙️</div>
+        <div class="app-menu-text">
+          <div class="title">Pengaturan</div>
+          <div class="desc">Setelan pencarian & tampilan</div>
+        </div>
+      </a>
+      <a href="/privacy" class="app-menu-card">
+        <div class="app-menu-icon">🔒</div>
+        <div class="app-menu-text">
+          <div class="title">Privasi</div>
+          <div class="desc">Kebijakan & perlindungan data</div>
+        </div>
+      </a>
+      <a href="/about" class="app-menu-card">
+        <div class="app-menu-icon">ℹ️</div>
+        <div class="app-menu-text">
+          <div class="title">Tentang Deevv</div>
+          <div class="desc">Informasi mesin pencari</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+
       </div> `;
     UI.setupEventListeners();
   },
@@ -1294,14 +1325,15 @@ const UI = {
 
 document.addEventListener('click', (e) => {
     const menuBtn = document.getElementById('appMenuBtn');
-    const dropdownMenu = document.getElementById('appDropdownMenu');
-    
-    if (!menuBtn || !dropdownMenu) return;
+    const closeBtn = document.getElementById('appMenuClose');
+    const overlay = document.getElementById('appMenuOverlay');
 
-    if (menuBtn.contains(e.target)) {
-        dropdownMenu.classList.toggle('active');
-    } else if (!dropdownMenu.contains(e.target)) {
-        dropdownMenu.classList.remove('active');
+    if (!overlay) return;
+
+    if (menuBtn && menuBtn.contains(e.target)) {
+        overlay.classList.add('active');
+    } else if ((closeBtn && closeBtn.contains(e.target)) || e.target === overlay) {
+        overlay.classList.remove('active');
     }
 });
 
