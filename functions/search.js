@@ -134,7 +134,23 @@ export async function onRequestGet(context) {
       <div class="app" id="main-bx">  
         <div class="page-header">  
           <div class="page-header__inner">  
-            <div class="logo-slot"><a title="Kembali" href="/"><img alt="Logo" src="/images/logo.png"></a></div>  
+            
+            <div class="logo-slot">
+  <div class="logo-area-wrapper">
+    <a title="Kembali" href="/"><img alt="Logo" src="/images/logo.png"></a>
+    <button type="button" class="app-menu-btn" id="appMenuBtn" title="Menu Lainnya">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+      </svg>
+    </button>
+  </div>
+  <div class="app-dropdown-menu" id="appDropdownMenu">
+    <a href="/" class="app-dropdown-item">🏠 Beranda</a>
+    <a href="/settings" class="app-dropdown-item">⚙️ Pengaturan</a>
+    <a href="https://discord.com" target="_blank" class="app-dropdown-item">💬 Komunitas / Discord</a>
+  </div>
+</div>
+  
             <div class="header">  
               <div class="search-box">  
                 <div class="search-field">  
