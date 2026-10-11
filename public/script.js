@@ -1234,8 +1234,7 @@ const UI = {
     const existingMainResult = preserveResults ? document.querySelector(".main-result")?.outerHTML : null;
     document.title = isIdLang ? `${Config.q} - Penelusuran` : `${Config.q} - Search`;
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const themeCookie = document.cookie.match(/(?:^|;\s*)theme=(light|dark|system)/);
-    const themePref = (themeCookie && themeCookie[1]) || settings.theme;
+    const themePref = settings.theme;
     if (themePref === "dark" || (themePref === "system" && prefersDark) || Config.th == 1) {
       document.body.classList.add("dark");
     } else {
@@ -1364,11 +1363,10 @@ const UI = {
             if (modal.classList.contains("open")) closeModal(); else closeMenu();
         });
 
-        // --- Tema: Sistem / Terang / Gelap (disimpan di cookie "theme" yang sudah dipakai shared.js) ---
+        // --- Tema: Sistem / Terang / Gelap (disimpan lewat updateSetting dari cookie.js) ---
         const labels = { system: getText("themeSystem"), light: getText("themeLight"), dark: getText("themeDark") };
         const currentPref = () => {
-            const m = document.cookie.match(/(?:^|;\s*)theme=(light|dark|system)/);
-            const v = (m && m[1]) || settings.theme;
+            const v = getData().theme; // baca ulang dari cookie.js, sama seperti halaman settings
             return v === "dark" || v === "system" ? v : "light";
         };
         const applyTheme = (pref) => {
@@ -1396,7 +1394,7 @@ const UI = {
         modal.querySelectorAll(".theme-choice").forEach(o => {
             o.addEventListener("click", () => {
                 const pref = o.dataset.theme;
-                document.cookie = `theme=${pref}; path=/; max-age=31536000; SameSite=Lax`;
+                updateSetting("theme", pref); // cookie.js, sama seperti halaman settings
                 applyTheme(pref);
                 paintTheme();
                 closeModal();
