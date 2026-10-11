@@ -70,16 +70,12 @@ body.dark .related:after {
 /* --- Shell Layout --- */
 .app { width: 100%; }
 
-/* ==========================================
-   HEADER LOGO & HAMBURGER MENU (POSITIONING)
-   ========================================== */
-
 .logo-slot {
   display: flex;
-  justify-content: space-between; /* Menjaga Logo di Kiri & Tombol di Kanan mentok padding */
+  justify-content: center;
   align-items: center;
   background: var(--color-white);
-  padding: 8px 16px 4px 16px;
+  padding: 8px 12px 0px 12px;
   width: 100%;
 }
 
@@ -88,162 +84,6 @@ body.dark .related:after {
   height: 45px;
   object-fit: contain;
 }
-
-.app-menu-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-dark);
-  -webkit-tap-highlight-color: transparent;
-  transition: background-color 0.2s;
-}
-
-.app-menu-btn:hover {
-  background-color: var(--color-bg-alt);
-}
-
-/* ==========================================
-   GOOGLE-STYLE MODAL MENU OVERLAY
-   ========================================== */
-
-.app-menu-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 999999;
-  justify-content: center;
-  align-items: flex-start;
-  padding-top: 12px;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.app-menu-overlay.active {
-  display: flex;
-  opacity: 1;
-}
-
-.app-menu-modal {
-  background: var(--color-bg);
-  width: 92%;
-  max-width: 360px;
-  border-radius: 28px;
-  padding: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  transform: translateY(-10px);
-  transition: transform 0.2s ease;
-}
-
-.app-menu-overlay.active .app-menu-modal {
-  transform: translateY(0);
-}
-
-.app-menu-header {
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-}
-
-.app-menu-close {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-muted);
-}
-
-.app-menu-close:hover {
-  background-color: var(--color-bg-alt);
-  color: var(--color-text-dark);
-}
-
-.app-menu-body {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.app-menu-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 14px 16px;
-  background: var(--color-white);
-  border-radius: 16px;
-  text-decoration: none;
-  color: var(--color-text-dark);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  transition: background-color 0.15s, transform 0.1s;
-}
-
-.app-menu-card:hover {
-  background-color: var(--color-bg-alt);
-}
-
-.app-menu-card:active {
-  transform: scale(0.98);
-}
-
-.app-menu-icon {
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.app-menu-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.app-menu-text .title {
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--color-text-dark);
-}
-
-.app-menu-text .desc {
-  font-size: 12px;
-  color: var(--color-text-muted);
-}
-
-/* Media Query untuk Desktop Layout */
-@media (min-width: 780px) {
-  .logo-slot {
-    justify-content: flex-start !important;
-    gap: 16px;
-    padding: 0 !important;
-  }
-}
-
-body.dark .app-menu-modal {
-  background: #202125;
-}
-
-body.dark .app-menu-card {
-  background: #303134;
-  color: #E9EAEE;
-}
-
-/* end */
 
 .page-header { background: var(--color-white); }
 .header { background: var(--color-white); }
@@ -812,4 +652,134 @@ body.dark .footer-link {
 body.dark .footer-separator,
 body.dark .footer-copy {
   color: #bdc1c4; 
+}
+
+
+/* ==========================================================================
+   MENU GARIS TIGA (hamburger) + OVERLAY LAYAR PENUH
+   ========================================================================== */
+.page-header { position: relative; }
+
+.menu-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-dark);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.menu-btn:active, .menu-btn:hover { background: var(--color-bg-alt); }
+
+.menu-overlay {
+  --menu-bg: #f0f4f9;
+  --menu-item: #ffffff;
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: var(--menu-bg);
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition: opacity .2s ease, transform .2s ease, visibility 0s linear .2s;
+}
+.menu-overlay.open {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity .2s ease, transform .2s ease, visibility 0s;
+}
+body.dark .menu-overlay { --menu-bg: #171717; --menu-item: #202125; }
+
+.menu-panel { max-width: 560px; margin: 0 auto; padding: 8px 16px 32px; }
+
+.menu-top { display: flex; justify-content: flex-end; padding: 2px 0 6px; }
+.menu-close {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-dark);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.menu-close:active { background: rgba(128,128,128,.18); }
+
+.menu-list { display: flex; flex-direction: column; gap: 2px; }
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 56px;
+  padding: 0 20px;
+  border: none;
+  background: var(--menu-item);
+  color: var(--color-text-dark);
+  font-size: 16px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.menu-item span { flex: 1; font-size: 16px; }
+.menu-item:active { filter: brightness(.96); }
+.menu-ico { flex: 0 0 auto; color: var(--color-text); }
+.menu-value { font-style: normal; font-size: 14px; color: var(--color-text-muted); }
+.menu-chev { color: var(--color-text-muted); transition: transform .2s ease; }
+
+/* sudut: item pertama & terakhir melengkung besar, tengah kecil (seperti Google) */
+.menu-list > :first-child > .menu-item,
+.menu-list > .menu-item:first-child { border-radius: 26px 26px 4px 4px; }
+.menu-list > .menu-item:last-child { border-radius: 4px 4px 26px 26px; }
+.menu-list > .menu-item:not(:first-child):not(:last-child),
+.menu-theme .menu-item { border-radius: 4px; }
+
+.menu-theme { display: flex; flex-direction: column; gap: 2px; }
+.menu-theme-opts {
+  display: none;
+  gap: 8px;
+  padding: 4px 20px 16px 60px;
+  background: var(--menu-item);
+  border-radius: 4px;
+}
+.menu-theme.open .menu-theme-opts { display: flex; }
+.menu-theme.open .menu-chev { transform: rotate(180deg); }
+
+.theme-opt {
+  flex: 1;
+  height: 36px;
+  border: 1px solid var(--color-border-alt);
+  border-radius: 18px;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 14px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.theme-opt.active {
+  background: var(--color-title);
+  border-color: var(--color-title);
+  color: #fff;
+}
+body.dark .theme-opt.active { color: #101518; }
+
+@media (min-width: 780px) {
+  .menu-btn { top: 19px; right: 20px; }
+  .page-header__inner { padding-right: 72px; }
+  .menu-panel { padding-top: 16px; }
 }

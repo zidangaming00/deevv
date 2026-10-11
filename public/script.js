@@ -55,7 +55,9 @@ const LANG_DICT = {
         noresultsug: ["Try different keywords.", "Try more general keywords.", "Try fewer keywords."],
         tab: ["All", "Images", "Videos", "News", "Maps"],
         aiHeader: "AI Overview (Beta)", aiMore: "Show more", aiLess: "Show less",
-        aiThinking: "Thinking", justNow: "Just now"
+        aiThinking: "Thinking", justNow: "Just now",
+        menu: "Menu", close: "Close", menuHome: "Home", menuTheme: "Theme", menuSettings: "Settings", menuAbout: "About", menuPrivacy: "Privacy",
+        themeSystem: "System", themeLight: "Light", themeDark: "Dark"
     },
     id: {
         news: "Hasil berita <pre>Beta</pre>", more: "Hasil penelusuran lainnya", vidTitle: "Video",
@@ -65,7 +67,9 @@ const LANG_DICT = {
         noresultsug: ["Coba kata kunci yang berbeda.", "Coba kata kunci yang lebih umum.", "Coba lebih sedikit kata kunci."],
         tab: ["Semua", "Gambar", "Video", "Berita", "Peta"],
         aiHeader: "Ringkasan AI (Beta)", aiMore: "Tampilkan lainnya", aiLess: "Tampilkan lebih sedikit",
-        aiThinking: "Berpikir", justNow: "Baru saja"
+        aiThinking: "Berpikir", justNow: "Baru saja",
+        menu: "Menu", close: "Tutup", menuHome: "Beranda", menuTheme: "Tema", menuSettings: "Settings", menuAbout: "Tentang", menuPrivacy: "Privacy",
+        themeSystem: "Sistem", themeLight: "Terang", themeDark: "Gelap"
     }
 };
 
@@ -1230,7 +1234,10 @@ const UI = {
     const existingMainResult = preserveResults ? document.querySelector(".main-result")?.outerHTML : null;
     document.title = isIdLang ? `${Config.q} - Penelusuran` : `${Config.q} - Search`;
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (settings.theme === "dark" || (settings.theme === "system" && prefersDark) || Config.th == 1) {
+    let storedTheme = null;
+    try { storedTheme = localStorage.getItem("deevv-theme"); } catch (e) {}
+    const themePref = storedTheme || settings.theme;
+    if (themePref === "dark" || (themePref === "system" && prefersDark) || Config.th == 1) {
       document.body.classList.add("dark");
     } else {
       document.body.classList.remove("dark");
@@ -1247,17 +1254,11 @@ const UI = {
     document.body.innerHTML = ` 
       <div class="app" id="main-bx"> 
         <div class="page-header"> 
+          <button type="button" class="menu-btn" id="menuBtn" aria-label="${getText("menu")}" aria-expanded="false" aria-controls="menuOverlay">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
+          </button>
           <div class="page-header__inner"> 
-            
-             <div class="logo-slot">
-  <a title="Kembali" href="/"><img alt="Logo" src="/images/logo.png"></a>
-  <button type="button" class="app-menu-btn" id="appMenuBtn" aria-label="Menu">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-    </svg>
-  </button>
-</div>
- 
+            <div class="logo-slot"><a title="Kembali" href="/"><img alt="Logo" src="/images/logo.png"></a></div> 
             <div class="header"> 
               <div class="search-box"> 
                 <div class="search-field"> 
@@ -1279,64 +1280,113 @@ const UI = {
         <div class="results-section"> 
           <div class="result-wrapper">${existingMainResult || '<div class="main-result"></div>'}</div> 
         </div> 
-
-<!-- Modal Menu Overlay ala Google -->
-<div class="app-menu-overlay" id="appMenuOverlay">
-  <div class="app-menu-modal">
-    <div class="app-menu-header">
-      <button type="button" class="app-menu-close" id="appMenuClose" aria-label="Tutup">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-        </svg>
-      </button>
-    </div>
-    <div class="app-menu-body">
-      <a href="/settings" class="app-menu-card">
-        <div class="app-menu-icon">⚙️</div>
-        <div class="app-menu-text">
-          <div class="title">Pengaturan</div>
-          <div class="desc">Setelan pencarian & tampilan</div>
-        </div>
-      </a>
-      <a href="/privacy" class="app-menu-card">
-        <div class="app-menu-icon">🔒</div>
-        <div class="app-menu-text">
-          <div class="title">Privasi</div>
-          <div class="desc">Kebijakan & perlindungan data</div>
-        </div>
-      </a>
-      <a href="/about" class="app-menu-card">
-        <div class="app-menu-icon">ℹ️</div>
-        <div class="app-menu-text">
-          <div class="title">Tentang Deevv</div>
-          <div class="desc">Informasi mesin pencari</div>
-        </div>
-      </a>
-    </div>
-  </div>
-</div>
-
-
-      </div> `;
+      </div> 
+      ${UI.menuHtml()}`;
     UI.setupEventListeners();
+    UI.setupMenu();
   },
 
+    // ---------- MENU GARIS TIGA ----------
+    menuHtml: () => {
+        const icons = {
+            home: '<path d="M12 3 3 10.5V21h6v-6h6v6h6V10.5L12 3zm7 16h-2v-6H7v6H5v-7.6l7-5.8 7 5.8V19z"/>',
+            theme: '<path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.5 5.5 0 0 1-7.54-7.54A9.2 9.2 0 0 0 12 3zm0 16a7 7 0 0 1-3.2-13.2 7.5 7.5 0 0 0 10.4 10.4A7 7 0 0 1 12 19z"/>',
+            settings: '<path d="M19.14 12.94a7.4 7.4 0 0 0 0-1.88l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7 7 0 0 0-1.62-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54c-.58.24-1.12.56-1.62.94l-2.39-.96a.5.5 0 0 0-.6.22L2.7 8.84a.5.5 0 0 0 .12.64l2.03 1.58a7.4 7.4 0 0 0 0 1.88l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.13.22.39.3.6.22l2.39-.96c.5.38 1.04.7 1.62.94l.36 2.54c.04.24.25.42.5.42h3.84c.25 0 .46-.18.5-.42l.36-2.54c.58-.24 1.12-.56 1.62-.94l2.39.96c.22.09.47 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/>',
+            about: '<path d="M11 7h2v2h-2V7zm0 4h2v6h-2v-6zm1-9a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/>',
+            privacy: '<path d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm7 10c0 4.52-2.98 8.69-7 9.93C7.98 19.69 5 15.52 5 11V6.3l7-3.11 7 3.11V11z"/>'
+        };
+        const ico = (k) => `<svg class="menu-ico" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">${icons[k]}</svg>`;
+        const chev = `<svg class="menu-chev" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>`;
+        return `
+        <div class="menu-overlay" id="menuOverlay" role="dialog" aria-modal="true" aria-label="${getText("menu")}" aria-hidden="true">
+          <div class="menu-panel">
+            <div class="menu-top">
+              <button type="button" class="menu-close" id="menuClose" aria-label="${getText("close")}">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+              </button>
+            </div>
+            <nav class="menu-list">
+              <a class="menu-item" href="/">${ico("home")}<span>${getText("menuHome")}</span></a>
+              <div class="menu-theme" id="menuTheme">
+                <button type="button" class="menu-item menu-item--btn" id="menuThemeBtn" aria-expanded="false">${ico("theme")}<span>${getText("menuTheme")}</span><em class="menu-value" id="menuThemeValue"></em>${chev}</button>
+                <div class="menu-theme-opts" id="menuThemeOpts">
+                  <button type="button" class="theme-opt" data-theme="system">${getText("themeSystem")}</button>
+                  <button type="button" class="theme-opt" data-theme="light">${getText("themeLight")}</button>
+                  <button type="button" class="theme-opt" data-theme="dark">${getText("themeDark")}</button>
+                </div>
+              </div>
+              <a class="menu-item" href="/settings">${ico("settings")}<span>${getText("menuSettings")}</span></a>
+              <a class="menu-item" href="/about">${ico("about")}<span>${getText("menuAbout")}</span></a>
+              <a class="menu-item" href="/privacy">${ico("privacy")}<span>${getText("menuPrivacy")}</span></a>
+            </nav>
+          </div>
+        </div>`;
+    },
+
+    setupMenu: () => {
+        const btn = document.getElementById("menuBtn");
+        const overlay = document.getElementById("menuOverlay");
+        const closeBtn = document.getElementById("menuClose");
+        const themeBtn = document.getElementById("menuThemeBtn");
+        const themeWrap = document.getElementById("menuTheme");
+        const themeValue = document.getElementById("menuThemeValue");
+        if (!btn || !overlay) return;
+
+        const open = () => {
+            overlay.classList.add("open");
+            overlay.setAttribute("aria-hidden", "false");
+            btn.setAttribute("aria-expanded", "true");
+            document.documentElement.style.overflow = "hidden";
+            closeBtn.focus({ preventScroll: true });
+        };
+        const close = () => {
+            overlay.classList.remove("open");
+            overlay.setAttribute("aria-hidden", "true");
+            btn.setAttribute("aria-expanded", "false");
+            document.documentElement.style.overflow = "";
+            btn.focus({ preventScroll: true });
+        };
+
+        btn.addEventListener("click", open);
+        closeBtn.addEventListener("click", close);
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && overlay.classList.contains("open")) close();
+        });
+
+        // --- Tema: Sistem / Terang / Gelap ---
+        const labels = { system: getText("themeSystem"), light: getText("themeLight"), dark: getText("themeDark") };
+        const currentPref = () => {
+            let v = null;
+            try { v = localStorage.getItem("deevv-theme"); } catch (e) {}
+            v = v || settings.theme;
+            return v === "dark" || v === "system" ? v : "light";
+        };
+        const applyTheme = (pref) => {
+            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            document.body.classList.toggle("dark", pref === "dark" || (pref === "system" && prefersDark));
+        };
+        const paintTheme = () => {
+            const pref = currentPref();
+            themeValue.textContent = labels[pref];
+            themeWrap.querySelectorAll(".theme-opt").forEach(o => o.classList.toggle("active", o.dataset.theme === pref));
+        };
+        paintTheme();
+
+        themeBtn.addEventListener("click", () => {
+            const isOpen = themeWrap.classList.toggle("open");
+            themeBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+        themeWrap.querySelectorAll(".theme-opt").forEach(o => {
+            o.addEventListener("click", () => {
+                const pref = o.dataset.theme;
+                try { localStorage.setItem("deevv-theme", pref); } catch (e) {}
+                applyTheme(pref);
+                paintTheme();
+            });
+        });
+    },
+
     setupEventListeners: () => {
-
-document.addEventListener('click', (e) => {
-    const menuBtn = document.getElementById('appMenuBtn');
-    const closeBtn = document.getElementById('appMenuClose');
-    const overlay = document.getElementById('appMenuOverlay');
-
-    if (!overlay) return;
-
-    if (menuBtn && menuBtn.contains(e.target)) {
-        overlay.classList.add('active');
-    } else if ((closeBtn && closeBtn.contains(e.target)) || e.target === overlay) {
-        overlay.classList.remove('active');
-    }
-});
-
         const searchInput = document.querySelector(".search-input");
         const clearBtn = document.querySelector(".cleartext");
         const toggleBtn = document.querySelector(".search-toggle");
