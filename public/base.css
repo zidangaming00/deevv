@@ -85,6 +85,88 @@ body.dark .related:after {
   object-fit: contain;
 }
 
+/* --- App Launcher / Hamburger Menu (Kanan Logo) --- */
+.logo-area-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-menu-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  transition: background-color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-menu-btn:hover {
+  background-color: var(--color-bg-alt);
+  color: var(--color-text-dark);
+}
+
+/* Dropdown Menu Container */
+.app-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 60px;
+  left: 16px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  width: 240px;
+  z-index: 10000;
+  padding: 8px;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.app-dropdown-menu.active {
+  display: flex;
+}
+
+.app-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  text-decoration: none;
+  color: var(--color-text-dark);
+  font-size: 14px;
+  border-radius: 8px;
+  transition: background-color 0.15s;
+}
+
+.app-dropdown-item:hover {
+  background-color: var(--color-bg-alt);
+}
+
+/* Penyesuaian Desktop untuk Header & Logo Slot */
+@media (min-width: 780px) {
+  .logo-slot {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    gap: 12px;
+  }
+  
+  .app-dropdown-menu {
+    left: 24px;
+  }
+}
+
+body.dark .app-dropdown-menu {
+  background: var(--color-bg-alt);
+  border-color: var(--color-border);
+}
+
 .page-header { background: var(--color-white); }
 .header { background: var(--color-white); }
 
