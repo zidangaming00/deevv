@@ -1234,9 +1234,8 @@ const UI = {
     const existingMainResult = preserveResults ? document.querySelector(".main-result")?.outerHTML : null;
     document.title = isIdLang ? `${Config.q} - Penelusuran` : `${Config.q} - Search`;
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    let storedTheme = null;
-    try { storedTheme = localStorage.getItem("deevv-theme"); } catch (e) {}
-    const themePref = storedTheme || settings.theme;
+    const themeCookie = document.cookie.match(/(?:^|;\s*)theme=(light|dark|system)/);
+    const themePref = (themeCookie && themeCookie[1]) || settings.theme;
     if (themePref === "dark" || (themePref === "system" && prefersDark) || Config.th == 1) {
       document.body.classList.add("dark");
     } else {
@@ -1295,30 +1294,36 @@ const UI = {
             about: '<path d="M11 7h2v2h-2V7zm0 4h2v6h-2v-6zm1-9a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/>',
             privacy: '<path d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm7 10c0 4.52-2.98 8.69-7 9.93C7.98 19.69 5 15.52 5 11V6.3l7-3.11 7 3.11V11z"/>'
         };
-        const ico = (k) => `<svg class="menu-ico" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">${icons[k]}</svg>`;
-        const chev = `<svg class="menu-chev" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>`;
+        const ico = (k) => `<svg class="menu-ico" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">${icons[k]}</svg>`;
         return `
         <div class="menu-overlay" id="menuOverlay" role="dialog" aria-modal="true" aria-label="${getText("menu")}" aria-hidden="true">
           <div class="menu-panel">
             <div class="menu-top">
               <button type="button" class="menu-close" id="menuClose" aria-label="${getText("close")}">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
               </button>
             </div>
             <nav class="menu-list">
-              <a class="menu-item" href="/">${ico("home")}<span>${getText("menuHome")}</span></a>
-              <div class="menu-theme" id="menuTheme">
-                <button type="button" class="menu-item menu-item--btn" id="menuThemeBtn" aria-expanded="false">${ico("theme")}<span>${getText("menuTheme")}</span><em class="menu-value" id="menuThemeValue"></em>${chev}</button>
-                <div class="menu-theme-opts" id="menuThemeOpts">
-                  <button type="button" class="theme-opt" data-theme="system">${getText("themeSystem")}</button>
-                  <button type="button" class="theme-opt" data-theme="light">${getText("themeLight")}</button>
-                  <button type="button" class="theme-opt" data-theme="dark">${getText("themeDark")}</button>
-                </div>
+              <div class="menu-group">
+                <a class="menu-item" href="/">${ico("home")}<span>${getText("menuHome")}</span></a>
               </div>
-              <a class="menu-item" href="/settings">${ico("settings")}<span>${getText("menuSettings")}</span></a>
-              <a class="menu-item" href="/about">${ico("about")}<span>${getText("menuAbout")}</span></a>
-              <a class="menu-item" href="/privacy">${ico("privacy")}<span>${getText("menuPrivacy")}</span></a>
+              <div class="menu-group">
+                <button type="button" class="menu-item" id="menuThemeBtn">${ico("theme")}<span>${getText("menuTheme")}</span><em class="menu-value" id="menuThemeValue"></em></button>
+                <a class="menu-item" href="/settings">${ico("settings")}<span>${getText("menuSettings")}</span></a>
+              </div>
+              <div class="menu-group">
+                <a class="menu-item" href="/about">${ico("about")}<span>${getText("menuAbout")}</span></a>
+                <a class="menu-item" href="/privacy">${ico("privacy")}<span>${getText("menuPrivacy")}</span></a>
+              </div>
             </nav>
+          </div>
+          <div class="theme-modal" id="themeModal" aria-hidden="true">
+            <div class="theme-card" role="radiogroup" aria-label="${getText("menuTheme")}">
+              <div class="theme-title">${getText("menuTheme")}</div>
+              <button type="button" class="theme-choice" role="radio" data-theme="system"><i></i>${getText("themeSystem")}</button>
+              <button type="button" class="theme-choice" role="radio" data-theme="light"><i></i>${getText("themeLight")}</button>
+              <button type="button" class="theme-choice" role="radio" data-theme="dark"><i></i>${getText("themeDark")}</button>
+            </div>
           </div>
         </div>`;
     },
@@ -1328,18 +1333,23 @@ const UI = {
         const overlay = document.getElementById("menuOverlay");
         const closeBtn = document.getElementById("menuClose");
         const themeBtn = document.getElementById("menuThemeBtn");
-        const themeWrap = document.getElementById("menuTheme");
         const themeValue = document.getElementById("menuThemeValue");
+        const modal = document.getElementById("themeModal");
         if (!btn || !overlay) return;
 
-        const open = () => {
+        const openMenu = () => {
             overlay.classList.add("open");
             overlay.setAttribute("aria-hidden", "false");
             btn.setAttribute("aria-expanded", "true");
             document.documentElement.style.overflow = "hidden";
             closeBtn.focus({ preventScroll: true });
         };
-        const close = () => {
+        const closeModal = () => {
+            modal.classList.remove("open");
+            modal.setAttribute("aria-hidden", "true");
+        };
+        const closeMenu = () => {
+            closeModal();
             overlay.classList.remove("open");
             overlay.setAttribute("aria-hidden", "true");
             btn.setAttribute("aria-expanded", "false");
@@ -1347,41 +1357,49 @@ const UI = {
             btn.focus({ preventScroll: true });
         };
 
-        btn.addEventListener("click", open);
-        closeBtn.addEventListener("click", close);
+        btn.addEventListener("click", openMenu);
+        closeBtn.addEventListener("click", closeMenu);
         document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape" && overlay.classList.contains("open")) close();
+            if (e.key !== "Escape" || !overlay.classList.contains("open")) return;
+            if (modal.classList.contains("open")) closeModal(); else closeMenu();
         });
 
-        // --- Tema: Sistem / Terang / Gelap ---
+        // --- Tema: Sistem / Terang / Gelap (disimpan di cookie "theme" yang sudah dipakai shared.js) ---
         const labels = { system: getText("themeSystem"), light: getText("themeLight"), dark: getText("themeDark") };
         const currentPref = () => {
-            let v = null;
-            try { v = localStorage.getItem("deevv-theme"); } catch (e) {}
-            v = v || settings.theme;
+            const m = document.cookie.match(/(?:^|;\s*)theme=(light|dark|system)/);
+            const v = (m && m[1]) || settings.theme;
             return v === "dark" || v === "system" ? v : "light";
         };
         const applyTheme = (pref) => {
             const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-            document.body.classList.toggle("dark", pref === "dark" || (pref === "system" && prefersDark));
+            const isDark = pref === "dark" || (pref === "system" && prefersDark);
+            document.body.classList.toggle("dark", isDark);
+            document.documentElement.classList.toggle("dark", isDark);
         };
         const paintTheme = () => {
             const pref = currentPref();
             themeValue.textContent = labels[pref];
-            themeWrap.querySelectorAll(".theme-opt").forEach(o => o.classList.toggle("active", o.dataset.theme === pref));
+            modal.querySelectorAll(".theme-choice").forEach(o => {
+                const on = o.dataset.theme === pref;
+                o.classList.toggle("active", on);
+                o.setAttribute("aria-checked", on ? "true" : "false");
+            });
         };
         paintTheme();
 
         themeBtn.addEventListener("click", () => {
-            const isOpen = themeWrap.classList.toggle("open");
-            themeBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+            modal.classList.add("open");
+            modal.setAttribute("aria-hidden", "false");
         });
-        themeWrap.querySelectorAll(".theme-opt").forEach(o => {
+        modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+        modal.querySelectorAll(".theme-choice").forEach(o => {
             o.addEventListener("click", () => {
                 const pref = o.dataset.theme;
-                try { localStorage.setItem("deevv-theme", pref); } catch (e) {}
+                document.cookie = `theme=${pref}; path=/; max-age=31536000; SameSite=Lax`;
                 applyTheme(pref);
                 paintTheme();
+                closeModal();
             });
         });
     },
