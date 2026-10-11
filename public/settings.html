@@ -6,250 +6,208 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="images/search.png" type="image/png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  
+
+  <!-- Terapkan tema lebih awal supaya tidak berkedip (cookie "theme" yang sama dengan shared.js) -->
+  <script>(function(){try{var m=document.cookie.match(/(?:^|;\s*)theme=(light|dark|system)/);var t=m&&m[1];if(t==="dark"||(t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")}catch(e){}})();</script>
+
   <style>
     :root {
       --primary: #1a73e8;
-      --bg: #f8fafd;
+      --bg: #f0f4f9;
       --surface: #ffffff;
-      --text-main: #1f1f1f;
-      --text-muted: #70757a;
-      --border-color: rgba(0, 0, 0, 0.06);
-      --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.04);
-      --radius-card: 18px;
-      --radius-btn: 12px;
-      --bg-card: #ffffff;
+      --text: #1f1f1f;
+      --muted: #5f6368;
+      --line: rgba(0, 0, 0, 0.12);
+      --track: #dadce0;
+      --danger: #d93025;
+      --press: rgba(128, 128, 128, 0.14);
+    }
+    :root.dark, body.dark {
+      --primary: #8ab4f8;
+      --bg: #171717;
+      --surface: #202125;
+      --text: #e8eaed;
+      --muted: #9aa0a6;
+      --line: rgba(255, 255, 255, 0.16);
+      --track: #4a4d52;
+      --danger: #f28b82;
     }
 
-    /* Mode Gelap (Dark Mode) */
-    body.dark {
-      --primary: #8ab4f8;        /* Biru terang lembut agar tidak sakit di mata */
-      --bg: #121316;             /* Latar belakang utama (Muted Dark) */
-      --surface: #1e1e1e;        /* Warna permukaan kartu / header */
-      --text-main: #e8eaed;      /* Teks putih terang */
-      --text-muted: #9aa0a6;     /* Teks sekunder abu-abu */
-      --border-color: rgba(255, 255, 255, 0.08); /* Garis tepi subtle */
-      --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.4);
-      --bg-card: #1e1f23;
-    }
-
-    /* Penyesuaian kecil untuk elemen form di dark mode */
-    html.dark select option {
-      background-color: var(--surface);
-      color: var(--text-main);
-    }
-
-    .back-btn:hover {
-      background: var(--border-color); /* Agar hover tombol back fleksibel di light/dark */
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
     body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background-color: var(--bg);
-      color: var(--text-main);
+      font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 100vh;
-      padding: 24px 20px 40px;
+      padding: 20px 16px 48px;
     }
 
+    button { font-family: inherit; color: inherit; }
+
+    /* ---------- Header ---------- */
     header {
       width: 100%;
-      max-width: 520px;
+      max-width: 560px;
       display: flex;
       align-items: center;
-      gap: 16px;
-      margin-bottom: 24px;
-      padding: 0;
+      gap: 10px;
+      margin-bottom: 28px;
     }
-
-    .btn-back {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+    .icon-btn {
       width: 40px;
       height: 40px;
-      border-radius: 50%;
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      cursor: pointer;
-      text-decoration: none;
-      transition: transform 0.2s ease;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-    }
-
-    .btn-back:active {
-      transform: scale(0.95);
-    }
-
-    .page-title {
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: -0.3px;
-    }
-
-    main {
-      width: 100%;
-      max-width: 520px;
+      flex: 0 0 auto;
       display: flex;
-      flex-direction: column;
-      gap: 20px;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
     }
+    .icon-btn:hover, .icon-btn:active { background: var(--press); }
+    .page-title { flex: 1; font-size: 20px; font-weight: 600; letter-spacing: -0.2px; }
 
-    .settings-group {
-      background: var(--surface);
-      border-radius: var(--radius-card);
-      box-shadow: var(--shadow-soft);
-      border: 1px solid var(--border-color);
-      overflow: hidden;
-    }
+    /* ---------- Section & group ---------- */
+    main { width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 28px; }
+    .sec-title { padding: 0 20px 12px; letter-spacing: 0.1px; font-size: 13px; font-weight: 600; color: var(--primary); }
+    .group { display: flex; flex-direction: column; gap: 3px; }
 
-    .group-header {
-      padding: 16px 20px 8px;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--primary);
-    }
-
-    .setting-item {
+    .row {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 20px;
+      min-height: 72px;
       padding: 16px 20px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-      gap: 16px;
+      background: var(--surface);
+      border-radius: 4px;
     }
+    .group > .row:first-child { border-radius: 24px 24px 4px 4px; }
+    .group > .row:last-child  { border-radius: 4px 4px 24px 24px; }
+    .group > .row:only-child  { border-radius: 24px; }
 
-    .setting-item:last-child {
-      border-bottom: none;
+    .info { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+    .label { font-size: 15px; font-weight: 500; color: var(--text); }
+    .desc { font-size: 13px; line-height: 1.5; color: var(--muted); }
+
+    /* ---------- Switch ---------- */
+    .switch { position: relative; display: inline-block; width: 40px; height: 22px; flex: 0 0 auto; }
+    .switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .slider { position: absolute; inset: 0; cursor: pointer; background: var(--track); border-radius: 22px; transition: background .2s ease; }
+    .slider::before {
+      content: ""; position: absolute; width: 16px; height: 16px; left: 3px; top: 3px;
+      background: #fff; border-radius: 50%; transition: transform .2s ease;
     }
+    .switch input:checked + .slider { background: var(--primary); }
+    .switch input:checked + .slider::before { transform: translateX(18px); }
+    .switch input:focus-visible + .slider { outline: 2px solid var(--primary); outline-offset: 2px; }
 
-    .setting-info {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .setting-label {
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--text-main);
-    }
-
-    .setting-desc {
-      font-size: 12.5px;
-      color: var(--text-muted);
-      line-height: 1.4;
-    }
-
-    select {
-      background: var(--bg);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 8px 12px;
-      border-radius: var(--radius-btn);
-      font-size: 13.5px;
-      font-weight: 500;
-      outline: none;
-      cursor: pointer;
-      font-family: inherit;
-    }
-
-    /* Switch Custom */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 46px;
-      height: 26px;
-      flex-shrink: 0;
-    }
-
-    .switch input { opacity: 0; width: 0; height: 0; }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #e0e0e0;
-      transition: .25s ease;
-      border-radius: 34px;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 20px;
-      width: 20px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: .25s ease;
-      border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-
-    input:checked + .slider { background-color: var(--primary); }
-    input:checked + .slider:before { transform: translateX(20px); }
-
-    .btn-action {
+    /* ---------- Dropdown kustom ---------- */
+    .dd { position: relative; flex: 0 0 auto; }
+    .dd-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 36px;
+      padding: 0 10px 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
       background: transparent;
-      border: 1px solid var(--border-color);
-      color: #d93025;
-      padding: 8px 14px;
-      border-radius: var(--radius-btn);
-      font-size: 13px;
-      font-weight: 500;
+      font-size: 14px;
       cursor: pointer;
-      transition: background 0.2s;
     }
+    .dd-btn:hover { background: var(--press); }
+    .dd-btn svg { color: var(--muted); transition: transform .2s ease; }
+    .dd.open .dd-btn svg { transform: rotate(180deg); }
 
-    .btn-action:hover { background: rgba(217, 48, 37, 0.06); }
-
-    /* Toast notification */
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      background: #323232;
-      color: #fff;
-      padding: 12px 20px;
-      border-radius: 24px;
-      font-size: 13px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.3s, transform 0.3s;
-      pointer-events: none;
-      z-index: 9999;
+    .dd-panel { display: none; }
+    .dd.open .dd-panel { display: block; }
+    .dd-title { padding: 0 16px 8px; font-size: 16px; font-weight: 500; }
+    .dd-opt {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      height: 44px;
+      padding: 0 16px;
+      border: none;
+      border-radius: 12px;
+      background: transparent;
+      font-size: 15px;
+      text-align: left;
+      cursor: pointer;
     }
-
-    .toast.show { opacity: 1; transform: translateY(0); }
-
-    footer {
-      margin-top: auto;
-      padding: 24px 0 12px;
-      font-size: 12px;
-      color: var(--text-muted);
+    .dd-opt:hover, .dd-opt:active { background: var(--press); }
+    .dd-opt i {
+      flex: 0 0 auto; position: relative; width: 18px; height: 18px;
+      border: 2px solid var(--muted); border-radius: 50%;
     }
+    .dd-opt.active i { border-color: var(--primary); }
+    .dd-opt.active i::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--primary); }
 
-@media (max-width: 480px) {
-      body {
-        padding: 20px 16px 32px;
+    /* Mobile: dialog di tengah layar */
+    @media (max-width: 779px) {
+      .dd-panel {
+        position: fixed; inset: 0; z-index: 9000;
+        align-items: center; justify-content: center; padding: 24px;
+        background: rgba(0, 0, 0, 0.4);
+      }
+      .dd.open .dd-panel { display: flex; }
+      .dd-card {
+        width: 100%; max-width: 320px; padding: 18px 8px 8px;
+        border-radius: 24px; background: var(--surface);
       }
     }
+    /* Desktop: dropdown ke bawah tepat di bawah tombol */
+    @media (min-width: 780px) {
+      .dd-panel { position: absolute; top: calc(100% + 6px); right: 0; z-index: 50; }
+      .dd-card {
+        min-width: 210px; padding: 6px;
+        border-radius: 16px; background: var(--surface);
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18), 0 0 0 1px var(--line);
+      }
+      .dd-title { display: none; }
+      .dd-opt { height: 40px; }
+    }
 
+    /* ---------- Tombol reset ---------- */
+    .btn-danger {
+      flex: 0 0 auto; height: 36px; padding: 0 16px;
+      border: 1px solid var(--line); border-radius: 18px; background: transparent;
+      color: var(--danger); font-size: 13.5px; cursor: pointer;
+    }
+    .btn-danger:hover, .btn-danger:active { background: var(--press); }
+
+    /* ---------- Toast ---------- */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%;
+      padding: 12px 20px; border-radius: 24px;
+      background: #323232; color: #fff; font-size: 13px;
+      opacity: 0; transform: translate(-50%, 20px);
+      transition: opacity .25s, transform .25s;
+      pointer-events: none; z-index: 9500;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    footer { margin-top: auto; padding: 48px 0 8px; font-size: 12px; color: var(--muted); }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
   </style>
 </head>
 <body>
 
-    <header>
-    <button class="btn-back" onclick="history.back()" title="Kembali">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+  <header>
+    <button class="icon-btn" onclick="history.back()" aria-label="Kembali">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <line x1="19" y1="12" x2="5" y2="12"></line>
         <polyline points="12 19 5 12 12 5"></polyline>
       </svg>
@@ -258,197 +216,200 @@
   </header>
 
   <main>
-    <!-- Group: Tampilan -->
-    <div class="settings-group">
-      <div class="group-header">Tampilan</div>
-      
-      <div class="setting-item">
-        <div class="setting-info">
-          <span class="setting-label">Tema Tampilan</span>
-          <span class="setting-desc">Pilih warna antarmuka Deevv Search</span>
+    <section>
+      <h2 class="sec-title">Tampilan</h2>
+      <div class="group">
+        <div class="row">
+          <div class="info">
+            <span class="label">Tema tampilan</span>
+            <span class="desc">Pilih warna antarmuka Deevv Search</span>
+          </div>
+          <div class="dd" data-key="theme" data-title="Tema tampilan"></div>
         </div>
-        <select id="theme_select">
-          <option value="light">Terang</option>
-          <option value="dark">Gelap (Beta)</option>
-          <option value="system">Sistem</option>
-        </select>
-      </div>
-
-      <div class="setting-item">
-        <div class="setting-info">
-          <span class="setting-label">Favicon Situs</span>
-          <span class="setting-desc">Tampilkan logo situs web pada hasil pencarian</span>
+        <div class="row">
+          <div class="info">
+            <span class="label">Favicon situs</span>
+            <span class="desc">Tampilkan logo situs web pada hasil pencarian</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="favicon_toggle"><span class="slider"></span></label>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="favicon_toggle">
-          <span class="slider"></span>
-        </label>
       </div>
-    </div>
+    </section>
 
-    <!-- Group: Bahasa -->
-    <div class="settings-group">
-      <div class="group-header">Bahasa</div>
-
-      <div class="setting-item">
-        <div class="setting-info">
-          <span class="setting-label">Bahasa Antarmuka</span>
-          <span class="setting-desc">Bahasa yang digunakan dalam layanan</span>
+    <section>
+      <h2 class="sec-title">Bahasa</h2>
+      <div class="group">
+        <div class="row">
+          <div class="info">
+            <span class="label">Bahasa antarmuka</span>
+            <span class="desc">Bahasa yang digunakan dalam layanan</span>
+          </div>
+          <div class="dd" data-key="lang" data-title="Bahasa antarmuka"></div>
         </div>
-        <select id="lang_select">
-          <option value="id">Bahasa Indonesia</option>
-          <option value="en">English (US)</option>
-        </select>
       </div>
-    </div>
+    </section>
 
-    <!-- Group: Pencarian -->
-    <div class="settings-group">
-      <div class="group-header">Pencarian</div>
-      
-      <div class="setting-item">
-        <div class="setting-info">
-          <span class="setting-label">Buka di Tab Baru</span>
-          <span class="setting-desc">Membuka tautan hasil pencarian di tab terpisah</span>
+    <section>
+      <h2 class="sec-title">Pencarian</h2>
+      <div class="group">
+        <div class="row">
+          <div class="info">
+            <span class="label">Buka di tab baru</span>
+            <span class="desc">Membuka tautan hasil pencarian di tab terpisah</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="newtab_toggle"><span class="slider"></span></label>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="newtab_toggle">
-          <span class="slider"></span>
-        </label>
-      </div>
-
-      <div class="setting-item">
-        <div class="setting-info">
-          <span class="setting-label">Navigasi Langsung URL</span>
-          <span class="setting-desc">Buka situs langsung jika input berupa URL valid</span>
+        <div class="row">
+          <div class="info">
+            <span class="label">Navigasi langsung URL</span>
+            <span class="desc">Buka situs langsung jika input berupa URL valid</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="newurl_toggle"><span class="slider"></span></label>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="newurl_toggle">
-          <span class="slider"></span>
-        </label>
-      </div>
-
-      <div class="setting-item">
-        <div class="setting-info">
-          <span class="setting-label">Saran Pencarian</span>
-          <span class="setting-desc">Tampilkan rekomendasi kata kunci saat mengetik</span>
+        <div class="row">
+          <div class="info">
+            <span class="label">Saran pencarian</span>
+            <span class="desc">Tampilkan rekomendasi kata kunci saat mengetik</span>
+          </div>
+          <label class="switch"><input type="checkbox" id="suggest_toggle"><span class="slider"></span></label>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="suggest_toggle">
-          <span class="slider"></span>
-        </label>
       </div>
-    </div>
+    </section>
 
-    <!-- Group: Privasi & Cookie -->
-    <div class="settings-group">
-      <div class="group-header">Privasi & Cookie</div>
-
-      <div class="setting-item">
-        <div class="setting-info">
-          <span class="setting-label">Reset Cookie Pengaturan</span>
-          <span class="setting-desc">Kembalikan seluruh konfigurasimu ke bawaan</span>
+    <section>
+      <h2 class="sec-title">Privasi &amp; cookie</h2>
+      <div class="group">
+        <div class="row">
+          <div class="info">
+            <span class="label">Reset cookie pengaturan</span>
+            <span class="desc">Kembalikan seluruh konfigurasimu ke bawaan</span>
+          </div>
+          <button type="button" class="btn-danger" id="reset_cookie_btn">Reset</button>
         </div>
-        <button class="btn-action" id="reset_cookie_btn">Reset Cookie</button>
       </div>
-    </div>
+    </section>
   </main>
 
-  <div id="toast" class="toast">Pengaturan tersimpan</div>
+  <div id="toast" class="toast" role="status">Pengaturan tersimpan</div>
 
-  <footer>
-    &copy; Deevv Search &bull; Versi 1.3.0
-  </footer>
+  <footer>&copy; Deevv Search</footer>
 
   <!-- File External Cookie JS -->
   <script src="cookie.js"></script>
 
   <script>
-    // Elements DOM
-    const themeSelect = document.getElementById('theme_select');
-    const faviconToggle = document.getElementById('favicon_toggle');
-    const langSelect = document.getElementById('lang_select');
-    const newtabToggle = document.getElementById('newtab_toggle');
-    const newurlToggle = document.getElementById('newurl_toggle');
-    const suggestToggle = document.getElementById('suggest_toggle');
-    const resetCookieBtn = document.getElementById('reset_cookie_btn');
-    const toast = document.getElementById('toast');
+    const $ = (id) => document.getElementById(id);
+    const toast = $('toast');
+    const CHEVRON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>';
+
+    const OPTIONS = {
+      theme: [['light', 'Terang'], ['dark', 'Gelap (Beta)'], ['system', 'Sistem']],
+      lang:  [['id', 'Bahasa Indonesia'], ['en', 'English (US)']]
+    };
+    const TOASTS = { theme: 'Tema diperbarui', lang: 'Bahasa diperbarui' };
 
     function showToast(msg) {
       toast.textContent = msg;
       toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2000);
+      clearTimeout(showToast.t);
+      showToast.t = setTimeout(() => toast.classList.remove('show'), 2000);
     }
 
-    // Load preferensi dari cookie.js
+    function applyTheme(pref) {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const dark = pref === 'dark' || (pref === 'system' && prefersDark);
+      document.body.classList.toggle('dark', dark);
+      document.documentElement.classList.toggle('dark', dark);
+    }
+
+    const state = {};
+    const labelOf = (key, val) => (OPTIONS[key].find(o => o[0] === val) || OPTIONS[key][0])[1];
+
+    // ---------- Dropdown kustom ----------
+    function optionsHtml(key) {
+      return OPTIONS[key].map(([v, t]) =>
+        `<button type="button" class="dd-opt" role="option" data-value="${v}"><i></i>${t}</button>`).join('');
+    }
+
+    document.querySelectorAll('.dd').forEach(dd => {
+      const key = dd.dataset.key;
+      dd.innerHTML =
+        `<button type="button" class="dd-btn" aria-haspopup="listbox" aria-expanded="false"><span class="dd-val"></span>${CHEVRON}</button>` +
+        `<div class="dd-panel"><div class="dd-card" role="listbox"><div class="dd-title">${dd.dataset.title}</div>${optionsHtml(key)}</div></div>`;
+
+      const btn = dd.querySelector('.dd-btn');
+      const panel = dd.querySelector('.dd-panel');
+      btn.addEventListener('click', () => {
+        const willOpen = !dd.classList.contains('open');
+        closeAllDd();
+        if (willOpen) { dd.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); }
+      });
+      panel.addEventListener('click', (e) => { if (e.target === panel) closeAllDd(); }); // klik latar (mobile)
+      dd.querySelectorAll('.dd-opt').forEach(o => o.addEventListener('click', () => {
+        closeAllDd();
+        setValue(key, o.dataset.value);
+      }));
+    });
+
+    function closeAllDd() {
+      document.querySelectorAll('.dd.open').forEach(d => {
+        d.classList.remove('open');
+        d.querySelector('.dd-btn').setAttribute('aria-expanded', 'false');
+      });
+    }
+    document.addEventListener('click', (e) => { if (!e.target.closest('.dd')) closeAllDd(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAllDd(); });
+
+    function paint(key) {
+      const val = state[key];
+      document.querySelectorAll(`.dd[data-key="${key}"]`).forEach(dd => {
+        dd.querySelector('.dd-val').textContent = labelOf(key, val);
+        dd.querySelectorAll('.dd-opt').forEach(o => {
+          const on = o.dataset.value === val;
+          o.classList.toggle('active', on);
+          o.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+      });
+    }
+
+    function setValue(key, val) {
+      state[key] = val;
+      updateSetting(key, val);          // simpan lewat cookie.js
+      if (key === 'theme') applyTheme(val);
+      paint(key);
+      showToast(TOASTS[key]);
+    }
+
+    // ---------- Muat pengaturan ----------
     document.addEventListener('DOMContentLoaded', () => {
-      const config = getData(); // Mengambil data dari cookie.js
+      const config = getData();         // dari cookie.js
+      state.theme = OPTIONS.theme.some(o => o[0] === config.theme) ? config.theme : 'light';
+      state.lang  = OPTIONS.lang.some(o => o[0] === config.lang) ? config.lang : 'id';
+      applyTheme(state.theme);
+      paint('theme'); paint('lang');
 
-          themeSelect.value = config.theme || 'light';
-    
-    // Sinkronisasi untuk halaman pengaturan saat dimuat
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (config.theme === 'dark' || (config.theme === 'system' && prefersDark)) {
-      document.body.classList.add('dark');
-    } else {
-      document.body.classList.remove('dark');
-    }
-
-
-      themeSelect.value = config.theme || 'light';
-      langSelect.value = config.lang || 'id';
-      faviconToggle.checked = config.favicon;
-      newtabToggle.checked = config.newtab;
-      newurlToggle.checked = config.newurl;
-      suggestToggle.checked = config.suggest;
+      $('favicon_toggle').checked = !!config.favicon;
+      $('newtab_toggle').checked  = !!config.newtab;
+      $('newurl_toggle').checked  = !!config.newurl;
+      $('suggest_toggle').checked = !!config.suggest;
     });
 
-    // Event Listener Update Opsi
-      themeSelect.addEventListener('change', (e) => {
-    const selectedTheme = e.target.value;
-    updateSetting('theme', selectedTheme);
-    
-    // Terapkan perubahan tema secara langsung (real-time)
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (selectedTheme === 'dark' || (selectedTheme === 'system' && prefersDark)) {
-      document.body.classList.add('dark');
-    } else {
-      document.body.classList.remove('dark');
-    }
-    
-    showToast('Tema diperbarui');
-  });
-
-    langSelect.addEventListener('change', (e) => {
-      updateSetting('lang', e.target.value);
-      showToast('Bahasa diperbarui');
+    // ---------- Toggle ----------
+    [
+      ['favicon_toggle', 'favicon', 'Pengaturan favicon disimpan'],
+      ['newtab_toggle',  'newtab',  'Pengaturan tab disimpan'],
+      ['newurl_toggle',  'newurl',  'Pengaturan URL disimpan'],
+      ['suggest_toggle', 'suggest', 'Pengaturan saran disimpan']
+    ].forEach(([id, key, msg]) => {
+      $(id).addEventListener('change', (e) => { updateSetting(key, e.target.checked); showToast(msg); });
     });
 
-    faviconToggle.addEventListener('change', (e) => {
-      updateSetting('favicon', e.target.checked);
-      showToast('Pengaturan Favicon disimpan');
-    });
-
-    newtabToggle.addEventListener('change', (e) => {
-      updateSetting('newtab', e.target.checked);
-      showToast('Pengaturan tab disimpan');
-    });
-
-    newurlToggle.addEventListener('change', (e) => {
-      updateSetting('newurl', e.target.checked);
-      showToast('Pengaturan URL disimpan');
-    });
-
-    suggestToggle.addEventListener('change', (e) => {
-      updateSetting('suggest', e.target.checked);
-      showToast('Pengaturan saran disimpan');
-    });
-
-    resetCookieBtn.addEventListener('click', () => {
-      clearData(); // Menghapus cookie dari cookie.js
+    $('reset_cookie_btn').addEventListener('click', () => {
+      clearData();                      // dari cookie.js
       showToast('Cookie berhasil di-reset');
       setTimeout(() => location.reload(), 1200);
     });
+
   </script>
 </body>
 </html>
