@@ -453,7 +453,6 @@ footer {
   border: none;
   padding: 0;
   font-size: 12.5px;
-  font-family: inherit;
   cursor: pointer;
   transition: color 0.15s ease;
 }
