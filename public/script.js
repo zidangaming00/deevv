@@ -56,7 +56,7 @@ const LANG_DICT = {
         tab: ["All", "Images", "Videos", "News", "Maps"],
         aiHeader: "AI Overview (Beta)", aiMore: "Show more", aiLess: "Show less",
         aiThinking: "Thinking", justNow: "Just now",
-        menu: "Menu", close: "Close", menuHome: "Deevv Search home", menuTheme: "Display theme", menuSettings: "Search settings", menuAbout: "About Deevv Search", menuPrivacy: "Privacy policy",
+        menu: "Menu", close: "Close", menuHome: "Home", menuTheme: "Display theme", menuSettings: "Search settings", menuAbout: "About", menuPrivacy: "Privacy policy",
         themeSystem: "System", themeLight: "Light", themeDark: "Dark"
     },
     id: {
@@ -68,7 +68,7 @@ const LANG_DICT = {
         tab: ["Semua", "Gambar", "Video", "Berita", "Peta"],
         aiHeader: "Ringkasan AI (Beta)", aiMore: "Tampilkan lainnya", aiLess: "Tampilkan lebih sedikit",
         aiThinking: "Berpikir", justNow: "Baru saja",
-        menu: "Menu", close: "Tutup", menuHome: "Beranda Deevv Search", menuTheme: "Tema tampilan", menuSettings: "Pengaturan penelusuran", menuAbout: "Tentang Deevv Search", menuPrivacy: "Kebijakan privasi",
+        menu: "Menu", close: "Tutup", menuHome: "Home", menuTheme: "Tema tampilan", menuSettings: "Pengaturan penelusuran", menuAbout: "About", menuPrivacy: "Kebijakan privasi",
         themeSystem: "Sistem", themeLight: "Terang", themeDark: "Gelap"
     }
 };
@@ -1299,7 +1299,6 @@ const UI = {
         <div class="menu-overlay" id="menuOverlay" role="dialog" aria-modal="true" aria-label="${getText("menu")}" aria-hidden="true">
           <div class="menu-panel">
             <div class="menu-top">
-              <span class="menu-brand">Deevv Search</span>
               <button type="button" class="menu-close" id="menuClose" aria-label="${getText("close")}">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
               </button>
