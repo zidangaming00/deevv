@@ -1490,7 +1490,7 @@ const UI = {
                         </div>
                     </div>
                     <div class="footer-row">
-                        <span>Dirancang untuk pengalaman pencarian yang bersih dan cepat.</span>
+                        <span>Pengalaman pencarian yang bersih dan cepat.</span>
                         <div class="footer-links">
                             <button type="button" id="theme-toggle-btn">Tema gelap: ${isDark ? 'Aktif' : 'Nonaktif'}</button>
                             <button type="button" onclick="openFeedbackModal()">Masukan</button>
