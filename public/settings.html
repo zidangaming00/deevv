@@ -5,7 +5,9 @@
   <title>Pengaturan — Deevv Search</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="images/search.png" type="image/png">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@100..1000&display=swap" rel="stylesheet">
 
   <!-- Terapkan tema lebih awal supaya tidak berkedip -->
   <script>(function(){try{var m=document.cookie.match(/(?:^|;\s*)theme=(light|dark|system)/);var t=m&&m[1];if(t==="dark"||(t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")}catch(e){}})();</script>
@@ -36,7 +38,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
     body {
-      font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+      font-family: 'Google Sans Flex', -apple-system, 'Segoe UI', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
@@ -367,7 +369,7 @@
       </div>
     </div>
     <div class="footer-row">
-      <span>Dirancang untuk pengalaman pencarian yang bersih dan cepat.</span>
+      <span>Pengalaman pencarian yang bersih dan cepat.</span>
       <div class="footer-links">
         <button id="theme-toggle-btn" onclick="toggleTheme()">Tema gelap: Nonaktif</button>
         <button type="button" onclick="openFeedbackModal()">Masukan</button>
