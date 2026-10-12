@@ -681,15 +681,17 @@ body.dark .footer-copy {
 .menu-btn:active, .menu-btn:hover { background: var(--color-bg-alt); }
 
 .menu-overlay {
-  --menu-ico: 22px;   /* ukuran ikon */
-  --menu-fs: 16px;    /* ukuran teks menu */
-  --menu-row: 52px;   /* tinggi tiap baris */
+  --menu-ico: 20px;   /* ukuran ikon */
+  --menu-fs: 15px;    /* ukuran teks menu */
+  --menu-row: 48px;   /* tinggi tiap baris */
   --menu-bg: #f0f4f9;
   --menu-item: #ffffff;
   position: fixed;
   inset: 0;
   z-index: 10000;
   background: rgba(0, 0, 0, 0.28);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
   opacity: 0;
   visibility: hidden;
   transition: opacity .18s ease, visibility 0s linear .18s;
@@ -699,15 +701,15 @@ body.dark .menu-overlay { --menu-bg: #1b1c1f; --menu-item: #26282c; background: 
 
 .menu-panel {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: min(280px, calc(100vw - 48px));
-  max-height: calc(100vh - 16px);
+  top: 12px;
+  right: 12px;
+  width: min(272px, calc(100vw - 56px));
+  max-height: calc(100vh - 24px);
   overflow-y: auto;
-  padding: 6px 8px 10px;
+  padding: 10px 10px 12px;
   background: var(--menu-bg);
-  border-radius: 28px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28);
+  border-radius: 26px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(0, 0, 0, 0.05);
   transform-origin: top right;
   transform: scale(.95);
   opacity: 0;
@@ -716,10 +718,10 @@ body.dark .menu-overlay { --menu-bg: #1b1c1f; --menu-item: #26282c; background: 
 .menu-overlay.open .menu-panel { transform: none; opacity: 1; }
 body.dark .menu-panel { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08); }
 
-.menu-top { display: flex; justify-content: flex-end; padding: 2px 2px 6px; }
+.menu-top { display: flex; justify-content: flex-end; padding: 0 0 10px; }
 .menu-close {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -732,16 +734,16 @@ body.dark .menu-panel { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgb
 }
 .menu-close:active, .menu-close:hover { background: rgba(128,128,128,.18); }
 
-.menu-list { display: flex; flex-direction: column; gap: 10px; }
+.menu-list { display: flex; flex-direction: column; gap: 12px; }
 .menu-group { display: flex; flex-direction: column; gap: 2px; }
 
 .menu-item {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   width: 100%;
   min-height: var(--menu-row);
-  padding: 0 18px;
+  padding: 0 16px;
   border: none;
   border-radius: 4px;
   background: var(--menu-item);
@@ -753,13 +755,14 @@ body.dark .menu-panel { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgb
   -webkit-tap-highlight-color: transparent;
 }
 .menu-item span { flex: 1; font-size: var(--menu-fs); }
-.menu-item:active { filter: brightness(.96); }
+.menu-item:active { filter: brightness(.95); }
+.menu-item:focus-visible, .menu-close:focus-visible { outline: 2px solid var(--color-title); outline-offset: -2px; }
 .menu-ico { flex: 0 0 auto; width: var(--menu-ico); height: var(--menu-ico); color: var(--color-text); }
-.menu-value { font-style: normal; font-size: 13px; color: var(--color-text-muted); }
+.menu-value { font-style: normal; font-size: 12.5px; color: var(--color-text-muted); }
 
-.menu-group > .menu-item:first-child { border-radius: 20px 20px 4px 4px; }
-.menu-group > .menu-item:last-child  { border-radius: 4px 4px 20px 20px; }
-.menu-group > .menu-item:only-child  { border-radius: 20px; }
+.menu-group > .menu-item:first-child { border-radius: 18px 18px 4px 4px; }
+.menu-group > .menu-item:last-child  { border-radius: 4px 4px 18px 18px; }
+.menu-group > .menu-item:only-child  { border-radius: 18px; }
 
 /* Dialog pilihan tema */
 .theme-modal {
@@ -794,7 +797,7 @@ body.dark .menu-panel { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgb
   border-radius: 12px;
   background: transparent;
   color: var(--color-text-dark);
-  font-size: 16px;
+  font-size: 15px;
   text-align: left;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -820,5 +823,5 @@ body.dark .menu-panel { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgb
 @media (min-width: 780px) {
   .menu-btn { top: 19px; right: 20px; }
   .page-header__inner { padding-right: 72px; }
-  .menu-panel { top: 12px; right: 16px; }
+  .menu-panel { top: 14px; right: 18px; }
 }
