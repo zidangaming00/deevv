@@ -7,14 +7,14 @@
   <link rel="icon" href="images/search.png" type="image/png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Terapkan tema lebih awal supaya tidak berkedip (cookie "theme" yang sama dengan shared.js) -->
+  <!-- Terapkan tema lebih awal supaya tidak berkedip -->
   <script>(function(){try{var m=document.cookie.match(/(?:^|;\s*)theme=(light|dark|system)/);var t=m&&m[1];if(t==="dark"||(t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")}catch(e){}})();</script>
 
   <style>
     :root {
       --primary: #1a73e8;
-      --bg: #f0f4f9;
-      --surface: #ffffff;
+      --bg: #ffffff;
+      --surface: #f8fafc;
       --text: #1f1f1f;
       --muted: #5f6368;
       --line: rgba(0, 0, 0, 0.12);
@@ -25,7 +25,7 @@
     :root.dark, body.dark {
       --primary: #8ab4f8;
       --bg: #171717;
-      --surface: #202125;
+      --surface: #22262b;;
       --text: #e8eaed;
       --muted: #9aa0a6;
       --line: rgba(255, 255, 255, 0.16);
@@ -43,7 +43,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 16px 48px;
+      padding: 20px 16px 40px;
     }
 
     button { font-family: inherit; color: inherit; }
@@ -54,6 +54,7 @@
       max-width: 560px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 10px;
       margin-bottom: 28px;
     }
@@ -73,7 +74,7 @@
     .icon-btn:hover, .icon-btn:active { background: var(--press); }
     .page-title { flex: 1; font-size: 20px; font-weight: 600; letter-spacing: -0.2px; }
 
-    /* ---------- Section & group ---------- */
+    /* ---------- Main & Group Cards Asli ---------- */
     main { width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 28px; }
     .sec-title { padding: 0 20px 12px; letter-spacing: 0.1px; font-size: 13px; font-weight: 600; color: var(--primary); }
     .group { display: flex; flex-direction: column; gap: 3px; }
@@ -88,14 +89,16 @@
       padding: 16px 20px;
       background: var(--surface);
       border-radius: 4px;
+
+      
     }
     .group > .row:first-child { border-radius: 24px 24px 4px 4px; }
     .group > .row:last-child  { border-radius: 4px 4px 24px 24px; }
     .group > .row:only-child  { border-radius: 24px; }
 
     .info { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
-    .label { font-size: 15px; font-weight: 500; color: var(--text); }
-    .desc { font-size: 13px; line-height: 1.5; color: var(--muted); }
+    .label { font-size: 15px; font-weight: 600; color: var(--text); }
+    .desc { font-size: 13.5px; line-height: 1.6; color: var(--muted); }
 
     /* ---------- Switch ---------- */
     .switch { position: relative; display: inline-block; width: 40px; height: 22px; flex: 0 0 auto; }
@@ -109,7 +112,7 @@
     .switch input:checked + .slider::before { transform: translateX(18px); }
     .switch input:focus-visible + .slider { outline: 2px solid var(--primary); outline-offset: 2px; }
 
-    /* ---------- Dropdown kustom ---------- */
+    /* ---------- Dropdown ---------- */
     .dd { position: relative; flex: 0 0 auto; }
     .dd-btn {
       display: inline-flex;
@@ -152,7 +155,6 @@
     .dd-opt.active i { border-color: var(--primary); }
     .dd-opt.active i::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--primary); }
 
-    /* Mobile: dialog di tengah layar */
     @media (max-width: 779px) {
       .dd-panel {
         position: fixed; inset: 0; z-index: 9000;
@@ -165,7 +167,6 @@
         border-radius: 24px; background: var(--surface);
       }
     }
-    /* Desktop: dropdown ke bawah tepat di bawah tombol */
     @media (min-width: 780px) {
       .dd-panel { position: absolute; top: calc(100% + 6px); right: 0; z-index: 50; }
       .dd-card {
@@ -177,7 +178,7 @@
       .dd-opt { height: 40px; }
     }
 
-    /* ---------- Tombol reset ---------- */
+    /* ---------- Tombol Reset ---------- */
     .btn-danger {
       flex: 0 0 auto; height: 36px; padding: 0 16px;
       border: 1px solid var(--line); border-radius: 18px; background: transparent;
@@ -196,7 +197,71 @@
     }
     .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-    footer { margin-top: auto; padding: 48px 0 8px; font-size: 12px; color: var(--muted); }
+    /* ---------- Footer Diselaraskan Privacy ---------- */
+    footer {
+      width: 100%;
+      max-width: 560px;
+      margin-top: 48px;
+      padding: 24px 0;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+    .footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-links a, .footer-links button {
+      color: var(--muted);
+      text-decoration: none;
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 12.5px;
+      cursor: pointer;
+      transition: color 0.15s ease;
+    }
+    .footer-links a:hover, .footer-links button:hover {
+      color: var(--primary);
+    }
+
+    @media (max-width: 480px) {
+      .footer-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+    }
+
+    /* ---------- Mode Desktop Sesuai Privacy ---------- */
+    @media (min-width: 641px) {
+      header, main, footer {
+        max-width: 760px;
+      }
+
+      header {
+        justify-content: space-between;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 20px;
+        padding: 16px 20px;
+      }
+    }
 
     @media (prefers-reduced-motion: reduce) {
       * { transition: none !important; }
@@ -292,10 +357,27 @@
 
   <div id="toast" class="toast" role="status">Pengaturan tersimpan</div>
 
-  <footer>&copy; Deevv Search</footer>
+  <footer>
+    <div class="footer-row">
+      <span>&copy; 2026 Deevv Search.</span>
+      <div class="footer-links">
+        <a href="index.html">Beranda</a>
+        <a href="settings.html">Pengaturan</a>
+        <a href="privacy.html">Privasi</a>
+      </div>
+    </div>
+    <div class="footer-row">
+      <span>Dirancang untuk pengalaman pencarian yang bersih dan cepat.</span>
+      <div class="footer-links">
+        <button id="theme-toggle-btn" onclick="toggleTheme()">Tema gelap: Nonaktif</button>
+        <button type="button" onclick="openFeedbackModal()">Masukan</button>
 
-  <!-- File External Cookie JS -->
+      </div>
+    </div>
+  </footer>
+
   <script src="cookie.js"></script>
+  <script src="feedback-modal.js"></script>
 
   <script>
     const $ = (id) => document.getElementById(id);
@@ -315,17 +397,31 @@
       showToast.t = setTimeout(() => toast.classList.remove('show'), 2000);
     }
 
+    function updateThemeBtnText(isDark) {
+      var btn = document.getElementById('theme-toggle-btn');
+      if (btn) {
+        btn.textContent = 'Tema gelap: ' + (isDark ? 'Aktif' : 'Nonaktif');
+      }
+    }
+
     function applyTheme(pref) {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       const dark = pref === 'dark' || (pref === 'system' && prefersDark);
       document.body.classList.toggle('dark', dark);
       document.documentElement.classList.toggle('dark', dark);
+      updateThemeBtnText(dark);
+    }
+
+    function toggleTheme() {
+      var isDark = document.documentElement.classList.contains("dark");
+      var newTheme = isDark ? "light" : "dark";
+      document.cookie = "theme=" + newTheme + "; path=/; max-age=31536000";
+      setValue('theme', newTheme);
     }
 
     const state = {};
     const labelOf = (key, val) => (OPTIONS[key].find(o => o[0] === val) || OPTIONS[key][0])[1];
 
-    // ---------- Dropdown kustom ----------
     function optionsHtml(key) {
       return OPTIONS[key].map(([v, t]) =>
         `<button type="button" class="dd-opt" role="option" data-value="${v}"><i></i>${t}</button>`).join('');
@@ -344,7 +440,7 @@
         closeAllDd();
         if (willOpen) { dd.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); }
       });
-      panel.addEventListener('click', (e) => { if (e.target === panel) closeAllDd(); }); // klik latar (mobile)
+      panel.addEventListener('click', (e) => { if (e.target === panel) closeAllDd(); });
       dd.querySelectorAll('.dd-opt').forEach(o => o.addEventListener('click', () => {
         closeAllDd();
         setValue(key, o.dataset.value);
@@ -374,15 +470,14 @@
 
     function setValue(key, val) {
       state[key] = val;
-      updateSetting(key, val);          // simpan lewat cookie.js
+      updateSetting(key, val);
       if (key === 'theme') applyTheme(val);
       paint(key);
       showToast(TOASTS[key]);
     }
 
-    // ---------- Muat pengaturan ----------
     document.addEventListener('DOMContentLoaded', () => {
-      const config = getData();         // dari cookie.js
+      const config = getData();
       state.theme = OPTIONS.theme.some(o => o[0] === config.theme) ? config.theme : 'light';
       state.lang  = OPTIONS.lang.some(o => o[0] === config.lang) ? config.lang : 'id';
       applyTheme(state.theme);
@@ -394,7 +489,6 @@
       $('suggest_toggle').checked = !!config.suggest;
     });
 
-    // ---------- Toggle ----------
     [
       ['favicon_toggle', 'favicon', 'Pengaturan favicon disimpan'],
       ['newtab_toggle',  'newtab',  'Pengaturan tab disimpan'],
@@ -405,11 +499,10 @@
     });
 
     $('reset_cookie_btn').addEventListener('click', () => {
-      clearData();                      // dari cookie.js
+      clearData();
       showToast('Cookie berhasil di-reset');
       setTimeout(() => location.reload(), 1200);
     });
-
   </script>
 </body>
 </html>

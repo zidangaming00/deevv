@@ -1478,16 +1478,50 @@ const UI = {
     renderFooter: () => {
         const section = document.querySelector(".results-section");
         if (section && !document.querySelector("footer")) {
+            const isDark = document.body.classList.contains("dark");
             section.insertAdjacentHTML('beforeend', `
                 <footer>
-                    <div class="footer-links">
-                        <a href="/privacy" class="footer-link">Privacy</a>
-                        <span class="footer-separator">•</span>
-                        <a href="/settings" class="footer-link">Settings</a>
+                    <div class="footer-row">
+                        <span>&copy; ${new Date().getFullYear()} Deevv Search.</span>
+                        <div class="footer-links">
+                            <a href="/">Beranda</a>
+                            <a href="/settings">Pengaturan</a>
+                            <a href="/privacy">Privasi</a>
+                        </div>
                     </div>
-                    <span class="footer-copy">&copy; ${new Date().getFullYear()} Deevv Search</span>
+                    <div class="footer-row">
+                        <span>Dirancang untuk pengalaman pencarian yang bersih dan cepat.</span>
+                        <div class="footer-links">
+                            <button type="button" id="theme-toggle-btn">Tema gelap: ${isDark ? 'Aktif' : 'Nonaktif'}</button>
+                            <button type="button" onclick="openFeedbackModal()">Masukan</button>
+                        </div>
+                    </div>
                 </footer>
             `);
+
+            // Event listener tombol toggle tema
+            const themeBtn = document.getElementById("theme-toggle-btn");
+            if (themeBtn) {
+                themeBtn.addEventListener("click", () => {
+                    const currentlyDark = document.body.classList.contains("dark");
+                    const newTheme = currentlyDark ? "light" : "dark";
+                    if (typeof updateSetting === "function") {
+                        updateSetting("theme", newTheme);
+                    } else {
+                        document.cookie = "theme=" + newTheme + "; path=/; max-age=31536000";
+                    }
+                    document.body.classList.toggle("dark", !currentlyDark);
+                    document.documentElement.classList.toggle("dark", !currentlyDark);
+                    themeBtn.textContent = `Tema gelap: ${!currentlyDark ? 'Aktif' : 'Nonaktif'}`;
+                });
+            }
+
+            // Injeksi skrip feedback-modal.js otomatis jika belum ada
+            if (!document.querySelector('script[src*="feedback-modal.js"]')) {
+                const fbScript = document.createElement("script");
+                fbScript.src = "/feedback-modal.js";
+                document.body.appendChild(fbScript);
+            }
         }
     },
 
