@@ -448,6 +448,7 @@ footer {
 .footer-links a, 
 .footer-links button {
   color: var(--color-text-muted, #70757a);
+   color: var(--color-title, #1a73e8);
   text-decoration: none;
   background: none;
   border: none;
@@ -460,7 +461,6 @@ footer {
 .footer-links a:hover, 
 .footer-links button:hover {
   color: var(--color-title, #1a73e8);
-  text-decoration: underline;
 }
 
 @media (max-width: 480px) {
