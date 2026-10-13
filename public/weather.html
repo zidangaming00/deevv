@@ -2,406 +2,450 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#ffffff">
-  <title>Deevv Weather</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deevv SERP Weather Widget</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&display=swap">
   
-  <script>
-    (function(){
-      try {
-        var p = localStorage.getItem("deevv_weather_theme") || "system";
-        var d = p === "dark" || (p === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-        document.documentElement.setAttribute("data-theme", d ? "dark" : "light");
-      } catch(e){}
-    })();
-  </script>
-
   <style>
+    /* Variabel Identitas Deevv */
     :root {
       --brand: #1558D6;
-      --brand-fill: #1558D6;
-      --brand-600: #1048B3;
-      --brand-700: #1558D6;
-      --brand-100: #D2E3FC;
       --brand-50: #E8F0FE;
-
-      --bg: #ffffff;
+      --brand-100: #D2E3FC;
       --surface: #ffffff;
+      --card-bg-alt: #f0f4f9;
       --text: #101518;
-      --text-2: #494949;
-      --muted: #70757a;
+      --text-muted: #70757a;
       --line: #EDEDED;
-      --line-alt: #E0E4E9;
-      --card: #ffffff;
-      --card-bg-alt: #f4f6f7;
-      --hover: rgba(128,128,128,.12);
-      --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.05);
+      --aqi-good-bg: #e6f4ea;
+      --aqi-good-text: #137333;
+      --chart-fill: rgba(254, 224, 130, 0.55);
+      --chart-line: #f9ab00;
       --font: 'Google Sans Flex', system-ui, -apple-system, sans-serif;
-      color-scheme: light;
     }
 
-    :root[data-theme="dark"] {
-      color-scheme: dark;
+    [data-theme="dark"] {
       --brand: #8ab4f8;
-      --brand-fill: #1558D6;
-      --brand-600: #2a6be0;
-      --brand-700: #8ab4f8;
-      --brand-100: #2b4a80;
       --brand-50: #1f2d4a;
-
-      --bg: #171717;
+      --brand-100: #2b4a80;
       --surface: #202125;
-      --text: #E9EAEE;
-      --text-2: #BDC1C4;
-      --muted: #9BA0A6;
-      --line: #3C4043;
-      --line-alt: #3C4043;
-      --card: #202125;
       --card-bg-alt: #26282c;
-      --shadow-card: none;
+      --text: #E9EAEE;
+      --text-muted: #9BA0A6;
+      --line: #3C4043;
+      --aqi-good-bg: #0c2d1c;
+      --aqi-good-text: #81c995;
+      --chart-fill: rgba(249, 171, 0, 0.25);
+      --chart-line: #fdd663;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: var(--font);
-      background: var(--bg);
+      background: var(--surface);
       color: var(--text);
-      min-height: 100vh;
+      padding: 16px;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0 16px 40px;
+      justify-content: center;
     }
 
-    /* --- Header --- */
-    header {
+    /* Outer Wrapper untuk SERP Result Card */
+    .serp-weather-card {
       width: 100%;
-      max-width: 600px;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--line);
-      margin-bottom: 24px;
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-    }
-    .logo { width: 32px; height: 32px; flex-shrink: 0; }
-    
-    .icon-btn {
-      border: 0; background: transparent;
-      width: 40px; height: 40px;
-      display: grid; place-items: center;
-      color: var(--text); border-radius: 50%;
-      cursor: pointer;
-    }
-    .icon-btn:hover { background: var(--hover); }
-    .icon-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-
-    /* --- Main Content --- */
-    main {
-      width: 100%;
-      max-width: 600px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    /* Badge Lokasi Pengguna */
-    .location-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--brand-50);
-      color: var(--brand-700);
-      padding: 8px 16px;
+      max-width: 580px;
+      background: var(--surface);
+      border: 1px solid var(--line);
       border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 1px 6px rgba(32,33,36,0.08);
+    }
+
+    /* Header Section */
+    .serp-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+
+    .serp-subhead {
       font-size: 14px;
-      font-weight: 600;
-      width: fit-content;
-      border: 1px solid var(--brand-100);
-    }
-    .location-badge svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; }
-
-    /* Card Utama Cuaca */
-    .weather-card {
-      background: var(--card);
-      border: 1px solid var(--line-alt);
-      border-radius: 28px;
-      padding: 28px 24px;
-      box-shadow: var(--shadow-card);
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      position: relative;
+      color: var(--text-muted);
+      margin-top: 2px;
+      margin-bottom: 16px;
     }
 
-    .weather-main {
+    /* Temperature & Unit Switch */
+    .temp-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      margin-bottom: 12px;
     }
 
-    .temp-wrap {
+    .temp-main {
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      gap: 12px;
     }
 
-    .temp {
-      font-size: 56px;
-      font-weight: 700;
-      line-height: 1;
-      letter-spacing: -2px;
-      color: var(--text);
-    }
-
-    .condition {
-      font-size: 18px;
-      color: var(--text-2);
-      font-weight: 500;
-      margin-top: 6px;
-    }
-
-    .weather-icon {
-      width: 72px;
-      height: 72px;
+    .weather-icon-large {
+      width: 48px;
+      height: 48px;
       color: var(--brand);
     }
 
-    /* Grid Status Detail */
-    .weather-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      padding-top: 16px;
-      border-top: 1px solid var(--line);
+    .temp-number {
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1;
     }
 
-    .stat-item {
-      background: var(--card-bg-alt);
-      border-radius: 18px;
-      padding: 14px 12px;
+    .unit-switch {
+      font-size: 14px;
+      color: var(--text-muted);
+      display: flex;
+      gap: 6px;
+    }
+
+    .unit-switch span { cursor: pointer; }
+    .unit-switch span.active {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    /* Sunrise, Sunset, AQI Meta Info */
+    .meta-info {
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      text-align: center;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 20px;
     }
 
-    .stat-label { font-size: 12px; color: var(--muted); font-weight: 500; }
-    .stat-value { font-size: 16px; color: var(--text); font-weight: 700; }
+    .meta-info span strong { font-weight: 600; }
 
-    /* Tombol Aksi */
-    .btn-refresh {
+    .aqi-row {
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 8px;
-      width: 100%;
-      height: 48px;
-      border: none;
-      border-radius: 24px;
-      background: var(--brand-fill);
-      color: #ffffff;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: filter .15s;
-    }
-    .btn-refresh:hover { filter: brightness(0.95); }
-    .btn-refresh svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-
-    /* Skeleton Loading state */
-    .loading .temp, .loading .condition, .loading .stat-value {
-      opacity: 0.3;
+      margin-top: 4px;
     }
 
-    /* Footer */
-    footer {
-      margin-top: 40px;
+    .aqi-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--aqi-good-bg);
+      color: var(--aqi-good-text);
+      padding: 3px 12px;
+      border-radius: 14px;
       font-size: 13px;
-      color: var(--muted);
-      text-align: center;
+      font-weight: 600;
     }
 
-    @media (max-width: 480px) {
-      .weather-stats { grid-template-columns: 1fr; }
-      .stat-item { flex-direction: row; justify-content: space-between; align-items: center; padding: 12px 16px; }
+    .aqi-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--aqi-good-text);
+    }
+
+    /* Filter Tabs (Pill Buttons) */
+    .tab-pills {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--line);
+      background: var(--card-bg-alt);
+      color: var(--text);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn.active {
+      border-color: var(--brand);
+      background: var(--surface);
+      color: var(--brand);
+      font-weight: 600;
+      box-shadow: 0 0 0 1px var(--brand);
+    }
+
+    /* Area Chart Canvas Container */
+    .chart-container {
+      width: 100%;
+      height: 120px;
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    canvas#weatherChart {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Horizontal Forecast List */
+    .forecast-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--line);
+    }
+
+    .forecast-card {
+      flex: 1;
+      min-width: 80px;
+      background: transparent;
+      border-radius: 16px;
+      padding: 12px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .forecast-card.active {
+      background: var(--brand-50);
+    }
+
+    .forecast-day {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .forecast-icon {
+      width: 28px;
+      height: 28px;
+    }
+
+    .forecast-temp {
+      font-size: 13px;
+      color: var(--text);
+      display: flex;
+      gap: 6px;
+    }
+
+    .forecast-temp .min {
+      color: var(--text-muted);
+    }
+
+    /* Footer Credits */
+    .serp-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .serp-footer a {
+      color: var(--brand);
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
 
-  <!-- Header Brand -->
-  <header>
-    <div class="brand">
-      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
-        <rect width="32" height="32" rx="9" fill="#1558D6"/>
-        <circle cx="13.5" cy="17.5" r="5" fill="none" stroke="#fff" stroke-width="3"/>
-        <path d="M19 7.5V25" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-      </svg>
-      <span>deevv weather</span>
-    </div>
-    <button class="icon-btn" id="themeBtn" aria-label="Ganti Tema">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-    </button>
-  </header>
-
-  <main>
-    <!-- Konfirmasi Nama Lokasi -->
-    <div class="location-badge" id="locationBadge">
-      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      <span id="locationText">Mendeteksi lokasi...</span>
+  <div class="serp-weather-card">
+    <!-- Header info lokasi -->
+    <div class="serp-header">
+      <h2 id="cityName">South Tangerang, Banten, ID</h2>
+      <div class="serp-subhead" id="subHead">Rabu, 14 Oktober · Berawan · Kelembapan: 74%</div>
     </div>
 
-    <!-- Card Informasi Cuaca -->
-    <div class="weather-card" id="weatherCard">
-      <div class="weather-main">
-        <div class="temp-wrap">
-          <div class="temp" id="tempText">--°C</div>
-          <div class="condition" id="conditionText">Memuat cuaca...</div>
-        </div>
-        <div class="weather-icon" id="weatherIcon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2"/></svg>
-        </div>
+    <!-- Suhu utama dan switch Fahrenheit / Celsius -->
+    <div class="temp-row">
+      <div class="temp-main">
+        <svg class="weather-icon-large" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+        </svg>
+        <div class="temp-number" id="currentTemp">28°</div>
       </div>
+      <div class="unit-switch">
+        <span>Fahrenheit</span>
+        <span class="active">Celsius</span>
+      </div>
+    </div>
 
-      <!-- Detail Cuaca Tambahan -->
-      <div class="weather-stats">
-        <div class="stat-item">
-          <span class="stat-label">Kecepatan Angin</span>
-          <span class="stat-value" id="windText">-- km/h</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Arah Angin</span>
-          <span class="stat-value" id="windDirText">--</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Kode Cuaca</span>
-          <span class="stat-value" id="codeText">--</span>
+    <!-- Sunrise, Sunset & AQI -->
+    <div class="meta-info">
+      <div>Matahari terbit: <strong>05:32</strong></div>
+      <div>Matahari terbenam: <strong>17:46</strong></div>
+      <div class="aqi-row">
+        <span>AQI</span>
+        <div class="aqi-badge">
+          <span class="aqi-dot"></span>
+          <span>Baik</span>
         </div>
       </div>
     </div>
 
-    <!-- Tombol Perbarui Data -->
-    <button class="btn-refresh" id="refreshBtn">
-      <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9c2.5 0 4.9 1 6.7 2.7L21 8"/><path d="M21 3v5h-5"/></svg>
-      Perbarui Lokasi & Cuaca
-    </button>
-  </main>
+    <!-- Pill Tabs -->
+    <div class="tab-pills">
+      <button class="tab-btn active">Temperature</button>
+      <button class="tab-btn">Precipitation</button>
+      <button class="tab-btn">Wind</button>
+    </div>
 
-  <footer>
-    &copy; 2026 Deevv Weather. Data cuaca oleh Open-Meteo & Nominatim.
-  </footer>
+    <!-- Graphic Curve Canvas -->
+    <div class="chart-container">
+      <canvas id="weatherChart"></canvas>
+    </div>
+
+    <!-- 4-Day Forecast Cards -->
+    <div class="forecast-row">
+      <div class="forecast-card active">
+        <span class="forecast-day">Rabu</span>
+        <svg class="forecast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+        </svg>
+        <div class="forecast-temp">
+          <span>37°</span>
+          <span class="min">28°</span>
+        </div>
+      </div>
+
+      <div class="forecast-card">
+        <span class="forecast-day">Kamis</span>
+        <svg class="forecast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+        </svg>
+        <div class="forecast-temp">
+          <span>37°</span>
+          <span class="min">28°</span>
+        </div>
+      </div>
+
+      <div class="forecast-card">
+        <span class="forecast-day">Jumat</span>
+        <svg class="forecast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/>
+          <path d="M8 19v2M12 19v2M16 19v2"/>
+        </svg>
+        <div class="forecast-temp">
+          <span>36°</span>
+          <span class="min">27°</span>
+        </div>
+      </div>
+
+      <div class="forecast-card">
+        <span class="forecast-day">Sabtu</span>
+        <svg class="forecast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/>
+          <path d="M8 19v2M12 19v2M16 19v2"/>
+        </svg>
+        <div class="forecast-temp">
+          <span>36°</span>
+          <span class="min">27°</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer SERP -->
+    <div class="serp-footer">
+      <span>Powered by <a href="#">OpenWeatherMap</a></span>
+      <a href="#">Masukan</a>
+    </div>
+  </div>
 
   <script>
-    // System Tema Deevv
-    const THEME_KEY = "deevv_weather_theme";
-    const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const themeBtn = document.getElementById("themeBtn");
+    // Canvas Custom Spline/Area Chart Drawing
+    function drawWeatherChart() {
+      const canvas = document.getElementById('weatherChart');
+      const ctx = canvas.getContext('2d');
+      
+      // Handle High-DPI screens
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
 
-    function getSavedTheme() {
-      try { return localStorage.getItem(THEME_KEY) || "system"; } catch(e) { return "system"; }
-    }
+      const hours = ["07:00", "13:00", "19:00", "01:00", "07:00"];
+      const temps = [28, 34, 32, 29, 31];
 
-    function applyTheme(mode) {
-      const isDark = mode === "dark" || (mode === "system" && darkQuery.matches);
-      document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
-      themeBtn.innerHTML = isDark 
-        ? '<svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>'
-        : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
-    }
+      const paddingX = 30;
+      const width = rect.width - paddingX * 2;
+      const height = rect.height - 35; // Reserve space for bottom time labels
 
-    themeBtn.onclick = () => {
-      const current = getSavedTheme();
-      const next = current === "dark" ? "light" : "dark";
-      try { localStorage.setItem(THEME_KEY, next); } catch(e){}
-      applyTheme(next);
-    };
+      const minTemp = 25;
+      const maxTemp = 36;
 
-    applyTheme(getSavedTheme());
+      const points = temps.map((t, index) => {
+        const x = paddingX + (index / (temps.length - 1)) * width;
+        const y = height - ((t - minTemp) / (maxTemp - minTemp)) * (height - 20) - 10;
+        return { x, y, temp: t, time: hours[index] };
+      });
 
-    // Kamus Kode Cuaca WMO ke Teks Indonesia
-    function interpretWMO(code) {
-      if (code === 0) return "Cerah";
-      if (code >= 1 && code <= 3) return "Cerah Berawan";
-      if (code === 45 || code === 48) return "Berkabut";
-      if (code >= 51 && code <= 55) return "Gerimis halus";
-      if (code >= 61 && code <= 65) return "Hujan";
-      if (code >= 80 && code <= 82) return "Hujan Lebat";
-      if (code >= 95) return "Hujan Badai / Petir";
-      return "Berawan";
-    }
+      // Clear Canvas
+      ctx.clearRect(0, 0, rect.width, rect.height);
 
-    // Fungsi Utama Fetch Lokasi & Cuaca
-    async function loadWeatherData() {
-      const locText = document.getElementById("locationText");
-      const tempText = document.getElementById("tempText");
-      const condText = document.getElementById("conditionText");
-      const windText = document.getElementById("windText");
-      const windDirText = document.getElementById("windDirText");
-      const codeText = document.getElementById("codeText");
+      // Draw Filled Area Below Curve
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
 
-      locText.innerText = "Mendeteksi lokasi...";
-      condText.innerText = "Memuat cuaca...";
-
-      if (!("geolocation" in navigator)) {
-        locText.innerText = "Browser tidak mendukung lokasi";
-        return;
+      for (let i = 0; i < points.length - 1; i++) {
+        const xc = (points[i].x + points[i + 1].x) / 2;
+        const yc = (points[i].y + points[i + 1].y) / 2;
+        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
       }
+      ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+      ctx.lineTo(points[points.length - 1].x, height + 5);
+      ctx.lineTo(points[0].x, height + 5);
+      ctx.closePath();
 
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
+      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--chart-fill').trim();
+      ctx.fill();
 
-        try {
-          // 1. Reverse Geocoding via Nominatim OpenStreetMap (Gratis)
-          const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-          const geoData = await geoRes.json();
-          const addr = geoData.address || {};
+      // Draw Curve Line
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 0; i < points.length - 1; i++) {
+        const xc = (points[i].x + points[i + 1].x) / 2;
+        const yc = (points[i].y + points[i + 1].y) / 2;
+        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+      }
+      ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--chart-line').trim();
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
 
-          // Ambil nama kota/kabupaten terdekat
-          const cityName = addr.city || addr.town || addr.suburb || addr.city_district || addr.county || "Lokasi Anda";
-          const stateName = addr.state ? `, ${addr.state}` : "";
-          
-          locText.innerText = `${cityName}${stateName}`;
+      // Draw Temperature Labels & Time Text
+      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
+      ctx.font = '500 12px Google Sans Flex, sans-serif';
+      ctx.textAlign = 'center';
 
-          // 2. Fetch Data Cuaca via Open-Meteo API
-          const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
-          const weatherData = await weatherRes.json();
-          const current = weatherData.current_weather;
+      points.forEach(p => {
+        // Temp text above point
+        ctx.fillText(`${p.temp}`, p.x, p.y - 8);
 
-          // Render Data ke UI Deevv
-          tempText.innerText = `${Math.round(current.temperature)}°C`;
-          condText.innerText = interpretWMO(current.weathercode);
-          windText.innerText = `${current.windspeed} km/h`;
-          windDirText.innerText = `${current.winddirection}°`;
-          codeText.innerText = `WMO ${current.weathercode}`;
-
-        } catch (err) {
-          console.error("Gagal memuat data:", err);
-          locText.innerText = "Gagal mengambil data lokasi/cuaca";
-          condText.innerText = "Terjadi kesalahan";
-        }
-      }, (err) => {
-        console.warn("Lokasi ditolak:", err.message);
-        locText.innerText = "Izin lokasi ditolak pengguna";
-        condText.innerText = "Akses lokasi diperlukan";
+        // Time text at the bottom
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim();
+        ctx.fillText(p.time, p.x, height + 24);
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
       });
     }
 
-    document.getElementById("refreshBtn").onclick = loadWeatherData;
-
-    // Load pertama kali saat halaman dibuka
-    window.addEventListener("DOMContentLoaded", loadWeatherData);
+    window.addEventListener('load', drawWeatherChart);
+    window.addEventListener('resize', drawWeatherChart);
   </script>
 </body>
 </html>
