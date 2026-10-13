@@ -531,8 +531,8 @@
       const width = rect.width;
       const padTop = 32;
       const padBottom = 28;
-      const padX = 22;           // jarak titik dari tepi kiri/kanan
-      const labelGap = 8;        // jarak label ke garis (px)
+      const padX = 0;
+      const labelGap = 8;
       const availableHeight = rect.height - padTop - padBottom;
 
       let minVal = Math.min(...rawValues);
@@ -597,11 +597,13 @@
       ctx.lineJoin = 'round';
       ctx.stroke();
 
-      // Label angka + jam
-      // Label angka + jam (hanya titik genap)
-      ctx.textAlign = 'center';
-      points.forEach((p) => {
+      const last = points.length - 1;
+      points.forEach((p, idx) => {
         if (!p.show) return;
+
+        // Ujung kiri rata kiri, ujung kanan rata kanan, sisanya tengah
+        ctx.textAlign = idx === 0 ? 'left' : (idx === last ? 'right' : 'center');
+
         ctx.fillStyle = css.getPropertyValue('--text').trim();
         ctx.font = '600 13px Google Sans Flex, sans-serif';
         ctx.fillText(`${p.val}${suffix}`, p.x, p.y - labelGap);
