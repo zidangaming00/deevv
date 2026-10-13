@@ -447,7 +447,7 @@ footer {
 
 .footer-links a, 
 .footer-links button {
-  color: #5f6368;
+  color: #9aa0a6;
   text-decoration: none;
   background: none;
   border: none;
@@ -459,7 +459,7 @@ footer {
 
 .footer-links a:hover, 
 .footer-links button:hover {
-  color: var(--color-title, #1a73e8);
+  color: #1a73e8;
 }
 
 @media (max-width: 480px) {
