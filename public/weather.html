@@ -52,7 +52,6 @@
       margin: 0;
     }
 
-    /* Container SERP Widget */
     .serp-weather-card {
       width: 100%;
       background: var(--surface);
@@ -62,7 +61,6 @@
       overflow: hidden;
     }
 
-    /* Hierarchy Font Size: 22px untuk Nama Lokasi */
     .serp-header h2 {
       font-size: 22px;
       font-weight: 700;
@@ -71,7 +69,6 @@
       line-height: 1.25;
     }
 
-    /* Hierarchy Font Size: 14px untuk Sub-header */
     .serp-subhead {
       font-size: 14px;
       color: var(--text-muted);
@@ -80,7 +77,6 @@
       line-height: 1.4;
     }
 
-    /* Temperature Row */
     .temp-row {
       display: flex;
       align-items: center;
@@ -101,14 +97,12 @@
       flex-shrink: 0;
     }
 
-    /* Hierarchy Font Size: 20px untuk Angka Suhu Utama */
     .temp-number {
       font-size: 20px;
       font-weight: 700;
       line-height: 1;
     }
 
-    /* Hierarchy Font Size: 14px untuk Switch Unit */
     .unit-switch {
       font-size: 14px;
       color: var(--text-muted);
@@ -128,7 +122,6 @@
       font-weight: 700;
     }
 
-    /* Hierarchy Font Size: 14px untuk Meta Info */
     .meta-info {
       display: flex;
       flex-direction: column;
@@ -165,7 +158,6 @@
       background: var(--aqi-good-text);
     }
 
-    /* Hierarchy Font Size: 16px untuk Tab Pill */
     .tab-pills-wrap {
       margin: 0 -16px 16px -16px;
       padding: 0 16px;
@@ -176,22 +168,23 @@
 
     .tab-pills {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       width: max-content;
     }
 
-    /* Border Bersih Rapi Tanpa Double Shadow */
+    /* Ukuran Tab Diperkecil (Font 14px, Padding Lebih Compact) */
     .tab-btn {
       border: 1px solid var(--line-alt);
       background: var(--card-bg-alt);
       color: var(--text);
-      padding: 8px 18px;
-      border-radius: 20px;
-      font-size: 16px;
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-size: 14px;
       font-weight: 500;
       cursor: pointer;
       white-space: nowrap;
       outline: none;
+      transition: background 0.15s, border-color 0.15s;
     }
 
     .tab-btn.active {
@@ -201,7 +194,6 @@
       font-weight: 600;
     }
 
-    /* Area Chart Canvas Full Edge-to-Edge */
     .chart-container {
       width: 100%;
       height: 130px;
@@ -215,7 +207,6 @@
       display: block;
     }
 
-    /* Horizontal Forecast Cards Carousel */
     .forecast-wrap {
       margin: 0 -16px 12px -16px;
       padding: 0 16px 8px 16px;
@@ -252,7 +243,6 @@
       border-color: var(--brand-100);
     }
 
-    /* Hierarchy Font Size: 14px untuk Hari */
     .forecast-day {
       font-size: 14px;
       font-weight: 600;
@@ -265,7 +255,6 @@
       color: var(--text);
     }
 
-    /* Hierarchy Font Size: 14px untuk Rentang Suhu */
     .forecast-temp {
       font-size: 14px;
       color: var(--text);
@@ -278,7 +267,6 @@
       color: var(--text-muted);
     }
 
-    /* Hierarchy Font Size: 14px untuk Footer SERP */
     .serp-footer {
       display: flex;
       justify-content: space-between;
@@ -367,7 +355,6 @@
       return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
     }
 
-    // Interactive Switch C/F
     document.getElementById('unitC').onclick = () => {
       if (currentUnit === 'C') return;
       currentUnit = 'C';
@@ -384,7 +371,6 @@
       renderRealData();
     };
 
-    // Tab Filters
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.onclick = () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -394,7 +380,6 @@
       };
     });
 
-    // Fetch API Real-Time
     async function initWeather() {
       if (!("geolocation" in navigator)) {
         document.getElementById("cityName").innerText = "Tangerang Selatan, Banten, ID";
@@ -406,7 +391,6 @@
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
 
-        // Reverse Geocoding
         try {
           const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
           const geoData = await geoRes.json();
@@ -443,21 +427,17 @@
       const daily = apiDataStore.daily;
       const hourly = apiDataStore.hourly;
 
-      // Subhead Tanggal Hari Ini & Kelembapan
       const today = new Date();
       const dateStr = `${daysName[today.getDay()]}, ${today.getDate()} Oktober`;
       const humidity = hourly.relativehumidity_2m[0] || 74;
       document.getElementById("subHead").innerText = `${dateStr} · Berawan · Kelembapan: ${humidity}%`;
 
-      // Suhu Utama
       const curTemp = Math.round(current.temperature);
       document.getElementById("currentTemp").innerText = `${currentUnit === 'C' ? curTemp : toFahrenheit(curTemp)}°`;
 
-      // Sunrise & Sunset
       document.getElementById("sunriseText").innerText = formatTime(daily.sunrise[0]);
       document.getElementById("sunsetText").innerText = formatTime(daily.sunset[0]);
 
-      // Render 4 Hari Forecast Cards
       const forecastRow = document.getElementById("forecastRow");
       forecastRow.innerHTML = "";
 
@@ -495,7 +475,6 @@
       drawChart();
     }
 
-    // Draw Chart - Full Ujung ke Ujung (x = 0 sampai x = Width)
     function drawChart() {
       if (!apiDataStore) return;
       const canvas = document.getElementById('weatherChart');
@@ -508,8 +487,7 @@
       canvas.height = rect.height * dpr;
       ctx.scale(dpr, dpr);
 
-      // Ambil data hourly untuk hari terpilih (5 titik waktu)
-      const startIndex = selectedDayIndex * 24 + 7; // mulai jam 07:00
+      const startIndex = selectedDayIndex * 24 + 7;
       const hourlyTimes = ["07:00", "13:00", "19:00", "01:00", "07:00"];
       
       let rawValues = [];
@@ -546,7 +524,6 @@
         suffix = ' km/h';
       }
 
-      const paddingX = 0; // FULL DARI KIRI KE KANAN
       const width = rect.width;
       const height = rect.height - 32;
 
@@ -561,7 +538,6 @@
 
       ctx.clearRect(0, 0, rect.width, rect.height);
 
-      // Fill Area Below Curve
       ctx.beginPath();
       ctx.moveTo(points[0].x, points[0].y);
       for (let i = 0; i < points.length - 1; i++) {
@@ -577,7 +553,6 @@
       ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--chart-fill').trim();
       ctx.fill();
 
-      // Stroke Line Curve
       ctx.beginPath();
       ctx.moveTo(points[0].x, points[0].y);
       for (let i = 0; i < points.length - 1; i++) {
@@ -590,15 +565,12 @@
       ctx.lineWidth = 2.5;
       ctx.stroke();
 
-      // Text Render (Hierarchy: Font 14px untuk Label Canvas)
       points.forEach((p, idx) => {
-        // Value Text
         ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
         ctx.font = '600 14px Google Sans Flex, sans-serif';
         ctx.textAlign = idx === 0 ? 'left' : (idx === points.length - 1 ? 'right' : 'center');
         ctx.fillText(`${p.val}${suffix}`, p.x, p.y - 8);
 
-        // Time Text
         ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim();
         ctx.font = '500 14px Google Sans Flex, sans-serif';
         ctx.fillText(p.time, p.x, height + 20);
