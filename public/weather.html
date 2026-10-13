@@ -500,40 +500,32 @@
       ctx.scale(dpr, dpr);
 
       const startIndex = selectedDayIndex * 24 + 7;
-      const hourlyTimes = ["07:00", "13:00", "19:00", "01:00", "07:00"];
-      
+      const step = 3;
+      const count = 9;
+      const hourlyTimes = ["07:00","10:00","13:00","16:00","19:00","22:00","01:00","04:00","07:00"];
+      const h = apiDataStore.hourly;
+
+      const series = (arr, fallback) =>
+        Array.from({ length: count }, (_, i) => arr[startIndex + i * step] ?? fallback);
+
       let rawValues = [];
       let suffix = '';
+      let minSpan = 1;   // rentang vertikal minimum (makin besar = makin landai)
+      let fixedRange = null;
 
       if (currentTab === 'temp') {
-        const temps = [
-          apiDataStore.hourly.temperature_2m[startIndex],
-          apiDataStore.hourly.temperature_2m[startIndex + 6],
-          apiDataStore.hourly.temperature_2m[startIndex + 12],
-          apiDataStore.hourly.temperature_2m[startIndex + 18],
-          apiDataStore.hourly.temperature_2m[startIndex + 24]
-        ].map(v => Math.round(v || 28));
-
-        rawValues = currentUnit === 'C' ? temps : temps.map(v => toFahrenheit(v));
+        const temps = series(h.temperature_2m, 28).map(v => Math.round(v));
+        rawValues = currentUnit === 'C' ? temps : temps.map(toFahrenheit);
         suffix = '°';
+        minSpan = currentUnit === 'C' ? 14 : 25;
       } else if (currentTab === 'precip') {
-        rawValues = [
-          apiDataStore.hourly.precipitation_probability[startIndex] || 10,
-          apiDataStore.hourly.precipitation_probability[startIndex + 6] || 20,
-          apiDataStore.hourly.precipitation_probability[startIndex + 12] || 60,
-          apiDataStore.hourly.precipitation_probability[startIndex + 18] || 40,
-          apiDataStore.hourly.precipitation_probability[startIndex + 24] || 15
-        ];
+        rawValues = series(h.precipitation_probability, 0).map(Math.round);
         suffix = '%';
+        fixedRange = [0, 100];
       } else if (currentTab === 'wind') {
-        rawValues = [
-          Math.round(apiDataStore.hourly.windspeed_10m[startIndex] || 8),
-          Math.round(apiDataStore.hourly.windspeed_10m[startIndex + 6] || 12),
-          Math.round(apiDataStore.hourly.windspeed_10m[startIndex + 12] || 15),
-          Math.round(apiDataStore.hourly.windspeed_10m[startIndex + 18] || 9),
-          Math.round(apiDataStore.hourly.windspeed_10m[startIndex + 24] || 7)
-        ];
+        rawValues = series(h.windspeed_10m, 0).map(Math.round);
         suffix = ' km/h';
+        minSpan = 20;
       }
 
       const width = rect.width;
@@ -543,14 +535,22 @@
       const labelGap = 8;        // jarak label ke garis (px)
       const availableHeight = rect.height - padTop - padBottom;
 
-      const minVal = Math.min(...rawValues);
-      const maxVal = Math.max(...rawValues);
+      let minVal = Math.min(...rawValues);
+      let maxVal = Math.max(...rawValues);
+
+      if (fixedRange) {
+        [minVal, maxVal] = fixedRange;
+      } else if (maxVal - minVal < minSpan) {
+        const mid = (maxVal + minVal) / 2;
+        minVal = mid - minSpan / 2;
+        maxVal = mid + minSpan / 2;
+      }
       const range = (maxVal - minVal) || 1;
 
       const points = rawValues.map((val, index) => {
         const x = padX + (index / (rawValues.length - 1)) * (width - padX * 2);
         const y = padTop + (1 - (val - minVal) / range) * availableHeight;
-        return { x, y, val, time: hourlyTimes[index] };
+        return { x, y, val, time: hourlyTimes[index], show: index % 2 === 0 };
       });
 
       // Kurva halus yang MELEWATI setiap titik (tanpa overshoot)
@@ -598,11 +598,12 @@
       ctx.stroke();
 
       // Label angka + jam
+      // Label angka + jam (hanya titik genap)
       ctx.textAlign = 'center';
       points.forEach((p) => {
+        if (!p.show) return;
         ctx.fillStyle = css.getPropertyValue('--text').trim();
         ctx.font = '600 13px Google Sans Flex, sans-serif';
-        ctx.textBaseline = 'alphabetic';
         ctx.fillText(`${p.val}${suffix}`, p.x, p.y - labelGap);
 
         ctx.fillStyle = css.getPropertyValue('--text-muted').trim();
