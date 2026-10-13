@@ -14,7 +14,7 @@
       --brand-50: #E8F0FE;
       --brand-100: #D2E3FC;
       --surface: #ffffff;
-      --card-bg-alt: #f4f6f7;
+      --card-bg-alt: #f8f9fa;
       --text: #101518;
       --text-muted: #70757a;
       --line: #EDEDED;
@@ -90,6 +90,7 @@
       gap: 10px;
     }
 
+    /* Warna Ikon Utama Aksen Brand */
     .weather-icon-large {
       width: 44px;
       height: 44px;
@@ -193,9 +194,10 @@
       font-weight: 600;
     }
 
+    /* Container Chart dengan margin teratur */
     .chart-container {
       width: 100%;
-      height: 130px;
+      height: 140px;
       position: relative;
       margin-bottom: 16px;
     }
@@ -206,10 +208,9 @@
       display: block;
     }
 
-    /* Forecast Card Lebih Compact/Kecil */
     .forecast-wrap {
       margin: 0 -16px 12px -16px;
-      padding: 0 16px 6px 16px;
+      padding: 0 16px 8px 16px;
       overflow-x: auto;
       scrollbar-width: none;
       border-bottom: 1px solid var(--line);
@@ -218,29 +219,35 @@
 
     .forecast-row {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       width: max-content;
       min-width: 100%;
     }
 
+    /* PERBAIKAN BORDER CARD UNSELECTED */
     .forecast-card {
       flex: 1;
-      min-width: 70px;
-      background: transparent;
+      min-width: 72px;
+      background: var(--card-bg-alt);
       border-radius: 14px;
       padding: 8px 6px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
       text-align: center;
       cursor: pointer;
-      border: 1px solid transparent;
+      border: 1px solid var(--line-alt); /* BORDER UNSELECTED TERSEDIA */
+      transition: all 0.15s ease;
+    }
+
+    .forecast-card:hover {
+      border-color: var(--brand-100);
     }
 
     .forecast-card.active {
       background: var(--brand-50);
-      border-color: var(--brand-100);
+      border-color: var(--brand); /* BORDER SELECTED LEBIH TEGAS */
     }
 
     .forecast-day {
@@ -249,10 +256,11 @@
       color: var(--text);
     }
 
+    /* Ikon Cuaca Card diberi Aksen Warna */
     .forecast-icon {
-      width: 24px;
-      height: 24px;
-      color: var(--text);
+      width: 26px;
+      height: 26px;
+      color: var(--brand);
     }
 
     .forecast-temp {
@@ -260,14 +268,14 @@
       color: var(--text);
       display: flex;
       gap: 4px;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .forecast-temp .min {
       color: var(--text-muted);
+      font-weight: 400;
     }
 
-    /* Footer Teks Dikecilin Jadi 12px */
     .serp-footer {
       display: flex;
       justify-content: space-between;
@@ -439,14 +447,12 @@
       document.getElementById("sunriseText").innerText = formatTime(daily.sunrise[0]);
       document.getElementById("sunsetText").innerText = formatTime(daily.sunset[0]);
 
-      // Render 7 Hari Penuh (Dari Hari Ini Sampai 7 Hari ke Depan / Rabu s.d. Rabu Depan)
       const forecastRow = document.getElementById("forecastRow");
       forecastRow.innerHTML = "";
 
       const totalDays = Math.min(7, daily.time.length);
       for (let i = 0; i < totalDays; i++) {
         const dateObj = new Date(daily.time[i]);
-        // Tampilkan label tanggal pendek (misal: "Rab 14", "Kam 15") agar muat 7 hari secara rapi
         const dayName = i === 0 ? "Hari ini" : daysName[dateObj.getDay()];
 
         const maxC = Math.round(daily.temperature_2m_max[i]);
@@ -479,6 +485,7 @@
       drawChart();
     }
 
+    // PERBAIKAN GRAFIK PRESISI (ANGKA TIDAK MENGAPUNG TERBANG)
     function drawChart() {
       if (!apiDataStore) return;
       const canvas = document.getElementById('weatherChart');
@@ -529,19 +536,26 @@
       }
 
       const width = rect.width;
-      const height = rect.height - 32;
+      
+      // Memberi padding top khusus (28px) agar angka tertinggi tidak terbang keluar
+      const paddingTop = 28;
+      const paddingBottom = 26;
+      const height = rect.height - paddingBottom;
 
-      const minVal = Math.min(...rawValues) - 2;
-      const maxVal = Math.max(...rawValues) + 2;
+      const minVal = Math.min(...rawValues);
+      const maxVal = Math.max(...rawValues);
+      const range = (maxVal - minVal) || 1;
 
       const points = rawValues.map((val, index) => {
         const x = (index / (rawValues.length - 1)) * width;
-        const y = height - ((val - minVal) / (maxVal - minVal || 1)) * (height - 32) - 12;
+        // Kalkulasi Y presisi dalam batas canvas
+        const y = height - ((val - minVal) / range) * (height - paddingTop) - 4;
         return { x, y, val, time: hourlyTimes[index] };
       });
 
       ctx.clearRect(0, 0, rect.width, rect.height);
 
+      // Gradient Fill
       ctx.beginPath();
       ctx.moveTo(points[0].x, points[0].y);
       for (let i = 0; i < points.length - 1; i++) {
@@ -557,6 +571,7 @@
       ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--chart-fill').trim();
       ctx.fill();
 
+      // Line Stroke
       ctx.beginPath();
       ctx.moveTo(points[0].x, points[0].y);
       for (let i = 0; i < points.length - 1; i++) {
@@ -569,15 +584,17 @@
       ctx.lineWidth = 2.5;
       ctx.stroke();
 
+      // Render Teks Nilai (Di atas titik kurva secara pas & presisi)
       points.forEach((p, idx) => {
         ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
-        ctx.font = '600 14px Google Sans Flex, sans-serif';
+        ctx.font = '600 13px Google Sans Flex, sans-serif';
         ctx.textAlign = idx === 0 ? 'left' : (idx === points.length - 1 ? 'right' : 'center');
-        ctx.fillText(`${p.val}${suffix}`, p.x, p.y - 8);
+        ctx.fillText(`${p.val}${suffix}`, p.x, p.y - 7);
 
+        // Render Teks Jam
         ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim();
-        ctx.font = '500 14px Google Sans Flex, sans-serif';
-        ctx.fillText(p.time, p.x, height + 20);
+        ctx.font = '500 13px Google Sans Flex, sans-serif';
+        ctx.fillText(p.time, p.x, height + 18);
       });
     }
 
