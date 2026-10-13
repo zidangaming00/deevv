@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&display=swap">
   
   <style>
-    /* Variabel Identitas Deevv */
     :root {
       --brand: #1558D6;
       --brand-50: #E8F0FE;
@@ -41,28 +40,27 @@
       --chart-line: #fdd663;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    
     body {
       font-family: var(--font);
       background: var(--surface);
       color: var(--text);
-      padding: 16px;
-      display: flex;
-      justify-content: center;
+      padding: 0;
+      margin: 0;
     }
 
-    /* Outer Wrapper untuk SERP Result Card */
+    /* Container disesuaikan untuk SERP Deevv (Full width + Padding 16px) */
     .serp-weather-card {
       width: 100%;
-      max-width: 580px;
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 20px;
-      padding: 20px;
+      padding: 20px 16px;
       box-shadow: 0 1px 6px rgba(32,33,36,0.08);
+      overflow: hidden;
     }
 
-    /* Header Section */
     .serp-header h2 {
       font-size: 20px;
       font-weight: 700;
@@ -71,18 +69,18 @@
     }
 
     .serp-subhead {
-      font-size: 14px;
+      font-size: 13.5px;
       color: var(--text-muted);
-      margin-top: 2px;
+      margin-top: 3px;
       margin-bottom: 16px;
     }
 
-    /* Temperature & Unit Switch */
+    /* Row Temp & Unit Switch */
     .temp-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
     .temp-main {
@@ -92,13 +90,13 @@
     }
 
     .weather-icon-large {
-      width: 48px;
-      height: 48px;
+      width: 52px;
+      height: 52px;
       color: var(--brand);
     }
 
     .temp-number {
-      font-size: 48px;
+      font-size: 52px;
       font-weight: 700;
       line-height: 1;
     }
@@ -107,16 +105,23 @@
       font-size: 14px;
       color: var(--text-muted);
       display: flex;
-      gap: 6px;
+      gap: 8px;
+      user-select: none;
     }
 
-    .unit-switch span { cursor: pointer; }
+    .unit-switch span { 
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: color 0.15s;
+    }
+
     .unit-switch span.active {
       color: var(--text);
       font-weight: 700;
     }
 
-    /* Sunrise, Sunset, AQI Meta Info */
+    /* Information Lines */
     .meta-info {
       display: flex;
       flex-direction: column;
@@ -126,13 +131,13 @@
       margin-bottom: 20px;
     }
 
-    .meta-info span strong { font-weight: 600; }
+    .meta-info strong { font-weight: 600; }
 
     .aqi-row {
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     .aqi-badge {
@@ -154,13 +159,19 @@
       background: var(--aqi-good-text);
     }
 
-    /* Filter Tabs (Pill Buttons) */
+    /* Pill Filter Tabs (Horizontal Scroll jika sempit) */
+    .tab-pills-wrap {
+      margin: 0 -16px 18px -16px;
+      padding: 0 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tab-pills-wrap::-webkit-scrollbar { display: none; }
+
     .tab-pills {
       display: flex;
       gap: 8px;
-      margin-bottom: 20px;
-      overflow-x: auto;
-      scrollbar-width: none;
+      width: max-content;
     }
 
     .tab-btn {
@@ -184,55 +195,72 @@
       box-shadow: 0 0 0 1px var(--brand);
     }
 
-    /* Area Chart Canvas Container */
+    /* Area Chart Canvas */
     .chart-container {
       width: 100%;
-      height: 120px;
+      height: 140px;
       position: relative;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
     }
 
     canvas#weatherChart {
       width: 100%;
       height: 100%;
+      display: block;
     }
 
-    /* Horizontal Forecast List */
+    /* 4-Day Forecast Horizontal Carousel */
+    .forecast-wrap {
+      margin: 0 -16px 12px -16px;
+      padding: 0 16px 8px 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      border-bottom: 1px solid var(--line);
+    }
+    .forecast-wrap::-webkit-scrollbar { display: none; }
+
     .forecast-row {
       display: flex;
       gap: 8px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      padding-bottom: 8px;
-      border-bottom: 2px solid var(--line);
+      width: max-content;
+      min-width: 100%;
     }
 
     .forecast-card {
       flex: 1;
-      min-width: 80px;
+      min-width: 82px;
       background: transparent;
-      border-radius: 16px;
-      padding: 12px 8px;
+      border-radius: 18px;
+      padding: 12px 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 8px;
       text-align: center;
       cursor: pointer;
+      border: 1px solid transparent;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .forecast-card:hover {
+      background: var(--card-bg-alt);
     }
 
     .forecast-card.active {
       background: var(--brand-50);
+      border-color: var(--brand-100);
     }
 
     .forecast-day {
       font-size: 14px;
       font-weight: 600;
+      color: var(--text);
     }
 
     .forecast-icon {
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
+      color: var(--text);
     }
 
     .forecast-temp {
@@ -240,6 +268,7 @@
       color: var(--text);
       display: flex;
       gap: 6px;
+      font-weight: 500;
     }
 
     .forecast-temp .min {
@@ -251,8 +280,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 14px;
-      font-size: 12px;
+      margin-top: 12px;
+      font-size: 12.5px;
       color: var(--text-muted);
     }
 
@@ -260,18 +289,17 @@
       color: var(--brand);
       text-decoration: none;
     }
+    .serp-footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
 
   <div class="serp-weather-card">
-    <!-- Header info lokasi -->
     <div class="serp-header">
       <h2 id="cityName">South Tangerang, Banten, ID</h2>
       <div class="serp-subhead" id="subHead">Rabu, 14 Oktober · Berawan · Kelembapan: 74%</div>
     </div>
 
-    <!-- Suhu utama dan switch Fahrenheit / Celsius -->
     <div class="temp-row">
       <div class="temp-main">
         <svg class="weather-icon-large" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -280,12 +308,11 @@
         <div class="temp-number" id="currentTemp">28°</div>
       </div>
       <div class="unit-switch">
-        <span>Fahrenheit</span>
-        <span class="active">Celsius</span>
+        <span id="unitF">Fahrenheit</span>
+        <span id="unitC" class="active">Celsius</span>
       </div>
     </div>
 
-    <!-- Sunrise, Sunset & AQI -->
     <div class="meta-info">
       <div>Matahari terbit: <strong>05:32</strong></div>
       <div>Matahari terbenam: <strong>17:46</strong></div>
@@ -298,124 +325,226 @@
       </div>
     </div>
 
-    <!-- Pill Tabs -->
-    <div class="tab-pills">
-      <button class="tab-btn active">Temperature</button>
-      <button class="tab-btn">Precipitation</button>
-      <button class="tab-btn">Wind</button>
+    <div class="tab-pills-wrap">
+      <div class="tab-pills">
+        <button class="tab-btn active" data-type="temp">Temperature</button>
+        <button class="tab-btn" data-type="precip">Precipitation</button>
+        <button class="tab-btn" data-type="wind">Wind</button>
+      </div>
     </div>
 
-    <!-- Graphic Curve Canvas -->
     <div class="chart-container">
       <canvas id="weatherChart"></canvas>
     </div>
 
-    <!-- 4-Day Forecast Cards -->
-    <div class="forecast-row">
-      <div class="forecast-card active">
-        <span class="forecast-day">Rabu</span>
-        <svg class="forecast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
-        </svg>
-        <div class="forecast-temp">
-          <span>37°</span>
-          <span class="min">28°</span>
+    <div class="forecast-wrap">
+      <div class="forecast-row" id="forecastRow">
+        <div class="forecast-card active" data-day="0">
+          <span class="forecast-day">Rabu</span>
+          <svg class="forecast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+          </svg>
+          <div class="forecast-temp">
+            <span class="max-val">37°</span>
+            <span class="min-val min">28°</span>
+          </div>
         </div>
-      </div>
 
-      <div class="forecast-card">
-        <span class="forecast-day">Kamis</span>
-        <svg class="forecast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
-        </svg>
-        <div class="forecast-temp">
-          <span>37°</span>
-          <span class="min">28°</span>
+        <div class="forecast-card" data-day="1">
+          <span class="forecast-day">Kamis</span>
+          <svg class="forecast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+          </svg>
+          <div class="forecast-temp">
+            <span class="max-val">37°</span>
+            <span class="min-val min">28°</span>
+          </div>
         </div>
-      </div>
 
-      <div class="forecast-card">
-        <span class="forecast-day">Jumat</span>
-        <svg class="forecast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/>
-          <path d="M8 19v2M12 19v2M16 19v2"/>
-        </svg>
-        <div class="forecast-temp">
-          <span>36°</span>
-          <span class="min">27°</span>
+        <div class="forecast-card" data-day="2">
+          <span class="forecast-day">Jumat</span>
+          <svg class="forecast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/>
+            <path d="M8 19v2M12 19v2M16 19v2"/>
+          </svg>
+          <div class="forecast-temp">
+            <span class="max-val">36°</span>
+            <span class="min-val min">27°</span>
+          </div>
         </div>
-      </div>
 
-      <div class="forecast-card">
-        <span class="forecast-day">Sabtu</span>
-        <svg class="forecast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/>
-          <path d="M8 19v2M12 19v2M16 19v2"/>
-        </svg>
-        <div class="forecast-temp">
-          <span>36°</span>
-          <span class="min">27°</span>
+        <div class="forecast-card" data-day="3">
+          <span class="forecast-day">Sabtu</span>
+          <svg class="forecast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/>
+            <path d="M8 19v2M12 19v2M16 19v2"/>
+          </svg>
+          <div class="forecast-temp">
+            <span class="max-val">36°</span>
+            <span class="min-val min">27°</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Footer SERP -->
     <div class="serp-footer">
-      <span>Powered by <a href="#">OpenWeatherMap</a></span>
+      <span>Powered by <a href="https://open-meteo.com" target="_blank">Open-Meteo</a></span>
       <a href="#">Masukan</a>
     </div>
   </div>
 
   <script>
-    // Canvas Custom Spline/Area Chart Drawing
-    function drawWeatherChart() {
+    // System State Management
+    let currentUnit = 'C'; // 'C' atau 'F'
+    let currentTab = 'temp'; // 'temp', 'precip', 'wind'
+    let selectedDay = 0;
+
+    // Data Mock/API Hourly untuk tiap Tab & Hari
+    const weatherDataset = {
+      0: { // Rabu
+        temp: [28, 34, 32, 29, 31],
+        precip: [10, 20, 60, 40, 15], // %
+        wind: [8, 12, 15, 9, 7]      // km/h
+      },
+      1: { // Kamis
+        temp: [27, 35, 31, 28, 30],
+        precip: [5, 10, 25, 15, 5],
+        wind: [6, 10, 11, 8, 6]
+      },
+      2: { // Jumat
+        temp: [26, 33, 29, 27, 28],
+        precip: [40, 75, 80, 50, 20],
+        wind: [12, 18, 22, 14, 10]
+      },
+      3: { // Sabtu
+        temp: [27, 34, 30, 27, 29],
+        precip: [20, 30, 45, 30, 10],
+        wind: [9, 13, 16, 11, 8]
+      }
+    };
+
+    const hours = ["07:00", "13:00", "19:00", "01:00", "07:00"];
+
+    function toFahrenheit(c) {
+      return Math.round((c * 9/5) + 32);
+    }
+
+    // Interactive Switch Unit C / F
+    document.getElementById('unitC').onclick = () => {
+      if (currentUnit === 'C') return;
+      currentUnit = 'C';
+      document.getElementById('unitC').classList.add('active');
+      document.getElementById('unitF').classList.remove('active');
+      updateUI();
+    };
+
+    document.getElementById('unitF').onclick = () => {
+      if (currentUnit === 'F') return;
+      currentUnit = 'F';
+      document.getElementById('unitF').classList.add('active');
+      document.getElementById('unitC').classList.remove('active');
+      updateUI();
+    };
+
+    // Interactive Pill Tab Click
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentTab = btn.dataset.type;
+        drawChart();
+      };
+    });
+
+    // Interactive Day Selection
+    document.querySelectorAll('.forecast-card').forEach(card => {
+      card.onclick = () => {
+        document.querySelectorAll('.forecast-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        selectedDay = parseInt(card.dataset.day);
+        updateUI();
+      };
+    });
+
+    function updateUI() {
+      // Update Suhu Utama
+      const baseTempC = 28;
+      const displayTemp = currentUnit === 'C' ? baseTempC : toFahrenheit(baseTempC);
+      document.getElementById('currentTemp').innerText = `${displayTemp}°`;
+
+      // Update Angka di Forecast Card
+      document.querySelectorAll('.forecast-card').forEach(card => {
+        const maxSpan = card.querySelector('.max-val');
+        const minSpan = card.querySelector('.min-val');
+        
+        const rawMax = 37;
+        const rawMin = 28;
+
+        maxSpan.innerText = `${currentUnit === 'C' ? rawMax : toFahrenheit(rawMax)}°`;
+        minSpan.innerText = `${currentUnit === 'C' ? rawMin : toFahrenheit(rawMin)}°`;
+      });
+
+      drawChart();
+    }
+
+    // Dynamic Chart Renderer
+    function drawChart() {
       const canvas = document.getElementById('weatherChart');
+      if (!canvas) return;
       const ctx = canvas.getContext('2d');
       
-      // Handle High-DPI screens
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
       ctx.scale(dpr, dpr);
 
-      const hours = ["07:00", "13:00", "19:00", "01:00", "07:00"];
-      const temps = [28, 34, 32, 29, 31];
+      let rawValues = [...weatherDataset[selectedDay][currentTab]];
+      let suffix = '';
 
-      const paddingX = 30;
+      if (currentTab === 'temp') {
+        if (currentUnit === 'F') {
+          rawValues = rawValues.map(v => toFahrenheit(v));
+        }
+        suffix = '°';
+      } else if (currentTab === 'precip') {
+        suffix = '%';
+      } else if (currentTab === 'wind') {
+        suffix = ' km/h';
+      }
+
+      const paddingX = 26;
       const width = rect.width - paddingX * 2;
-      const height = rect.height - 35; // Reserve space for bottom time labels
+      const height = rect.height - 38; // space bottom for timeline
 
-      const minTemp = 25;
-      const maxTemp = 36;
+      const minVal = Math.min(...rawValues) - 2;
+      const maxVal = Math.max(...rawValues) + 2;
 
-      const points = temps.map((t, index) => {
-        const x = paddingX + (index / (temps.length - 1)) * width;
-        const y = height - ((t - minTemp) / (maxTemp - minTemp)) * (height - 20) - 10;
-        return { x, y, temp: t, time: hours[index] };
+      const points = rawValues.map((val, index) => {
+        const x = paddingX + (index / (rawValues.length - 1)) * width;
+        const y = height - ((val - minVal) / (maxVal - minVal || 1)) * (height - 30) - 10;
+        return { x, y, val, time: hours[index] };
       });
 
-      // Clear Canvas
       ctx.clearRect(0, 0, rect.width, rect.height);
 
-      // Draw Filled Area Below Curve
+      // Fill Area Under Curve
       ctx.beginPath();
       ctx.moveTo(points[0].x, points[0].y);
-
       for (let i = 0; i < points.length - 1; i++) {
         const xc = (points[i].x + points[i + 1].x) / 2;
         const yc = (points[i].y + points[i + 1].y) / 2;
         ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
       }
       ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
-      ctx.lineTo(points[points.length - 1].x, height + 5);
-      ctx.lineTo(points[0].x, height + 5);
+      ctx.lineTo(points[points.length - 1].x, height + 4);
+      ctx.lineTo(points[0].x, height + 4);
       ctx.closePath();
 
       ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--chart-fill').trim();
       ctx.fill();
 
-      // Draw Curve Line
+      // Draw Curve Stroke
       ctx.beginPath();
       ctx.moveTo(points[0].x, points[0].y);
       for (let i = 0; i < points.length - 1; i++) {
@@ -428,24 +557,26 @@
       ctx.lineWidth = 2.5;
       ctx.stroke();
 
-      // Draw Temperature Labels & Time Text
-      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
-      ctx.font = '500 12px Google Sans Flex, sans-serif';
+      // Render Labels
       ctx.textAlign = 'center';
-
+      
       points.forEach(p => {
-        // Temp text above point
-        ctx.fillText(`${p.temp}`, p.x, p.y - 8);
-
-        // Time text at the bottom
-        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim();
-        ctx.fillText(p.time, p.x, height + 24);
+        // Value Text
         ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
+        ctx.font = '600 12px Google Sans Flex, sans-serif';
+        ctx.fillText(`${p.val}${suffix}`, p.x, p.y - 8);
+
+        // Time Text
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim();
+        ctx.font = '500 12px Google Sans Flex, sans-serif';
+        ctx.fillText(p.time, p.x, height + 22);
       });
     }
 
-    window.addEventListener('load', drawWeatherChart);
-    window.addEventListener('resize', drawWeatherChart);
+    window.addEventListener('load', () => {
+      updateUI();
+    });
+    window.addEventListener('resize', drawChart);
   </script>
 </body>
 </html>
