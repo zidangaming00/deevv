@@ -218,26 +218,48 @@
 
     .forecast-row {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       width: max-content;
       min-width: 100%;
     }
 
-    /* FIX PADDING CARD SUPAYA TIDAK MENDEM */
     .forecast-card {
       flex: 1;
-      min-width: 76px;
+      min-width: 60px;
       background: var(--card-bg-alt);
-      border-radius: 16px;
-      padding: 12px 8px;
+      border-radius: 12px;
+      padding: 8px 6px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
+      gap: 3px;
       text-align: center;
       cursor: pointer;
       border: 1px solid var(--line-alt);
       transition: all 0.15s ease;
+    }
+
+    .forecast-day {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .forecast-icon {
+      width: 22px;
+      height: 22px;
+      color: var(--brand);
+      margin: 1px 0;
+    }
+
+    .forecast-temp {
+      font-size: 12px;
+      color: var(--text);
+      display: flex;
+      gap: 3px;
+      font-weight: 600;
+      line-height: 1.2;
     }
 
     .forecast-card:hover {
@@ -249,28 +271,6 @@
       border-color: var(--brand);
     }
 
-    .forecast-day {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1.2;
-    }
-
-    .forecast-icon {
-      width: 28px;
-      height: 28px;
-      color: var(--brand);
-      margin: 2px 0;
-    }
-
-    .forecast-temp {
-      font-size: 14px;
-      color: var(--text);
-      display: flex;
-      gap: 4px;
-      font-weight: 600;
-      line-height: 1.2;
-    }
 
     .forecast-temp .min {
       color: var(--text-muted);
@@ -597,16 +597,32 @@
       ctx.lineJoin = 'round';
       ctx.stroke();
 
+      // Label angka + jam (hanya titik genap)
       const last = points.length - 1;
       points.forEach((p, idx) => {
         if (!p.show) return;
 
-        // Ujung kiri rata kiri, ujung kanan rata kanan, sisanya tengah
-        ctx.textAlign = idx === 0 ? 'left' : (idx === last ? 'right' : 'center');
+        const align = idx === 0 ? 'left' : (idx === last ? 'right' : 'center');
+        ctx.textAlign = align;
+
+        const label = `${p.val}${suffix}`;
+        ctx.font = '600 13px Google Sans Flex, sans-serif';
+        const w = ctx.measureText(label).width;
+
+        // Posisi Y label: di ujung, naikkan sesuai kemiringan garis di bawah teks
+        let labelY = p.y - labelGap;
+        if (idx === 0) {
+          const n = points[1];
+          const slope = (n.y - p.y) / (n.x - p.x);   // negatif = naik ke kanan
+          labelY = Math.min(p.y, p.y + slope * w) - labelGap;
+        } else if (idx === last) {
+          const pr = points[last - 1];
+          const slope = (p.y - pr.y) / (p.x - pr.x);  // positif = turun ke kanan
+          labelY = Math.min(p.y, p.y - slope * w) - labelGap;
+        }
 
         ctx.fillStyle = css.getPropertyValue('--text').trim();
-        ctx.font = '600 13px Google Sans Flex, sans-serif';
-        ctx.fillText(`${p.val}${suffix}`, p.x, p.y - labelGap);
+        ctx.fillText(label, p.x, labelY);
 
         ctx.fillStyle = css.getPropertyValue('--text-muted').trim();
         ctx.font = '500 13px Google Sans Flex, sans-serif';
