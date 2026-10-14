@@ -132,7 +132,10 @@ export async function onRequestGet(context) {
 
   const bodyHtml = `  
       <div class="app" id="main-bx">  
-        <div class="page-header">  
+        <div class="page-header">
+<button type="button" class="menu-btn" id="menuBtn" aria-label="${getText("menu")}" aria-expanded="false" aria-controls="menuOverlay">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
+          </button>  
           <div class="page-header__inner">  
             
             <div class="logo-slot">
@@ -144,12 +147,6 @@ export async function onRequestGet(context) {
       </svg>
     </button>
   </div>
-  <div class="app-dropdown-menu" id="appDropdownMenu">
-    <a href="/" class="app-dropdown-item">🏠 Beranda</a>
-    <a href="/settings" class="app-dropdown-item">⚙️ Pengaturan</a>
-    <a href="https://discord.com" target="_blank" class="app-dropdown-item">💬 Komunitas / Discord</a>
-  </div>
-</div>
   
             <div class="header">  
               <div class="search-box">  
