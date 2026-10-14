@@ -727,6 +727,7 @@ const Widgets = {
         // Gabungkan deteksi jam dan tanggal ke satu variabel
         const isTimeOrDate = /jam|waktu|time|clock|tanggal|date/.test(query) && query.length < 20 && query.split(" ").length < 5;
         const isCalc = (/kalkulator|calculator/.test(query) && query.split(" ").length <= 2) || (/calculator\s+online|kalkulator\s+online/.test(query) && query.split(" ").length <= 3);
+        const isWeather = /cuaca|weather|prakiraan cuaca/i.test(query) && query.length < 30;
         const isTranslate = false;
         const d = new Date();
 
@@ -746,7 +747,7 @@ const Widgets = {
                 </div>
             `);
         }
-else if (isCalc) {
+        else if (isCalc) {
     Widgets.placeTopWidget(mainResult, `
         <div class="calculator result-card result-card--flat">
             <div class="calc-display-wrapper">
@@ -832,6 +833,37 @@ else if (isCalc) {
         </div>`);
     Widgets.initCalculator();
 }
+    else if (isWeather) {
+        Widgets.placeTopWidget(mainResult, `
+            <div class="result-card result-card--flat serp-weather-card" style="padding: 16px;">
+                <div class="serp-header">
+                    <h2 id="cityName" style="font-size: 20px; font-weight: 600; color: var(--color-title);">Mendeteksi lokasi...</h2>
+                    <div class="serp-subhead" id="subHead" style="font-size: 13px; color: var(--color-text-muted); margin: 4px 0 12px 0;">Memuat data cuaca...</div>
+                </div>
+                <div class="temp-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                    <div class="temp-main" style="display: flex; align-items: center; gap: 8px;">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color: var(--color-title);"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+                        <div class="temp-number" id="currentTemp" style="font-size: 24px; font-weight: 600;">--°</div>
+                    </div>
+                    <div class="unit-switch" style="font-size: 13px; color: var(--color-text-muted); display: flex; gap: 6px; cursor: pointer;">
+                        <span id="unitF">F</span> | <span id="unitC" style="font-weight: 700; color: var(--color-text-dark);">C</span>
+                    </div>
+                </div>
+                <div class="meta-info" style="font-size: 13px; display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; color: var(--color-text);">
+                    <div>Matahari terbit: <strong id="sunriseText">--:--</strong></div>
+                    <div>Matahari terbenam: <strong id="sunsetText">--:--</strong></div>
+                </div>
+                <div class="chart-container" style="width: 100%; height: 140px; position: relative; margin-bottom: 12px;">
+                    <canvas id="weatherChart" style="width: 100%; height: 100%; display: block;"></canvas>
+                </div>
+                <div class="forecast-wrap" style="overflow-x: auto; scrollbar-width: none;">
+                    <div class="forecast-row" id="forecastRow" style="display: flex; gap: 8px; width: max-content;"></div>
+                </div>
+            </div>
+        `);
+        Widgets.initWeatherWidget();
+    }
+
 
         else if (isTranslate) {
             Widgets.placeTopWidget(mainResult, `
@@ -1040,6 +1072,301 @@ else if (isCalc) {
             console.log("Gagal memuat widget video:", err);
         }
     },
+
+    initWeatherWidget: () => {
+        let currentUnit = 'C';
+        let currentTab = 'temp';
+        let selectedDayIndex = 0;
+        let apiDataStore = null;
+
+        const daysName = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+
+        function toFahrenheit(c) {
+            return Math.round((c * 9/5) + 32);
+        }
+
+        function formatTime(isoString) {
+            if(!isoString) return "--:--";
+            const date = new Date(isoString);
+            return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
+        }
+
+        const unitC = document.getElementById('unitC');
+        const unitF = document.getElementById('unitF');
+        if (unitC) {
+            unitC.onclick = () => {
+                if (currentUnit === 'C') return;
+                currentUnit = 'C';
+                unitC.classList.add('active');
+                if(unitF) unitF.classList.remove('active');
+                renderRealData();
+            };
+        }
+        if (unitF) {
+            unitF.onclick = () => {
+                if (currentUnit === 'F') return;
+                currentUnit = 'F';
+                unitF.classList.add('active');
+                if(unitC) unitC.classList.remove('active');
+                renderRealData();
+            };
+        }
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentTab = btn.dataset.type;
+                drawChart();
+            };
+        });
+
+        async function initWeather() {
+            if (!("geolocation" in navigator)) {
+                const cn = document.getElementById("cityName");
+                if(cn) cn.innerText = "Tangerang Selatan, Banten, ID";
+                fetchWeatherForCoords(-6.2886, 106.7179);
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+
+                try {
+                    const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                    const geoData = await geoRes.json();
+                    const addr = geoData.address || {};
+                    const city = addr.city || addr.town || addr.suburb || addr.city_district || addr.county || "Lokasi Anda";
+                    const state = addr.state ? `, ${addr.state}` : "";
+                    const cn = document.getElementById("cityName");
+                    if(cn) cn.innerText = `${city}${state}, ID`;
+                } catch {
+                    const cn = document.getElementById("cityName");
+                    if(cn) cn.innerText = "Tangerang Selatan, Banten, ID";
+                }
+
+                fetchWeatherForCoords(lat, lon);
+            }, () => {
+                const cn = document.getElementById("cityName");
+                if(cn) cn.innerText = "Tangerang Selatan, Banten, ID";
+                fetchWeatherForCoords(-6.2886, 106.7179);
+            });
+        }
+
+        async function fetchWeatherForCoords(lat, lon) {
+            try {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,precipitation_probability,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto`;
+                const res = await fetch(url);
+                apiDataStore = await res.json();
+                renderRealData();
+            } catch (err) {
+                const sh = document.getElementById("subHead");
+                if(sh) sh.innerText = "Gagal memuat data dari API";
+            }
+        }
+
+        function renderRealData() {
+            if (!apiDataStore) return;
+
+            const current = apiDataStore.current_weather;
+            const daily = apiDataStore.daily;
+            const hourly = apiDataStore.hourly;
+
+            const today = new Date();
+            const dateStr = `${daysName[today.getDay()]}, ${today.getDate()} Oktober`;
+            const humidity = hourly.relativehumidity_2m[0] || 74;
+            const sh = document.getElementById("subHead");
+            if(sh) sh.innerText = `${dateStr} · Berawan · Kelembapan: ${humidity}%`;
+
+            const curTemp = Math.round(current.temperature);
+            const ct = document.getElementById("currentTemp");
+            if(ct) ct.innerText = `${currentUnit === 'C' ? curTemp : toFahrenheit(curTemp)}°`;
+
+            const sr = document.getElementById("sunriseText");
+            const ss = document.getElementById("sunsetText");
+            if(sr) sr.innerText = formatTime(daily.sunrise[0]);
+            if(ss) ss.innerText = formatTime(daily.sunset[0]);
+
+            const forecastRow = document.getElementById("forecastRow");
+            if (!forecastRow) return;
+            forecastRow.innerHTML = "";
+
+            const totalDays = Math.min(7, daily.time.length);
+            for (let i = 0; i < totalDays; i++) {
+                const dateObj = new Date(daily.time[i]);
+                const dayName = i === 0 ? "Hari ini" : daysName[dateObj.getDay()];
+
+                const maxC = Math.round(daily.temperature_2m_max[i]);
+                const minC = Math.round(daily.temperature_2m_min[i]);
+
+                const maxVal = currentUnit === 'C' ? maxC : toFahrenheit(maxC);
+                const minVal = currentUnit === 'C' ? minC : toFahrenheit(minC);
+
+                const card = document.createElement("div");
+                card.className = `forecast-card ${i === selectedDayIndex ? 'active' : ''}`;
+                card.innerHTML = `
+                    <span class="forecast-day">${dayName}</span>
+                    <svg class="forecast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+                    </svg>
+                    <div class="forecast-temp">
+                        <span>${maxVal}°</span>
+                        <span class="min">${minVal}°</span>
+                    </div>
+                `;
+
+                card.onclick = () => {
+                    selectedDayIndex = i;
+                    renderRealData();
+                };
+
+                forecastRow.appendChild(card);
+            }
+
+            drawChart();
+        }
+
+        function drawChart() {
+            if (!apiDataStore) return;
+            const canvas = document.getElementById('weatherChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+
+            const startIndex = selectedDayIndex * 24 + 7;
+            const step = 3;
+            const count = 9;
+            const hourlyTimes = ["07:00","10:00","13:00","16:00","19:00","22:00","01:00","04:00","07:00"];
+            const h = apiDataStore.hourly;
+
+            const series = (arr, fallback) =>
+                Array.from({ length: count }, (_, i) => arr[startIndex + i * step] ?? fallback);
+
+            let rawValues = [];
+            let suffix = '';
+            let minSpan = 1;
+            let fixedRange = null;
+
+            if (currentTab === 'temp') {
+                const temps = series(h.temperature_2m, 28).map(v => Math.round(v));
+                rawValues = currentUnit === 'C' ? temps : temps.map(toFahrenheit);
+                suffix = '°';
+                minSpan = currentUnit === 'C' ? 14 : 25;
+            } else if (currentTab === 'precip') {
+                rawValues = series(h.precipitation_probability, 0).map(Math.round);
+                suffix = '%';
+                fixedRange = [0, 100];
+            } else if (currentTab === 'wind') {
+                rawValues = series(h.windspeed_10m, 0).map(Math.round);
+                suffix = ' km/h';
+                minSpan = 20;
+            }
+
+            const width = rect.width;
+            const padTop = 32;
+            const padBottom = 28;
+            const padX = 0;
+            const labelGap = 8;
+            const availableHeight = rect.height - padTop - padBottom;
+
+            let minVal = Math.min(...rawValues);
+            let maxVal = Math.max(...rawValues);
+
+            if (fixedRange) {
+                [minVal, maxVal] = fixedRange;
+            } else if (maxVal - minVal < minSpan) {
+                const mid = (maxVal + minVal) / 2;
+                minVal = mid - minSpan / 2;
+                maxVal = mid + minSpan / 2;
+            }
+            const range = (maxVal - minVal) || 1;
+
+            const points = rawValues.map((val, index) => {
+                const x = padX + (index / (rawValues.length - 1)) * (width - padX * 2);
+                const y = padTop + (1 - (val - minVal) / range) * availableHeight;
+                return { x, y, val, time: hourlyTimes[index], show: index % 2 === 0 };
+            });
+
+            function tracePath() {
+                ctx.moveTo(points[0].x, points[0].y);
+                for (let i = 0; i < points.length - 1; i++) {
+                    const p0 = points[i - 1] || points[i];
+                    const p1 = points[i];
+                    const p2 = points[i + 1];
+                    const p3 = points[i + 2] || p2;
+
+                    const lo = Math.min(p1.y, p2.y);
+                    const hi = Math.max(p1.y, p2.y);
+                    const cp1y = Math.min(hi, Math.max(lo, p1.y + (p2.y - p0.y) / 6));
+                    const cp2y = Math.min(hi, Math.max(lo, p2.y - (p3.y - p1.y) / 6));
+
+                    ctx.bezierCurveTo(
+                        p1.x + (p2.x - p0.x) / 6, cp1y,
+                        p2.x - (p3.x - p1.x) / 6, cp2y,
+                        p2.x, p2.y
+                    );
+                }
+            }
+
+            const css = getComputedStyle(document.documentElement);
+            const baseY = rect.height - padBottom + 6;
+
+            ctx.clearRect(0, 0, rect.width, rect.height);
+
+            ctx.beginPath();
+            tracePath();
+            ctx.lineTo(points[points.length - 1].x, baseY);
+            ctx.lineTo(points[0].x, baseY);
+            ctx.closePath();
+            ctx.fillStyle = css.getPropertyValue('--chart-fill').trim() || 'rgba(254, 224, 130, 0.45)';
+            ctx.fill();
+
+            ctx.beginPath();
+            tracePath();
+            ctx.strokeStyle = css.getPropertyValue('--chart-line').trim() || '#f9ab00';
+            ctx.lineWidth = 2.5;
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+
+            const last = points.length - 1;
+            points.forEach((p, idx) => {
+                if (!p.show) return;
+
+                const align = idx === 0 ? 'left' : (idx === last ? 'right' : 'center');
+                ctx.textAlign = align;
+
+                const label = `${p.val}${suffix}`;
+                ctx.font = '600 13px sans-serif';
+                const w = ctx.measureText(label).width;
+
+                let labelY = p.y - labelGap;
+                if (idx === 0) {
+                    const n = points[1];
+                    const slope = (n.y - p.y) / (n.x - p.x);
+                    labelY = Math.min(p.y, p.y + slope * w) - labelGap;
+                } else if (idx === last) {
+                    const pr = points[last - 1];
+                    const slope = (p.y - pr.y) / (p.x - pr.x);
+                    labelY = Math.min(p.y, p.y - slope * w) - labelGap;
+                }
+
+                ctx.fillStyle = css.getPropertyValue('--text').trim() || '#222';
+                ctx.fillText(label, p.x, labelY);
+
+                ctx.fillStyle = css.getPropertyValue('--text-muted').trim() || '#70757a';
+                ctx.font = '500 13px sans-serif';
+                ctx.fillText(p.time, p.x, rect.height - 6);
+            });
+        }
+
+        initWeather();
+    };
 
 initCalculator: () => {
     const calculatorBox = document.querySelector(".calculator");
