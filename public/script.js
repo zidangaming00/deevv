@@ -56,7 +56,7 @@ const LANG_DICT = {
         tab: ["All", "Images", "Videos", "News", "Maps"],
         aiHeader: "AI Overview (Beta)", aiMore: "Show more", aiLess: "Show less",
         aiThinking: "Thinking", justNow: "Just now",
-        menu: "Menu", close: "Close", menuHome: "Home", menuTheme: "Display theme", menuSettings: "Search settings", menuAbout: "About", menuPrivacy: "Privacy policy",
+        menu: "Menu", close: "Close", menuHome: "Home", menuTheme: "Display theme", menuSettings: "Preferences", menuAbout: "About", menuPrivacy: "Privacy policy",
         themeSystem: "System", themeLight: "Light", themeDark: "Dark",
         // --- tambahan: sebelumnya hardcode ---
         titleSuffix: "Search", back: "Back", search: "Search", clear: "Clear",
@@ -66,7 +66,7 @@ const LANG_DICT = {
         newsFallback: "News",
         calcHistory: "History",
         trnsFrom: "Enter text", trnsTo: "Translation", trnsLoading: "Translating...", trnsError: "Translation error",
-        footerHome: "Home", footerSettings: "Settings", footerPrivacy: "Privacy",
+        footerHome: "Home", footerSettings: "Preferences", footerPrivacy: "Privacy",
         footerTagline: "A clean and fast search experience.",
         darkThemeLabel: "Dark theme: {state}", on: "On", off: "Off", feedback: "Feedback",
         errTitle: "Error 503", errBody: "That’s an error.", errMaint: "Site under maintenance."
@@ -80,7 +80,7 @@ const LANG_DICT = {
         tab: ["Semua", "Gambar", "Video", "Berita", "Peta"],
         aiHeader: "Ringkasan AI (Beta)", aiMore: "Tampilkan lainnya", aiLess: "Tampilkan lebih sedikit",
         aiThinking: "Berpikir", justNow: "Baru saja",
-        menu: "Menu", close: "Tutup", menuHome: "Beranda", menuTheme: "Tema tampilan", menuSettings: "Pengaturan penelusuran", menuAbout: "Tentang", menuPrivacy: "Kebijakan privasi",
+        menu: "Menu", close: "Tutup", menuHome: "Beranda", menuTheme: "Tema tampilan", menuSettings: "Preferensi", menuAbout: "Tentang", menuPrivacy: "Kebijakan privasi",
         themeSystem: "Sistem", themeLight: "Terang", themeDark: "Gelap",
         // --- tambahan: sebelumnya hardcode ---
         titleSuffix: "Penelusuran", back: "Kembali", search: "Cari", clear: "Hapus",
@@ -90,7 +90,7 @@ const LANG_DICT = {
         newsFallback: "Berita",
         calcHistory: "Riwayat",
         trnsFrom: "Masukkan teks", trnsTo: "Terjemahan", trnsLoading: "Menerjemahkan...", trnsError: "Gagal menerjemahkan",
-        footerHome: "Beranda", footerSettings: "Pengaturan", footerPrivacy: "Privasi",
+        footerHome: "Beranda", footerSettings: "Preferensi", footerPrivacy: "Privasi",
         footerTagline: "Pengalaman pencarian yang bersih dan cepat.",
         darkThemeLabel: "Tema gelap: {state}", on: "Aktif", off: "Nonaktif", feedback: "Masukan",
         errTitle: "Error 503", errBody: "Terjadi kesalahan.", errMaint: "Situs sedang dalam perbaikan."
