@@ -130,46 +130,36 @@ export async function onRequestGet(context) {
     ? "min-width:var(--page-max-width);max-width:var(--page-max-width)"
     : "";
 
-  const bodyHtml = `  
-      <div class="app" id="main-bx">  
-        <div class="page-header">
-<button type="button" class="menu-btn" id="menuBtn" aria-label="${getText("menu")}" aria-expanded="false" aria-controls="menuOverlay">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
-          </button>  
-          <div class="page-header__inner">  
-            
-            <div class="logo-slot">
-  <div class="logo-area-wrapper">
-    <a title="Kembali" href="/"><img alt="Logo" src="/images/logo.png"></a>
-    <button type="button" class="app-menu-btn" id="appMenuBtn" title="Menu Lainnya">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-      </svg>
+const bodyHtml = `
+<div class="app" id="main-bx">
+  <div class="page-header">
+    <button type="button" class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false" aria-controls="menuOverlay">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
     </button>
+    <div class="page-header__inner">
+      <div class="logo-slot">
+        <a title="${isIdLang ? "Kembali" : "Back"}" href="/"><img alt="Logo" src="/images/logo.png"></a>
+      </div>
+      <div class="header">
+        <div class="search-box">
+          <div class="search-field">
+            <input type="search" id="sear_21829_input" value="${escapeHTML(q)}" name="q" class="search-input" autocomplete="off" placeholder="${getText(isIdLang, "placeholder")}">
+            <div role="button" class="search-toggle inpbtun" id="xclarGh" title="${isIdLang ? "Cari" : "Search"}"></div>
+            <div role="button" class="cleartext inpbtun" style="display:${q ? "block" : "none"}" id="Chasprn" title="${isIdLang ? "Hapus" : "Clear"}"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="search-menu">
+      ${tabs}
+    </div>
   </div>
- </div>
-
-            <div class="header">  
-              <div class="search-box">  
-                <div class="search-field">  
-                  <input type="search" id="sear_21829_input" value="${escapeHTML(q)}" name="q" class="search-input" autocomplete="off" placeholder="${getText(isIdLang, "placeholder")}">  
-                  <div role="button" class="search-toggle inpbtun" id="xclarGh" title="Cari"></div>  
-                  <div role="button" class="cleartext inpbtun" style="display:none" id="Chasprn" title="Hapus"></div>  
-                </div>  
-              </div>  
-            </div>  
-          </div>  
-          <div class="search-menu">  
-            ${tabs}
-          </div>  
-        </div>  
-        <div class="results-section">  
-          <div class="result-wrapper">
-            <div class="main-result" style="${mainResultStyle}">${mainResultInner}</div>
-          </div>  
-        </div>  
-      </div>`;
-
+  <div class="results-section">
+    <div class="result-wrapper">
+      <div class="main-result" style="${mainResultStyle}">${mainResultInner}</div>
+    </div>
+  </div>
+</div>`;
   // ssr data
 const cleanItems = (ssrData?.items || []).map(item =>
   Object.fromEntries(
