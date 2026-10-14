@@ -837,33 +837,59 @@ const Widgets = {
         Widgets.placeTopWidget(mainResult, `
             <div class="result-card result-card--flat serp-weather-card" style="padding: 16px;">
                 <div class="serp-header">
-                    <h2 id="cityName" style="font-size: 20px; font-weight: 600; color: var(--color-title);">Mendeteksi lokasi...</h2>
-                    <div class="serp-subhead" id="subHead" style="font-size: 13px; color: var(--color-text-muted); margin: 4px 0 12px 0;">Memuat data cuaca...</div>
+                    <h2 id="cityName">Mendeteksi lokasi...</h2>
+                    <div class="serp-subhead" id="subHead">Memuat data cuaca...</div>
                 </div>
-                <div class="temp-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                    <div class="temp-main" style="display: flex; align-items: center; gap: 8px;">
-                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color: var(--color-title);"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
-                        <div class="temp-number" id="currentTemp" style="font-size: 24px; font-weight: 600;">--°</div>
+
+                <div class="temp-row">
+                    <div class="temp-main">
+                        <svg class="weather-icon-large" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+                        </svg>
+                        <div class="temp-number" id="currentTemp">--°</div>
                     </div>
-                    <div class="unit-switch" style="font-size: 13px; color: var(--color-text-muted); display: flex; gap: 6px; cursor: pointer;">
-                        <span id="unitF">F</span> | <span id="unitC" style="font-weight: 700; color: var(--color-text-dark);">C</span>
+                    <div class="unit-switch">
+                        <span id="unitF">Fahrenheit</span>
+                        <span id="unitC" class="active">Celsius</span>
                     </div>
                 </div>
-                <div class="meta-info" style="font-size: 13px; display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; color: var(--color-text);">
+
+                <div class="meta-info">
                     <div>Matahari terbit: <strong id="sunriseText">--:--</strong></div>
                     <div>Matahari terbenam: <strong id="sunsetText">--:--</strong></div>
+                    <div class="aqi-row">
+                        <span>AQI</span>
+                        <div class="aqi-badge">
+                            <span class="aqi-dot"></span>
+                            <span id="aqiText">Baik</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="chart-container" style="width: 100%; height: 140px; position: relative; margin-bottom: 12px;">
-                    <canvas id="weatherChart" style="width: 100%; height: 100%; display: block;"></canvas>
+
+                <div class="tab-pills-wrap">
+                    <div class="tab-pills">
+                        <button class="tab-btn active" data-type="temp">Temperature</button>
+                        <button class="tab-btn" data-type="precip">Precipitation</button>
+                        <button class="tab-btn" data-type="wind">Wind</button>
+                    </div>
                 </div>
-                <div class="forecast-wrap" style="overflow-x: auto; scrollbar-width: none;">
-                    <div class="forecast-row" id="forecastRow" style="display: flex; gap: 8px; width: max-content;"></div>
+
+                <div class="chart-container">
+                    <canvas id="weatherChart"></canvas>
+                </div>
+
+                <div class="forecast-wrap">
+                    <div class="forecast-row" id="forecastRow"></div>
+                </div>
+
+                <div class="serp-footer">
+                    <span>Powered by <a href="https://open-meteo.com" target="_blank">Open-Meteo</a></span>
+                    <a href="#">Masukan</a>
                 </div>
             </div>
         `);
         Widgets.initWeatherWidget();
     }
-
 
         else if (isTranslate) {
             Widgets.placeTopWidget(mainResult, `
