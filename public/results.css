@@ -903,7 +903,7 @@ body.dark .forecast-card.active { background: #1f2d4a; border-color: #8ab4f8; }
    ========================================================================== */
 
 .calculator {
-
+  padding: 16px;
 }
 
 /* Display Box */
