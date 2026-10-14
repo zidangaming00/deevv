@@ -479,7 +479,7 @@ footer {
 
 @media (min-width: 780px) {
   footer {
-    max-width: calc(100vw - (144px * 2));
+    max-width: 960px;
   }
 }
 
