@@ -147,7 +147,8 @@ export async function onRequestGet(context) {
       </svg>
     </button>
   </div>
-  
+ </div>
+
             <div class="header">  
               <div class="search-box">  
                 <div class="search-field">  
