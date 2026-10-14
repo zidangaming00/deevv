@@ -1148,35 +1148,44 @@ const Widgets = {
         });
 
         async function initWeather() {
-            if (!("geolocation" in navigator)) {
+            // 1. Ambil data default dari SSR Cloudflare (window.__SSR_DATA__) sebagai data utama awal
+            const serverLoc = window.__SSR_DATA__?.location;
+            if (serverLoc) {
                 const cn = document.getElementById("cityName");
-                if(cn) cn.innerText = "Tangerang Selatan, Banten, ID";
-                fetchWeatherForCoords(-6.2886, 106.7179);
-                return;
+                if (cn) cn.innerText = `${serverLoc.city}, ${serverLoc.country}`;
+                fetchWeatherForCoords(serverLoc.lat, serverLoc.lon);
+            } else {
+                const cn = document.getElementById("cityName");
+                if (cn) cn.innerText = "Lokasi Tidak Diketahui";
             }
+
+            // 2. Langsung minta izin GPS untuk mendapatkan lokasi presisi tinggi
+            if (!("geolocation" in navigator)) return;
 
             navigator.geolocation.getCurrentPosition(async (pos) => {
                 const lat = pos.coords.latitude;
                 const lon = pos.coords.longitude;
 
                 try {
+                    // Lakukan reverse geocoding untuk mendapatkan nama wilayah presisi dari koordinat GPS
                     const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
                     const geoData = await geoRes.json();
                     const addr = geoData.address || {};
                     const city = addr.city || addr.town || addr.suburb || addr.city_district || addr.county || "Lokasi Anda";
                     const state = addr.state ? `, ${addr.state}` : "";
                     const cn = document.getElementById("cityName");
-                    if(cn) cn.innerText = `${city}${state}, ID`;
+                    if (cn) cn.innerText = `${city}${state}, ID`;
                 } catch {
-                    const cn = document.getElementById("cityName");
-                    if(cn) cn.innerText = "Tangerang Selatan, Banten, ID";
+                    // Jika reverse geocoding gagal, biarkan nama kota dari Cloudflare atau tampilkan koordinat
                 }
 
+                // Perbarui data cuaca berdasarkan koordinat GPS yang akurat
                 fetchWeatherForCoords(lat, lon);
-            }, () => {
-                const cn = document.getElementById("cityName");
-                if(cn) cn.innerText = "Tangerang Selatan, Banten, ID";
-                fetchWeatherForCoords(-6.2886, 106.7179);
+            }, (err) => {
+                
+            }, {
+                timeout: 10000,
+                maximumAge: 60000
             });
         }
 
