@@ -57,7 +57,19 @@ const LANG_DICT = {
         aiHeader: "AI Overview (Beta)", aiMore: "Show more", aiLess: "Show less",
         aiThinking: "Thinking", justNow: "Just now",
         menu: "Menu", close: "Close", menuHome: "Home", menuTheme: "Display theme", menuSettings: "Search settings", menuAbout: "About", menuPrivacy: "Privacy policy",
-        themeSystem: "System", themeLight: "Light", themeDark: "Dark"
+        themeSystem: "System", themeLight: "Light", themeDark: "Dark",
+        // --- tambahan: sebelumnya hardcode ---
+        titleSuffix: "Search", back: "Back", search: "Search", clear: "Clear",
+        statsLine: "About {count} results ({time} seconds)",
+        summary: "Summary", apps: "Apps", install: "Install",
+        countThousand: "K", countMillion: "M",
+        newsFallback: "News",
+        calcHistory: "History",
+        trnsFrom: "Enter text", trnsTo: "Translation", trnsLoading: "Translating...", trnsError: "Translation error",
+        footerHome: "Home", footerSettings: "Settings", footerPrivacy: "Privacy",
+        footerTagline: "A clean and fast search experience.",
+        darkThemeLabel: "Dark theme: {state}", on: "On", off: "Off", feedback: "Feedback",
+        errTitle: "Error 503", errBody: "That’s an error.", errMaint: "Site under maintenance."
     },
     id: {
         news: "Hasil berita <pre>Beta</pre>", more: "Hasil penelusuran lainnya", vidTitle: "Video",
@@ -68,15 +80,33 @@ const LANG_DICT = {
         tab: ["Semua", "Gambar", "Video", "Berita", "Peta"],
         aiHeader: "Ringkasan AI (Beta)", aiMore: "Tampilkan lainnya", aiLess: "Tampilkan lebih sedikit",
         aiThinking: "Berpikir", justNow: "Baru saja",
-        menu: "Menu", close: "Tutup", menuHome: "Home", menuTheme: "Tema tampilan", menuSettings: "Pengaturan penelusuran", menuAbout: "About", menuPrivacy: "Kebijakan privasi",
-        themeSystem: "Sistem", themeLight: "Terang", themeDark: "Gelap"
+        menu: "Menu", close: "Tutup", menuHome: "Beranda", menuTheme: "Tema tampilan", menuSettings: "Pengaturan penelusuran", menuAbout: "Tentang", menuPrivacy: "Kebijakan privasi",
+        themeSystem: "Sistem", themeLight: "Terang", themeDark: "Gelap",
+        // --- tambahan: sebelumnya hardcode ---
+        titleSuffix: "Penelusuran", back: "Kembali", search: "Cari", clear: "Hapus",
+        statsLine: "Sekitar {count} hasil ({time} detik)",
+        summary: "Ringkasan", apps: "Aplikasi", install: "Instal",
+        countThousand: "rb", countMillion: "jt",
+        newsFallback: "Berita",
+        calcHistory: "Riwayat",
+        trnsFrom: "Masukkan teks", trnsTo: "Terjemahan", trnsLoading: "Menerjemahkan...", trnsError: "Gagal menerjemahkan",
+        footerHome: "Beranda", footerSettings: "Pengaturan", footerPrivacy: "Privasi",
+        footerTagline: "Pengalaman pencarian yang bersih dan cepat.",
+        darkThemeLabel: "Tema gelap: {state}", on: "Aktif", off: "Nonaktif", feedback: "Masukan",
+        errTitle: "Error 503", errBody: "Terjadi kesalahan.", errMaint: "Situs sedang dalam perbaikan."
     }
 };
 
+// Ambil teks sesuai bahasa; kalau kunci belum ada di bahasa aktif, jatuh ke Inggris (default)
 const getText = (key, index = null) => {
     const lang = isIdLang ? 'id' : 'en';
-    return index !== null ? LANG_DICT[lang][key][index] : LANG_DICT[lang][key];
+    const val = LANG_DICT[lang][key] !== undefined ? LANG_DICT[lang][key] : LANG_DICT.en[key];
+    return index !== null ? val[index] : val;
 };
+
+// Teks dengan placeholder {nama}, mis. formatText("statsLine", { count: "10", time: "0.3" })
+const formatText = (key, vars = {}) =>
+    getText(key).replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : ""));
 
 
 // ==========================================
@@ -196,7 +226,7 @@ const API = {
 
     fetchImages: (query, page = 1) => API.get("images", { q: query, page, hl: isIdLang ? "id" : "" }),
 
-    fetchInstantAnswer: (query) => API.get("instant", { q: query }),
+    fetchInstantAnswer: (query) => API.get("instant", { q: query, hl: isIdLang ? "id" : "en" }),
 
     fetchSuggestions: (query) => API.get("suggest", { q: query }),
 
@@ -208,7 +238,7 @@ const API = {
     },
 
     fetchAI: async (promptUser, context = "") => {
-        const data = await API.post("ai", { q: promptUser, context });
+        const data = await API.post("ai", { q: promptUser, context, hl: isIdLang ? "id" : "en" });
         return String(data.text || "").trim();
     }
 };
@@ -535,7 +565,7 @@ const Widgets = {
             ${subtitle ? `<div class="instant-answer__subtitle">${subtitle}</div>` : ''}
             ${imageHtml}
             <div class="summary-box">
-                <div class="instant-answer__section-title">Ringkasan</div>
+                <div class="instant-answer__section-title">${getText("summary")}</div>
                 <div class="summary-text">
                     ${Utils.escapeHTML(snippetText.slice(0, 140))}... 
                     <a href="${sourceHref}" class="wikipedia">${sourceName} ›</a>
@@ -568,12 +598,12 @@ const Widgets = {
 
     // Jika jutaan (>= 1.000.000): Ambil angka paling depan saja + "+"
     if (num >= 1000000) {
-        return `${Math.floor(num / 1000000)}jt`;
+        return `${Math.floor(num / 1000000)}${getText("countMillion")}`;
     }
 
     // Jika ribuan (>= 1.000): Tampilkan ribuan
     if (num >= 1000) {
-        return `${Math.floor(num / 1000)}rb`;
+        return `${Math.floor(num / 1000)}${getText("countThousand")}`;
     }
 
     return num.toString();
@@ -635,7 +665,7 @@ const Widgets = {
         const headerHtml = `
             <div style="display:flex; align-items:center; gap:8px; font-size: var(--dtext-medium); color:var(--color-text-dark); padding-bottom: 2px;">
                 ${playStoreLogoSvg}
-                <span>Aplikasi</span>
+                <span>${getText("apps")}</span>
             </div>
         `;
 
@@ -648,7 +678,7 @@ const Widgets = {
             const rating = app.rating ? parseFloat(app.rating).toFixed(1) : null;
             const url = Utils.attrUrl(app.url);
             const isFree = app.price === "0" || app.price === 0;
-            const priceText = isFree ? 'Install' : `Rp ${Number(app.price).toLocaleString('id-ID')}`;
+            const priceText = isFree ? getText("install") : `Rp ${Number(app.price).toLocaleString(localLang)}`;
             const countText = app.ratingCount ? `(${Widgets.formatCount(app.ratingCount)})` : '';
 
             const categoryText = app.category 
@@ -721,7 +751,7 @@ else if (isCalc) {
         <div class="calculator result-card result-card--flat">
             <div class="calc-display-wrapper">
                 <div class="calc-top-bar">
-                    <span class="calc-history-icon" title="History">
+                    <span class="calc-history-icon" title="${getText("calcHistory")}">
                         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                             <path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8z"/>
                         </svg>
@@ -810,7 +840,7 @@ else if (isCalc) {
                     <li class="exchange"><i class="fas fa-exchange-alt"></i></li>
                     <li class="row to"><select></select><div class="icons"><i class="fas fa-volume-up"></i><i class="fas fa-copy"></i></div></li>
                 </ul>
-                <div class="text-input"><textarea spellcheck="false" class="from-text" placeholder="Enter text"></textarea><textarea spellcheck="false" readonly disabled class="to-text" placeholder="Translation"></textarea></div></div></div>
+                <div class="text-input"><textarea spellcheck="false" class="from-text" placeholder="${getText("trnsFrom")}"></textarea><textarea spellcheck="false" readonly disabled class="to-text" placeholder="${getText("trnsTo")}"></textarea></div></div></div>
             `);
             Widgets.initTranslator();
         }
@@ -1164,10 +1194,15 @@ initCalculator: () => {
         let timer;
         let requestId = 0;
 
+        // Nama bahasa mengikuti bahasa UI (English / Indonesia); fallback ke daftar di atas
+        let langNames = null;
+        try { langNames = new Intl.DisplayNames([localLang], { type: "language" }); } catch (e) {}
+        const langName = (code) => (langNames && langNames.of(code)) || countries[code];
+
         selects.forEach((sel, i) => {
             for (let code in countries) {
                 let selected = (i === 0 && code === (isIdLang ? "id" : "en")) || (i === 1 && code === (isIdLang ? "en" : "id")) ? "selected" : "";
-                sel.insertAdjacentHTML("beforeend", `<option value="${code}" ${selected}>${countries[code]}</option>`);
+                sel.insertAdjacentHTML("beforeend", `<option value="${code}" ${selected}>${langName(code)}</option>`);
             }
             sel.addEventListener("change", translate);
         });
@@ -1208,7 +1243,7 @@ initCalculator: () => {
             const text = fromText.value.trim();
             if (!text) return;
             const currentId = ++requestId;
-            toText.setAttribute("placeholder", "Translating...");
+            toText.setAttribute("placeholder", getText("trnsLoading"));
             try {
                 // Terjemahan diproses lewat /api/translate (bukan langsung dari browser)
                 const output = await API.translate(text, selects[0].value, selects[1].value);
@@ -1216,7 +1251,7 @@ initCalculator: () => {
                 toText.value = output;
             } catch (err) {
                 if (currentId !== requestId) return;
-                toText.value = "Translation error";
+                toText.value = getText("trnsError");
             }
         }
     }
@@ -1231,15 +1266,19 @@ const UI = {
 
   renderBase: (opts = {}) => {
     const preserveResults = !!opts.preserveResults;
-    const existingMainResult = preserveResults ? document.querySelector(".main-result")?.outerHTML : null;
-    document.title = isIdLang ? `${Config.q} - Penelusuran` : `${Config.q} - Search`;
+    document.title = `${Config.q} - ${getText("titleSuffix")}`;
+    document.documentElement.lang = isIdLang ? "id" : "en";
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const themePref = settings.theme;
-    if (themePref === "dark" || (themePref === "system" && prefersDark) || Config.th == 1) {
-      document.body.classList.add("dark");
-    } else {
-      document.body.classList.remove("dark");
-    }
+    const useDark = themePref === "dark" || (themePref === "system" && prefersDark) || Config.th == 1;
+    document.body.classList.toggle("dark", useDark);
+    document.documentElement.classList.toggle("dark", useDark);
+
+    // SSR: header + hasil SUDAH ada di DOM. Jangan bongkar body (itu penyebab flicker);
+    // cukup tambahkan yang memang tidak ada di SSR (tombol garis tiga, overlay menu) dan pasang listener.
+    if (preserveResults && UI.hydrateBase()) return;
+
+    const existingMainResult = preserveResults ? document.querySelector(".main-result")?.outerHTML : null;
     const svgIcons = {
         all: `<svg width="16" height="16" viewBox="0 0 16 16" fill="#6e7780" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 1C2.68629 1 0 3.68629 0 7C0 10.3137 2.68629 13 6 13C7.64669 13 9.13845 12.3366 10.2226 11.2626L14.7873 14.8403C15.1133 15.0959 15.5848 15.0387 15.8403 14.7127C16.0958 14.3867 16.0387 13.9153 15.7126 13.6597L11.1487 10.0826C11.6892 9.18164 12 8.12711 12 7C12 3.68629 9.31371 1 6 1ZM1.5 7C1.5 4.51472 3.51472 2.5 6 2.5C8.48528 2.5 10.5 4.51472 10.5 7C10.5 9.48528 8.48528 11.5 6 11.5C3.51472 11.5 1.5 9.48528 1.5 7Z"></path></svg>`,
         images: `<svg width="16" height="16" viewBox="0 0 16 16" fill="#6e7780"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.25 1C1.455 1 0 2.455 0 4.25V11.75C0 13.545 1.455 15 3.25 15H12.75C14.545 15 16 13.545 16 11.75V10.259C16 10.253 16 10.247 16 10.241V4.25C16 2.455 14.545 1 12.75 1H3.25ZM14.5 8.439V4.25C14.5 3.284 13.716 2.5 12.75 2.5H3.25C2.284 2.5 1.5 3.284 1.5 4.25V11.75C1.5 11.956 1.536 12.154 1.601 12.338L5.97 7.97C6.263 7.677 6.737 7.677 7.03 7.97L8 8.939L10.97 5.97C11.263 5.677 11.737 5.677 12.03 5.97L14.5 8.439ZM9.061 10L10.03 10.97C10.323 11.263 10.323 11.737 10.03 12.03C9.737 12.323 9.263 12.323 8.97 12.03L6.5 9.561L2.662 13.399C2.846 13.464 3.044 13.5 3.25 13.5H12.75C13.716 13.5 14.5 12.716 14.5 11.75V10.561L11.5 7.561L9.061 10Z"></path></svg>`,
@@ -1252,17 +1291,15 @@ const UI = {
     document.body.innerHTML = ` 
       <div class="app" id="main-bx"> 
         <div class="page-header"> 
-          <button type="button" class="menu-btn" id="menuBtn" aria-label="${getText("menu")}" aria-expanded="false" aria-controls="menuOverlay">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
-          </button>
+          ${UI.menuBtnHtml()}
           <div class="page-header__inner"> 
-            <div class="logo-slot"><a title="Kembali" href="/"><img alt="Logo" src="/images/logo.png"></a></div> 
+            <div class="logo-slot"><a title="${getText("back")}" href="/"><img alt="Logo" src="/images/logo.png"></a></div> 
             <div class="header"> 
               <div class="search-box"> 
                 <div class="search-field"> 
                   <input type="search" id="sear_21829_input" value="${Utils.escapeHTML(Config.q.trim())}" name="q" class="search-input" autocomplete="off" placeholder="${getText("placeholder")}"> 
-                  <div role="button" class="search-toggle inpbtun" id="xclarGh" title="Cari"></div> 
-                  <div role="button" class="cleartext inpbtun" style="display:none" id="Chasprn" title="Hapus"></div> 
+                  <div role="button" class="search-toggle inpbtun" id="xclarGh" title="${getText("search")}"></div> 
+                  <div role="button" class="cleartext inpbtun" style="display:none" id="Chasprn" title="${getText("clear")}"></div> 
                 </div> 
               </div> 
             </div> 
@@ -1283,6 +1320,45 @@ const UI = {
     UI.setupEventListeners();
     UI.setupMenu();
   },
+
+    // ---------- TOMBOL GARIS TIGA ----------
+    menuBtnHtml: () => `
+          <button type="button" class="menu-btn" id="menuBtn" aria-label="${getText("menu")}" aria-expanded="false" aria-controls="menuOverlay">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
+          </button>`,
+
+    // Dipanggil saat halaman SUDAH di-render server (SSR). Tidak membongkar DOM:
+    // hanya menyisipkan tombol garis tiga + overlay menu yang tidak ada di SSR, menyamakan teks
+    // dengan bahasa aktif, lalu memasang listener. Return false kalau markup SSR tidak sesuai
+    // dugaan (supaya renderBase jatuh ke render penuh).
+    hydrateBase: () => {
+        const header = document.querySelector(".page-header");
+        const input = document.querySelector(".search-input");
+        if (!header || !input) return false;
+
+        if (!document.getElementById("menuBtn")) {
+            header.insertAdjacentHTML("afterbegin", UI.menuBtnHtml());
+        }
+        if (!document.getElementById("menuOverlay")) {
+            document.body.insertAdjacentHTML("beforeend", UI.menuHtml());
+        }
+
+        // Samakan teks dengan bahasa aktif (kalau sama persis, tidak ada perubahan visual)
+        input.placeholder = getText("placeholder");
+        const setTitle = (sel, key) => { const el = document.querySelector(sel); if (el) el.title = getText(key); };
+        setTitle(".logo-slot a", "back");
+        setTitle(".search-toggle", "search");
+        setTitle(".cleartext", "clear");
+        const tabIds = ["all", "images", "videos", "news", "maps"];
+        tabIds.forEach((id, i) => {
+            const label = document.querySelector(`.tab-wrapper[tab-id="${id}"] span`);
+            if (label && label.textContent !== getText("tab", i)) label.textContent = getText("tab", i);
+        });
+
+        UI.setupEventListeners();
+        UI.setupMenu();
+        return true;
+    },
 
     // ---------- MENU GARIS TIGA ----------
     menuHtml: () => {
@@ -1479,21 +1555,22 @@ const UI = {
         const section = document.querySelector(".results-section");
         if (section && !document.querySelector("footer")) {
             const isDark = document.body.classList.contains("dark");
+            const darkLabel = (on) => formatText("darkThemeLabel", { state: getText(on ? "on" : "off") });
             section.insertAdjacentHTML('beforeend', `
                 <footer>
                     <div class="footer-row">
                         <span>&copy; ${new Date().getFullYear()} Deevv Search.</span>
                         <div class="footer-links">
-                            <a href="/">Beranda</a>
-                            <a href="/settings">Pengaturan</a>
-                            <a href="/privacy">Privasi</a>
+                            <a href="/">${getText("footerHome")}</a>
+                            <a href="/settings">${getText("footerSettings")}</a>
+                            <a href="/privacy">${getText("footerPrivacy")}</a>
                         </div>
                     </div>
                     <div class="footer-row">
-                        <span>Pengalaman pencarian yang bersih dan cepat.</span>
+                        <span>${getText("footerTagline")}</span>
                         <div class="footer-links">
-                            <button type="button" id="theme-toggle-btn">Tema gelap: ${isDark ? 'Aktif' : 'Nonaktif'}</button>
-                            <button type="button" onclick="openFeedbackModal()">Masukan</button>
+                            <button type="button" id="theme-toggle-btn">${darkLabel(isDark)}</button>
+                            <button type="button" onclick="openFeedbackModal()">${getText("feedback")}</button>
                         </div>
                     </div>
                 </footer>
@@ -1512,7 +1589,7 @@ const UI = {
                     }
                     document.body.classList.toggle("dark", !currentlyDark);
                     document.documentElement.classList.toggle("dark", !currentlyDark);
-                    themeBtn.textContent = `Tema gelap: ${!currentlyDark ? 'Aktif' : 'Nonaktif'}`;
+                    themeBtn.textContent = darkLabel(!currentlyDark);
                 });
             }
 
@@ -1537,8 +1614,8 @@ const UI = {
 
     handleErrorState: () => {
         document.head.innerHTML = `<style>*{margin:0;padding:0}html{font:15px/22px arial,sans-serif;background:#fff;color:#222;padding:15px}body{margin:7% auto 0;max-width:390px;min-height:180px;padding:30px 0 15px}#error{font-size:40px;font-weight:bold;color:black}</style>`;
-        document.body.innerHTML = `<span id="error">ERROR</span><p><b>503.</b> That’s an error.</p><p>Site under maintenance.</p>`;
-        document.title = "Error 503";
+        document.body.innerHTML = `<span id="error">ERROR</span><p><b>503.</b> ${getText("errBody")}</p><p>${getText("errMaint")}</p>`;
+        document.title = getText("errTitle");
     }
 };
 
@@ -1601,14 +1678,14 @@ const SuggestionsManager = {
             overlay.className = "sug-mobile-overlay";
             overlay.innerHTML = `
                 <div class="sug-mobile-header">
-                    <button type="button" class="sug-back-btn" id="sugBackBtn">
+                    <button type="button" class="sug-back-btn" id="sugBackBtn" aria-label="${getText("back")}">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
                         </svg>
                     </button>
                     <div class="sug-input-wrap">
                         <input type="search" class="sug-mobile-input" placeholder="${getText("placeholder")}" autocomplete="off">
-                        <button type="button" class="sug-clear-btn" id="sugClearBtn" style="display:none">&times;</button>
+                        <button type="button" class="sug-clear-btn" id="sugClearBtn" style="display:none" aria-label="${getText("clear")}">&times;</button>
                     </div>
                 </div>
                 <div class="sug-mobile-list" id="sugMobileList"></div>
@@ -1890,7 +1967,7 @@ function renderNews(res) {
         const title = Utils.escapeHTML(item.title || "");
         const safeLink = Utils.safeUrl(item.link);
         const link = Utils.escapeHTML(safeLink) || "#";
-        const publisher = Utils.escapeHTML(item.publisher || item.domain || "Berita");
+        const publisher = Utils.escapeHTML(item.publisher || item.domain || getText("newsFallback"));
 
         // Membersihkan string tanggal
         const rawPubTime = String(item.publishedAt || item.published_at || item.pubDate || item.date || "");
@@ -2126,7 +2203,7 @@ function renderWebResults(res) {
     const info = res.searchInformation;
     if (Config.windowWidth > 700) {
       if (info) {
-        document.querySelector(".main-result").insertAdjacentHTML('afterbegin', `<div class="result-stats">${isIdLang ? `Sekitar ${Utils.escapeHTML(info.formattedTotalResults)} hasil (${Utils.escapeHTML(info.formattedSearchTime)} detik)` : `Approximately ${Utils.escapeHTML(info.formattedTotalResults)} result (${Utils.escapeHTML(info.formattedSearchTime)} seconds)`}</div>`);
+        document.querySelector(".main-result").insertAdjacentHTML('afterbegin', `<div class="result-stats">${formatText("statsLine", { count: Utils.escapeHTML(info.formattedTotalResults), time: Utils.escapeHTML(info.formattedSearchTime) })}</div>`);
       }
     }
     if (res.spelling) {
