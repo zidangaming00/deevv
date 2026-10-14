@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
-  <title>Pengaturan — Deevv Search</title>
+  <title>Settings - Deevv</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="images/search.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,7 +27,7 @@
     :root.dark, body.dark {
       --primary: #8ab4f8;
       --bg: #171717;
-      --surface: #22262b;;
+      --surface: #22262b;
       --text: #e8eaed;
       --muted: #9aa0a6;
       --line: rgba(255, 255, 255, 0.16);
@@ -91,8 +91,6 @@
       padding: 16px 20px;
       background: var(--surface);
       border-radius: 4px;
-
-      
     }
     .group > .row:first-child { border-radius: 24px 24px 4px 4px; }
     .group > .row:last-child  { border-radius: 4px 4px 24px 24px; }
@@ -251,11 +249,9 @@
       header, main, footer {
         max-width: 760px;
       }
-
       header {
         justify-content: space-between;
       }
-
       .row {
         display: grid;
         grid-template-columns: 1fr auto;
@@ -273,30 +269,30 @@
 <body>
 
   <header>
-    <button class="icon-btn" onclick="history.back()" aria-label="Kembali">
+    <button class="icon-btn" onclick="history.back()" id="backBtn" aria-label="Kembali">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <line x1="19" y1="12" x2="5" y2="12"></line>
         <polyline points="12 19 5 12 12 5"></polyline>
       </svg>
     </button>
-    <h1 class="page-title">Pengaturan</h1>
+    <h1 class="page-title" data-i18n="settingsTitle">Pengaturan</h1>
   </header>
 
   <main>
     <section>
-      <h2 class="sec-title">Tampilan</h2>
+      <h2 class="sec-title" data-i18n="secAppearance">Tampilan</h2>
       <div class="group">
         <div class="row">
           <div class="info">
-            <span class="label">Tema tampilan</span>
-            <span class="desc">Pilih warna antarmuka Deevv Search</span>
+            <span class="label" data-i18n="lblTheme">Tema tampilan</span>
+            <span class="desc" data-i18n="descTheme">Pilih warna antarmuka Deevv Search</span>
           </div>
           <div class="dd" data-key="theme" data-title="Tema tampilan"></div>
         </div>
         <div class="row">
           <div class="info">
-            <span class="label">Favicon situs</span>
-            <span class="desc">Tampilkan logo situs web pada hasil pencarian</span>
+            <span class="label" data-i18n="lblFavicon">Favicon situs</span>
+            <span class="desc" data-i18n="descFavicon">Tampilkan logo situs web pada hasil pencarian</span>
           </div>
           <label class="switch"><input type="checkbox" id="favicon_toggle"><span class="slider"></span></label>
         </div>
@@ -304,12 +300,12 @@
     </section>
 
     <section>
-      <h2 class="sec-title">Bahasa</h2>
+      <h2 class="sec-title" data-i18n="secLanguage">Bahasa</h2>
       <div class="group">
         <div class="row">
           <div class="info">
-            <span class="label">Bahasa antarmuka</span>
-            <span class="desc">Bahasa yang digunakan dalam layanan</span>
+            <span class="label" data-i18n="lblLanguage">Bahasa antarmuka</span>
+            <span class="desc" data-i18n="descLanguage">Bahasa yang digunakan dalam layanan</span>
           </div>
           <div class="dd" data-key="lang" data-title="Bahasa antarmuka"></div>
         </div>
@@ -317,26 +313,26 @@
     </section>
 
     <section>
-      <h2 class="sec-title">Pencarian</h2>
+      <h2 class="sec-title" data-i18n="secSearch">Pencarian</h2>
       <div class="group">
         <div class="row">
           <div class="info">
-            <span class="label">Buka di tab baru</span>
-            <span class="desc">Membuka tautan hasil pencarian di tab terpisah</span>
+            <span class="label" data-i18n="lblNewTab">Buka di tab baru</span>
+            <span class="desc" data-i18n="descNewTab">Membuka tautan hasil pencarian di tab terpisah</span>
           </div>
           <label class="switch"><input type="checkbox" id="newtab_toggle"><span class="slider"></span></label>
         </div>
         <div class="row">
           <div class="info">
-            <span class="label">Navigasi langsung URL</span>
-            <span class="desc">Buka situs langsung jika input berupa URL valid</span>
+            <span class="label" data-i18n="lblNewUrl">Navigasi langsung URL</span>
+            <span class="desc" data-i18n="descNewUrl">Buka situs langsung jika input berupa URL valid</span>
           </div>
           <label class="switch"><input type="checkbox" id="newurl_toggle"><span class="slider"></span></label>
         </div>
         <div class="row">
           <div class="info">
-            <span class="label">Saran pencarian</span>
-            <span class="desc">Tampilkan rekomendasi kata kunci saat mengetik</span>
+            <span class="label" data-i18n="lblSuggest">Saran pencarian</span>
+            <span class="desc" data-i18n="descSuggest">Tampilkan rekomendasi kata kunci saat mengetik</span>
           </div>
           <label class="switch"><input type="checkbox" id="suggest_toggle"><span class="slider"></span></label>
         </div>
@@ -344,14 +340,14 @@
     </section>
 
     <section>
-      <h2 class="sec-title">Privasi &amp; cookie</h2>
+      <h2 class="sec-title" data-i18n="secPrivacy">Privasi &amp; cookie</h2>
       <div class="group">
         <div class="row">
           <div class="info">
-            <span class="label">Reset cookie pengaturan</span>
-            <span class="desc">Kembalikan seluruh konfigurasimu ke bawaan</span>
+            <span class="label" data-i18n="lblReset">Reset cookie pengaturan</span>
+            <span class="desc" data-i18n="descReset">Kembalikan seluruh konfigurasimu ke bawaan</span>
           </div>
-          <button type="button" class="btn-danger" id="reset_cookie_btn">Reset</button>
+          <button type="button" class="btn-danger" id="reset_cookie_btn" data-i18n="btnReset">Reset</button>
         </div>
       </div>
     </section>
@@ -363,17 +359,16 @@
     <div class="footer-row">
       <span>&copy; 2026 Deevv Search.</span>
       <div class="footer-links">
-        <a href="index.html">Beranda</a>
-        <a href="settings.html">Pengaturan</a>
-        <a href="privacy.html">Privasi</a>
+        <a href="index.html" data-i18n="footerHome">Beranda</a>
+        <a href="settings.html" data-i18n="footerSettings">Pengaturan</a>
+        <a href="privacy.html" data-i18n="footerPrivacy">Privasi</a>
       </div>
     </div>
     <div class="footer-row">
-      <span>Pengalaman pencarian yang bersih dan cepat.</span>
+      <span data-i18n="footerTagline">Pengalaman pencarian yang bersih dan cepat.</span>
       <div class="footer-links">
         <button id="theme-toggle-btn" onclick="toggleTheme()">Tema gelap: Nonaktif</button>
-        <button type="button" onclick="openFeedbackModal()">Masukan</button>
-
+        <button type="button" onclick="openFeedbackModal()" data-i18n="feedback">Masukan</button>
       </div>
     </div>
   </footer>
@@ -386,11 +381,119 @@
     const toast = $('toast');
     const CHEVRON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>';
 
+    // ==========================================
+    // DICTIONARY & LANGUAGE (Konsisten dengan script.js)
+    // ==========================================
+    const settingsObj = typeof getData === 'function' ? getData() : {};
+    const isIdLang = settingsObj.lang !== "en"; // Default ke ID jika tidak diset ke 'en'
+
+    const LANG_DICT = {
+        en: {
+            settingsTitle: "Settings",
+            back: "Back",
+            secAppearance: "Appearance",
+            lblTheme: "Display theme",
+            descTheme: "Choose Deevv Search interface color",
+            lblFavicon: "Site favicon",
+            descFavicon: "Show website logos on search results",
+            secLanguage: "Language",
+            lblLanguage: "Interface language",
+            descLanguage: "Language used in the service",
+            secSearch: "Search",
+            lblNewTab: "Open in new tab",
+            descNewTab: "Open search result links in a separate tab",
+            lblNewUrl: "Direct URL navigation",
+            descNewUrl: "Open site directly if input is a valid URL",
+            lblSuggest: "Search suggestions",
+            descSuggest: "Show keyword recommendations while typing",
+            secPrivacy: "Privacy & cookies",
+            lblReset: "Reset settings cookies",
+            descReset: "Restore all your configurations to default",
+            btnReset: "Reset",
+            footerHome: "Home",
+            footerSettings: "Settings",
+            footerPrivacy: "Privacy",
+            footerTagline: "A clean and fast search experience.",
+            feedback: "Feedback",
+            toastSaved: "Settings saved",
+            toastTheme: "Theme updated",
+            toastLang: "Language updated",
+            toastFavicon: "Favicon setting saved",
+            toastTab: "Tab setting saved",
+            toastUrl: "URL setting saved",
+            toastSuggest: "Suggestion setting saved",
+            toastReset: "Cookies successfully reset",
+            darkThemeOn: "Dark theme: On",
+            darkThemeOff: "Dark theme: Off"
+        },
+        id: {
+            settingsTitle: "Pengaturan",
+            back: "Kembali",
+            secAppearance: "Tampilan",
+            lblTheme: "Tema tampilan",
+            descTheme: "Pilih warna antarmuka Deevv Search",
+            lblFavicon: "Favicon situs",
+            descFavicon: "Tampilkan logo situs web pada hasil pencarian",
+            secLanguage: "Bahasa",
+            lblLanguage: "Bahasa antarmuka",
+            descLanguage: "Bahasa yang digunakan dalam layanan",
+            secSearch: "Pencarian",
+            lblNewTab: "Buka di tab baru",
+            descNewTab: "Membuka tautan hasil pencarian di tab terpisah",
+            lblNewUrl: "Navigasi langsung URL",
+            descNewUrl: "Buka situs langsung jika input berupa URL valid",
+            lblSuggest: "Saran pencarian",
+            descSuggest: "Tampilkan rekomendasi kata kunci saat mengetik",
+            secPrivacy: "Privasi & cookie",
+            lblReset: "Reset cookie pengaturan",
+            descReset: "Kembalikan seluruh konfigurasimu ke bawaan",
+            btnReset: "Reset",
+            footerHome: "Beranda",
+            footerSettings: "Pengaturan",
+            footerPrivacy: "Privasi",
+            footerTagline: "Pengalaman pencarian yang bersih dan cepat.",
+            feedback: "Masukan",
+            toastSaved: "Pengaturan tersimpan",
+            toastTheme: "Tema diperbarui",
+            toastLang: "Bahasa diperbarui",
+            toastFavicon: "Pengaturan favicon disimpan",
+            toastTab: "Pengaturan tab disimpan",
+            toastUrl: "Pengaturan URL disimpan",
+            toastSuggest: "Pengaturan saran disimpan",
+            toastReset: "Cookie berhasil di-reset",
+            darkThemeOn: "Tema gelap: Aktif",
+            darkThemeOff: "Tema gelap: Nonaktif"
+        }
+    };
+
+    const getText = (key) => {
+        const lang = isIdLang ? 'id' : 'en';
+        return LANG_DICT[lang][key] !== undefined ? LANG_DICT[lang][key] : LANG_DICT.en[key];
+    };
+
+    // Terapkan terjemahan otomatis ke elemen ber-atribut data-i18n
+    function applyTranslations() {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            const text = getText(key);
+            if (text) el.textContent = text;
+        });
+        const backBtn = $('backBtn');
+        if (backBtn) backBtn.setAttribute('aria-label', getText('back'));
+        document.title = `${getText('settingsTitle')} - Deevv`;
+        document.documentElement.lang = isIdLang ? 'id' : 'en';
+    }
+
     const OPTIONS = {
-      theme: [['light', 'Terang'], ['dark', 'Gelap (Beta)'], ['system', 'Sistem']],
+      theme: [['light', isIdLang ? 'Terang' : 'Light'], ['dark', isIdLang ? 'Gelap (Beta)' : 'Dark (Beta)'], ['system', isIdLang ? 'Sistem' : 'System']],
       lang:  [['id', 'Bahasa Indonesia'], ['en', 'English (US)']]
     };
-    const TOASTS = { theme: 'Tema diperbarui', lang: 'Bahasa diperbarui' };
+    
+    // Mengambil teks toast sesuai bahasa aktif
+    const getToastMessage = (key) => {
+        const map = { theme: 'toastTheme', lang: 'toastLang', favicon: 'toastFavicon', newtab: 'toastTab', newurl: 'toastUrl', suggest: 'toastSuggest' };
+        return getText(map[key] || 'toastSaved');
+    };
 
     function showToast(msg) {
       toast.textContent = msg;
@@ -402,7 +505,7 @@
     function updateThemeBtnText(isDark) {
       var btn = document.getElementById('theme-toggle-btn');
       if (btn) {
-        btn.textContent = 'Tema gelap: ' + (isDark ? 'Aktif' : 'Nonaktif');
+        btn.textContent = isDark ? getText('darkThemeOn') : getText('darkThemeOff');
       }
     }
 
@@ -474,11 +577,19 @@
       state[key] = val;
       updateSetting(key, val);
       if (key === 'theme') applyTheme(val);
+      if (key === 'lang') {
+          // Jika bahasa diubah, langsung reload agar seluruh teks ter-load dengan bahasa baru
+          showToast(getText('toastLang'));
+          setTimeout(() => location.reload(), 800);
+          return;
+      }
       paint(key);
-      showToast(TOASTS[key]);
+      showToast(getToastMessage(key));
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      applyTranslations(); // Jalankan penerjemahan teks HTML
+
       const config = getData();
       state.theme = OPTIONS.theme.some(o => o[0] === config.theme) ? config.theme : 'light';
       state.lang  = OPTIONS.lang.some(o => o[0] === config.lang) ? config.lang : 'id';
@@ -492,17 +603,20 @@
     });
 
     [
-      ['favicon_toggle', 'favicon', 'Pengaturan favicon disimpan'],
-      ['newtab_toggle',  'newtab',  'Pengaturan tab disimpan'],
-      ['newurl_toggle',  'newurl',  'Pengaturan URL disimpan'],
-      ['suggest_toggle', 'suggest', 'Pengaturan saran disimpan']
-    ].forEach(([id, key, msg]) => {
-      $(id).addEventListener('change', (e) => { updateSetting(key, e.target.checked); showToast(msg); });
+      ['favicon_toggle', 'favicon'],
+      ['newtab_toggle',  'newtab'],
+      ['newurl_toggle',  'newurl'],
+      ['suggest_toggle', 'suggest']
+    ].forEach(([id, key]) => {
+      $(id).addEventListener('change', (e) => { 
+          updateSetting(key, e.target.checked); 
+          showToast(getToastMessage(key)); 
+      });
     });
 
     $('reset_cookie_btn').addEventListener('click', () => {
       clearData();
-      showToast('Cookie berhasil di-reset');
+      showToast(getText('toastReset'));
       setTimeout(() => location.reload(), 1200);
     });
   </script>
