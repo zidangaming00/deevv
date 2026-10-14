@@ -653,15 +653,6 @@ body.dark .related:after {
 .info-label { color: #000; font-size: 12px; border-radius: 5px; margin-left: 5px; padding: 0 2px; border: 1px solid #ccc; }
 
 /* --- Weather Widget (From cuaca_2.html) --- */
-.serp-weather-card {
-  width: 100%;
-  background: var(--color-white, #ffffff);
-  border: 1px solid var(--color-border, #E0E4E9);
-  border-radius: 18px;
-  padding: 16px;
-  overflow: hidden;
-  margin-bottom: 8px;
-}
 
 body.dark .serp-weather-card {
   background: #202125;
