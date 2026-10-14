@@ -337,6 +337,11 @@ body.dark .related:after {
   justify-content: center;
 }
 
+.main-result.vw-max {
+  min-width: var(--page-max-width);
+  max-width: var(--page-max-width)
+}
+
 .result-stats { display: none; }
 
 .show-wrapper {
