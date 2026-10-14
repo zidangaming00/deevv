@@ -1465,10 +1465,10 @@ const UI = {
             mainResult.innerHTML = `<div class="show-wrapper">${Utils.loaderHtml}</div>`;
         } else if (Config.tbm === "nws") {
             items[3].classList.add("selected");
+            mainResult.classList.add("vw-max");
         } else {
             items[0].classList.add("selected");
-            // Kalau hasil sudah di-render server (opts.preserveResults), .results-list
-            // sudah ada di DOM -> jangan tambah lagi, nanti dobel.
+            mainResult.classList.add("vw-max");
             if (!opts.preserveResults && !mainResult.querySelector(".results-list")) {
                 mainResult.innerHTML += `<div class="results-list"></div>`;
             }
@@ -1879,7 +1879,6 @@ function renderVideos(res) {
 // ==========================================
 function renderNews(res) {
     const container = document.querySelector(".main-result");
-    container.style.cssText = !Config.isMobile ? "min-width:var(--page-max-width);max-width:var(--page-max-width)" : "";
     const newsItems = res.results || res.news || res.items;
 
     if (!newsItems || !newsItems.length) {
@@ -2129,7 +2128,6 @@ function renderWebResults(res) {
       if (info) {
         document.querySelector(".main-result").insertAdjacentHTML('afterbegin', `<div class="result-stats">${isIdLang ? `Sekitar ${Utils.escapeHTML(info.formattedTotalResults)} hasil (${Utils.escapeHTML(info.formattedSearchTime)} detik)` : `Approximately ${Utils.escapeHTML(info.formattedTotalResults)} result (${Utils.escapeHTML(info.formattedSearchTime)} seconds)`}</div>`);
       }
-      document.querySelector(".main-result").style.minWidth = "var(--page-max-width)";
     }
     if (res.spelling) {
       const corrected = res.spelling.correctedQuery || "";
