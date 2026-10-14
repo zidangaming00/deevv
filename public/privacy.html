@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
-  <title>Kebijakan Privasi — Deevv Search</title>
+  <title>Privacy — Deevv</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="images/search.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -366,13 +366,14 @@
     <div class="footer-row">
       <span>Pengalaman pencarian yang bersih dan cepat.</span>
       <div class="footer-links">
-        <button id="theme-toggle-btn" onclick="toggleTheme()">Tema gelap: Nonaktif</button>
+        <button id="theme-toggle-btn" type="button">Tema gelap: Nonaktif</button>
         <button type="button" onclick="openFeedbackModal()">Masukan</button>
-
       </div>
     </div>
   </footer>
 
+  <script src="cookie.js"></script>
+  <script src="feedback-modal.js"></script>
   <!-- Skrip sinkronisasi tema otomatis dan toggle theme -->
   <script>
     function updateThemeBtnText(isDark) {
@@ -384,9 +385,10 @@
 
     function applyTheme() {
       try {
-        var m = document.cookie.match(/(?:^|;\s*)theme=(light|dark|system)/);
-        var t = m && m[1];
-        var isDark = t === "dark" || (t === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        var config = typeof getData === 'function' ? getData() : {};
+        var themePref = config.theme;
+        var prefersDark = matchMedia("(prefers-color-scheme: dark)").matches;
+        var isDark = themePref === "dark" || (themePref === "system" && prefersDark) || (!themePref && prefersDark);
         
         if (isDark) {
           document.documentElement.classList.add("dark");
@@ -400,15 +402,25 @@
     }
 
     function toggleTheme() {
-      var isDark = document.documentElement.classList.contains("dark");
-      var newTheme = isDark ? "light" : "dark";
-      document.cookie = "theme=" + newTheme + "; path=/; max-age=31536000";
+      var currentlyDark = document.documentElement.classList.contains("dark");
+      var newTheme = currentlyDark ? "light" : "dark";
+      
+      if (typeof updateSetting === "function") {
+        updateSetting("theme", newTheme);
+      } else {
+        document.cookie = "theme=" + newTheme + "; path=/; max-age=31536000";
+      }
       applyTheme();
     }
 
-    // Jalankan saat pertama kali dimuat
-    applyTheme();
+    // Pasang event listener ke tombol tema di footer
+    document.addEventListener('DOMContentLoaded', () => {
+      applyTheme();
+      var themeBtn = document.getElementById('theme-toggle-btn');
+      if (themeBtn) {
+        themeBtn.addEventListener('click', toggleTheme);
+      }
+    });
   </script>
-  <script src="feedback-modal.js"></script>
 </body>
 </html>
