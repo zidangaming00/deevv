@@ -1366,7 +1366,7 @@ const Widgets = {
         }
 
         initWeather();
-    };
+    },
 
 initCalculator: () => {
     const calculatorBox = document.querySelector(".calculator");
