@@ -1274,10 +1274,10 @@ const UI = {
     document.body.classList.toggle("dark", useDark);
     document.documentElement.classList.toggle("dark", useDark);
 
-    // SSR: hasil (.main-result) sudah ada di DOM dan dibiarkan utuh. Yang diganti hanya header,
-    // karena markup header SSR berbeda dari header client (link teks mentah, tombol sendiri).
-    const canSwapHeader = preserveResults && !!document.querySelector(".page-header") && !!document.querySelector(".results-section .main-result");
-    const existingMainResult = (preserveResults && !canSwapHeader) ? document.querySelector(".main-result")?.outerHTML : null;
+    // SSR: header + hasil sudah ada di DOM. Jangan bongkar/ganti apa pun (itu sumber flicker
+    // dan bisa menghapus hasil kalau markup SSR tidak seimbang); cukup pasang yang kurang.
+    if (preserveResults && UI.hydrateBase()) return;
+    const existingMainResult = preserveResults ? document.querySelector(".main-result")?.outerHTML : null;
     const svgIcons = {
         all: `<svg width="16" height="16" viewBox="0 0 16 16" fill="#6e7780" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 1C2.68629 1 0 3.68629 0 7C0 10.3137 2.68629 13 6 13C7.64669 13 9.13845 12.3366 10.2226 11.2626L14.7873 14.8403C15.1133 15.0959 15.5848 15.0387 15.8403 14.7127C16.0958 14.3867 16.0387 13.9153 15.7126 13.6597L11.1487 10.0826C11.6892 9.18164 12 8.12711 12 7C12 3.68629 9.31371 1 6 1ZM1.5 7C1.5 4.51472 3.51472 2.5 6 2.5C8.48528 2.5 10.5 4.51472 10.5 7C10.5 9.48528 8.48528 11.5 6 11.5C3.51472 11.5 1.5 9.48528 1.5 7Z"></path></svg>`,
         images: `<svg width="16" height="16" viewBox="0 0 16 16" fill="#6e7780"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.25 1C1.455 1 0 2.455 0 4.25V11.75C0 13.545 1.455 15 3.25 15H12.75C14.545 15 16 13.545 16 11.75V10.259C16 10.253 16 10.247 16 10.241V4.25C16 2.455 14.545 1 12.75 1H3.25ZM14.5 8.439V4.25C14.5 3.284 13.716 2.5 12.75 2.5H3.25C2.284 2.5 1.5 3.284 1.5 4.25V11.75C1.5 11.956 1.536 12.154 1.601 12.338L5.97 7.97C6.263 7.677 6.737 7.677 7.03 7.97L8 8.939L10.97 5.97C11.263 5.677 11.737 5.677 12.03 5.97L14.5 8.439ZM9.061 10L10.03 10.97C10.323 11.263 10.323 11.737 10.03 12.03C9.737 12.323 9.263 12.323 8.97 12.03L6.5 9.561L2.662 13.399C2.846 13.464 3.044 13.5 3.25 13.5H12.75C13.716 13.5 14.5 12.716 14.5 11.75V10.561L11.5 7.561L9.061 10Z"></path></svg>`,
@@ -1317,16 +1317,7 @@ const UI = {
       </div> 
       ${UI.menuHtml()}`;
 
-    if (canSwapHeader) {
-      const tpl = document.createElement("template");
-      tpl.innerHTML = bodyHtml;
-      document.querySelector(".page-header").replaceWith(tpl.content.querySelector(".page-header"));
-      document.getElementById("menuOverlay")?.remove();
-      document.getElementById("themeModal")?.remove();
-      document.body.appendChild(tpl.content.querySelector("#menuOverlay"));
-    } else {
-      document.body.innerHTML = bodyHtml;
-    }
+    document.body.innerHTML = bodyHtml;
     UI.setupEventListeners();
     UI.setupMenu();
   },
@@ -1336,6 +1327,35 @@ const UI = {
           <button type="button" class="menu-btn" id="menuBtn" aria-label="${getText("menu")}" aria-expanded="false" aria-controls="menuOverlay">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
           </button>`,
+
+    // Dipanggil saat halaman sudah di-render server (SSR). TIDAK mengganti/menghapus elemen:
+    // hanya melengkapi tombol garis tiga (kalau SSR belum punya), overlay menu, teks sesuai
+    // bahasa aktif, lalu memasang listener. Return false kalau markup SSR tidak ada.
+    hydrateBase: () => {
+        const header = document.querySelector(".page-header");
+        const input = document.querySelector(".search-input");
+        if (!header || !input) return false;
+
+        if (!document.getElementById("menuBtn")) header.insertAdjacentHTML("afterbegin", UI.menuBtnHtml());
+        if (!document.getElementById("menuOverlay")) document.body.insertAdjacentHTML("beforeend", UI.menuHtml());
+
+        // Samakan teks dengan bahasa aktif (kalau sudah sama, tidak ada perubahan visual)
+        const menuBtn = document.getElementById("menuBtn");
+        if (menuBtn) menuBtn.setAttribute("aria-label", getText("menu"));
+        input.placeholder = getText("placeholder");
+        const setTitle = (sel, key) => { const el = document.querySelector(sel); if (el) el.title = getText(key); };
+        setTitle(".logo-slot a", "back");
+        setTitle(".search-toggle", "search");
+        setTitle(".cleartext", "clear");
+        document.querySelectorAll(".search-menu .search-item").forEach((item, i) => {
+            const label = item.querySelector(".label span");
+            if (label && i < 5 && label.textContent !== getText("tab", i)) label.textContent = getText("tab", i);
+        });
+
+        UI.setupEventListeners();
+        UI.setupMenu();
+        return true;
+    },
 
     // ---------- MENU GARIS TIGA ----------
     menuHtml: () => {
