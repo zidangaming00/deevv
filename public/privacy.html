@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
-  <title>Kebijakan Privasi — Deevv Search</title>
+  <title>Kebijakan Privasi - Deevv Search</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="images/search.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,24 +15,24 @@
   <style>
     :root {
       --primary: #1a73e8;
-      --bg: #ffffff;
-      --surface: #f8f9fa;
+      --bg: #f7f8f9;
+      --surface: #ffffff;
       --text: #1f1f1f;
       --muted: #5f6368;
-      --line: rgba(0, 0, 0, 0.12);
-      --press: rgba(128, 128, 128, 0.14);
+      --line: rgba(0, 0, 0, 0.08);
+      --press: rgba(128, 128, 128, 0.1);
     }
     :root.dark, body.dark {
       --primary: #8ab4f8;
       --bg: #171717;
-      --surface: #202125;
+      --surface: #22262b;
       --text: #e8eaed;
       --muted: #9aa0a6;
-      --line: rgba(255, 255, 255, 0.16);
+      --line: rgba(255, 255, 255, 0.12);
       --press: rgba(128, 128, 128, 0.14);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
 
     body {
       font-family: 'Google Sans Flex', -apple-system, 'Segoe UI', sans-serif;
@@ -42,19 +42,19 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 16px 0;
+      padding: 24px clamp(16px, 5vw, 144px) 0;
     }
 
     button { font-family: inherit; color: inherit; }
 
-    /* ---------- Header ---------- */
+    /* ---------- Header / Top Bar ---------- */
     header {
       width: 100%;
-      max-width: 560px;
+      max-width: 960px;
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
+      padding: 0;
     }
     .icon-btn {
       width: 40px;
@@ -68,104 +68,206 @@
       background: transparent;
       color: var(--text);
       cursor: pointer;
+      transition: background 0.15s ease;
     }
     .icon-btn:hover, .icon-btn:active { background: var(--press); }
-    .page-title { flex: 1; font-size: 20px; font-weight: 600; letter-spacing: -0.2px; }
+    .page-title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.1px;
+      color: var(--text);
+    }
 
-    /* ---------- Main & Content ---------- */
-    main {
+    .page-layout {
       width: 100%;
-      max-width: 560px;
+      max-width: 960px;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* ---------- Sidebar Daftar Isi ---------- */
+    aside.toc-sidebar {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 20px;
+      position: sticky;
+      top: 24px;
       display: flex;
       flex-direction: column;
-      gap: 28px;
+      gap: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .toc-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .toc-item a {
+      display: block;
+      font-size: 13.5px;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 8px;
+      transition: all 0.15s ease;
+    }
+    .toc-item a:hover {
+      background: var(--press);
+      color: var(--text);
+    }
+    .toc-sublist {
+      list-style: none;
+      padding-left: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+    .toc-sublist a {
+      font-size: 13px;
+    }
+
+    /* ---------- Konten Utama ---------- */
+    main {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .doc-container {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 28px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .last-updated {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .intro-banner {
+      background: rgba(26, 115, 232, 0.04);
+      border-radius: 12px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-left: 3px solid var(--primary);
+    }
+    :root.dark .intro-banner, body.dark .intro-banner {
+      background: rgba(138, 180, 248, 0.06);
+    }
+
+    .doc-section {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      scroll-margin-top: 24px; /* Supaya pas saat di-klik dari sidebar */
+    }
+
+    .doc-section + .doc-section {
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
     }
 
     .sec-title {
-      padding: 0 20px 12px;
-      letter-spacing: 0.1px;
       font-size: 13px;
       font-weight: 600;
       color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
-    .group {
+    .content-group {
       display: flex;
       flex-direction: column;
+      gap: 16px;
     }
 
-    .row {
-      position: relative;
+    .article-block {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      padding: 20px;
+      gap: 4px;
+      scroll-margin-top: 24px;
     }
 
-    .row-title {
-      font-size: 15px;
+    .label {
+      font-size: 14px;
       font-weight: 600;
       color: var(--text);
     }
 
-    .row-desc {
+    .desc {
       font-size: 13.5px;
       line-height: 1.6;
       color: var(--muted);
     }
 
-    .row-desc a {
+    .desc a {
       color: var(--primary);
       text-decoration: none;
     }
-    .row-desc a:hover {
+    .desc a:hover {
       text-decoration: underline;
     }
 
-    /* ---------- Banner Pengantar ---------- */
-    .intro-banner {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      border-left: 4px solid var(--primary);
-    }
-
-    /* ---------- CTA Card ---------- */
-    .cta-card {
+    /* ---------- Action Card Bawah ---------- */
+    .action-card {
       background: var(--surface);
-      border-radius: 24px;
-      padding: 24px 20px;
+      border-radius: 20px;
+      padding: 22px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 20px;
+    }
+    .action-left {
+      display: flex;
+      align-items: center;
       gap: 16px;
     }
-    .cta-info {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .cta-icon-badge {
-      width: 40px;
-      height: 40px;
+    .action-icon-badge {
+      width: 44px;
+      height: 44px;
       border-radius: 12px;
-      background: rgba(26, 115, 232, 0.1);
+      background: rgba(26, 115, 232, 0.08);
       color: var(--primary);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 2px;
+      flex-shrink: 0;
     }
-    :root.dark .cta-icon-badge, body.dark .cta-icon-badge {
-      background: rgba(138, 180, 248, 0.15);
+    :root.dark .action-icon-badge, body.dark .action-icon-badge {
+      background: rgba(138, 180, 248, 0.12);
     }
-    .cta-title {
-      font-size: 15px;
+    .action-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .action-title {
+      font-size: 14.5px;
       font-weight: 600;
       color: var(--text);
     }
-    .cta-desc {
+    .action-desc {
       font-size: 13px;
       color: var(--muted);
     }
@@ -174,16 +276,17 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      height: 40px;
+      height: 38px;
       padding: 0 20px;
-      border-radius: 20px;
+      border-radius: 19px;
       background: var(--primary);
       color: #fff;
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 500;
       text-decoration: none;
       white-space: nowrap;
       transition: opacity 0.2s ease, transform 0.1s ease;
+      flex-shrink: 0;
     }
     .btn-primary:hover { opacity: 0.9; }
     .btn-primary:active { transform: scale(0.97); }
@@ -191,9 +294,9 @@
     /* ---------- Footer ---------- */
     footer {
       width: 100%;
-      max-width: 560px;
-      margin-top: 48px;
-      padding: 24px 0;
+      max-width: 960px;
+      margin-top: 56px;
+      padding: 24px 0 24px;
       border-top: 1px solid var(--line);
       display: flex;
       flex-direction: column;
@@ -227,28 +330,30 @@
       color: var(--primary);
     }
 
-    @media (max-width: 480px) {
-      .cta-card { flex-direction: column; align-items: flex-start; }
+    /* ---------- Responsive (Mobile) ---------- */
+    @media (max-width: 768px) {
+      .page-layout {
+        grid-template-columns: 1fr; /* Sidebar otomatis pindah ke atas / disembunyikan */
+      }
+      aside.toc-sidebar {
+        position: relative;
+        top: 0;
+      }
+      .action-card { flex-direction: column; align-items: flex-start; gap: 16px; }
       .btn-primary { width: 100%; }
       .footer-row { flex-direction: column; align-items: flex-start; gap: 8px; }
     }
 
-    @media (min-width: 641px) {
-      header, main, footer { max-width: 760px; }
-      header { justify-content: space-between; }
-      .row { display: grid; grid-template-columns: 220px 1fr; align-items: start; gap: 16px; padding: 20px; }
-      .row-title { padding-top: 1px; }
-    }
-
     @media (prefers-reduced-motion: reduce) {
-      * { transition: none !important; }
+      * { transition: none !important; scroll-behavior: auto !important; }
     }
   </style>
 </head>
 <body>
 
+  <!-- Header -->
   <header>
-    <button class="icon-btn" onclick="history.back()" id="backBtn" aria-label="Kembali">
+    <button class="icon-btn" onclick="history.back()" id="backBtn" aria-label="Kembali" style="position: relative; left: -8px;">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <line x1="19" y1="12" x2="5" y2="12"></line>
         <polyline points="12 19 5 12 12 5"></polyline>
@@ -257,76 +362,112 @@
     <h1 class="page-title" data-i18n="pageTitle">Kebijakan Privasi</h1>
   </header>
 
-  <main>
-    <div class="intro-banner">
-      <span class="row-title" data-i18n="introTitle">Komitmen Transparansi Data</span>
-      <p class="row-desc" data-i18n="introDesc">
-        Di Deevv Search, privasi Anda adalah prioritas utama. Halaman ini merinci bagaimana informasi dan preferensi Anda dikelola secara aman, transparan, dan privat sejak pertama kali menggunakan layanan.
-      </p>
-    </div>
+  <!-- Layout Utama (Sidebar + Konten) -->
+  <div class="page-layout">
+    
+    <!-- Sidebar Daftar Isi (Table of Contents) -->
+    <aside class="toc-sidebar">
+      <div class="toc-title" data-i18n="tocTitle">Daftar Isi</div>
+      <ul class="toc-list">
+        <li class="toc-item"><a href="#intro" data-i18n="tocIntro">Transparansi Data</a></li>
+        <li class="toc-item">
+          <a href="#secCollection" data-i18n="tocCollection">Pengumpulan & Penggunaan</a>
+          <ul class="toc-sublist">
+            <li><a href="#item1" data-i18n="tocItem1">Preferensi Cookie</a></li>
+            <li><a href="#item2" data-i18n="tocItem2">Query Penelusuran</a></li>
+            <li><a href="#item3" data-i18n="tocItem3">Log Sistem</a></li>
+          </ul>
+        </li>
+        <li class="toc-item">
+          <a href="#secSecurity" data-i18n="tocSecurity">Keamanan & Kendali</a>
+          <ul class="toc-sublist">
+            <li><a href="#item4" data-i18n="tocItem4">Tanpa Pelacak Iklan</a></li>
+            <li><a href="#item5" data-i18n="tocItem5">Kontrol Penuh Anda</a></li>
+          </ul>
+        </li>
+      </ul>
+    </aside>
 
-    <section>
-      <h2 class="sec-title" data-i18n="secCollection">Pengumpulan &amp; Penggunaan</h2>
-      <div class="group">
-        <div class="row">
-          <span class="row-title" data-i18n="item1Title">Preferensi Pengguna Lokal</span>
-          <p class="row-desc" data-i18n="item1Desc">Segala bentuk pengaturan tampilan (seperti mode terang atau gelap), bahasa antarmuka, serta preferensi pencarian disimpan secara mandiri di dalam penyimpanan lokal perangkat Anda.</p>
-        </div>
-        <div class="row">
-          <span class="row-title" data-i18n="item2Title">Query Penelusuran</span>
-          <p class="row-desc" data-i18n="item2Desc">Kata kunci atau frasa yang Anda ketik diproses secara langsung untuk menyajikan hasil pencarian terbaik tanpa menghubungkan riwayat penelusuran dengan identitas pribadi Anda.</p>
-        </div>
-        <div class="row">
-          <span class="row-title" data-i18n="item3Title">Log Sistem Sementara</span>
-          <p class="row-desc" data-i18n="item3Desc">Sistem memproses informasi jaringan standar secara sementara semata-mata untuk menjaga kestabilan server serta melindungi layanan dari potensi ancaman keamanan.</p>
-        </div>
-      </div>
-    </section>
+    <!-- Konten Utama -->
+    <main>
+      <div class="doc-container">
+        <div class="last-updated" data-i18n="lastUpdated">Terakhir diperbarui: 14 Oktober 2026</div>
 
-    <section>
-      <h2 class="sec-title" data-i18n="secSecurity">Keamanan &amp; Kendali</h2>
-      <div class="group">
-        <div class="row">
-          <span class="row-title" data-i18n="item4Title">Tanpa Pelacakan Pihak Ketiga</span>
-          <p class="row-desc" data-i18n="item4Desc">Deevv Search tidak menggunakan skrip pelacak iklan lintas situs, analitik invasif, ataupun mekanisme <em>profiling</em> data pengguna.</p>
-        </div>
-        <div class="row">
-          <span class="row-title" data-i18n="item5Title">Kontrol Penuh di Tangan Anda</span>
-          <p class="row-desc">
-            <span data-i18n="item5DescPre">Anda memiliki hak penuh atas data lokal yang tersimpan. Seluruh konfigurasi dapat dibersihkan atau di-reset kapan saja melalui menu</span> 
-            <a href="settings.html" data-i18n="settingsLinkText">Pengaturan</a>.
+        <div id="intro" class="intro-banner">
+          <span class="label" data-i18n="introTitle">Komitmen Transparansi Data</span>
+          <p class="desc" data-i18n="introDesc">
+            Di Deevv Search, privasi Anda adalah prioritas utama. Halaman ini merinci bagaimana informasi dan preferensi Anda dikelola secara aman, transparan, dan privat sejak pertama kali menggunakan layanan.
           </p>
         </div>
-      </div>
-    </section>
 
-    <div class="cta-card">
-      <div class="cta-info">
-        <div class="cta-icon-badge">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            <polyline points="9 12 11 14 15 10"></polyline>
-          </svg>
+        <div id="secCollection" class="doc-section">
+          <h2 class="sec-title" data-i18n="secCollection">Pengumpulan &amp; Penggunaan</h2>
+          <div class="content-group">
+            <div id="item1" class="article-block">
+              <span class="label" data-i18n="item1Title">Preferensi Cookie Pengguna</span>
+              <p class="desc" data-i18n="item1Desc">Segala bentuk pengaturan tampilan (seperti mode terang atau gelap), bahasa antarmuka, serta preferensi pencarian disimpan secara mandiri melalui cookie di browser Anda.</p>
+            </div>
+            <div id="item2" class="article-block">
+              <span class="label" data-i18n="item2Title">Query Penelusuran</span>
+              <p class="desc" data-i18n="item2Desc">Kata kunci atau frasa yang Anda ketik diproses secara langsung untuk menyajikan hasil pencarian terbaik tanpa menghubungkan riwayat penelusuran dengan identitas pribadi Anda.</p>
+            </div>
+            <div id="item3" class="article-block">
+              <span class="label" data-i18n="item3Title">Log Sistem Sementara</span>
+              <p class="desc" data-i18n="item3Desc">Sistem memproses informasi jaringan standar secara sementara semata-mata untuk menjaga kestabilan server serta melindungi layanan dari potensi ancaman keamanan.</p>
+            </div>
+          </div>
         </div>
-        <span class="cta-title" data-i18n="ctaTitle">Siap menjelajah dengan aman?</span>
-        <span class="cta-desc" data-i18n="ctaDesc">Kembali ke halaman utama dan nikmati pengalaman pencarian tanpa batas.</span>
-      </div>
-      <a href="index.html" class="btn-primary">
-        <span data-i18n="ctaBtn">Mulai Sekarang</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-          <polyline points="12 5 19 12 12 19"></polyline>
-        </svg>
-      </a>
-    </div>
-  </main>
 
+        <div id="secSecurity" class="doc-section">
+          <h2 class="sec-title" data-i18n="secSecurity">Keamanan &amp; Kendali</h2>
+          <div class="content-group">
+            <div id="item4" class="article-block">
+              <span class="label" data-i18n="item4Title">Tanpa Pelacak Iklan atau Analitik</span>
+              <p class="desc" data-i18n="item4Desc">Deevv Search tidak menggunakan skrip pelacak iklan lintas situs, analitik pihak ketiga yang invasif, ataupun mekanisme <em>profiling</em> data pengguna.</p>
+            </div>
+            <div id="item5" class="article-block">
+              <span class="label" data-i18n="item5Title">Kontrol Penuh di Tangan Anda</span>
+              <p class="desc">
+                <span data-i18n="item5DescPart1">Anda memiliki hak penuh atas preferensi cookie yang tersimpan. Seluruh konfigurasi dapat dibersihkan atau di-reset kapan saja melalui menu</span> 
+                <a href="settings.html" data-i18n="settingsLinkText">Preferensi</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Get Started Card (Bawah) -->
+      <div class="action-card">
+        <div class="action-left">
+          <div class="action-icon-badge">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+            </svg>
+          </div>
+          <div class="action-info">
+            <span class="action-title" data-i18n="actionTitle">Siap untuk penelusuran privat?</span>
+            <span class="action-desc" data-i18n="actionDesc">Nikmati pengalaman pencarian bersih tanpa iklan dan pelacak.</span>
+          </div>
+        </div>
+        <a href="index.html" class="btn-primary">
+          <span data-i18n="actionBtn">Mari mulai</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <!-- Footer -->
   <footer>
     <div class="footer-row">
       <span>&copy; 2026 Deevv Search.</span>
       <div class="footer-links">
         <a href="index.html" data-i18n="footerHome">Beranda</a>
-        <a href="settings.html" data-i18n="footerSettings">Pengaturan</a>
+        <a href="settings.html" data-i18n="footerSettings">Preferensi</a>
         <a href="privacy.html" data-i18n="footerPrivacy">Privasi</a>
       </div>
     </div>
@@ -342,7 +483,6 @@
   <script src="cookie.js"></script>
   <script src="feedback-modal.js"></script>
   <script>
-    // Kamus Bahasa (ID & EN)
     const settingsObj = typeof getData === 'function' ? getData() : {};
     const isIdLang = settingsObj.lang !== "en";
 
@@ -350,26 +490,36 @@
         en: {
             pageTitle: "Privacy Policy",
             back: "Back",
+            tocTitle: "In this article",
+            tocIntro: "Data Transparency",
+            tocCollection: "Collection & Usage",
+            tocItem1: "Cookie Preferences",
+            tocItem2: "Search Queries",
+            tocItem3: "System Logs",
+            tocSecurity: "Security & Control",
+            tocItem4: "No Ad Trackers",
+            tocItem5: "Your Full Control",
+            lastUpdated: "Last updated: October 14, 2026",
             introTitle: "Data Transparency Commitment",
             introDesc: "At Deevv Search, your privacy is a top priority. This page details how your information and preferences are managed securely, transparently, and privately from your very first use.",
             secCollection: "Collection & Usage",
-            item1Title: "Local User Preferences",
-            item1Desc: "All appearance settings (such as light or dark mode), interface language, and search preferences are stored independently in your device's local storage.",
+            item1Title: "User Cookie Preferences",
+            item1Desc: "All appearance settings (such as light or dark mode), interface language, and search preferences are stored independently via cookies in your browser.",
             item2Title: "Search Queries",
             item2Desc: "Keywords or phrases you type are processed directly to deliver the best search results without linking your search history to your personal identity.",
             item3Title: "Temporary System Logs",
             item3Desc: "The system temporarily processes standard network information solely to maintain server stability and protect the service from potential security threats.",
             secSecurity: "Security & Control",
-            item4Title: "No Third-Party Tracking",
-            item4Desc: "Deevv Search does not use cross-site ad tracking scripts, invasive analytics, or user data profiling mechanisms.",
+            item4Title: "No Ad Trackers or Analytics",
+            item4Desc: "Deevv Search does not use cross-site ad tracking scripts, invasive third-party analytics, or user data profiling mechanisms.",
             item5Title: "Full Control in Your Hands",
-            item5DescPre: "You have full rights over your stored local data. All configurations can be cleared or reset at any time via the",
-            settingsLinkText: "Settings",
-            ctaTitle: "Ready to browse safely?",
-            ctaDesc: "Return to the home page and enjoy a seamless, limitless search experience.",
-            ctaBtn: "Get Started",
+            item5DescPart1: "You have full control over your stored cookie data. All configurations can be cleared or reset at any time via",
+            settingsLinkText: "Preferences",
+            actionTitle: "Ready for private browsing?",
+            actionDesc: "Enjoy a clean search experience free of ads and trackers.",
+            actionBtn: "Get started",
             footerHome: "Home",
-            footerSettings: "Settings",
+            footerSettings: "Preferences",
             footerPrivacy: "Privacy",
             footerTagline: "A clean and fast search experience.",
             feedback: "Feedback",
@@ -379,26 +529,36 @@
         id: {
             pageTitle: "Kebijakan Privasi",
             back: "Kembali",
+            tocTitle: "Dalam artikel ini",
+            tocIntro: "Transparansi Data",
+            tocCollection: "Pengumpulan & Penggunaan",
+            tocItem1: "Preferensi Cookie",
+            tocItem2: "Query Penelusuran",
+            tocItem3: "Log Sistem",
+            tocSecurity: "Keamanan & Kendali",
+            tocItem4: "Tanpa Pelacak Iklan",
+            tocItem5: "Kontrol Penuh Anda",
+            lastUpdated: "Terakhir diperbarui: 14 Oktober 2026",
             introTitle: "Komitmen Transparansi Data",
             introDesc: "Di Deevv Search, privasi Anda adalah prioritas utama. Halaman ini merinci bagaimana informasi dan preferensi Anda dikelola secara aman, transparan, dan privat sejak pertama kali menggunakan layanan.",
             secCollection: "Pengumpulan & Penggunaan",
-            item1Title: "Preferensi Pengguna Lokal",
-            item1Desc: "Segala bentuk pengaturan tampilan (seperti mode terang atau gelap), bahasa antarmuka, serta preferensi pencarian disimpan secara mandiri di dalam penyimpanan lokal perangkat Anda.",
+            item1Title: "Preferensi Cookie Pengguna",
+            item1Desc: "Segala bentuk pengaturan tampilan (seperti mode terang atau gelap), bahasa antarmuka, serta preferensi pencarian disimpan secara mandiri melalui cookie di browser Anda.",
             item2Title: "Query Penelusuran",
             item2Desc: "Kata kunci atau frasa yang Anda ketik diproses secara langsung untuk menyajikan hasil pencarian terbaik tanpa menghubungkan riwayat penelusuran dengan identitas pribadi Anda.",
             item3Title: "Log Sistem Sementara",
             item3Desc: "Sistem memproses informasi jaringan standar secara sementara semata-mata untuk menjaga kestabilan server serta melindungi layanan dari potensi ancaman keamanan.",
             secSecurity: "Keamanan & Kendali",
-            item4Title: "Tanpa Pelacakan Pihak Ketiga",
-            item4Desc: "Deevv Search tidak menggunakan skrip pelacak iklan lintas situs, analitik invasif, ataupun mekanisme <em>profiling</em> data pengguna.",
+            item4Title: "Tanpa Pelacak Iklan atau Analitik",
+            item4Desc: "Deevv Search tidak menggunakan skrip pelacak iklan lintas situs, analitik pihak ketiga yang invasif, ataupun mekanisme <em>profiling</em> data pengguna.",
             item5Title: "Kontrol Penuh di Tangan Anda",
-            item5DescPre: "Anda memiliki hak penuh atas data lokal yang tersimpan. Seluruh konfigurasi dapat dibersihkan atau di-reset kapan saja melalui menu",
-            settingsLinkText: "Pengaturan",
-            ctaTitle: "Siap menjelajah dengan aman?",
-            ctaDesc: "Kembali ke halaman utama dan nikmati pengalaman pencarian tanpa batas.",
-            ctaBtn: "Mulai Sekarang",
+            item5DescPart1: "Anda memiliki hak penuh atas preferensi cookie yang tersimpan. Seluruh konfigurasi dapat dibersihkan atau di-reset kapan saja melalui menu",
+            settingsLinkText: "Preferensi",
+            actionTitle: "Siap untuk penelusuran privat?",
+            actionDesc: "Nikmati pengalaman pencarian bersih tanpa iklan dan pelacak.",
+            actionBtn: "Mari mulai",
             footerHome: "Beranda",
-            footerSettings: "Pengaturan",
+            footerSettings: "Preferensi",
             footerPrivacy: "Privasi",
             footerTagline: "Pengalaman pencarian yang bersih dan cepat.",
             feedback: "Masukan",
@@ -409,14 +569,14 @@
 
     const getText = (key) => {
         const lang = isIdLang ? 'id' : 'en';
-        return LANG_DICT[lang][key] !== undefined ? LANG_DICT[lang][key] : LANG_DICT.en[key];
+        return LANG_DICT[lang] && LANG_DICT[lang][key] !== undefined ? LANG_DICT[lang][key] : LANG_DICT.en[key];
     };
 
     function applyTranslations() {
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             const text = getText(key);
-            if (text) el.innerHTML = text; // pakai innerHTML supaya tag HTML seperti <em> aman jika ada
+            if (text) el.innerHTML = text;
         });
         const backBtn = document.getElementById('backBtn');
         if (backBtn) backBtn.setAttribute('aria-label', getText('back'));

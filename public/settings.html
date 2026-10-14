@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
-  <title>Settings - Deevv</title>
+  <title>Preferensi - Deevv Search</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="images/search.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,14 +15,15 @@
   <style>
     :root {
       --primary: #1a73e8;
-      --bg: #ffffff;
-      --surface: #f8fafc;
+      --bg: #f7f8f9;
+      --surface: #ffffff;
       --text: #1f1f1f;
       --muted: #5f6368;
-      --line: rgba(0, 0, 0, 0.12);
+      --line: rgba(0, 0, 0, 0.08);
       --track: #dadce0;
       --danger: #d93025;
-      --press: rgba(128, 128, 128, 0.14);
+      --press: rgba(128, 128, 128, 0.1);
+      --shadow: none;
     }
     :root.dark, body.dark {
       --primary: #8ab4f8;
@@ -30,12 +31,13 @@
       --surface: #22262b;
       --text: #e8eaed;
       --muted: #9aa0a6;
-      --line: rgba(255, 255, 255, 0.16);
+      --line: rgba(255, 255, 255, 0.12);
       --track: #4a4d52;
       --danger: #f28b82;
+      --shadow: none;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
 
     body {
       font-family: 'Google Sans Flex', -apple-system, 'Segoe UI', sans-serif;
@@ -45,20 +47,19 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 16px 0;
+      padding: 24px clamp(16px, 5vw, 144px) 0;
     }
 
     button { font-family: inherit; color: inherit; }
 
-    /* ---------- Header ---------- */
+    /* ---------- Header / Top Bar ---------- */
     header {
       width: 100%;
-      max-width: 560px;
+      max-width: 960px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
+      padding: 0;
     }
     .icon-btn {
       width: 40px;
@@ -72,14 +73,97 @@
       background: transparent;
       color: var(--text);
       cursor: pointer;
+      transition: background 0.15s ease;
     }
     .icon-btn:hover, .icon-btn:active { background: var(--press); }
-    .page-title { flex: 1; font-size: 20px; font-weight: 600; letter-spacing: -0.2px; }
+    .page-title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.1px;
+      color: var(--text);
+    }
 
-    /* ---------- Main & Group Cards Asli ---------- */
-    main { width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 28px; }
-    .sec-title { padding: 0 20px 12px; letter-spacing: 0.1px; font-size: 13px; font-weight: 600; color: var(--primary); }
-    .group { display: flex; flex-direction: column; gap: 3px; }
+    /* ---------- Layout Utama (Grid 2 Kolom: Pengaturan di Kiri, Ekspor/Impor di Kanan / Sebaliknya) ---------- */
+    .page-layout {
+      width: 100%;
+      max-width: 960px;
+      display: grid;
+      grid-template-columns: 1fr 300px; /* Kiri konten utama, kanan menu ekspor/impor */
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* ---------- Sidebar Kanan (Menu Ekspor & Impor) ---------- */
+    aside.settings-sidebar {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 20px;
+      position: sticky;
+      top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .sidebar-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .sidebar-action-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .sidebar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .sidebar-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .sidebar-row .info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .sidebar-row .btn-secondary {
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* ---------- Konten Utama Kiri ---------- */
+    main {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .settings-card {
+      background: var(--surface);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      border: none;
+      overflow: hidden;
+    }
+
+    .card-section-title {
+      padding: 20px 24px 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--primary);
+    }
 
     .row {
       position: relative;
@@ -87,20 +171,24 @@
       align-items: center;
       justify-content: space-between;
       gap: 20px;
-      min-height: 72px;
-      padding: 16px 20px;
-      background: var(--surface);
-      border-radius: 4px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--line);
     }
-    .group > .row:first-child { border-radius: 24px 24px 4px 4px; }
-    .group > .row:last-child  { border-radius: 4px 4px 24px 24px; }
-    .group > .row:only-child  { border-radius: 24px; }
+    .row:last-child {
+      border-bottom: none;
+    }
 
-    .info { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
-    .label { font-size: 15px; font-weight: 600; color: var(--text); }
-    .desc { font-size: 13.5px; line-height: 1.6; color: var(--muted); }
+    .info { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 3px; 
+      min-width: 0; 
+      flex: 1;
+    }
+    .label { font-size: 14.5px; font-weight: 600; color: var(--text); }
+    .desc { font-size: 13px; line-height: 1.5; color: var(--muted); }
 
-    /* ---------- Switch ---------- */
+    /* ---------- Switch Toggle ---------- */
     .switch { position: relative; display: inline-block; width: 40px; height: 22px; flex: 0 0 auto; }
     .switch input { opacity: 0; width: 0; height: 0; position: absolute; }
     .slider { position: absolute; inset: 0; cursor: pointer; background: var(--track); border-radius: 22px; transition: background .2s ease; }
@@ -119,12 +207,14 @@
       align-items: center;
       gap: 6px;
       height: 36px;
-      padding: 0 10px 0 14px;
+      padding: 0 12px 0 14px;
       border: 1px solid var(--line);
       border-radius: 18px;
-      background: transparent;
-      font-size: 14px;
+      background: var(--bg);
+      font-size: 13.5px;
+      font-weight: 500;
       cursor: pointer;
+      color: var(--text);
     }
     .dd-btn:hover { background: var(--press); }
     .dd-btn svg { color: var(--muted); transition: transform .2s ease; }
@@ -132,24 +222,25 @@
 
     .dd-panel { display: none; }
     .dd.open .dd-panel { display: block; }
-    .dd-title { padding: 0 16px 8px; font-size: 16px; font-weight: 500; }
+    .dd-title { padding: 0 16px 8px; font-size: 15px; font-weight: 500; }
     .dd-opt {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       width: 100%;
-      height: 44px;
+      height: 42px;
       padding: 0 16px;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       background: transparent;
-      font-size: 15px;
+      font-size: 14px;
       text-align: left;
       cursor: pointer;
+      color: var(--text);
     }
     .dd-opt:hover, .dd-opt:active { background: var(--press); }
     .dd-opt i {
-      flex: 0 0 auto; position: relative; width: 18px; height: 18px;
+      flex: 0 0 auto; position: relative; width: 16px; height: 16px;
       border: 2px solid var(--muted); border-radius: 50%;
     }
     .dd-opt.active i { border-color: var(--primary); }
@@ -163,30 +254,40 @@
       }
       .dd.open .dd-panel { display: flex; }
       .dd-card {
-        width: 100%; max-width: 320px; padding: 18px 8px 8px;
-        border-radius: 24px; background: var(--surface);
+        width: 100%; max-width: 300px; padding: 18px 8px 8px;
+        border-radius: 20px; background: var(--surface);
       }
     }
     @media (min-width: 780px) {
       .dd-panel { position: absolute; top: calc(100% + 6px); right: 0; z-index: 50; }
       .dd-card {
-        min-width: 210px; padding: 6px;
-        border-radius: 16px; background: var(--surface);
-        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18), 0 0 0 1px var(--line);
+        min-width: 200px; padding: 6px;
+        border-radius: 14px; background: var(--surface);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 0 0 0 1px var(--line);
       }
       .dd-title { display: none; }
-      .dd-opt { height: 40px; }
+      .dd-opt { height: 38px; }
     }
 
-    /* ---------- Tombol Reset ---------- */
+    /* ---------- Tombol Aksi ---------- */
     .btn-danger {
       flex: 0 0 auto; height: 36px; padding: 0 16px;
       border: 1px solid var(--line); border-radius: 18px; background: transparent;
-      color: var(--danger); font-size: 13.5px; cursor: pointer;
+      color: var(--danger); font-size: 13px; font-weight: 500; cursor: pointer;
     }
     .btn-danger:hover, .btn-danger:active { background: var(--press); }
 
-    /* ---------- Toast ---------- */
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 36px; padding: 0 16px;
+      border: 1px solid var(--line); border-radius: 18px; background: transparent;
+      color: var(--primary); font-size: 13px; font-weight: 500; cursor: pointer;
+    }
+    .btn-secondary:hover, .btn-secondary:active { background: var(--press); }
+
+    /* ---------- Toast Notification ---------- */
     .toast {
       position: fixed; bottom: 24px; left: 50%;
       padding: 12px 20px; border-radius: 24px;
@@ -197,12 +298,12 @@
     }
     .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-    /* ---------- Footer Diselaraskan Privacy ---------- */
+    /* ---------- Footer ---------- */
     footer {
       width: 100%;
-      max-width: 560px;
-      margin-top: 48px;
-      padding: 24px 0;
+      max-width: 960px;
+      margin-top: 56px;
+      padding: 24px 0 24px;
       border-top: 1px solid var(--line);
       display: flex;
       flex-direction: column;
@@ -236,52 +337,49 @@
       color: var(--primary);
     }
 
-    @media (max-width: 480px) {
-      .footer-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
+    /* ---------- Responsive (Mobile) ---------- */
+    @media (max-width: 768px) {
+      .page-layout {
+        grid-template-columns: 1fr; /* Di mobile jadi 1 kolom, konten utama duluan, sidebar di bawah */
       }
-    }
-
-    /* ---------- Mode Desktop Sesuai Privacy ---------- */
-    @media (min-width: 641px) {
-      header, main, footer {
-        max-width: 760px;
+      aside.settings-sidebar {
+        position: relative;
+        top: 0;
+        order: 2; /* Memastikan sidebar ekspor/impor turun ke bawah di mode mobile */
       }
-      header {
-        justify-content: space-between;
+      main {
+        order: 1;
       }
-      .row {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        align-items: center;
-        gap: 20px;
-        padding: 16px 20px;
-      }
+      .footer-row { flex-direction: column; align-items: flex-start; gap: 8px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      * { transition: none !important; }
+      * { transition: none !important; scroll-behavior: auto !important; }
     }
   </style>
 </head>
 <body>
 
+  <!-- Header -->
   <header>
-    <button class="icon-btn" onclick="history.back()" id="backBtn" aria-label="Kembali">
+    <button class="icon-btn" onclick="history.back()" id="backBtn" aria-label="Kembali" style="position: relative; left: -8px;">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <line x1="19" y1="12" x2="5" y2="12"></line>
         <polyline points="12 19 5 12 12 5"></polyline>
       </svg>
     </button>
-    <h1 class="page-title" data-i18n="settingsTitle">Pengaturan</h1>
+    <h1 class="page-title" data-i18n="settingsTitle">Preferensi</h1>
   </header>
 
-  <main>
-    <section>
-      <h2 class="sec-title" data-i18n="secAppearance">Tampilan</h2>
-      <div class="group">
+  <!-- Layout Utama (Konten Pengaturan di Kiri/Atas, Menu Ekspor Impor di Kanan/Bawah) -->
+  <div class="page-layout">
+    
+    <!-- Konten Utama (Muncul Pertama di Mobile, di Kiri pada Desktop) -->
+    <main>
+      <!-- Tampilan & Bahasa -->
+      <div class="settings-card">
+        <div class="card-section-title" data-i18n="secAppearance">Tampilan &amp; Bahasa</div>
+        
         <div class="row">
           <div class="info">
             <span class="label" data-i18n="lblTheme">Tema tampilan</span>
@@ -289,6 +387,15 @@
           </div>
           <div class="dd" data-key="theme" data-title="Tema tampilan"></div>
         </div>
+
+        <div class="row">
+          <div class="info">
+            <span class="label" data-i18n="lblLanguage">Bahasa antarmuka</span>
+            <span class="desc" data-i18n="descLanguage">Bahasa yang digunakan dalam layanan</span>
+          </div>
+          <div class="dd" data-key="lang" data-title="Bahasa antarmuka"></div>
+        </div>
+
         <div class="row">
           <div class="info">
             <span class="label" data-i18n="lblFavicon">Favicon situs</span>
@@ -297,24 +404,11 @@
           <label class="switch"><input type="checkbox" id="favicon_toggle"><span class="slider"></span></label>
         </div>
       </div>
-    </section>
 
-    <section>
-      <h2 class="sec-title" data-i18n="secLanguage">Bahasa</h2>
-      <div class="group">
-        <div class="row">
-          <div class="info">
-            <span class="label" data-i18n="lblLanguage">Bahasa antarmuka</span>
-            <span class="desc" data-i18n="descLanguage">Bahasa yang digunakan dalam layanan</span>
-          </div>
-          <div class="dd" data-key="lang" data-title="Bahasa antarmuka"></div>
-        </div>
-      </div>
-    </section>
+      <!-- Pencarian -->
+      <div class="settings-card">
+        <div class="card-section-title" data-i18n="secSearch">Pencarian</div>
 
-    <section>
-      <h2 class="sec-title" data-i18n="secSearch">Pencarian</h2>
-      <div class="group">
         <div class="row">
           <div class="info">
             <span class="label" data-i18n="lblNewTab">Buka di tab baru</span>
@@ -322,6 +416,7 @@
           </div>
           <label class="switch"><input type="checkbox" id="newtab_toggle"><span class="slider"></span></label>
         </div>
+
         <div class="row">
           <div class="info">
             <span class="label" data-i18n="lblNewUrl">Navigasi langsung URL</span>
@@ -329,6 +424,7 @@
           </div>
           <label class="switch"><input type="checkbox" id="newurl_toggle"><span class="slider"></span></label>
         </div>
+
         <div class="row">
           <div class="info">
             <span class="label" data-i18n="lblSuggest">Saran pencarian</span>
@@ -337,37 +433,61 @@
           <label class="switch"><input type="checkbox" id="suggest_toggle"><span class="slider"></span></label>
         </div>
       </div>
-    </section>
 
-    <section>
-      <h2 class="sec-title" data-i18n="secPrivacy">Privasi &amp; cookie</h2>
-      <div class="group">
+      <!-- Privasi & Cookie -->
+      <div class="settings-card">
+        <div class="card-section-title" data-i18n="secPrivacy">Privasi &amp; Cookie</div>
+
         <div class="row">
           <div class="info">
-            <span class="label" data-i18n="lblReset">Reset cookie pengaturan</span>
+            <span class="label" data-i18n="lblReset">Reset cookie preferensi</span>
             <span class="desc" data-i18n="descReset">Kembalikan seluruh konfigurasimu ke bawaan</span>
           </div>
           <button type="button" class="btn-danger" id="reset_cookie_btn" data-i18n="btnReset">Reset</button>
         </div>
       </div>
-    </section>
-  </main>
+    </main>
 
-  <div id="toast" class="toast" role="status">Pengaturan tersimpan</div>
+    <!-- Sidebar Kanan: Menu Ekspor & Impor (Di Kanan pada Desktop, di Bawah pada Mobile) -->
+    <aside class="settings-sidebar">
+      <div class="sidebar-title" data-i18n="secBackup">Cadangan Data</div>
+      <div class="sidebar-action-group">
+        <div class="sidebar-row">
+          <div class="info">
+            <span class="label" data-i18n="lblExport">Ekspor pengaturan</span>
+            <span class="desc" data-i18n="descExport">Simpan preferensi Anda ke file cadangan</span>
+          </div>
+          <button type="button" class="btn-secondary" id="export_btn" data-i18n="btnExport">Ekspor</button>
+        </div>
+        <div class="sidebar-row">
+          <div class="info">
+            <span class="label" data-i18n="lblImport">Impor pengaturan</span>
+            <span class="desc" data-i18n="descImport">Pulihkan preferensi dari file cadangan</span>
+          </div>
+          <button type="button" class="btn-secondary" id="import_btn" data-i18n="btnImport">Impor</button>
+          <input type="file" id="import_file" accept=".json" style="display: none;">
+        </div>
+      </div>
+    </aside>
 
+  </div>
+
+  <div id="toast" class="toast" role="status">Preferensi tersimpan</div>
+
+  <!-- Footer -->
   <footer>
     <div class="footer-row">
       <span>&copy; 2026 Deevv Search.</span>
       <div class="footer-links">
         <a href="index.html" data-i18n="footerHome">Beranda</a>
-        <a href="settings.html" data-i18n="footerSettings">Pengaturan</a>
+        <a href="settings.html" data-i18n="footerSettings">Preferensi</a>
         <a href="privacy.html" data-i18n="footerPrivacy">Privasi</a>
       </div>
     </div>
     <div class="footer-row">
       <span data-i18n="footerTagline">Pengalaman pencarian yang bersih dan cepat.</span>
       <div class="footer-links">
-        <button id="theme-toggle-btn" onclick="toggleTheme()">Tema gelap: Nonaktif</button>
+        <button id="theme-toggle-btn" type="button">Tema gelap: Nonaktif</button>
         <button type="button" onclick="openFeedbackModal()" data-i18n="feedback">Masukan</button>
       </div>
     </div>
@@ -379,26 +499,22 @@
   <script>
     const $ = (id) => document.getElementById(id);
     const toast = $('toast');
-    const CHEVRON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>';
+    const CHEVRON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
 
-    // ==========================================
-    // DICTIONARY & LANGUAGE (Konsisten dengan script.js)
-    // ==========================================
     const settingsObj = typeof getData === 'function' ? getData() : {};
-    const isIdLang = settingsObj.lang !== "en"; // Default ke ID jika tidak diset ke 'en'
+    const isIdLang = settingsObj.lang !== "en";
 
     const LANG_DICT = {
         en: {
-            settingsTitle: "Settings",
+            settingsTitle: "Preferences",
             back: "Back",
-            secAppearance: "Appearance",
+            secAppearance: "Appearance & Language",
             lblTheme: "Display theme",
             descTheme: "Choose Deevv Search interface color",
-            lblFavicon: "Site favicon",
-            descFavicon: "Show website logos on search results",
-            secLanguage: "Language",
             lblLanguage: "Interface language",
             descLanguage: "Language used in the service",
+            lblFavicon: "Site favicon",
+            descFavicon: "Show website logos on search results",
             secSearch: "Search",
             lblNewTab: "Open in new tab",
             descNewTab: "Open search result links in a separate tab",
@@ -406,37 +522,46 @@
             descNewUrl: "Open site directly if input is a valid URL",
             lblSuggest: "Search suggestions",
             descSuggest: "Show keyword recommendations while typing",
+            secBackup: "Data Backup",
+            lblExport: "Export settings",
+            descExport: "Save your preferences into a backup file",
+            btnExport: "Export",
+            lblImport: "Import settings",
+            descImport: "Restore preferences from a backup file",
+            btnImport: "Import",
             secPrivacy: "Privacy & cookies",
-            lblReset: "Reset settings cookies",
+            lblReset: "Reset preference cookies",
             descReset: "Restore all your configurations to default",
             btnReset: "Reset",
             footerHome: "Home",
-            footerSettings: "Settings",
+            footerSettings: "Preferences",
             footerPrivacy: "Privacy",
             footerTagline: "A clean and fast search experience.",
             feedback: "Feedback",
-            toastSaved: "Settings saved",
+            toastSaved: "Preferences saved",
             toastTheme: "Theme updated",
             toastLang: "Language updated",
             toastFavicon: "Favicon setting saved",
             toastTab: "Tab setting saved",
             toastUrl: "URL setting saved",
             toastSuggest: "Suggestion setting saved",
+            toastExport: "Settings successfully exported",
+            toastImport: "Settings successfully imported",
+            toastError: "Failed to import settings file",
             toastReset: "Cookies successfully reset",
             darkThemeOn: "Dark theme: On",
             darkThemeOff: "Dark theme: Off"
         },
         id: {
-            settingsTitle: "Pengaturan",
+            settingsTitle: "Preferensi",
             back: "Kembali",
-            secAppearance: "Tampilan",
+            secAppearance: "Tampilan & Bahasa",
             lblTheme: "Tema tampilan",
             descTheme: "Pilih warna antarmuka Deevv Search",
-            lblFavicon: "Favicon situs",
-            descFavicon: "Tampilkan logo situs web pada hasil pencarian",
-            secLanguage: "Bahasa",
             lblLanguage: "Bahasa antarmuka",
             descLanguage: "Bahasa yang digunakan dalam layanan",
+            lblFavicon: "Favicon situs",
+            descFavicon: "Tampilkan logo situs web pada hasil pencarian",
             secSearch: "Pencarian",
             lblNewTab: "Buka di tab baru",
             descNewTab: "Membuka tautan hasil pencarian di tab terpisah",
@@ -444,22 +569,32 @@
             descNewUrl: "Buka situs langsung jika input berupa URL valid",
             lblSuggest: "Saran pencarian",
             descSuggest: "Tampilkan rekomendasi kata kunci saat mengetik",
-            secPrivacy: "Privasi & cookie",
-            lblReset: "Reset cookie pengaturan",
+            secBackup: "Cadangan Data",
+            lblExport: "Ekspor pengaturan",
+            descExport: "Simpan preferensi Anda ke file cadangan",
+            btnExport: "Ekspor",
+            lblImport: "Impor pengaturan",
+            descImport: "Pulihkan preferensi dari file cadangan",
+            btnImport: "Impor",
+            secPrivacy: "Privasi & Cookie",
+            lblReset: "Reset cookie preferensi",
             descReset: "Kembalikan seluruh konfigurasimu ke bawaan",
             btnReset: "Reset",
             footerHome: "Beranda",
-            footerSettings: "Pengaturan",
+            footerSettings: "Preferensi",
             footerPrivacy: "Privasi",
             footerTagline: "Pengalaman pencarian yang bersih dan cepat.",
             feedback: "Masukan",
-            toastSaved: "Pengaturan tersimpan",
+            toastSaved: "Preferensi tersimpan",
             toastTheme: "Tema diperbarui",
             toastLang: "Bahasa diperbarui",
             toastFavicon: "Pengaturan favicon disimpan",
             toastTab: "Pengaturan tab disimpan",
             toastUrl: "Pengaturan URL disimpan",
             toastSuggest: "Pengaturan saran disimpan",
+            toastExport: "Pengaturan berhasil diekspor",
+            toastImport: "Pengaturan berhasil diimpor",
+            toastError: "Gagal membaca file pengaturan",
             toastReset: "Cookie berhasil di-reset",
             darkThemeOn: "Tema gelap: Aktif",
             darkThemeOff: "Tema gelap: Nonaktif"
@@ -468,10 +603,9 @@
 
     const getText = (key) => {
         const lang = isIdLang ? 'id' : 'en';
-        return LANG_DICT[lang][key] !== undefined ? LANG_DICT[lang][key] : LANG_DICT.en[key];
+        return LANG_DICT[lang] && LANG_DICT[lang][key] !== undefined ? LANG_DICT[lang][key] : LANG_DICT.en[key];
     };
 
-    // Terapkan terjemahan otomatis ke elemen ber-atribut data-i18n
     function applyTranslations() {
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
@@ -480,7 +614,7 @@
         });
         const backBtn = $('backBtn');
         if (backBtn) backBtn.setAttribute('aria-label', getText('back'));
-        document.title = `${getText('settingsTitle')} - Deevv`;
+        document.title = `${getText('settingsTitle')} — Deevv Search`;
         document.documentElement.lang = isIdLang ? 'id' : 'en';
     }
 
@@ -489,7 +623,6 @@
       lang:  [['id', 'Bahasa Indonesia'], ['en', 'English (US)']]
     };
     
-    // Mengambil teks toast sesuai bahasa aktif
     const getToastMessage = (key) => {
         const map = { theme: 'toastTheme', lang: 'toastLang', favicon: 'toastFavicon', newtab: 'toastTab', newurl: 'toastUrl', suggest: 'toastSuggest' };
         return getText(map[key] || 'toastSaved');
@@ -520,8 +653,13 @@
     function toggleTheme() {
       var isDark = document.documentElement.classList.contains("dark");
       var newTheme = isDark ? "light" : "dark";
-      document.cookie = "theme=" + newTheme + "; path=/; max-age=31536000";
-      setValue('theme', newTheme);
+      
+      if (typeof updateSetting === "function") {
+        updateSetting("theme", newTheme);
+      } else {
+        document.cookie = "theme=" + newTheme + "; path=/; max-age=31536000";
+      }
+      applyTheme(newTheme);
     }
 
     const state = {};
@@ -578,7 +716,6 @@
       updateSetting(key, val);
       if (key === 'theme') applyTheme(val);
       if (key === 'lang') {
-          // Jika bahasa diubah, langsung reload agar seluruh teks ter-load dengan bahasa baru
           showToast(getText('toastLang'));
           setTimeout(() => location.reload(), 800);
           return;
@@ -588,7 +725,12 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      applyTranslations(); // Jalankan penerjemahan teks HTML
+      applyTranslations();
+      
+      var themeBtn = document.getElementById('theme-toggle-btn');
+      if (themeBtn) {
+        themeBtn.addEventListener('click', toggleTheme);
+      }
 
       const config = getData();
       state.theme = OPTIONS.theme.some(o => o[0] === config.theme) ? config.theme : 'light';
@@ -612,6 +754,67 @@
           updateSetting(key, e.target.checked); 
           showToast(getToastMessage(key)); 
       });
+    });
+
+    /* ---------- Logika Ekspor Pengaturan ---------- */
+    $('export_btn').addEventListener('click', () => {
+      const storedData = typeof getData === 'function' ? getData() : {};
+      
+      // Format isi JSON sesuai dengan struktur yang diinginkan
+      const exportData = {
+        settings: {
+          theme: state.theme || storedData.theme || 'light',
+          lang: state.lang || storedData.lang || 'id',
+          favicon: $('favicon_toggle').checked,
+          newtab: $('newtab_toggle').checked,
+          newurl: $('newurl_toggle').checked,
+          suggest: $('suggest_toggle').checked,
+          ...storedData
+        }
+      };
+      
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'deevv-config.json'; // Nama file unduhan
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast(getText('toastExport'));
+    });
+
+    $('import_btn').addEventListener('click', () => {
+      $('import_file').click();
+    });
+
+    /* ---------- Logika Impor Pembaca Pengaturan ---------- */
+    $('import_file').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const importedJson = JSON.parse(event.target.result);
+          
+          // Mengambil objek settings dari dalam file (mendukung format baru maupun langsung)
+          const importedData = importedJson.settings ? importedJson.settings : importedJson;
+
+          if (importedData && typeof importedData === 'object') {
+            for (const [key, val] of Object.entries(importedData)) {
+              if (typeof updateSetting === 'function') {
+                updateSetting(key, val);
+              }
+            }
+            showToast(getText('toastImport'));
+            setTimeout(() => location.reload(), 1000);
+          } else {
+            throw new Error();
+          }
+        } catch (err) {
+          showToast(getText('toastError'));
+        }
+      };
+      reader.readAsText(file);
     });
 
     $('reset_cookie_btn').addEventListener('click', () => {
