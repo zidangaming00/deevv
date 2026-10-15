@@ -2393,7 +2393,8 @@ function loadImgTest() {
 
 async function performSearch() {
 
-if (queryLower === "ruang angkasa" || queryLower === "cosmos" || queryLower === "easter egg") {
+    const queryLower = (Config.q || "").toLowerCase().trim();
+    if (queryLower === "ruang angkasa" || queryLower === "cosmos" || queryLower === "easter egg") {
         SpaceEasterEgg.init();
     }
 
