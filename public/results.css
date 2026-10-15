@@ -1196,28 +1196,31 @@ body.dark .calculator .calc-mode-switch button.active {
   .result-card .tab-link { display: inline-block; padding: 16px 16px 0; }
   .result-card .btm-snpt { padding: 0 15px 5px; }
 
+  /* Instant Answer sebagai Sidebar yang pas dan tidak terpotong */
   .instant-answer { 
-    width: 310px !important; 
+    width: 360px !important; 
+    flex: 0 0 360px;
     border: 1px solid var(--color-border) !important;
     border-radius: 16px !important; 
-    margin-left: 20px !important; 
+    margin-left: 0 !important; 
+    margin-bottom: 0 !important;
     box-shadow: none !important; 
   }
-  .results-list .instant-answer { display: none; }
+  .results-list .instant-answer { 
+    display: block !important; 
+  }
 
-.related-search {
+  .related-search {
     padding: 16px 16px 8px 16px;
     border: 0;
   }
 
-  /* Grid 2 kolom dengan jarak antar baris yang rapat */
   .search-list {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 8px 12px;
   }
 
-  /* Kartu diset ramping (padding tipis) & pill-rounded modern */
   .search-list .related {
     width: 100%;
     padding: 4px 14px; 
@@ -1230,7 +1233,6 @@ body.dark .calculator .calc-mode-switch button.active {
     transition: background-color 0.15s ease, border-color 0.15s ease;
   }
 
-  /* Hover ramping tanpa efek melayang berlebihan */
   .search-list .related:hover {
     background-color: #f1f5f9;
     border-color: #cbd5e1;
@@ -1253,7 +1255,7 @@ body.dark .calculator .calc-mode-switch button.active {
 }
 
 @media (min-width: 992px) {
-  .instant-answer { width: 380px !important; }
+  .instant-answer { width: 380px !important; flex: 0 0 380px; }
 }
 
 @media (max-width: 480px) {
