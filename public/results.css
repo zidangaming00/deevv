@@ -1202,7 +1202,7 @@ body.dark .calculator .calc-mode-switch button.active {
   .result-card .favicon { width: 26px; height: 26px; }
   .result-card .link { font-size: 14px; }
   .result-card:not(.instant-answer):not(.news-card):not(.video-widget) .title {
-    font-size: 21px;
+    font-size: 22px;
     line-height: 1.3;
   }
   .result-card .snippet { font-size: 15px; line-height: 1.55; }
