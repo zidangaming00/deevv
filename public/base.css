@@ -40,6 +40,15 @@ input[type="search"]::-webkit-search-results-decoration {
   --card-shadow: 0 0 0 1px rgba(235, 237, 239, 1);
   --page-max-width: 630px;
   --page-gutter: 130px;
+
+  /* Layout desktop dinamis: satu sumber nilai untuk header, hasil, instant answer, footer */
+  --logo-w: 92px;
+  --header-gap: 24px;
+  --page-offset: clamp(140px, 13vw, 200px);   /* jeda kosong kiri: tumbuh mengikuti layar */
+  --page-pad-right: clamp(16px, 2vw, 32px);
+  --col-gap: clamp(20px, 2.6vw, 40px);        /* jarak kolom hasil <-> instant answer */
+  --ia-width: clamp(264px, 28vw, 370px);
+  --card-pad: 16px;                           /* padding horizontal isi kartu (footer ikut ini) */
   --dtext-small: 14px;
   --dtext-medium: 18px;
 }
@@ -272,25 +281,27 @@ body.dark .related:after {
 
 /* --- Tab Navigation --- */
 .tab-wrapper {
-  padding: 12px 12px 16px 12px;
+  padding: 12px 0 16px;
   display: flex;
   justify-content: center;
 }
 .tab-wrapper svg { margin-right: 5px; }
 
 .search-menu {
-  padding: 0 13px;
+  display: flex;
+  gap: 24px;               /* jarak antar tab (dulu padding kiri+kanan 12px di .tab-wrapper) */
+  padding: 0 25px;
   margin: 0;
   border-bottom: 1px solid var(--color-border);
   user-select: none;
   white-space: nowrap;
-  display: -webkit-box;
   overflow-x: scroll;
   scroll-snap-type: x mandatory;
 }
 .search-menu::-webkit-scrollbar { display: none; }
 
 .search-item {
+  flex: 0 0 auto;
   display: inline-block;
   text-align: center;
   font-size: var(--dtext-small);
@@ -329,7 +340,8 @@ body.dark .related:after {
 
 .main-result {
   position: relative;
-  min-width: 100%;
+  width: 100%;
+  min-width: 0;
   background: var(--color-white);
   display: flex;
   flex-direction: column;
@@ -337,12 +349,6 @@ body.dark .related:after {
   justify-content: center;
 }
 
-@media (min-width: 780px) {
-   .main-result.vw-max {
-      min-width: var(--page-max-width);
-      max-width: var(--page-max-width)
-   }
-}
 
 .result-stats { display: none; }
 
@@ -428,7 +434,7 @@ footer {
   width: 100%;
   max-width: 560px;
   margin: 0 auto;
-  padding: 24px 16px;
+  padding: 24px var(--card-pad, 16px);
   border-top: 1px solid var(--color-border, #e0e0e0);
   display: flex;
   flex-direction: column;
@@ -478,9 +484,19 @@ footer {
 }
 
 @media (min-width: 780px) {
+  /* Footer mulai dari tepi kiri kartu hasil (--page-offset) dan berakhir di tepi kanan
+     instant answer; teks di dalamnya punya padding sama dengan isi kartu. */
   footer {
-    max-width: 960px;
+    width: auto;
+    max-width: calc(var(--page-max-width) + var(--col-gap) + var(--ia-width));
+    margin: 16px var(--page-pad-right) 0 var(--page-offset);
+    padding: 28px var(--card-pad) 36px;
+    font-size: 13px;
   }
+
+  .footer-links { gap: 8px 20px; }
+  .footer-links a,
+  .footer-links button { font-size: 13px; }
 }
 
 /* ==========================================================================
@@ -493,15 +509,15 @@ footer {
 }
 
 @media (min-width: 780px) {
-  :root { 
+  :root {
     --color-title: #1A0DAB;
-    --page-max-width: 652px; 
+    --page-max-width: 652px;
   }
 
-  /* Membuat kontainer utama header agar sejajar dengan result card */
   .page-header {
     display: block;
-    padding: 16px 0 0 0;
+    /* kotak cari jatuh tepat di --page-offset, sejajar kolom hasil */
+    padding: 16px 0 0 calc(var(--page-offset) - var(--logo-w) - var(--header-gap));
     background: var(--color-white);
   }
 
@@ -509,17 +525,14 @@ footer {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    gap: 28px; 
+    gap: var(--header-gap);
     width: 100%;
-    max-width: 1120px; /* Lebar maksimal gabungan hasil + sidebar agar proporsional di layar 1920px */
-    margin: 0 auto;
-    padding-left: 24px;
   }
 
   .logo-slot {
     display: flex;
-    flex: 0 0 92px;
-    width: 92px !important;
+    flex: 0 0 var(--logo-w);
+    width: var(--logo-w) !important;
     justify-content: flex-start !important;
     align-items: center;
     padding: 0 !important;
@@ -529,7 +542,7 @@ footer {
 
   .logo-slot img {
     display: block;
-    width: 92px;
+    width: var(--logo-w);
     height: 33px;
     object-fit: contain;
   }
@@ -544,7 +557,7 @@ footer {
 
   .search-box {
     width: 100%;
-    max-width: 652px; 
+    max-width: var(--page-max-width);
     padding: 0;
   }
 
@@ -555,19 +568,21 @@ footer {
 
   .search-input {
     width: 100%;
-    height: 46px;
-    padding: 0 75px 0 20px;
+    height: 48px;
+    padding: 0 75px 0 22px;
     border: 1px solid #dfe1e5;
     border-radius: 24px;
     box-shadow: none;
   }
 
   .search-box .search-toggle {
+    top: 6px;
     left: auto;
     right: 12px;
   }
 
   .search-box .cleartext {
+    top: 6px;
     right: 44px;
   }
 
@@ -577,11 +592,10 @@ footer {
     border-color: transparent;
   }
 
-  /* Search menu diselaraskan agar lurus dengan search box dan result card */
   .search-menu {
     width: 100% !important;
-    max-width: 652px;
-    padding-left: 0 !important; 
+    gap: 16px;               /* sama dengan padding-right lama di .tab-wrapper */
+    padding-left: calc(var(--page-offset) - 8px) !important;
     padding-right: 0 !important;
     margin-left: 0 !important;
     margin-top: 12px !important;
@@ -591,38 +605,25 @@ footer {
 
   .tab-wrapper {
     justify-content: flex-start;
-    padding: 8px 16px 12px 0;
+    padding: 8px 0 12px;
   }
 
-  /* Kontainer pembungkus hasil pencarian dan sidebar agar posisinya pas di tengah/kiri */
+  /* Baris hasil: [offset] [kolom hasil] gap [instant answer] — kolom hasil yang mengalah saat sempit */
   .result-wrapper {
     display: flex;
-    justify-content: flex-start;
-    gap: 24px;
-    padding: 12px 24px 0 0; 
-    max-width: 1120px;
-    margin: 0 auto;
+    align-items: flex-start;
+    gap: var(--col-gap);
+    width: 100%;
+    padding: 12px var(--page-pad-right) 0 var(--page-offset);
     background: var(--color-white);
   }
 
-  .main-result {
-    flex: 0 0 652px; /* Mengunci lebar area utama agar konsisten seperti Google */
-    max-width: 652px;
+  .main-result,
+  .main-result.vw-max {
+    flex: 0 1 var(--page-max-width);
+    width: auto;
     min-width: 0;
-  }
-
-  /* Footer diselaraskan agar sejajar dengan garis kiri konten */
-  footer {
-    max-width: 1120px;
-    margin: 0 auto;
-    padding: 24px 24px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    font-size: 12.5px;
-    color: #5f6368;
-    border-top: 1px solid var(--color-border, #e0e0e0);
+    max-width: var(--page-max-width);
   }
 
   .result-card,
@@ -634,32 +635,21 @@ footer {
     border-radius: 0 !important;
   }
 
-  /* Ukuran font judul hasil pencarian diset ke 22px */
-  .result-card .title,
-  .result-card .title-black {
-    font-size: 22px !important;
-  }
-
   .search-item.selected span { color: #1558d6; }
   .search-item.selected .label svg { fill: #1558d6; }
   .search-item.selected .label:before { background: #1558d6; bottom: -12px; }
 
   .show-wrapper .more { width: 50%; }
-
-  body.dark .header {
-    background: #171717;
-  }
 }
 
-@media (min-width: 1200px) {
-  :root { 
-    --page-max-width: 652px; 
-  }
-  .result-wrapper {
-    padding-left: max(144px, calc((100vw - 1100px) / 2));
-  }
-  footer {
-    padding-left: max(144px, calc((100vw - 1100px) / 2));
+/* Layar desktop sempit (780–899px): instant answer pindah ke atas, hasil selebar baris */
+@media (min-width: 780px) and (max-width: 899px) {
+  .result-wrapper { flex-wrap: wrap; }
+
+  .main-result,
+  .main-result.vw-max {
+    flex: 1 1 100%;
+    max-width: none;
   }
 }
 
