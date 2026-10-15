@@ -33,11 +33,6 @@
    border-bottom: 1px solid var(--color-border, #e0e0e0);
    margin-bottom: 8px;
 }
-/*
-@media (max-width: 480px) {
-  .result-card--flat { box-shadow: var(--card-shadow); }
-}*/
-
 .result-card .title,
 .result-card .title-black {
   color: var(--color-title);
@@ -93,26 +88,6 @@
   text-overflow: ellipsis;
 }
 .result-card .link.link--meta { font-size: 12px; margin-top: 1px; }
-
-/* desain eksperimental (tes) */
-@media (max-width: 780px) {
-   .result-card .tab-link {
-      position: relative;
-   }
-   
-   .result-card .tab-link::before {
-      content: "";
-      position: absolute;
-      left: -4px;
-      top: 16px;
-      bottom: 6px; 
-      width: 8px;
-      background: var(--color-bg-alt);
-      border-radius: 4px;
-   }
-}
-
-/* eksperimental end */
 
 .result-card .snippet {
   color: #474747;
@@ -1129,34 +1104,6 @@ body.dark .calculator .calc-mode-switch button.active {
   color: #a8c7fa;
 }
 
-@media (min-width: 780px) {
-  /* Membuat kontainer kalkulator menjadi full width */
-  .calculator {
-    max-width: 100% !important;
-    width: 100% !important;
-    box-sizing: border-box;
-  }
-
-  /* Mengubah grid wrapper menjadi 2 kolom: 123 di kiri, Fx di kanan */
-  .calculator .calc-grid-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    min-height: auto;
-  }
-
-  /* Memastikan kedua panel tombol selalu tampil berdampingan di desktop */
-  .calculator .buttons {
-    display: grid !important;
-    grid-template-rows: repeat(5, 42px);
-  }
-
-  /* Menyembunyikan tombol switcher 123/Fx khusus pada mode desktop */
-  .calculator .calc-mode-switch {
-    display: none !important;
-  }
-}
-
 /* --- Translator --- */
 .trnsl { width: 100%; border: 1px solid var(--color-border); border-style: solid none; margin: 4px 0; background: var(--color-white); }
 .wrpl { width: 100%; box-shadow: 0 10px 20px rgba(0,0,0,0.01); }
@@ -1178,10 +1125,34 @@ body.dark .calculator .calc-mode-switch button.active {
 .controls .exchange { color: #adadad; cursor: pointer; font-size: 14px; transition: transform 0.2s ease; }
 .controls .exchange.off { opacity: 0.6; pointer-events: none; }
 
-/* --- Media Queries & Dark Mode --- */
-@media (max-width: 780px) { 
-  .sitelinks { flex-direction: column; } 
-  .search-list { flex-direction: column; }
+/* ==========================================================================
+   RESPONSIVE - semua media query results.css ada di sini, urut kecil -> besar.
+   Breakpoint sama dengan base.css (480 / 780). Lebar kolom hasil, sidebar, dan
+   jeda kiri diatur token --page-* di base.css, jadi tidak ada lebar sidebar yang
+   di-hardcode di file ini.
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  .news-card { --news-thumb: 100px; }
+}
+
+/* 779.98px, bukan 780px: supaya lebar 780px tepat tidak kena dua blok sekaligus */
+@media (max-width: 779.98px) {
+  .sitelinks { flex-direction: column; }
+
+  /* desain eksperimental (tes) */
+  .result-card .tab-link { position: relative; }
+
+  .result-card .tab-link::before {
+    content: "";
+    position: absolute;
+    left: -4px;
+    top: 16px;
+    bottom: 6px;
+    width: 8px;
+    background: var(--color-bg-alt);
+    border-radius: 4px;
+  }
 }
 
 @media (min-width: 780px) {
@@ -1196,19 +1167,14 @@ body.dark .calculator .calc-mode-switch button.active {
   .result-card .tab-link { display: inline-block; padding: 16px 16px 0; }
   .result-card .btm-snpt { padding: 0 15px 5px; }
 
-  .instant-answer { 
-    width: 310px !important; 
+  /* Sidebar: lebar & jarak ditentukan kolom .result-wrapper (base.css), bukan angka di sini */
+  .instant-answer {
     border: 1px solid var(--color-border) !important;
-    border-radius: 16px !important; 
-    margin-left: 20px !important; 
-    box-shadow: none !important; 
+    border-radius: 16px !important;
   }
   .results-list .instant-answer { display: none; }
 
-.related-search {
-    padding: 16px 16px 8px 16px;
-    border: 0;
-  }
+  .related-search { border: 0; }
 
   /* Grid 2 kolom dengan jarak antar baris yang rapat */
   .search-list {
@@ -1250,14 +1216,33 @@ body.dark .calculator .calc-mode-switch button.active {
     border: none;
   }
   body.dark .video-widget { border: none; background: #202125; }
-}
 
-@media (min-width: 992px) {
-  .instant-answer { width: 380px !important; }
-}
+  /* Kalkulator: full width, 123 di kiri dan Fx di kanan */
+  /* Membuat kontainer kalkulator menjadi full width */
+  .calculator {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box;
+  }
 
-@media (max-width: 480px) {
-  .news-card { --news-thumb: 100px; }
+  /* Mengubah grid wrapper menjadi 2 kolom: 123 di kiri, Fx di kanan */
+  .calculator .calc-grid-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    min-height: auto;
+  }
+
+  /* Memastikan kedua panel tombol selalu tampil berdampingan di desktop */
+  .calculator .buttons {
+    display: grid !important;
+    grid-template-rows: repeat(5, 42px);
+  }
+
+  /* Menyembunyikan tombol switcher 123/Fx khusus pada mode desktop */
+  .calculator .calc-mode-switch {
+    display: none !important;
+  }
 }
 
 /* Dark Mode Overrides */
