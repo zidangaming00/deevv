@@ -2392,12 +2392,6 @@ function loadImgTest() {
 }
 
 async function performSearch() {
-
-    const queryLower = (Config.q || "").toLowerCase().trim();
-    if (queryLower === "ruang angkasa" || queryLower === "cosmos" || queryLower === "easter egg") {
-        SpaceEasterEgg.init();
-    }
-
     try {
         if (Config.tbm === "vid") {
             const data = await API.fetchVideo(Config.q, 100);
@@ -2865,6 +2859,12 @@ function initApp() {
     if (!Config.q || window.location.pathname.match(".html")) {
         window.location.href = "/";
     } else if (Config.q && navigator.onLine) {
+
+        const queryLower = (Config.q || "").toLowerCase().trim();
+        if (queryLower === "ruang angkasa" || queryLower === "cosmos" || queryLower === "easter egg") {
+            SpaceEasterEgg.init();
+        }
+
         const ssrRes = window.__SSR_DATA__;
         const canHydrate = !!ssrRes && Config.startIndex === 1 && !["vid", "isch", "nws"].includes(Config.tbm);
 
