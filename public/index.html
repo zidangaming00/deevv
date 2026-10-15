@@ -6,42 +6,47 @@
   <meta name="description" content="Search and explore anything on the internet with Deevv.">
   <link rel="icon" href="images/search.png" type="image/png">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@100..1000&display=swap" rel="stylesheet">
   
   <style>
     :root {
       --primary: #1a73e8;
-      --bg: #f8f9fa;
+      --bg: #f7f8f9;
       --surface: #ffffff;
       --text-main: #1f1f1f;
-      --text-muted: #70757a;
+      --text-muted: #5f6368;
       --border-color: rgba(0, 0, 0, 0.08);
       --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.06);
       --shadow-hover: 0 6px 24px rgba(0, 0, 0, 0.1);
       --border-radius: 28px;
       --line: rgba(0, 0, 0, 0.08);
-      --muted: var(--text-muted);
+      --muted: #5f6368;
+      --press: rgba(128, 128, 128, 0.1);
     }
 
     body.dark {
       --primary: #8ab4f8;        
-      --bg: #121212;             
-      --surface: #1e1e1e;        
+      --bg: #171717;             
+      --surface: #22262b;        
       --text-main: #e8eaed;      
       --text-muted: #9aa0a6;     
       --border-color: rgba(255, 255, 255, 0.12); 
       --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.4);
       --line: rgba(255, 255, 255, 0.12);
+      --muted: #9aa0a6;
+      --press: rgba(128, 128, 128, 0.14);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
     html, body {
       height: 100%;
     }
 
     body {
-      font-family: 'Google Sans', Roboto, sans-serif;
+      font-family: 'Google Sans Flex', -apple-system, 'Segoe UI', sans-serif;
       background-color: var(--bg);
       color: var(--text-main);
       display: flex;
@@ -49,9 +54,11 @@
       align-items: center;
       min-height: 100vh;
       min-height: 100dvh;
-      padding: 16px 16px 0 16px;
+      padding: 24px clamp(16px, 5vw, 144px) 0;
       position: relative;
     }
+
+    button { font-family: inherit; color: inherit; }
 
     /* Header & Menu Button */
     header {
@@ -582,8 +589,6 @@
     }
     .trending-icon { fill: var(--text-muted); width: 16px; height: 16px; flex-shrink: 0; }
 
-
-
     /* Voice Search Overlay */
     .voice-overlay {
       position: fixed;
@@ -669,7 +674,7 @@
       .popup-menu { width: 210px; }
     }
 
-    /* ---------- Footer ---------- */
+    /* ---------- Footer (Persis seperti Privacy) ---------- */
     footer {
       width: 100%;
       max-width: 960px;
@@ -818,7 +823,7 @@
     </div>
   </div>
 
-  <!-- Footer (Persis seperti halaman Privacy) -->
+  <!-- Footer -->
   <footer>
     <div class="footer-row">
       <span>&copy; 2026 Deevv Search.</span>
