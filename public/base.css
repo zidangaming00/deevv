@@ -493,7 +493,10 @@ footer {
 }
 
 @media (min-width: 780px) {
-  :root { --color-title: #1A0DAB; }
+  :root { 
+    --color-title: #1A0DAB;
+    --page-max-width: 652px; 
+  }
 
   .page-header {
     display: block;
@@ -585,11 +588,34 @@ footer {
     padding: 8px 16px 12px 0;
   }
 
+  /* Perbaikan Layout Utama & Footer agar dinamis di layar besar (1920px) dengan padding kiri 144px */
   .result-wrapper {
     display: flex;
-    width: 100%;
-    padding: 12px 0 0 144px; 
+    justify-content: flex-start;
+    gap: 28px;
+    padding: 12px 24px 0 144px; 
+    max-width: 1600px;
+    margin: 0 auto;
     background: var(--color-white);
+  }
+
+  .main-result {
+    flex: 1;
+    max-width: var(--page-max-width);
+    min-width: 0;
+  }
+
+  footer {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 24px 24px 24px 144px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    font-size: 12.5px;
+    color: #5f6368;
+    border-top: 1px solid var(--color-border, #e0e0e0);
   }
 
   .result-card,
@@ -601,6 +627,12 @@ footer {
     border-radius: 0 !important;
   }
 
+  /* Memperbesar ukuran font judul hasil pencarian jadi 22px ala Google Desktop */
+  .result-card .title,
+  .result-card .title-black {
+    font-size: 22px !important;
+  }
+
   .search-item.selected span { color: #1558d6; }
   .search-item.selected .label svg { fill: #1558d6; }
   .search-item.selected .label:before { background: #1558d6; bottom: -12px; }
@@ -608,22 +640,20 @@ footer {
   .show-wrapper .more { width: 50%; }
 
   body.dark .header {
-    background: transparent;
+    background: #171717;
   }
-
-  body.dark .header { background: #171717; }
 }
 
-@media (min-width: 992px) {
+@media (min-width: 1200px) {
   :root { 
     --page-max-width: 652px; 
   }
-
-  .header {
-    padding-left: 0 !important;
+  .result-wrapper {
+    padding-left: max(144px, calc((100vw - 1100px) / 2));
   }
-
-  :root { --page-max-width: 650px; }
+  footer {
+    padding-left: max(144px, calc((100vw - 1100px) / 2));
+  }
 }
 
 body.dark, body.dark .result-wrapper { background: #171717; }
