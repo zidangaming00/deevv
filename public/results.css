@@ -1307,3 +1307,30 @@ body.dark .btn-show-more {
   background-color: #303135;
   border-color: #3c4043;
 }
+
+
+/* --- Space Easter --- */
+#space-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    display: none; /* Default disembunyikan */
+}
+
+/* Pastikan elemen SERP utama berada di atas canvas */
+.app, .serp-container, .page-header, .results-section {
+    position: relative;
+    z-index: 2;
+}
+
+body.space-easter-egg-active {
+    background-color: #070913 !important;
+}
+body.space-easter-egg-active #space-canvas {
+    display: block;
+}
+
