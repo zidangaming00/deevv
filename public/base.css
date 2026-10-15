@@ -40,15 +40,6 @@ input[type="search"]::-webkit-search-results-decoration {
   --card-shadow: 0 0 0 1px rgba(235, 237, 239, 1);
   --page-max-width: 630px;
   --page-gutter: 130px;
-
-  /* Layout desktop dinamis: satu sumber nilai untuk header, hasil, instant answer, footer */
-  --logo-w: 92px;
-  --header-gap: 24px;
-  --page-offset: clamp(140px, 13vw, 200px);   /* jeda kosong kiri: tumbuh mengikuti layar */
-  --page-pad-right: clamp(16px, 2vw, 32px);
-  --col-gap: clamp(20px, 2.6vw, 40px);        /* jarak kolom hasil <-> instant answer */
-  --ia-width: clamp(264px, 28vw, 370px);
-  --card-pad: 16px;                           /* padding horizontal isi kartu (footer ikut ini) */
   --dtext-small: 14px;
   --dtext-medium: 18px;
 }
@@ -281,27 +272,25 @@ body.dark .related:after {
 
 /* --- Tab Navigation --- */
 .tab-wrapper {
-  padding: 12px 0 16px;
+  padding: 12px 12px 16px 12px;
   display: flex;
   justify-content: center;
 }
 .tab-wrapper svg { margin-right: 5px; }
 
 .search-menu {
-  display: flex;
-  gap: 24px;               /* jarak antar tab (dulu padding kiri+kanan 12px di .tab-wrapper) */
-  padding: 0 25px;
+  padding: 0 13px;
   margin: 0;
   border-bottom: 1px solid var(--color-border);
   user-select: none;
   white-space: nowrap;
+  display: -webkit-box;
   overflow-x: scroll;
   scroll-snap-type: x mandatory;
 }
 .search-menu::-webkit-scrollbar { display: none; }
 
 .search-item {
-  flex: 0 0 auto;
   display: inline-block;
   text-align: center;
   font-size: var(--dtext-small);
@@ -340,8 +329,7 @@ body.dark .related:after {
 
 .main-result {
   position: relative;
-  width: 100%;
-  min-width: 0;
+  min-width: 100%;
   background: var(--color-white);
   display: flex;
   flex-direction: column;
@@ -349,6 +337,12 @@ body.dark .related:after {
   justify-content: center;
 }
 
+@media (min-width: 780px) {
+   .main-result.vw-max {
+      min-width: var(--page-max-width);
+      max-width: var(--page-max-width)
+   }
+}
 
 .result-stats { display: none; }
 
@@ -434,7 +428,7 @@ footer {
   width: 100%;
   max-width: 560px;
   margin: 0 auto;
-  padding: 24px var(--card-pad, 16px);
+  padding: 24px 16px;
   border-top: 1px solid var(--color-border, #e0e0e0);
   display: flex;
   flex-direction: column;
@@ -484,19 +478,9 @@ footer {
 }
 
 @media (min-width: 780px) {
-  /* Footer mulai dari tepi kiri kartu hasil (--page-offset) dan berakhir di tepi kanan
-     instant answer; teks di dalamnya punya padding sama dengan isi kartu. */
   footer {
-    width: auto;
-    max-width: calc(var(--page-max-width) + var(--col-gap) + var(--ia-width));
-    margin: 16px var(--page-pad-right) 0 var(--page-offset);
-    padding: 28px var(--card-pad) 36px;
-    font-size: 13px;
+    max-width: 960px;
   }
-
-  .footer-links { gap: 8px 20px; }
-  .footer-links a,
-  .footer-links button { font-size: 13px; }
 }
 
 /* ==========================================================================
@@ -509,16 +493,11 @@ footer {
 }
 
 @media (min-width: 780px) {
-  :root {
-    --color-title: #1A0DAB;
-    --page-max-width: 652px;
-     --logo-w: clamp(110px, 8vw, 150px);
-  }
+  :root { --color-title: #1A0DAB; }
 
   .page-header {
     display: block;
-    /* kotak cari jatuh tepat di --page-offset, sejajar kolom hasil */
-    padding: 16px 0 0 calc(var(--page-offset) - var(--logo-w) - var(--header-gap));
+    padding: 16px 0 0 24px;
     background: var(--color-white);
   }
 
@@ -526,14 +505,14 @@ footer {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    gap: var(--header-gap);
+    gap: 28px; 
     width: 100%;
   }
 
   .logo-slot {
     display: flex;
-    flex: 0 0 var(--logo-w);
-    width: var(--logo-w) !important;
+    flex: 0 0 92px;
+    width: 92px !important;
     justify-content: flex-start !important;
     align-items: center;
     padding: 0 !important;
@@ -543,7 +522,7 @@ footer {
 
   .logo-slot img {
     display: block;
-    width: var(--logo-w);
+    width: 92px;
     height: 33px;
     object-fit: contain;
   }
@@ -558,7 +537,7 @@ footer {
 
   .search-box {
     width: 100%;
-    max-width: var(--page-max-width);
+    max-width: 652px; 
     padding: 0;
   }
 
@@ -569,21 +548,19 @@ footer {
 
   .search-input {
     width: 100%;
-    height: 48px;
-    padding: 0 75px 0 22px;
+    height: 46px;
+    padding: 0 75px 0 20px;
     border: 1px solid #dfe1e5;
     border-radius: 24px;
     box-shadow: none;
   }
 
   .search-box .search-toggle {
-    top: 6px;
     left: auto;
     right: 12px;
   }
 
   .search-box .cleartext {
-    top: 6px;
     right: 44px;
   }
 
@@ -595,8 +572,7 @@ footer {
 
   .search-menu {
     width: 100% !important;
-    gap: 16px;
-    padding: 0 0 0 calc(var(--logo-w) + var(--header-gap)) !important;
+    padding-left: 136px !important; 
     padding-right: 0 !important;
     margin-left: 0 !important;
     margin-top: 12px !important;
@@ -606,25 +582,14 @@ footer {
 
   .tab-wrapper {
     justify-content: flex-start;
-    padding: 8px 0 12px;
+    padding: 8px 16px 12px 0;
   }
 
-  /* Baris hasil: [offset] [kolom hasil] gap [instant answer] — kolom hasil yang mengalah saat sempit */
   .result-wrapper {
     display: flex;
-    align-items: flex-start;
-    gap: var(--col-gap);
     width: 100%;
-    padding: 12px var(--page-pad-right) 0 var(--page-offset);
+    padding: 12px 0 0 144px; 
     background: var(--color-white);
-  }
-
-  .main-result,
-  .main-result.vw-max {
-    flex: 0 1 var(--page-max-width);
-    width: auto;
-    min-width: 0;
-    max-width: var(--page-max-width);
   }
 
   .result-card,
@@ -641,17 +606,24 @@ footer {
   .search-item.selected .label:before { background: #1558d6; bottom: -12px; }
 
   .show-wrapper .more { width: 50%; }
+
+  body.dark .header {
+    background: transparent;
+  }
+
+  body.dark .header { background: #171717; }
 }
 
-/* Layar desktop sempit (780–899px): instant answer pindah ke atas, hasil selebar baris */
-@media (min-width: 780px) and (max-width: 899px) {
-  .result-wrapper { flex-wrap: wrap; }
-
-  .main-result,
-  .main-result.vw-max {
-    flex: 1 1 100%;
-    max-width: none;
+@media (min-width: 992px) {
+  :root { 
+    --page-max-width: 652px; 
   }
+
+  .header {
+    padding-left: 0 !important;
+  }
+
+  :root { --page-max-width: 650px; }
 }
 
 body.dark, body.dark .result-wrapper { background: #171717; }

@@ -135,8 +135,8 @@
 }
 .snippet .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
 
-.result-card .tab-link { cursor: pointer; -webkit-tap-highlight-color: rgba(0,0,0,.10); padding: 16px var(--card-pad, 16px) 6px; }
-.result-card .btm-snpt { padding: 2px var(--card-pad, 16px) 12px; }
+.result-card .tab-link { cursor: pointer; -webkit-tap-highlight-color: rgba(0,0,0,.10); padding: 16px 16px 6px; }
+.result-card .btm-snpt { padding: 2px 16px 12px; }
 
 .ads {
   font-size: 10px;
@@ -150,7 +150,7 @@
 
 /* --- Sitelinks --- */
 .result-card .sitelinks { display: flex; padding-top: 10px; }
-.result-card .btm-snpt:has(.sitelinks) { padding: 0 var(--card-pad, 16px); }
+.result-card .btm-snpt:has(.sitelinks) { padding: 0 16px; }
 .sitelinks .link {
   color: #363636;
   font-size: 18px;
@@ -1193,38 +1193,16 @@ body.dark .calculator .calc-mode-switch button.active {
   .wrlink .snippet { -webkit-line-clamp: 2; }
   .result-card .title, .sitelinks .link { display: inline-block; color: var(--color-title); }
   .result-card .title:hover, .sitelinks .link:hover { text-decoration: underline; }
-  /* Ritme vertikal & tipografi desktop */
-  .result-card { margin-bottom: 14px; }
-  .result-card.news-card { margin-bottom: 12px; }
-  .result-card .tab-link { display: inline-block; padding: 14px var(--card-pad, 16px) 0; }
-  .result-card .btm-snpt { padding: 0 var(--card-pad, 16px) 6px; }
-  .result-card .top { gap: 10px; padding-bottom: 6px; }
-  .result-card .favicon { width: 26px; height: 26px; }
-  .result-card .link { font-size: 14px; }
-  .result-card:not(.instant-answer):not(.news-card):not(.video-widget) .title {
-    font-size: 22px;
-    line-height: 1.3;
-  }
-  .result-card .snippet { font-size: 15px; line-height: 1.55; }
+  .result-card .tab-link { display: inline-block; padding: 16px 16px 0; }
+  .result-card .btm-snpt { padding: 0 15px 5px; }
 
-  /* Instant answer: lebar ikut --ia-width, jarak ke hasil dari gap .result-wrapper (bukan margin) */
-  .instant-answer {
-    flex: 0 0 var(--ia-width);
-    width: var(--ia-width);
-    margin: 0;
-    padding: 20px;
+  .instant-answer { 
+    width: 310px !important; 
     border: 1px solid var(--color-border) !important;
-    border-radius: 16px !important;
-    box-shadow: none !important;
+    border-radius: 16px !important; 
+    margin-left: 20px !important; 
+    box-shadow: none !important; 
   }
-  .instant-answer .title { font-size: 24px; margin-bottom: 6px; }
-  .instant-answer__subtitle { font-size: 15px; margin-bottom: 14px; }
-  .instant-answer .logo { height: 160px; }
-  .instant-answer .summary-box { padding: 14px 16px; }
-  .instant-answer .summary-text,
-  .instant-answer .wikipedia { font-size: 15px; line-height: 1.55; }
-  .instant-answer .infobox-item__label { font-size: 13px; }
-  .instant-answer .infobox-item__value { font-size: 15px; }
   .results-list .instant-answer { display: none; }
 
 .related-search {
@@ -1274,9 +1252,8 @@ body.dark .calculator .calc-mode-switch button.active {
   body.dark .video-widget { border: none; background: #202125; }
 }
 
-/* Layar desktop sempit (780–899px): instant answer di atas, selebar baris (selaras base.css) */
-@media (min-width: 780px) and (max-width: 899px) {
-  .instant-answer { flex: 1 1 100%; width: auto; order: -1; }
+@media (min-width: 992px) {
+  .instant-answer { width: 380px !important; }
 }
 
 @media (max-width: 480px) {
