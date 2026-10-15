@@ -498,9 +498,10 @@ footer {
     --page-max-width: 652px; 
   }
 
+  /* Membuat kontainer utama header agar sejajar dengan result card */
   .page-header {
     display: block;
-    padding: 16px 0 0 24px;
+    padding: 16px 0 0 0;
     background: var(--color-white);
   }
 
@@ -510,6 +511,9 @@ footer {
     align-items: flex-start;
     gap: 28px; 
     width: 100%;
+    max-width: 1120px; /* Lebar maksimal gabungan hasil + sidebar agar proporsional di layar 1920px */
+    margin: 0 auto;
+    padding-left: 24px;
   }
 
   .logo-slot {
@@ -573,9 +577,11 @@ footer {
     border-color: transparent;
   }
 
+  /* Search menu diselaraskan agar lurus dengan search box dan result card */
   .search-menu {
     width: 100% !important;
-    padding-left: 136px !important; 
+    max-width: 652px;
+    padding-left: 0 !important; 
     padding-right: 0 !important;
     margin-left: 0 !important;
     margin-top: 12px !important;
@@ -588,27 +594,28 @@ footer {
     padding: 8px 16px 12px 0;
   }
 
-  /* Perbaikan Layout Utama & Footer agar dinamis di layar besar (1920px) dengan padding kiri 144px */
+  /* Kontainer pembungkus hasil pencarian dan sidebar agar posisinya pas di tengah/kiri */
   .result-wrapper {
     display: flex;
     justify-content: flex-start;
-    gap: 28px;
-    padding: 12px 24px 0 144px; 
-    max-width: 1600px;
+    gap: 24px;
+    padding: 12px 24px 0 0; 
+    max-width: 1120px;
     margin: 0 auto;
     background: var(--color-white);
   }
 
   .main-result {
-    flex: 1;
-    max-width: var(--page-max-width);
+    flex: 0 0 652px; /* Mengunci lebar area utama agar konsisten seperti Google */
+    max-width: 652px;
     min-width: 0;
   }
 
+  /* Footer diselaraskan agar sejajar dengan garis kiri konten */
   footer {
-    max-width: 1600px;
+    max-width: 1120px;
     margin: 0 auto;
-    padding: 24px 24px 24px 144px;
+    padding: 24px 24px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -627,7 +634,7 @@ footer {
     border-radius: 0 !important;
   }
 
-  /* Memperbesar ukuran font judul hasil pencarian jadi 22px ala Google Desktop */
+  /* Ukuran font judul hasil pencarian diset ke 22px */
   .result-card .title,
   .result-card .title-black {
     font-size: 22px !important;
