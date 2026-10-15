@@ -1310,6 +1310,80 @@ body.dark .btn-show-more {
 
 
 /* --- Space Easter --- */
+
+/* --- Perbaikan Total Transparansi Apple Clear Glass untuk Mode Ruang Angkasa --- */
+body.space-easter-egg-active,
+body.space-easter-egg-active .app,
+body.space-easter-egg-active .results-section,
+body.space-easter-egg-active .result-wrapper {
+    background: transparent !important;
+}
+
+/* Header & Search Bar */
+body.space-easter-egg-active .page-header {
+    background: rgba(7, 9, 19, 0.65) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.space-easter-egg-active .search-field {
+    background: rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+body.space-easter-egg-active .search-input {
+    color: #ffffff !important;
+}
+
+body.space-easter-egg-active .search-input::placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Membuat SEMUA Jenis Kartu Hasil, Related Search, dan Footer Menjadi Transparan Kaca */
+body.space-easter-egg-active .result-card,
+body.space-easter-egg-active .related-search,
+body.space-easter-egg-active footer,
+body.space-easter-egg-active .instant-answer {
+    background: rgba(15, 23, 42, 0.55) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
+    margin-bottom: 12px !important;
+    overflow: hidden;
+}
+
+/* Penyesuaian Warna Teks agar Kontras dan Nyaman Dibaca */
+body.space-easter-egg-active .result-card .title, 
+body.space-easter-egg-active .related-search .title,
+body.space-easter-egg-active .result-card .link {
+    color: #93c5fd !important;
+}
+
+body.space-easter-egg-active .result-card .snippet, 
+body.space-easter-egg-active .result-card .link.link--meta,
+body.space-easter-egg-active footer span,
+body.space-easter-egg-active footer a {
+    color: #cbd5e1 !important;
+}
+
+body.space-easter-egg-active .search-list .related {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 24px !important;
+    color: #e2e8f0 !important;
+    padding: 8px 14px !important;
+    margin-bottom: 6px;
+}
+
+body.space-easter-egg-active .search-list .related:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+}
+
 #space-canvas {
     position: fixed;
     top: 0;
