@@ -1309,104 +1309,194 @@ body.dark .btn-show-more {
 }
 
 
-/* --- Space Easter --- */
-/* --- Perbaikan Clear Glass yang Elegan untuk Mode Ruang Angkasa --- */
-body.space-easter-egg-active,
-body.space-easter-egg-active .app,
-body.space-easter-egg-active .results-section,
-body.space-easter-egg-active .result-wrapper,
-body.space-easter-egg-active .results-list {
-    background: transparent !important;
+/* ==========================================================================
+   SPACE EASTER EGG — CLEAR GLASS (ala Apple)
+   Ganti SELURUH blok "/* --- Space Easter --- */" di results.css
+   (dari baris 1312 sampai akhir file) dengan isi file ini.
+   Aturan lama di baris 1401 (.app, .serp-container, .page-header ...
+   { position: relative; z-index: 2 }) bocor ke SEMUA halaman, di sini
+   sudah dibatasi hanya untuk mode ruang angkasa.
+   ========================================================================== */
+
+/* 1. TOKEN — balik semua warna terang jadi kaca.
+      Semua elemen yang memakai var(--color-*) ikut berubah otomatis. */
+body.space-easter-egg-active {
+  color-scheme: dark;
+  --color-white: transparent;
+  --color-bg-alt: rgba(255, 255, 255, 0.08);
+  --color-border: rgba(255, 255, 255, 0.14);
+  --color-border-alt: rgba(255, 255, 255, 0.12);
+  --color-title: #8ec5ff;
+  --color-text: #cbd5e1;
+  --color-text-dark: #f1f5f9;
+  --color-text-muted: #94a3b8;
+
+  --glass-fill: linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.04));
+  --glass-blur: blur(24px) saturate(180%);
+  --glass-edge: rgba(255, 255, 255, 0.16);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+
+  background-color: #070913 !important;
+}
+html:has(body.space-easter-egg-active) { background: #070913; }
+
+/* HP low-end: blur besar + banyak kartu = lag, jadi dikecilkan di mobile */
+@media (max-width: 779px) {
+  body.space-easter-egg-active {
+    --glass-blur: blur(14px);
+  }
 }
 
-/* Header & Search Bar bergaya Apple Glass */
+/* 2. LATAR — kaca butuh sesuatu yang berwarna di belakangnya,
+      kalau cuma navy polos hasilnya kelihatan seperti panel datar. */
+body.space-easter-egg-active::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(900px 600px at 12% -5%, rgba(99, 102, 241, 0.32), transparent 62%),
+    radial-gradient(800px 560px at 100% 35%, rgba(14, 165, 233, 0.20), transparent 60%),
+    radial-gradient(700px 500px at 0% 100%, rgba(168, 85, 247, 0.18), transparent 60%);
+}
+
+#space-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  display: none;
+}
+body.space-easter-egg-active #space-canvas { display: block; }
+
+/* Konten di atas canvas (hanya saat mode aktif; posisi header tidak disentuh) */
+body.space-easter-egg-active .app,
+body.space-easter-egg-active .results-section {
+  position: relative;
+  z-index: 2;
+}
+body.space-easter-egg-active .page-header { z-index: 3; }
+
+/* 3. SEMUA PEMBUNGKUS HARUS TRANSPARAN.
+      Di screenshot header putih murni dan sela antar kartu abu terang:
+      ada pembungkus opak yang tidak masuk daftar lama. */
+body.space-easter-egg-active :is(
+  .app, .results-section, .result-wrapper, .main-result, .vw-max,
+  .results-list, .page-header__inner, .header, .search-box,
+  .logo-slot, .search-menu
+) {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* 4. HEADER & KOLOM CARI */
 body.space-easter-egg-active .page-header {
-    background: rgba(7, 9, 19, 0.45) !important;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(7, 9, 19, 0.38) !important;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 body.space-easter-egg-active .search-field {
-    background: rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  background: rgba(255, 255, 255, 0.10) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(160%);
+  border: 1px solid var(--glass-edge) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+body.space-easter-egg-active .search-input { color: #fff !important; }
+body.space-easter-egg-active .search-input::placeholder { color: rgba(255, 255, 255, 0.6) !important; }
+
+/* logo biru jadi putih, tombol garis tiga ikut terang */
+body.space-easter-egg-active .logo-slot img { filter: brightness(0) invert(1); }
+body.space-easter-egg-active .menu-btn { color: #fff; }
+
+/* Tab: "All" tadi hampir tak terlihat (#101518 di atas #070913) */
+body.space-easter-egg-active .search-menu .tab-wrapper,
+body.space-easter-egg-active .search-menu .tab-wrapper .label,
+body.space-easter-egg-active .search-menu .tab-wrapper span {
+  color: rgba(255, 255, 255, 0.62) !important;
+}
+body.space-easter-egg-active .search-menu .search-item.selected .tab-wrapper,
+body.space-easter-egg-active .search-menu .search-item.selected .tab-wrapper .label,
+body.space-easter-egg-active .search-menu .search-item.selected .tab-wrapper span {
+  color: #fff !important;
+}
+body.space-easter-egg-active .search-menu svg { fill: currentColor; }
+
+/* 5. KARTU KACA */
+body.space-easter-egg-active :is(.result-card, .related-search, .instant-answer, footer, .serp-footer) {
+  background: var(--glass-fill) !important;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-edge) !important;
+  border-radius: 22px !important;
+  box-shadow: var(--glass-shadow) !important;
+  box-sizing: border-box;
+  margin: 0 0 12px !important;
+  overflow: hidden;
 }
 
-body.space-easter-egg-active .search-input {
-    color: #ffffff !important;
-}
-
-body.space-easter-egg-active .search-input::placeholder {
-    color: rgba(255, 255, 255, 0.6) !important;
-}
-
-/* Kartu Hasil & Widget: Transparan tipis dengan border halus ala kaca */
-body.space-easter-egg-active .result-card,
-body.space-easter-egg-active .related-search,
-body.space-easter-egg-active footer,
-body.space-easter-egg-active .instant-answer {
-    background: rgba(255, 255, 255, 0.04) !important;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 20px !important;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25) !important;
-    margin: 0 12px 12px 12px !important;
+@media (max-width: 779px) {
+  body.space-easter-egg-active :is(.result-card, .related-search, .instant-answer, footer, .serp-footer) {
     width: calc(100% - 24px) !important;
-    box-sizing: border-box;
+    margin: 0 12px 12px !important;
+    align-self: center;
+  }
 }
 
-/* Perbaikan Warna Teks di dalam Kartu */
-body.space-easter-egg-active .result-card .title, 
-body.space-easter-egg-active .related-search .title,
-body.space-easter-egg-active .result-card .link {
-    color: #7dd3fc !important; /* Biru muda cerah yang kontras tapi lembut */
+/* desktop: instant answer tetap kolom samping seperti aslinya */
+@media (min-width: 780px) {
+  body.space-easter-egg-active .instant-answer {
+    width: 310px !important;
+    margin-left: 20px !important;
+  }
+}
+@media (min-width: 992px) {
+  body.space-easter-egg-active .instant-answer { width: 380px !important; }
 }
 
-body.space-easter-egg-active .result-card .snippet, 
-body.space-easter-egg-active .result-card .link.link--meta,
+/* garis putih di kiri kartu = desain eksperimental .tab-link::before (baris ~103) */
+body.space-easter-egg-active .result-card .tab-link::before { display: none; }
+
+/* favicon memakai mix-blend-mode: multiply, butuh alas terang */
+body.space-easter-egg-active .result-card .favicon { background: #fff; }
+
+/* 6. TEKS */
+body.space-easter-egg-active .result-card .title,
+body.space-easter-egg-active .result-card .title-black,
+body.space-easter-egg-active .related-search .title {
+  color: var(--color-title) !important;
+}
+body.space-easter-egg-active .result-card .link { color: #e2e8f0 !important; }
+body.space-easter-egg-active .result-card .link.link--meta { color: #94a3b8 !important; }
+body.space-easter-egg-active .result-card .snippet,
+body.space-easter-egg-active .snippet-info,
+body.space-easter-egg-active .instant-answer__subtitle,
 body.space-easter-egg-active footer span,
 body.space-easter-egg-active footer a,
+body.space-easter-egg-active .serp-footer a {
+  color: #cbd5e1 !important;
+}
+
+/* widget video: judul & ikon di file lama hitam (#000) */
+body.space-easter-egg-active .title.video-widget__title,
+body.space-easter-egg-active .video-widget-item__title,
+body.space-easter-egg-active .video-widget-item__meta { color: #f1f5f9 !important; }
 body.space-easter-egg-active .video-widget-item__channel,
-body.space-easter-egg-active .video-widget-item__date {
-    color: #cbd5e1 !important; /* Abu-abu terang agar mudah dibaca */
-}
+body.space-easter-egg-active .video-widget-item__date { color: #94a3b8 !important; }
+body.space-easter-egg-active .video-widget-item__play svg { fill: #fff; }
 
+/* related search */
 body.space-easter-egg-active .search-list .related {
-    background: rgba(255, 255, 255, 0.06) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 24px !important;
-    color: #f1f5f9 !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  border-radius: 24px !important;
+  color: #f1f5f9 !important;
 }
-
-body.space-easter-egg-active .search-list .related:hover {
-    background: rgba(255, 255, 255, 0.15) !important;
-}
-
-
-#space-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    pointer-events: none;
-    display: none; /* Default disembunyikan */
-}
-
-/* Pastikan elemen SERP utama berada di atas canvas */
-.app, .serp-container, .page-header, .results-section {
-    position: relative;
-    z-index: 2;
-}
-
-body.space-easter-egg-active {
-    background-color: #070913 !important;
-}
-body.space-easter-egg-active #space-canvas {
-    display: block;
-}
+body.space-easter-egg-active .search-list .related:hover { background: rgba(255, 255, 255, 0.16) !important; }
 
