@@ -42,11 +42,17 @@ input[type="search"]::-webkit-search-results-decoration {
   --page-container-width-desktop: 654px;
   --page-container-left-space-desktop: 120px; /* jadi 180px di >=90rem */
   --page-sidebar-width: 360px;
-  --page-column-gap: 40px;
+  --page-column-gap: 20px; /* 40px di >=67.5rem */
   --page-header-inline: 24px;
   --page-logo-col: calc(var(--page-container-left-space-desktop) - 16px);
-  /* garis kiri kotak cari = padding header + kolom logo */
-  --page-content-start: calc(var(--page-header-inline) + var(--page-logo-col));
+  /* Jeda kiri tab + hasil: mengecil mengikuti lebar layar (min 24px), tumbuh
+     sampai --page-container-left-space-desktop begitu kolom hasil + sidebar
+     sudah muat. 16px = cadangan scrollbar. Header/logo tetap memakai token lama. */
+  --page-content-left: clamp(
+    var(--page-header-inline),
+    calc(100vw - var(--page-container-width-desktop) - var(--page-column-gap) - var(--page-sidebar-width) - 16px),
+    var(--page-container-left-space-desktop)
+  );
   --page-max-width: var(--page-container-width-desktop); /* alias lama */
   --page-gutter: 130px;
   --dtext-small: 14px;
@@ -681,9 +687,8 @@ body.dark .menu-panel { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgb
    RESPONSIVE - semua media query base.css ada di sini, urut kecil -> besar.
    480px          hp kecil
    780px          mobile <-> desktop (header satu baris, tab bergeser ke kanan)
-   67.5rem=1080   sidebar pindah ke kolom kanan (grid)
-   80rem=1280     jeda kosong kiri aktif
-   90rem=1440     jeda kosong kiri melebar
+   67.5rem=1080   jarak hasil-sidebar 40px (di bawahnya 20px)
+   90rem=1440     batas jeda kosong kiri melebar (120px -> 180px)
    Ditaruh paling bawah supaya aturan desktop menang atas aturan dasar yang
    specificity-nya sama (mis. .menu-btn) tanpa perlu !important.
    ========================================================================== */
@@ -770,7 +775,7 @@ body.dark .menu-panel { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgb
   .search-menu {
     gap: 16px;
     margin-top: 12px;
-    padding: 0 0 0 calc(var(--page-container-left-space-desktop) - 10px);
+    padding: 0 0 0 calc(var(--page-content-left) - 10px);
     box-shadow: none;
     border-bottom: 1px solid var(--color-border-alt);
   }
@@ -784,14 +789,17 @@ body.dark .menu-panel { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgb
   .search-item.selected .label svg { fill: #1558d6; }
   .search-item.selected .label:before { background: #1558d6; bottom: -12px; }
 
-  /* Hasil + sidebar: flex dulu (780-1079px), jadi grid di >=1080px */
-  /* 780-1079px (termasuk "situs desktop" di HP): jeda kiri 24px (sama dengan
-     padding header) dan jarak ke sidebar lebih rapat */
+  /* Hasil + sidebar. Posisi hasil hanya bergantung pada lebar layar, bukan ada
+     tidaknya sidebar. Tab lain (gambar/video, tanpa .vw-max) tetap selebar layar. */
   .result-wrapper {
-    display: flex;
-    gap: 20px;
-    padding: 12px 0 0 24px;
+    padding: 12px 0 0 var(--page-content-left);
     background: var(--color-white);
+  }
+
+  .result-wrapper:has(.main-result.vw-max) {
+    display: grid;
+    grid-template-columns: var(--page-container-width-desktop) minmax(0, var(--page-sidebar-width));
+    column-gap: var(--page-column-gap);
   }
 
   .main-result.vw-max {
@@ -799,16 +807,7 @@ body.dark .menu-panel { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgb
     max-width: var(--page-container-width-desktop);
   }
 
-  .sidebar-panel {
-    flex: 0 1 var(--page-sidebar-width);
-    min-width: 0;
-  }
-
-  /* Tanpa sidebar (tidak ada instant answer): hasil rata kiri, sejajar kotak cari */
-  .result-wrapper:not(:has(.sidebar-panel .instant-answer)) {
-    display: block;
-    padding-left: var(--page-content-start);
-  }
+  .sidebar-panel { min-width: 0; }
 
   .result-card,
   .main-result article,
@@ -826,25 +825,7 @@ body.dark .menu-panel { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgb
 }
 
 @media (min-width: 67.5rem) {
-  .result-wrapper {
-    display: grid;
-    grid-template-columns:
-      minmax(0, var(--page-container-width-desktop))
-      minmax(0, var(--page-sidebar-width));
-    justify-content: center;
-    gap: var(--page-column-gap);
-    padding-left: 0;
-  }
-
-  .main-result { grid-column: 1; }
-  .sidebar-panel { grid-column: 2; }
-}
-
-@media (min-width: 80rem) {
-  .result-wrapper {
-    justify-content: start;
-    padding-left: var(--page-container-left-space-desktop);
-  }
+  :root { --page-column-gap: 40px; }
 }
 
 @media (min-width: 90rem) {
