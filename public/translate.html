@@ -1,672 +1,624 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terjemahan Pro - Layanan Terjemahan Online</title>
-    <style>
-        :root {
-            --bg-color: #f8f9fa;
-            --surface-color: #ffffff;
-            --text-primary: #202124;
-            --text-secondary: #5f6368;
-            --border-color: #dadce0;
-            --border-hover: #bdc1c6;
-            --primary-color: #1a73e8;
-            --primary-hover: #1557b0;
-            --primary-light: #e8f0fe;
-            --shadow: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
-            --shadow-sm: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
-            --transition: all 0.2s ease;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f8fa">
+<title>Translator — Deevv</title>
+<!-- Memuat Google Sans Flex resmi dari Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#f8f9fa;--surface:#ffffff;--text:#1a1d20;--muted:#68717a;--line:#eaedf0;--accent:#1b6ef3;--accent-soft:#eef4ff;--hover:#f1f3f5;--shadow:0 4px 20px rgba(0,0,0,.03);--nav-bg:rgba(255,255,255,.95)}
+:root.dark{color-scheme:dark;--bg:#121418;--surface:#1b1e24;--text:#f1f3f7;--muted:#9aa0a6;--line:#2b2f38;--accent:#7baaf7;--accent-soft:rgba(138, 180, 248, 0.12);--hover:#252932;--shadow:0 4px 20px rgba(0,0,0,.2);--nav-bg:rgba(27,30,36,.95)}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Google Sans Flex', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  min-height:100vh;
+  padding: 24px 0 40px;
+  transition:background .2s,color .2s;
+  font-size: 14px;
+}
+button,select,textarea{font:inherit}button{color:inherit}button:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-        [data-theme="dark"] {
-            --bg-color: #202124;
-            --surface-color: #292a2d;
-            --text-primary: #e8eaed;
-            --text-secondary: #9aa0a6;
-            --border-color: #5f6368;
-            --border-hover: #8ab4f8;
-            --primary-color: #8ab4f8;
-            --primary-hover: #aecbfa;
-            --primary-light: #3c4043;
-            --shadow: 0 1px 3px 0 rgba(0,0,0,0.5), 0 4px 8px 3px rgba(0,0,0,0.3);
-            --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.5), 0 1px 3px 1px rgba(0,0,0,0.3);
-        }
+/* Kontainer utama diset padding konsisten agar tombol, judul, dan box translate berada dalam satu garis lurus vertikal yang sama */
+.app{width:min(100%,820px);margin:0 auto;padding:0 16px;transition:max-width .2s ease}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;padding:0}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.brand{display:flex;align-items:center}
+.brand-name{font-size:20px;font-weight:700;letter-spacing:-.5px} /* Standar font 20px */
+.brand-name span{color:var(--accent)}
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            transition: background-color 0.3s, color 0.3s;
-        }
+/* Styling tombol garis tiga (burger button) */
+.burger-btn {
+  width: 38px;
+  height: 38px;
+  border: none;
+  background: rgba(26, 115, 232, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.2s;
+}
+body.dark .burger-btn { background: rgba(138, 180, 248, 0.12); }
+.burger-btn:hover { background: rgba(26, 115, 232, 0.18); }
+body.dark .burger-btn:hover { background: rgba(138, 180, 248, 0.2); }
+.burger-btn span {
+  display: block;
+  height: 2px;
+  width: 16px;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s, width 0.2s;
+}
+.burger-btn span:nth-child(2) {
+  width: 10px;
+  align-self: flex-end;
+  margin-right: 11px;
+}
 
-        /* Header / Navbar */
-        header {
-            background-color: var(--surface-color);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 24px;
-            box-shadow: 0 1px 2px 0 rgba(0,60,50,0.05);
-        }
+header:has(.sidebar-overlay.show) .burger-btn span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+header:has(.sidebar-overlay.show) .burger-btn span:nth-child(2) { opacity: 0; transform: translateX(6px); }
+header:has(.sidebar-overlay.show) .burger-btn span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+.icon-btn{width:40px;height:40px;border:0;background:transparent;border-radius:10px;display:grid;place-items:center;cursor:pointer;color:var(--muted);transition:background .15s,color .15s}
+.icon-btn:hover{background:var(--hover);color:var(--text)}
+svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.star-btn svg,.empty-icon svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
-        .logo-icon {
-            background: var(--primary-color);
-            color: white;
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
-        }
+.page{display:none;animation:appear .18s ease}.page.active{display:block}@keyframes appear{from{opacity:.4;transform:translateY(2px)}to{opacity:1;transform:translateY(0)}}
+.eyebrow{font-size:14px;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin:0 0 6px} /* Standar font 14px */
+.page-title{font-size:20px;letter-spacing:-.8px;font-weight:700;margin:0} /* Standar font 20px */
+.page-desc{color:var(--muted);font-size:14px;line-height:1.5;margin:6px 0 24px} /* Standar font 14px */
 
-        .logo-text {
-            font-size: 20px;
-            font-weight: 500;
-            letter-spacing: -0.5px;
-        }
+/* Sidebar Navigation */
+.sidebar-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(3px);z-index:200;opacity:0;pointer-events:none;transition:opacity .2s}
+.sidebar-overlay.show{opacity:1;pointer-events:auto}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:280px;background:var(--surface);border-right:1px solid var(--line);z-index:201;transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding:24px 16px}
+.sidebar-overlay.show .sidebar{transform:translateX(0)}
+.sidebar-header{font-size:16px;font-weight:700;margin-bottom:24px;padding-left:12px;color:var(--text)} /* Standar font 16px */
+.nav-list{display:flex;flex-direction:column;gap:6px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:0;background:transparent;color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;text-align:left;transition:background .15s,color .15s} /* Standar font 14px */
+.nav-item:hover{background:var(--hover);color:var(--text)}
+.nav-item.active{background:var(--accent-soft);color:var(--accent)}
 
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+/* Yandex-style Language Bar Header (Ramping) */
+.translate-card{background:var(--surface);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}
+.lang-header-bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--surface)}
+.lang-btn-text{background:transparent;border:0;font-size:14px;font-weight:750;color:var(--muted);padding:6px;cursor:pointer;text-align:center;letter-spacing:.03em;border-radius:8px;transition:background .15s, color .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} /* Standar font 14px */
+.lang-btn-text:hover{background:var(--hover);color:var(--text)}
 
-        .theme-toggle {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 8px 14px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: var(--transition);
-        }
+.swap-btn{width:32px;height:32px;border:0;border-radius:50%;background:var(--hover);color:var(--text);display:grid;place-items:center;cursor:pointer;margin:0 auto;transition:transform .2s,background .15s}
+.swap-btn:hover{background:var(--accent-soft);color:var(--accent)}
+.swap-btn:active{transform:rotate(180deg)}
+.swap-btn svg{width:16px;height:16px}
 
-        .theme-toggle:hover {
-            background-color: var(--primary-light);
-            border-color: var(--border-hover);
-        }
+/* Modal Pemilihan Bahasa */
+.lang-modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(3px);z-index:300;display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.lang-modal-overlay.show{opacity:1;pointer-events:auto}
+.lang-modal{background:var(--surface);border-radius:24px;width:min(90vw, 340px);max-height:80vh;display:flex;flex-direction:column;box-shadow:0 16px 40px rgba(0,0,0,0.15);transform:translateY(15px);transition:transform .2s}
+.lang-modal-overlay.show .lang-modal{transform:translateY(0)}
+.lang-modal-header{padding:20px 20px 12px;font-size:16px;font-weight:700;display:flex;justify-content:space-between;align-items:center} /* Standar font 16px */
+.lang-modal-body{padding:10px 14px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+.lang-option{width:100%;padding:12px 14px;border-radius:12px;font-size:14px;font-weight:500;color:var(--text);background:transparent;border:0;cursor:pointer;text-align:left;display:flex;align-items:center;transition:background .15s} /* Standar font 14px */
+.lang-option:hover{background:var(--hover)}
+.lang-option.selected{background:var(--accent-soft);color:var(--accent);font-weight:650}
 
-        /* Main Container */
-        main {
-            flex: 1;
-            max-width: 1280px;
-            width: 100%;
-            margin: 24px auto;
-            padding: 0 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
+.text-pane{padding:22px 24px 16px;display:flex;flex-direction:column}
+.pane-label{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--muted);margin-bottom:10px;font-weight:500} /* Standar font 14px */
 
-        /* Language Bar Toolbar */
-        .lang-bar {
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 16px;
-            box-shadow: var(--shadow-sm);
-        }
+.textarea{display:block;width:100%;height:115px;min-height:115px;max-height:115px;resize:none;border:0;outline:none;background:transparent;color:var(--text);font-size:18px;line-height:1.65;padding:0;box-shadow:none} /* Standar font 18px */
+.textarea:focus,.textarea:focus-visible,.textarea:active{outline:none!important;border:0!important;box-shadow:none!important}
+.textarea::placeholder{color:var(--muted);opacity:.7}
 
-        .lang-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            flex: 1;
-        }
+.pane-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}
+.count{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums} /* Standar font 14px */
+.actions{display:flex;gap:4px}
+.action-btn{width:36px;height:36px;border:0;border-radius:10px;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer;transition:background .15s,color .15s}
+.action-btn:hover{background:var(--hover);color:var(--text)}
+.action-btn:disabled{opacity:.3;cursor:default}
 
-        .lang-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            padding: 8px 16px;
-            border-radius: 16px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-        }
+.output-pane{border-top:1px solid var(--line);padding:20px 24px 18px;min-height:140px;display:flex;flex-direction:column;justify-content:space-between}
+.output-text{font-size:18px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;min-height:60px} /* Standar font 18px */
+.output-text.placeholder{font-size:14px;color:var(--muted);opacity:.5} /* Standar font 14px */
+.output-text.loading{color:var(--muted);font-size:14px} /* Standar font 14px */
+.output-footer{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+.status{font-size:14px;color:var(--muted)} /* Standar font 14px */
 
-        .lang-btn:hover {
-            background-color: var(--primary-light);
-            color: var(--primary-color);
-        }
+/* History & Saved List */
+.collection-toolbar{display:flex;align-items:center;justify-content:space-between;margin:0 0 16px;padding:0}
+.collection-toolbar span{font-size:14px;color:var(--muted);font-weight:500} /* Standar font 14px */
+.text-link{border:0;background:none;color:var(--accent);font-size:14px;font-weight:600;cursor:pointer;padding:4px 8px;border-radius:8px;transition:background .15s} /* Standar font 14px */
+.text-link:hover{background:var(--accent-soft)}
 
-        .lang-btn.active {
-            background-color: var(--primary-light);
-            color: var(--primary-color);
-        }
+.collection-list{display:flex;flex-direction:column;gap:12px}
+.entry{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:18px 20px;background:var(--surface);border-radius:20px;box-shadow:var(--shadow);transition:transform .15s, box-shadow .15s}
+.entry:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.05)}
+.entry-main{min-width:0;flex:1;cursor:pointer}
+.entry-source{font-size:16px;font-weight:650;color:var(--text);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} /* Standar font 16px */
+.entry-target{font-size:14px;color:var(--muted);margin-top:4px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} /* Standar font 14px */
+.entry-meta{font-size:14px;color:var(--muted);margin-top:10px;display:flex;align-items:center;gap:8px;opacity:.8} /* Standar font 14px */
+.entry-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
 
-        .select-wrapper {
-            position: relative;
-            display: inline-block;
-        }
+.star-btn{width:36px;height:36px;border:0;border-radius:10px;background:var(--hover);color:var(--muted);display:grid;place-items:center;cursor:pointer;transition:background .15s,color .15s}
+.star-btn:hover{background:var(--accent-soft);color:var(--accent)}
+.star-btn.saved{color:#f59e0b;background:#fef3c7}
+.star-btn.saved svg{fill:currentColor}
+.delete-btn:hover{color:#ef4444;background:#fee2e2}
 
-        select.lang-select {
-            appearance: none;
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 8px 32px 8px 16px;
-            border-radius: 16px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            outline: none;
-            transition: var(--transition);
-        }
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:64px 20px;color:var(--muted);margin-top:10px}
+.empty-icon{width:56px;height:56px;margin-bottom:14px;border-radius:20px;background:var(--surface);box-shadow:var(--shadow);display:grid;place-items:center;color:var(--accent)}
+.empty-icon svg{width:24px;height:24px}
+.empty-title{font-size:16px;font-weight:700;margin-bottom:4px;color:var(--text)} /* Standar font 16px */
+.empty-copy{font-size:14px;color:var(--muted);max-width:260px} /* Standar font 14px */
 
-        select.lang-select:hover, select.lang-select:focus {
-            border-color: var(--primary-color);
-            background-color: var(--primary-light);
-        }
+/* Toast & Popup Konfirmasi */
+.toast{position:fixed;left:50%;bottom:32px;transform:translate(-50%,10px);opacity:0;pointer-events:none;background:#1e2124;color:white;padding:12px 20px;border-radius:16px;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,0.2);transition:opacity .2s,transform .2s;z-index:400;text-align:center} /* Standar font 14px */
+.toast.show{opacity:1;transform:translate(-50%,0)}
 
-        .select-wrapper::after {
-            content: '▼';
-            font-size: 10px;
-            color: var(--text-secondary);
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
-        }
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);display:grid;place-items:center;z-index:350;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.show{opacity:1;pointer-events:auto}
+.modal-box{background:var(--surface);border-radius:32px;padding:32px 26px;width:min(90vw, 320px);box-shadow:0 24px 50px rgba(0,0,0,0.15);transform:scale(.95);transition:transform .2s;text-align:center}
+.modal-overlay.show .modal-box{transform:scale(1)}
+.modal-title{font-size:18px;font-weight:750;margin:0 0 8px;color:var(--text)} /* Standar font 18px */
+.modal-desc{font-size:14px;color:var(--muted);line-height:1.5;margin:0 0 24px} /* Standar font 14px */
+.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-btn{padding:13px 16px;border-radius:18px;font-size:14px;font-weight:700;cursor:pointer;border:0;transition:transform .1s, opacity .15s} /* Standar font 14px */
+.modal-btn:active{transform:scale(0.97)}
+.modal-btn.cancel{background:var(--hover);color:var(--text)}
+.modal-btn.confirm{background:var(--accent);color:#fff}
 
-        .swap-btn {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--text-secondary);
-            transition: var(--transition);
-            margin: 0 12px;
-        }
+.error{color:#ef4444}
 
-        .swap-btn:hover {
-            background-color: var(--primary-light);
-            color: var(--primary-color);
-            border-color: var(--border-hover);
-            transform: rotate(180deg);
-        }
-
-        /* Translation Workspace (Dual Panels) */
-        .workspace {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            flex: 1;
-            min-height: 420px;
-        }
-
-        @media (max-width: 768px) {
-            .workspace {
-                grid-template-columns: 1fr;
-            }
-            .lang-bar {
-                flex-direction: column;
-                gap: 12px;
-                align-items: stretch;
-            }
-            .swap-btn {
-                align-self: center;
-                margin: 4px 0;
-                transform: rotate(90deg);
-            }
-            .swap-btn:hover {
-                transform: rotate(270deg);
-            }
-        }
-
-        .panel {
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: var(--shadow-sm);
-            position: relative;
-            overflow: hidden;
-            transition: border-color var(--transition);
-        }
-
-        .panel:focus-within {
-            border-color: var(--primary-color);
-            box-shadow: var(--shadow);
-        }
-
-        .panel-textarea {
-            flex: 1;
-            width: 100%;
-            border: none;
-            background: transparent;
-            color: var(--text-primary);
-            padding: 16px;
-            font-size: 18px;
-            line-height: 1.5;
-            resize: none;
-            outline: none;
-        }
-
-        .output-panel {
-            background-color: var(--bg-color);
-        }
-
-        .output-text {
-            flex: 1;
-            width: 100%;
-            padding: 16px;
-            font-size: 18px;
-            line-height: 1.5;
-            overflow-y: auto;
-            word-break: break-word;
-            white-space: pre-wrap;
-            color: var(--text-primary);
-        }
-
-        /* Panel Footer Toolbar */
-        .panel-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 16px;
-            border-top: 1px solid var(--border-color);
-            background-color: var(--surface-color);
-        }
-
-        .char-counter {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .panel-tools {
-            display: flex;
-            gap: 8px;
-        }
-
-        .tool-icon-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .tool-icon-btn:hover {
-            background-color: var(--primary-light);
-            color: var(--primary-color);
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 24px;
-            font-size: 13px;
-            color: var(--text-secondary);
-            border-top: 1px solid var(--border-color);
-            background-color: var(--surface-color);
-            margin-top: auto;
-        }
-
-        /* Loading Spinner */
-        .loader {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid var(--border-color);
-            border-radius: 50%;
-            border-top-color: var(--primary-color);
-            animation: spin 0.8s linear infinite;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .status-msg {
-            font-size: 13px;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-        }
-    </style>
+/* OPTIMASI DESAIN DESKTOP (FULL-WIDTH & SIDE-BY-SIDE) */
+@media(min-width: 768px) {
+  body { padding: 28px 0 40px; }
+  .app { padding: 0 40px; }
+  .topbar { margin-bottom: 24px; }
+  .translate-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 280px;
+  }
+  .lang-header-bar {
+    grid-column: 1 / -1;
+  }
+  .text-pane {
+    border-right: 1px solid var(--line);
+    padding: 24px 28px 20px;
+    justify-content: space-between;
+  }
+  .output-pane {
+    border-top: none;
+    padding: 24px 28px 20px;
+    justify-content: space-between;
+  }
+  .textarea {
+    height: 180px;
+    min-height: 180px;
+    max-height: 280px;
+    font-size: 18px; /* Standar font 18px */
+  }
+  .output-text {
+    min-height: 180px;
+    font-size: 18px; /* Standar font 18px */
+  }
+}
+</style>
 </head>
-<body data-theme="light">
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="burger-btn" id="menuToggle" type="button" aria-label="Menu" title="Menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="brand">
+      <div class="brand-name">Deevv <span>Translator</span></div>
+    </div>
+  </div>
+  <button class="icon-btn" id="themeToggle" type="button" aria-label="Ganti tema" title="Ganti tema"><svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg></button>
+</header>
 
-    <!-- Header -->
-    <header>
-        <div class="logo-area">
-            <div class="logo-icon">T</div>
-            <div class="logo-text">Terjemahan Pro</div>
-        </div>
-        <div class="header-actions">
-            <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">
-                <span id="themeIcon">🌙</span> <span id="themeText">Mode Gelap</span>
-            </button>
-        </div>
-    </header>
+<main>
+<section class="page active" id="translatePage" data-page="translate">
+  <div class="translate-card">
+    <!-- Bar Bahasa ala Yandex Lebih Ramping -->
+    <div class="lang-header-bar">
+      <button class="lang-btn-text" id="sourceLangBtn" type="button">ENGLISH</button>
+      <button class="swap-btn" id="swapBtn" type="button" aria-label="Tukar bahasa" title="Tukar bahasa"><svg viewBox="0 0 24 24"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg></button>
+      <button class="lang-btn-text" id="targetLangBtn" type="button">JAPANESE</button>
+    </div>
 
-    <!-- Main Workspace -->
-    <main>
-        <!-- Language Selection Bar -->
-        <div class="lang-bar">
-            <div class="lang-group">
-                <button class="lang-btn active" onclick="setSourceLang('auto', this)">Deteksi Bahasa</button>
-                <button class="lang-btn" onclick="setSourceLang('id', this)">Indonesia</button>
-                <button class="lang-btn" onclick="setSourceLang('en', this)">Inggris</button>
-                <div class="select-wrapper">
-                    <select id="sourceLangSelect" class="lang-select" onchange="handleSelectChange('source', this.value)">
-                        <option value="auto">Bahasa Lainnya...</option>
-                        <option value="id">Indonesia</option>
-                        <option value="en">Inggris</option>
-                        <option value="es">Spanyol</option>
-                        <option value="fr">Prancis</option>
-                        <option value="de">Jerman</option>
-                        <option value="ja">Jepang</option>
-                        <option value="ko">Korea</option>
-                        <option value="zh-CN">Mandarin</option>
-                        <option value="ar">Arab</option>
-                        <option value="ru">Rusia</option>
-                        <option value="hi">Hindi</option>
-                        <option value="pt">Portugis</option>
-                    </select>
-                </div>
-            </div>
+    <div class="text-pane">
+      <div class="pane-label"><span>Teks asli</span><span id="sourceLanguageLabel">English</span></div>
+      <textarea class="textarea" id="inputText" maxlength="3000" placeholder="Ketik atau tempel teks di sini..." aria-label="Teks yang ingin diterjemahkan"></textarea>
+      <div class="pane-footer"><span class="count" id="charCount">0 / 3000</span><div class="actions">
+        <button class="action-btn" id="clearBtn" type="button" aria-label="Hapus teks" title="Hapus teks"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg></button>
+      </div></div>
+    </div>
+    
+    <div class="output-pane">
+      <div class="pane-label"><span>Terjemahan</span><span id="targetLanguageLabel">Japanese</span></div>
+      <div class="output-text placeholder" id="outputText" aria-live="polite"></div>
+      <div class="output-footer"><span class="status" id="statusText">Siap menerjemahkan</span><div class="actions">
+        <button class="action-btn" id="speakBtn" type="button" aria-label="Dengarkan" title="Dengarkan" disabled><svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5ZM15.5 8.5a5 5 0 0 1 0 7m2.5-9.5a9 9 0 0 1 0 12"/></svg></button>
+        <button class="action-btn" id="copyBtn" type="button" aria-label="Salin" title="Salin" disabled><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg></button>
+        <button class="action-btn" id="saveBtn" type="button" aria-label="Simpan" title="Simpan" disabled><svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg></button>
+      </div></div>
+    </div>
+  </div>
+</section>
 
-            <button class="swap-btn" title="Tukar Bahasa" onclick="swapLanguages()">
-                ⇄
-            </button>
+<section class="page" id="historyPage" data-page="history">
+  <p class="eyebrow">Koleksi pribadi</p><h1 class="page-title">Histori</h1><p class="page-desc">Semua riwayat terjemahan yang pernah kamu lakukan.</p>
+  <div class="collection-toolbar"><span id="historyCount">0 terjemahan</span><button class="text-link" id="clearHistoryBtn" type="button">Hapus histori</button></div>
+  <div class="collection-list" id="historyList"></div>
+</section>
 
-            <div class="lang-group" style="justify-content: flex-end;">
-                <button class="lang-btn active" onclick="setTargetLang('id', this)">Indonesia</button>
-                <button class="lang-btn" onclick="setTargetLang('en', this)">Inggris</button>
-                <button class="lang-btn" onclick="setTargetLang('ja', this)">Jepang</button>
-                <div class="select-wrapper">
-                    <select id="targetLangSelect" class="lang-select" onchange="handleSelectChange('target', this.value)">
-                        <option value="id">Bahasa Lainnya...</option>
-                        <option value="id">Indonesia</option>
-                        <option value="en">Inggris</option>
-                        <option value="es">Spanyol</option>
-                        <option value="fr">Prancis</option>
-                        <option value="de">Jerman</option>
-                        <option value="ja">Jepang</option>
-                        <option value="ko">Korea</option>
-                        <option value="zh-CN">Mandarin</option>
-                        <option value="ar">Arab</option>
-                        <option value="ru">Rusia</option>
-                        <option value="hi">Hindi</option>
-                        <option value="pt">Portugis</option>
-                    </select>
-                </div>
-            </div>
-        </div>
+<section class="page" id="savedPage" data-page="saved">
+  <p class="eyebrow">Koleksi pribadi</p><h1 class="page-title">Tersimpan</h1><p class="page-desc">Daftar terjemahan penting yang telah kamu tandai bintang.</p>
+  <div class="collection-toolbar"><span id="savedCount">0 tersimpan</span></div>
+  <div class="collection-list" id="savedList"></div>
+</section>
+</main>
+</div>
 
-        <!-- Dual Text Panels -->
-        <div class="workspace">
-            <!-- Source Panel -->
-            <div class="panel">
-                <textarea 
-                    id="sourceText" 
-                    class="panel-textarea" 
-                    placeholder="Ketik teks untuk diterjemahkan..." 
-                    oninput="handleInput()"
-                ></textarea>
-                <div class="panel-footer">
-                    <div class="panel-tools">
-                        <button class="tool-icon-btn" title="Dengarkan Teks" onclick="speakText('source')">🔊</button>
-                        <button class="tool-icon-btn" title="Hapus Teks" onclick="clearText()">🗑️</button>
-                    </div>
-                    <div class="char-counter"><span id="charCount">0</span> / 5000</div>
-                </div>
-            </div>
+<!-- Sidebar Navigation Drawer -->
+<div class="sidebar-overlay" id="sidebarOverlay">
+  <nav class="sidebar" aria-label="Navigasi Utama">
+    <div class="sidebar-header">Deevv Translator</div>
+    <div class="nav-list">
+      <button class="nav-item" type="button" data-tab="translate"><svg viewBox="0 0 24 24"><path d="M4 5h11M9.5 3v2c0 5-2.5 8-6 10"/><path d="M6 10c1.3 1.8 3 3.2 5 4M14 19l3.5-9 3.5 9M15.3 16h4.4"/></svg><span>Terjemahan</span></button>
+      <button class="nav-item" type="button" data-tab="history"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5m4-1v5l3 2"/></svg><span>Histori</span></button>
+      <button class="nav-item" type="button" data-tab="saved"><svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg><span>Tersimpan</span></button>
+    </div>
+  </nav>
+</div>
 
-            <!-- Output Panel -->
-            <div class="panel output-panel">
-                <div id="outputText" class="output-text" placeholder="Terjemahan akan muncul di sini..."></div>
-                <div class="panel-footer">
-                    <div class="status-msg" id="statusMsg">Siap</div>
-                    <div class="panel-tools">
-                        <button class="tool-icon-btn" title="Dengarkan Terjemahan" onclick="speakText('target')">🔊</button>
-                        <button class="tool-icon-btn" title="Salin Terjemahan" onclick="copyResult()">📋</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+<!-- Language Popup Modal -->
+<div class="lang-modal-overlay" id="langModalOverlay">
+  <div class="lang-modal">
+    <div class="lang-modal-header"><span id="langModalTitle">Pilih Bahasa</span><button class="icon-btn" id="closeLangModal" type="button" style="width:32px;height:32px;"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="lang-modal-body" id="langModalBody"></div>
+  </div>
+</div>
 
-    <!-- Footer -->
-    <footer>
-        &copy; 2026 Terjemahan Pro. Desain Profesional responsif ala Google &amp; Yandex Translate.
-    </footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-    <!-- JavaScript Logic -->
-    <script>
-        let currentSourceLang = 'auto';
-        let currentTargetLang = 'id';
-        let translationTimer = null;
+<!-- Custom Confirm Modal Playful & Rounded -->
+<div class="modal-overlay" id="customModal">
+  <div class="modal-box">
+    <h3 class="modal-title" id="modalTitle">Konfirmasi</h3>
+    <p class="modal-desc" id="modalDesc">Apakah Anda yakin?</p>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" id="modalCancel">Batal</button>
+      <button class="modal-btn confirm" id="modalConfirm">Hapus</button>
+    </div>
+  </div>
+</div>
 
-        // Theme Toggle Functionality
-        function toggleTheme() {
-            const body = document.body;
-            const themeIcon = document.getElementById('themeIcon');
-            const themeText = document.getElementById('themeText');
-            
-            if (body.getAttribute('data-theme') === 'light') {
-                body.setAttribute('data-theme', 'dark');
-                themeIcon.textContent = '☀️';
-                themeText.textContent = 'Mode Terang';
-            } else {
-                body.setAttribute('data-theme', 'light');
-                themeIcon.textContent = '🌙';
-                themeText.textContent = 'Mode Gelap';
-            }
-        }
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const STORAGE_KEY = 'deevv-translator-v18';
+  const LANG_NAMES = {id:'Indonesia',en:'English',ja:'Jepang',es:'Spanyol',fr:'Prancis',de:'Jerman',ko:'Korea','zh-CN':'Mandarin'};
+  const EMPTY_TEXT = '';
+  let typingTimer = null, toastTimer = null, requestId = 0;
+  let state = {history:[], saved:[], theme:'light', sourceLang:'en', targetLang:'ja'};
+  let modalCallback = null;
+  let activeLangType = null;
 
-        // Set Source Language via Quick Buttons
-        function setSourceLang(lang, btnElement) {
-            currentSourceLang = lang;
-            const group = btnElement.parentElement;
-            group.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-            btnElement.classList.add('active');
-            
-            document.getElementById('sourceLangSelect').value = 'auto';
-            triggerTranslation();
-        }
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    state.history = Array.isArray(raw.history) ? raw.history : [];
+    state.saved = Array.isArray(raw.saved) ? raw.saved : [];
+    state.theme = raw.theme === 'dark' ? 'dark' : 'light';
+    if (raw.sourceLang) state.sourceLang = raw.sourceLang;
+    if (raw.targetLang) state.targetLang = raw.targetLang;
+  } catch (_) {}
+  document.documentElement.classList.toggle('dark', state.theme === 'dark');
 
-        // Set Target Language via Quick Buttons
-        function setTargetLang(lang, btnElement) {
-            currentTargetLang = lang;
-            const group = btnElement.parentElement;
-            group.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-            btnElement.classList.add('active');
-            
-            document.getElementById('targetLangSelect').value = lang;
-            triggerTranslation();
-        }
+  function persist() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    catch (_) { showToast('Penyimpanan penuh atau tidak tersedia.'); }
+  }
+  function showToast(message) {
+    const toast = $('toast'); toast.textContent = message; toast.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove('show'), 2300);
+  }
 
-        // Handle Dropdown Selection Change
-        function handleSelectChange(type, value) {
-            if (type === 'source') {
-                currentSourceLang = value;
-                // Clear active states on quick buttons if custom select used
-                const buttons = document.querySelectorAll('.lang-bar > .lang-group:first-child .lang-btn');
-                buttons.forEach(b => b.classList.remove('active'));
-            } else {
-                currentTargetLang = value;
-                const buttons = document.querySelectorAll('.lang-bar > .lang-group:last-child .lang-btn');
-                buttons.forEach(b => b.classList.remove('active'));
-            }
-            triggerTranslation();
-        }
+  const toggleMenu = () => $('sidebarOverlay').classList.toggle('show');
+  $('menuToggle').addEventListener('click', toggleMenu);
+  $('sidebarOverlay').addEventListener('click', (e) => { if (e.target === $('sidebarOverlay')) toggleMenu(); });
 
-        // Swap Source and Target Languages
-        function swapLanguages() {
-            if (currentSourceLang === 'auto') return; // Cannot swap auto
-            
-            let temp = currentSourceLang;
-            currentSourceLang = currentTargetLang;
-            currentTargetLang = temp;
+  function showConfirm(title, desc, onConfirm) {
+    $('modalTitle').textContent = title;
+    $('modalDesc').textContent = desc;
+    modalCallback = onConfirm;
+    $('customModal').classList.add('show');
+  }
+  $('modalCancel').addEventListener('click', () => { $('customModal').classList.remove('show'); modalCallback = null; });
+  $('modalConfirm').addEventListener('click', () => { $('customModal').classList.remove('show');
+    if (modalCallback) modalCallback();
+    modalCallback = null;
+  });
 
-            // Update UI Selectors & Buttons
-            document.getElementById('targetLangSelect').value = currentTargetLang;
-            document.getElementById('sourceLangSelect').value = currentSourceLang;
+  const languagesList = [
+    {value:'id', text:'Indonesia'},
+    {value:'en', text:'English'},
+    {value:'ja', text:'Jepang'},
+    {value:'es', text:'Spanyol'},
+    {value:'fr', text:'Prancis'},
+    {value:'de', text:'Jerman'},
+    {value:'ko', text:'Korea'},
+    {value:'zh-CN', text:'Mandarin'}
+  ];
 
-            // Update active quick buttons if applicable
-            const sourceButtons = document.querySelectorAll('.lang-bar > .lang-group:first-child .lang-btn');
-            sourceButtons.forEach(b => {
-                b.classList.remove('active');
-                if (b.textContent.toLowerCase().includes(currentSourceLang === 'id' ? 'indonesia' : 'inggris')) {
-                    b.classList.add('active');
-                }
-            });
+  function updateHeaderLangUI() {
+    $('sourceLangBtn').textContent = (LANG_NAMES[state.sourceLang] || state.sourceLang).toUpperCase();$('targetLangBtn').textContent = (LANG_NAMES[state.targetLang] || state.targetLang).toUpperCase();
+  }
 
-            const targetButtons = document.querySelectorAll('.lang-bar > .lang-group:last-child .lang-btn');
-            targetButtons.forEach(b => {
-                b.classList.remove('active');
-                if (b.textContent.toLowerCase().includes(currentTargetLang === 'id' ? 'indonesia' : currentTargetLang === 'en' ? 'inggris' : 'jepang')) {
-                    b.classList.add('active');
-                }
-            });
+  function openLangModal(type) {
+    activeLangType = type;
+    $('langModalTitle').textContent = type === 'sourceLang' ? 'Pilih Bahasa Asli' : 'Pilih Bahasa Terjemahan';
+    const body = $('langModalBody');
+    body.innerHTML = languagesList.map(lang => 
+      `<button class="lang-option ${state[type] === lang.value ? 'selected' : ''}" type="button" data-val="${lang.value}">${lang.text}</button>`
+    ).join('');
+    $('langModalOverlay').classList.add('show');
+  }
 
-            // Swap text content as well if output exists
-            const sourceTextEl = document.getElementById('sourceText');
-            const outputTextEl = document.getElementById('outputText');
-            
-            if (outputTextEl.textContent.trim() !== '') {
-                sourceTextEl.value = outputTextEl.textContent;
-                handleInput();
-            }
-        }
+  $('closeLangModal').addEventListener('click', () => $('langModalOverlay').classList.remove('show'));$('langModalOverlay').addEventListener('click', (e) => { if(e.target === $('langModalOverlay'))$('langModalOverlay').classList.remove('show'); });
 
-        // Handle Input Typing & Character Counter
-        function handleInput() {
-            const text = document.getElementById('sourceText').value;
-            const charCount = text.length;
-            document.getElementById('charCount').textContent = charCount;
+  $('langModalBody').addEventListener('click', (e) => {
+    const btn = e.target.closest('.lang-option');
+    if(!btn || !activeLangType) return;
+    state[activeLangType] = btn.dataset.val;
+    updateHeaderLangUI();
+    $('langModalOverlay').classList.remove('show');
+    persist();
+    updateLanguageLabels();
+    if($('inputText').value.trim()) translateText();
+  });
 
-            if (charCount > 5000) {
-                document.getElementById('sourceText').value = text.substring(0, 5000);
-                document.getElementById('charCount').textContent = 5000;
-            }
+  $('sourceLangBtn').addEventListener('click', () => openLangModal('sourceLang'));$('targetLangBtn').addEventListener('click', () => openLangModal('targetLang'));
 
-            clearTimeout(translationTimer);
-            if (text.trim() === '') {
-                document.getElementById('outputText').innerHTML = '';
-                document.getElementById('statusMsg').textContent = 'Siap';
-                return;
-            }
+  function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  }
+  function formatTime(timestamp) {
+    try { return new Intl.DateTimeFormat('id-ID',{dateStyle:'medium',timeStyle:'short'}).format(new Date(timestamp)); }
+    catch (_) { return ''; }
+  }
+  function iconStar() { return '<svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg>'; }
+  function iconTrash() { return '<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg>'; }
 
-            document.getElementById('statusMsg').innerHTML = '<span class="loader"></span> Menerjemahkan...';
-            translationTimer = setTimeout(triggerTranslation, 400); // Debounce 400ms
-        }
+  function renderEmpty(title, description, icon) {
+    return `<div class="empty"><div class="empty-icon">${icon}</div><div class="empty-title">${title}</div><div class="empty-copy">${description}</div></div>`;
+  }
+  function isSaved(id) { return state.saved.some(item => item.id === id); }
+  function entryMarkup(item, showDelete = false) {
+    const saved = isSaved(item.id);
+    return `<article class="entry" data-entry="${escapeHTML(item.id)}">
+      <div class="entry-main" role="button" tabindex="0">
+        <span class="entry-source">${escapeHTML(item.source)}</span>
+        <span class="entry-target">${escapeHTML(item.target)}</span>
+        <div class="entry-meta"><span>${escapeHTML(LANG_NAMES[item.sl] || item.sl)} → ${escapeHTML(LANG_NAMES[item.tl] || item.tl)}</span><span>·</span><span>${escapeHTML(formatTime(item.time))}</span></div>
+      </div>
+      <div class="entry-actions">
+        <button class="star-btn ${saved?'saved':''}" type="button" data-action="star" aria-label="Simpan" title="Simpan">${iconStar()}</button>
+        ${showDelete?`<button class="star-btn delete-btn" type="button" data-action="delete" aria-label="Hapus" title="Hapus">${iconTrash()}</button>`:''}
+      </div></article>`;
+  }
+  function renderLists() {
+    $('historyCount').textContent = `${state.history.length} terjemahan`;
+    $('historyList').innerHTML = state.history.length ? state.history.map(item=>entryMarkup(item,true)).join('') : renderEmpty('Histori Kosong','Belum ada riwayat terjemahan yang tercatat di perangkat ini.','<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5m4-1v5l3 2"/></svg>');
+    $('savedCount').textContent = `${state.saved.length} tersimpan`;
+    $('savedList').innerHTML = state.saved.length ? state.saved.map(item=>entryMarkup(item,true)).join('') : renderEmpty('Belum Ada Tersimpan','Tandai terjemahan dengan ikon bintang untuk menyimpannya di sini.','<svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg>');
+  }
 
-        // Fetch Translation from Free Google Translate API Endpoint
-        async function triggerTranslation() {
-            const text = document.getElementById('sourceText').value.trim();
-            const outputDiv = document.getElementById('outputText');
-            const statusMsg = document.getElementById('statusMsg');
+  // Fungsi navigasi berbasis Query Parameter URL (?tab=...) agar saat diakses dari link langsung bisa terpanggil
+  function switchTab(tab, updateHistory = true) {
+    const validTabs = ['translate', 'history', 'saved'];
+    const activeTab = validTabs.includes(tab) ? tab : 'translate';
 
-            if (!text) {
-                outputDiv.innerHTML = '';
-                statusMsg.textContent = 'Siap';
-                return;
-            }
+    if (updateHistory) {
+      const url = new URL(window.location);
+      if (activeTab === 'translate') {
+        url.searchParams.delete('tab');
+      } else {
+        url.searchParams.set('tab', activeTab);
+      }
+      history.pushState(null, '', url);
+    }
 
-            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${currentSourceLang}&tl=${currentTargetLang}&dt=t&q=${encodeURIComponent(text)}`;
+    document.querySelectorAll('.page').forEach(page => page.classList.toggle('active', page.dataset.page === activeTab));
+    document.querySelectorAll('.nav-item').forEach(button => {
+      button.classList.toggle('active', button.dataset.tab === activeTab);
+    });
 
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Gagal terhubung ke server terjemahan');
-                
-                const data = await response.json();
-                let translatedText = '';
-                if (data && data[0]) {
-                    data[0].forEach(item => {
-                        if (item[0]) translatedText += item[0];
-                    });
-                }
+    window.scrollTo({top: 0, behavior: 'smooth'});
+    $('sidebarOverlay').classList.remove('show');
+    if (activeTab === 'history' || activeTab === 'saved') renderLists();
+  }
 
-                outputDiv.textContent = translatedText;
-                statusMsg.textContent = 'Terjemahan selesai';
-            } catch (error) {
-                console.error(error);
-                statusMsg.textContent = 'Terjadi kesalahan jaringan.';
-            }
-        }
+  document.querySelectorAll('.nav-item').forEach(button => {
+    button.addEventListener('click', () => switchTab(button.dataset.tab));
+  });
 
-        // Clear Text
-        function clearText() {
-            document.getElementById('sourceText').value = '';
-            document.getElementById('outputText').innerHTML = '';
-            document.getElementById('charCount').textContent = '0';
-            document.getElementById('statusMsg').textContent = 'Siap';
-        }
+  // Mendengarkan perubahan URL (termasuk tombol back/forward browser)
+  window.addEventListener('popstate', () => {
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get('tab');
+    switchTab(tabParam || 'translate', false);
+  });
 
-        // Copy Translated Result to Clipboard
-        function copyResult() {
-            const text = document.getElementById('outputText').textContent;
-            if (!text) return;
-            
-            navigator.clipboard.writeText(text).then(() => {
-                const statusMsg = document.getElementById('statusMsg');
-                const originalText = statusMsg.textContent;
-                statusMsg.textContent = 'Berhasil disalin ke klipboard!';
-                setTimeout(() => {
-                    statusMsg.textContent = originalText;
-                }, 2000);
-            });
-        }
+  function updateLanguageLabels() {
+    $('sourceLanguageLabel').textContent = LANG_NAMES[state.sourceLang] || state.sourceLang;
+    $('targetLanguageLabel').textContent = LANG_NAMES[state.targetLang] || state.targetLang;
+  }
+  function updateButtons(enabled) {
+    $('copyBtn').disabled = !enabled; $('speakBtn').disabled = !enabled; $('saveBtn').disabled = !enabled;
+  }
+  function addHistory(source,target,sl,tl) {
+    const same = state.history.find(item=>item.source===source && item.target===target && item.sl===sl && item.tl===tl);
+    const item = {id:same?same.id:`tr_${Date.now()}_${Math.random().toString(36).slice(2,8)}`,source,target,sl,tl,time:Date.now()};
+    state.history = [item,...state.history.filter(old=>old.id!==item.id)].slice(0,200);
+    state.saved = state.saved.map(old=>old.id===item.id?item:old);
+    persist();
+    return item;
+  }
+  async function translateText() {
+    const source = $('inputText').value.trim(), sl = state.sourceLang, tl = state.targetLang;
+    updateLanguageLabels();
+    if (!source) {
+      $('outputText').textContent=EMPTY_TEXT; 
+      $('outputText').className='output-text placeholder';$('statusText').textContent='Siap menerjemahkan'; 
+      updateButtons(false); 
+      return;
+    }
+    if (sl === tl) {
+      $('outputText').textContent='Pilih dua bahasa yang berbeda.'; 
+      $('outputText').className='output-text placeholder';$('statusText').textContent='Bahasa sama'; 
+      updateButtons(false); 
+      return;
+    }
+    const current = ++requestId;
+    $('outputText').textContent='Menerjemahkan…'; 
+    $('outputText').className='output-text loading';$('statusText').textContent='Sedang memproses'; 
+    updateButtons(false);
+    try {
+      const url=`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(sl)}&tl=${encodeURIComponent(tl)}&dt=t&q=${encodeURIComponent(source)}`;
+      const response=await fetch(url);
+      if(!response.ok) throw new Error('HTTP '+response.status);
+      const data=await response.json();
+      const result=Array.isArray(data?.[0])?data[0].map(part=>part?.[0]||'').join(''):'';
+      if(current!==requestId) return;
+      if(!result) throw new Error('Hasil kosong');
+      $('outputText').textContent=result; 
+      $('outputText').className='output-text';$('statusText').textContent='Terjemahan selesai'; 
+      updateButtons(true);
+      addHistory(source,result,sl,tl);
+    } catch (_) {
+      if(current!==requestId) return;
+      $('outputText').textContent='Terjemahan gagal. Periksa koneksi internet lalu coba lagi.';
+      $('outputText').className='output-text placeholder error';$('statusText').textContent='Gagal menerjemahkan'; 
+      updateButtons(false);
+    }
+  }
+  function handleTyping() {
+    const text=$('inputText').value;
+    $('charCount').textContent=`${text.length} / 3000`;
+    clearTimeout(typingTimer); ++requestId;
+    if(!text.trim()) {
+      $('outputText').textContent=EMPTY_TEXT; 
+      $('outputText').className='output-text placeholder';$('statusText').textContent='Siap menerjemahkan'; 
+      updateButtons(false); 
+      return;
+    }
+    $('outputText').textContent='Menunggu teks…';$('outputText').className='output-text loading';
+    typingTimer=setTimeout(translateText,550);
+  }
+  $('inputText').addEventListener('input',handleTyping);
 
-        // Text to Speech (Audio pronunciation)
-        function speakText(type) {
-            const text = type === 'source' ? document.getElementById('sourceText').value : document.getElementById('outputText').textContent;
-            if (!text) return;
+  $('swapBtn').addEventListener('click',()=>{
+    const old = state.sourceLang;
+    state.sourceLang = state.targetLang;
+    state.targetLang = old;
+    updateHeaderLangUI();
+    persist();
+    updateLanguageLabels();
+    const translated=$('outputText').textContent;
+    if($('inputText').value.trim() && translated && translated!==EMPTY_TEXT && !translated.startsWith('Terjemahan gagal'))$('inputText').value=translated;
+    $('charCount').textContent=`${$('inputText').value.length} / 3000`;
+    if($('inputText').value.trim()) translateText(); else {$('outputText').textContent=EMPTY_TEXT; updateButtons(false); }
+  });
 
-            const lang = type === 'source' ? (currentSourceLang === 'auto' ? 'id' : currentSourceLang) : currentTargetLang;
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = lang;
-            window.speechSynthesis.speak(utterance);
-        }
-    </script>
+  $('clearBtn').addEventListener('click',()=>{
+    clearTimeout(typingTimer);++requestId;$('inputText').value='';$('charCount').textContent='0 / 3000';
+    $('outputText').textContent=EMPTY_TEXT;$('outputText').className='output-text placeholder';$('statusText').textContent='Siap menerjemahkan';updateButtons(false);$('inputText').focus();
+  });
+  $('copyBtn').addEventListener('click',async()=>{
+    const value=$('outputText').textContent;
+    try { await navigator.clipboard.writeText(value);showToast('Terjemahan berhasil disalin.'); }
+    catch (_) { showToast('Gagal menyalin.'); }
+  });
+  $('speakBtn').addEventListener('click',()=>{
+    const value=$('outputText').textContent;
+    if(!('speechSynthesis' in window)){showToast('Fitur suara tidak didukung.');return;}
+    speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(value);
+    const language=state.targetLang;utterance.lang=language==='zh-CN'?'zh-CN':language;
+    speechSynthesis.speak(utterance);
+  });
+  $('saveBtn').addEventListener('click',()=>{
+    const source=$('inputText').value.trim(),target=$('outputText').textContent;
+    if(!source||!target||target===EMPTY_TEXT||target.startsWith('Terjemahan gagal'))return;
+    let item=state.history.find(x=>x.source===source&&x.target===target&&x.sl===state.sourceLang&&x.tl===state.targetLang);
+    if(!item)item=addHistory(source,target,state.sourceLang,state.targetLang);
+    if(isSaved(item.id)){state.saved=state.saved.filter(x=>x.id!==item.id);showToast('Dihapus dari Tersimpan.');}
+    else {state.saved=[item,...state.saved.filter(x=>x.id!==item.id)].slice(0,200);showToast('Disimpan ke Tersimpan.');}
+    persist();renderLists();
+  });
+  function restoreEntry(item) {
+    $('inputText').value=item.source;
+    state.sourceLang = item.sl;
+    state.targetLang = item.tl;
+    updateHeaderLangUI();
+    persist();
+    $('charCount').textContent=`${item.source.length} / 3000`;updateLanguageLabels();
+    $('outputText').textContent=item.target;$('outputText').className='output-text';$('statusText').textContent='Dibuka dari koleksi';updateButtons(true);switchTab('translate');
+  }
+  document.addEventListener('click',event=>{
+    const entry=event.target.closest('[data-entry]');if(!entry)return;
+    const id=entry.dataset.entry;
+    const item=state.history.find(x=>x.id===id)||state.saved.find(x=>x.id===id);
+    const action=event.target.closest('[data-action]')?.dataset.action;
+    if(action==='star' && item){
+      if(isSaved(id)){state.saved=state.saved.filter(x=>x.id!==id);showToast('Dihapus dari Tersimpan.');}
+      else {state.saved=[item,...state.saved].slice(0,200);showToast('Disimpan ke Tersimpan.');}
+      persist();renderLists();return;
+    }
+    if(action==='delete'){
+      showConfirm('Hapus Item', 'Hapus terjemahan ini dari daftar?', () => {
+        state.history=state.history.filter(x=>x.id!==id);state.saved=state.saved.filter(x=>x.id!==id);
+        persist();renderLists();showToast('Item dihapus.');
+      });
+      return;
+    }
+    if(!action && event.target.closest('.entry-main') && item)restoreEntry(item);
+  });
+  $('clearHistoryBtn').addEventListener('click',()=>{ if(!state.history.length){showToast('Histori sudah kosong.');return;} showConfirm('Hapus Semua Histori', 'Tindakan ini akan menghapus seluruh catatan riwayat terjemahan Anda.', () => { const savedIds=new Set(state.saved.map(x=>x.id)); state.history=state.history.filter(x=>savedIds.has(x.id)); persist();renderLists();showToast('Histori dibersihkan.'); }); });$('themeToggle').addEventListener('click',()=>{
+    state.theme=state.theme==='dark'?'light':'dark';
+    document.documentElement.classList.toggle('dark',state.theme==='dark');
+    $('themeIcon').innerHTML=state.theme==='dark'
+      ?'<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>'
+      :'<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/>';
+    persist();
+  });
+
+  updateHeaderLangUI();
+  updateLanguageLabels();
+  renderLists();
+
+  // Inisialisasi awal saat halaman pertama kali diakses lewat link (membaca parameter ?tab=...)
+  const urlParams = new URLSearchParams(window.location.search);
+  const tabParam = urlParams.get('tab');
+  if (['translate', 'history', 'saved'].includes(tabParam)) {
+    switchTab(tabParam, false);
+  }
+
+  if(state.theme==='dark') $('themeIcon').innerHTML='<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>';
+})();
+</script>
 </body>
 </html>
