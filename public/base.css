@@ -43,6 +43,10 @@ input[type="search"]::-webkit-search-results-decoration {
   --page-container-left-space-desktop: 120px; /* jadi 180px di >=90rem */
   --page-sidebar-width: 360px;
   --page-column-gap: 40px;
+  --page-header-inline: 24px;
+  --page-logo-col: calc(var(--page-container-left-space-desktop) - 16px);
+  /* garis kiri kotak cari = padding header + kolom logo */
+  --page-content-start: calc(var(--page-header-inline) + var(--page-logo-col));
   --page-max-width: var(--page-container-width-desktop); /* alias lama */
   --page-gutter: 130px;
   --dtext-small: 14px;
@@ -705,7 +709,7 @@ body.dark .menu-panel { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgb
 
   /* Header: [logo][kotak cari] sebaris */
   .page-header {
-    padding: 0 24px;
+    padding: 0 var(--page-header-inline);
     background: var(--color-white);
     border-bottom: 1px solid var(--color-border-alt);
   }
@@ -717,7 +721,7 @@ body.dark .menu-panel { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgb
   }
 
   .logo-slot {
-    flex: 0 0 calc(var(--page-container-left-space-desktop) - 16px);
+    flex: 0 0 var(--page-logo-col);
     order: unset;
     justify-content: flex-start;
     padding: 0;
@@ -798,6 +802,12 @@ body.dark .menu-panel { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgb
   .sidebar-panel {
     flex: 0 1 var(--page-sidebar-width);
     min-width: 0;
+  }
+
+  /* Tanpa sidebar (tidak ada instant answer): hasil rata kiri, sejajar kotak cari */
+  .result-wrapper:not(:has(.sidebar-panel .instant-answer)) {
+    display: block;
+    padding-left: var(--page-content-start);
   }
 
   .result-card,
