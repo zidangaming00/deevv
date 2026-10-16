@@ -11,22 +11,29 @@
 :root{color-scheme:light;--bg:#f8f9fa;--surface:#ffffff;--text:#1a1d20;--muted:#68717a;--line:#eaedf0;--accent:#1b6ef3;--accent-soft:#eef4ff;--hover:#f1f3f5;--shadow:0 4px 20px rgba(0,0,0,.03);--nav-bg:rgba(255,255,255,.95)}
 :root.dark{color-scheme:dark;--bg:#121418;--surface:#1b1e24;--text:#f1f3f7;--muted:#9aa0a6;--line:#2b2f38;--accent:#7baaf7;--accent-soft:rgba(138, 180, 248, 0.12);--hover:#252932;--shadow:0 4px 20px rgba(0,0,0,.2);--nav-bg:rgba(27,30,36,.95)}
 *{box-sizing:border-box}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:'Google Sans Flex', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  min-height:100vh;
-  padding: 24px 0 40px;
-  transition:background .2s,color .2s;
-  font-size: 14px;
+
+html, body {
+  margin: 0;
+  height: 100%;
 }
+
+body{
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Google Sans Flex', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 20px 0 30px;
+  transition: background .2s, color .2s;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
 button,select,textarea{font:inherit}button{color:inherit}button:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-/* Kontainer utama diset lebar 980px agar mode desktop lebih optimal, lega, dan seimbang */
-.app{width:min(100%,980px);margin:0 auto;padding:0 16px;transition:max-width .2s ease}
+/* Kontainer utama diset lebar 980px agar mode desktop lebih optimal */
+.app{width:min(100%,980px);margin:0 auto;padding:0 16px;transition:max-width .2s ease;display:flex;flex-direction:column;flex:1}
 
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;padding:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding:0;flex-shrink:0}
 .topbar-left{display:flex;align-items:center;gap:12px}
 .brand{display:flex;align-items:center}
 .brand-name{font-size:20px;font-weight:700;letter-spacing:-.5px}
@@ -72,10 +79,20 @@ header:has(.sidebar-overlay.show) .burger-btn span:nth-child(3) { transform: tra
 .icon-btn:hover{background:var(--hover);color:var(--text)}
 svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.star-btn svg,.empty-icon svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
-.page{display:none;animation:appear .18s ease}.page.active{display:block}@keyframes appear{from{opacity:.4;transform:translateY(2px)}to{opacity:1;transform:translateY(0)}}
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.page{display:none;flex-direction:column;flex:1;min-height:0;animation:appear .18s ease}
+.page.active{display:flex}
+@keyframes appear{from{opacity:.4;transform:translateY(2px)}to{opacity:1;transform:translateY(0)}}
+
 .eyebrow{font-size:14px;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin:0 0 6px}
 .page-title{font-size:20px;letter-spacing:-.8px;font-weight:700;margin:0}
-.page-desc{color:var(--muted);font-size:14px;line-height:1.5;margin:6px 0 24px}
+.page-desc{color:var(--muted);font-size:14px;line-height:1.5;margin:6px 0 20px}
 
 /* Sidebar Navigation */
 .sidebar-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(3px);z-index:200;opacity:0;pointer-events:none;transition:opacity .2s}
@@ -94,9 +111,10 @@ svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.sta
 .lang-btn-text{background:transparent;border:0;font-size:14px;font-weight:750;color:var(--muted);padding:6px;cursor:pointer;text-align:center;letter-spacing:.03em;border-radius:8px;transition:background .15s, color .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lang-btn-text:hover{background:var(--hover);color:var(--text)}
 
-.swap-btn{width:32px;height:32px;border:0;border-radius:50%;background:var(--hover);color:var(--text);display:grid;place-items:center;cursor:pointer;margin:0 auto;transition:transform .2s,background .15s}
+.swap-btn{width:32px;height:32px;border:0;border-radius:50%;background:var(--hover);color:var(--text);display:grid;place-items:center;cursor:pointer;margin:0 auto;transition:transform .2s,background .15s,opacity .15s}
 .swap-btn:hover{background:var(--accent-soft);color:var(--accent)}
 .swap-btn:active{transform:rotate(180deg)}
+.swap-btn:disabled{opacity:.3;cursor:default;background:var(--hover)!important;color:var(--muted)!important}
 .swap-btn svg{width:16px;height:16px}
 
 /* Modal Pemilihan Bahasa */
@@ -125,7 +143,6 @@ svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.sta
 .action-btn:disabled{opacity:.3;cursor:default}
 
 .output-pane{border-top:1px solid var(--line);padding:20px 24px 18px;min-height:140px;display:flex;flex-direction:column;justify-content:space-between}
-/* Warna teks output disamakan persis dengan warna teks input (var(--text)) */
 .output-text{font-size:18px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;min-height:60px;color:var(--text)}
 .output-text.placeholder{font-size:14px;color:var(--muted);opacity:.5}
 .output-text.loading{color:var(--muted);font-size:14px}
@@ -133,13 +150,13 @@ svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.sta
 .status{font-size:14px;color:var(--muted)}
 
 /* History & Saved List */
-.collection-toolbar{display:flex;align-items:center;justify-content:space-between;margin:0 0 16px;padding:0}
+.collection-toolbar{display:flex;align-items:center;justify-content:space-between;margin:0 0 16px;padding:0;flex-shrink:0}
 .collection-toolbar span{font-size:14px;color:var(--muted);font-weight:500}
 .text-link{border:0;background:none;color:var(--accent);font-size:14px;font-weight:600;cursor:pointer;padding:4px 8px;border-radius:8px;transition:background .15s}
 .text-link:hover{background:var(--accent-soft)}
 
-.collection-list{display:flex;flex-direction:column;gap:12px}
-.entry{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:18px 20px;background:var(--surface);border-radius:20px;box-shadow:var(--shadow);transition:transform .15s, box-shadow .15s}
+.collection-list{display:flex;flex-direction:column;gap:12px;overflow-y:auto;flex:1;min-height:0;padding-bottom:4px}
+.entry{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:18px 20px;background:var(--surface);border-radius:20px;box-shadow:var(--shadow);transition:transform .15s, box-shadow .15s;flex-shrink:0}
 .entry:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.05)}
 .entry-main{min-width:0;flex:1;cursor:pointer}
 .entry-source{font-size:16px;font-weight:650;color:var(--text);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -153,7 +170,7 @@ svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.sta
 .star-btn.saved svg{fill:currentColor}
 .delete-btn:hover{color:#ef4444;background:#fee2e2}
 
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:64px 20px;color:var(--muted);margin-top:10px}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 20px;color:var(--muted);margin:auto}
 .empty-icon{width:56px;height:56px;margin-bottom:14px;border-radius:20px;background:var(--surface);box-shadow:var(--shadow);display:grid;place-items:center;color:var(--accent)}
 .empty-icon svg{width:24px;height:24px}
 .empty-title{font-size:16px;font-weight:700;margin-bottom:4px;color:var(--text)}
@@ -262,14 +279,18 @@ svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.sta
 </section>
 
 <section class="page" id="historyPage" data-page="history">
-  <p class="eyebrow">Koleksi pribadi</p><h1 class="page-title">Histori</h1><p class="page-desc">Semua riwayat terjemahan yang pernah kamu lakukan.</p>
-  <div class="collection-toolbar"><span id="historyCount">0 terjemahan</span><button class="text-link" id="clearHistoryBtn" type="button">Hapus histori</button></div>
+  <div>
+    <p class="eyebrow">Koleksi pribadi</p><h1 class="page-title">Histori</h1><p class="page-desc">Semua riwayat terjemahan yang pernah kamu lakukan.</p>
+    <div class="collection-toolbar"><span id="historyCount">0 terjemahan</span><button class="text-link" id="clearHistoryBtn" type="button">Hapus histori</button></div>
+  </div>
   <div class="collection-list" id="historyList"></div>
 </section>
 
 <section class="page" id="savedPage" data-page="saved">
-  <p class="eyebrow">Koleksi pribadi</p><h1 class="page-title">Tersimpan</h1><p class="page-desc">Daftar terjemahan penting yang telah kamu tandai bintang.</p>
-  <div class="collection-toolbar"><span id="savedCount">0 tersimpan</span></div>
+  <div>
+    <p class="eyebrow">Koleksi pribadi</p><h1 class="page-title">Tersimpan</h1><p class="page-desc">Daftar terjemahan penting yang telah kamu tandai bintang.</p>
+    <div class="collection-toolbar"><span id="savedCount">0 tersimpan</span></div>
+  </div>
   <div class="collection-list" id="savedList"></div>
 </section>
 </main>
@@ -313,13 +334,31 @@ svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.sta
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
-  const STORAGE_KEY = 'deevv-translator-v19';
+  const STORAGE_KEY = 'deevv-translator-v23';
   const LANG_NAMES = {id:'Indonesia',en:'English',ja:'Jepang',es:'Spanyol',fr:'Prancis',de:'Jerman',ko:'Korea','zh-CN':'Mandarin'};
   const EMPTY_TEXT = '';
   let typingTimer = null, toastTimer = null, requestId = 0;
-  let state = {history:[], saved:[], theme:'light', sourceLang:'en', targetLang:'ja'};
+  let state = {history:[], saved:[], theme:'light', sourceLang:null, targetLang:null};
   let modalCallback = null;
   let activeLangType = null;
+
+  function detectBrowserLanguages() {
+    const navLang = (navigator.language || (navigator.languages && navigator.languages[0]) || 'en').toLowerCase();
+    let userLang = 'en';
+    if (navLang.startsWith('id')) userLang = 'id';
+    else if (navLang.startsWith('ja')) userLang = 'ja';
+    else if (navLang.startsWith('es')) userLang = 'es';
+    else if (navLang.startsWith('fr')) userLang = 'fr';
+    else if (navLang.startsWith('de')) userLang = 'de';
+    else if (navLang.startsWith('ko')) userLang = 'ko';
+    else if (navLang.startsWith('zh')) userLang = 'zh-CN';
+
+    if (userLang === 'id') {
+      return { sourceLang: 'en', targetLang: 'id' };
+    } else {
+      return { sourceLang: userLang, targetLang: 'id' };
+    }
+  }
 
   try {
     const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -328,7 +367,17 @@ svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.sta
     state.theme = raw.theme === 'dark' ? 'dark' : 'light';
     if (raw.sourceLang) state.sourceLang = raw.sourceLang;
     if (raw.targetLang) state.targetLang = raw.targetLang;
-  } catch (_) {}
+
+    if (!state.sourceLang || !state.targetLang) {
+      const detected = detectBrowserLanguages();
+      if (!state.sourceLang) state.sourceLang = detected.sourceLang;
+      if (!state.targetLang) state.targetLang = detected.targetLang;
+    }
+  } catch (_) {
+    const detected = detectBrowserLanguages();
+    state.sourceLang = detected.sourceLang;
+    state.targetLang = detected.targetLang;
+  }
   document.documentElement.classList.toggle('dark', state.theme === 'dark');
 
   function persist() {
@@ -431,7 +480,6 @@ svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.sta
     $('savedList').innerHTML = state.saved.length ? state.saved.map(item=>entryMarkup(item,true)).join('') : renderEmpty('Belum Ada Tersimpan','Tandai terjemahan dengan ikon bintang untuk menyimpannya di sini.','<svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg>');
   }
 
-  // Fungsi navigasi berbasis Query Parameter URL (?tab=...)
   function switchTab(tab, updateHistory = true) {
     const validTabs = ['translate', 'history', 'saved'];
     const activeTab = validTabs.includes(tab) ? tab : 'translate';
@@ -451,7 +499,6 @@ svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.sta
       button.classList.toggle('active', button.dataset.tab === activeTab);
     });
 
-    window.scrollTo({top: 0, behavior: 'smooth'});
     $('sidebarOverlay').classList.remove('show');
     if (activeTab === 'history' || activeTab === 'saved') renderLists();
   }
@@ -470,11 +517,13 @@ svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.sta
     $('sourceLanguageLabel').textContent = LANG_NAMES[state.sourceLang] || state.sourceLang;
     $('targetLanguageLabel').textContent = LANG_NAMES[state.targetLang] || state.targetLang;
   }
-  function updateButtons(enabled, inputEnabled = false) {
+  function updateButtons(enabled, inputEnabled = false, isTranslating = false) {
     $('copyBtn').disabled = !enabled; 
     $('speakBtn').disabled = !enabled; 
     $('saveBtn').disabled = !enabled;
     $('speakInputBtn').disabled = !inputEnabled;
+    // Mengunci tombol swap saat proses terjemahan sedang berlangsung
+    $('swapBtn').disabled = isTranslating;
   }
   function addHistory(source,target,sl,tl) {
     const same = state.history.find(item=>item.source===source && item.target===target && item.sl===sl && item.tl===tl);
@@ -490,19 +539,19 @@ svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.sta
     if (!source) {
       $('outputText').textContent=EMPTY_TEXT; 
       $('outputText').className='output-text placeholder';$('statusText').textContent='Siap menerjemahkan'; 
-      updateButtons(false, false); 
+      updateButtons(false, false, false); 
       return;
     }
     if (sl === tl) {
       $('outputText').textContent='Pilih dua bahasa yang berbeda.'; 
       $('outputText').className='output-text placeholder';$('statusText').textContent='Bahasa sama'; 
-      updateButtons(false, true); 
+      updateButtons(false, true, false); 
       return;
     }
     const current = ++requestId;
     $('outputText').textContent='Menerjemahkan…'; 
     $('outputText').className='output-text loading';$('statusText').textContent='Sedang memproses'; 
-    updateButtons(false, true);
+    updateButtons(false, true, true); // Tombol swap dinonaktifkan saat sedang menerjemahkan
     try {
       const url=`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(sl)}&tl=${encodeURIComponent(tl)}&dt=t&q=${encodeURIComponent(source)}`;
       const response=await fetch(url);
@@ -513,13 +562,13 @@ svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.sta
       if(!result) throw new Error('Hasil kosong');
       $('outputText').textContent=result; 
       $('outputText').className='output-text';$('statusText').textContent='Terjemahan selesai'; 
-      updateButtons(true, true);
+      updateButtons(true, true, false); // Tombol swap kembali diaktifkan
       addHistory(source,result,sl,tl);
     } catch (_) {
       if(current!==requestId) return;
       $('outputText').textContent='Terjemahan gagal. Periksa koneksi internet lalu coba lagi.';
       $('outputText').className='output-text placeholder error';$('statusText').textContent='Gagal menerjemahkan'; 
-      updateButtons(false, true);
+      updateButtons(false, true, false); // Tombol swap kembali diaktifkan
     }
   }
   function handleTyping() {
@@ -529,16 +578,17 @@ svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.sta
     if(!text.trim()) {
       $('outputText').textContent=EMPTY_TEXT; 
       $('outputText').className='output-text placeholder';$('statusText').textContent='Siap menerjemahkan'; 
-      updateButtons(false, false); 
+      updateButtons(false, false, false); 
       return;
     }
     $('outputText').textContent='Menunggu teks…';$('outputText').className='output-text loading';
-    updateButtons(false, true);
+    updateButtons(false, true, true); // Tombol swap dinonaktifkan saat menunggu debounce
     typingTimer=setTimeout(translateText,550);
   }
   $('inputText').addEventListener('input',handleTyping);
 
   $('swapBtn').addEventListener('click',()=>{
+    if ($('swapBtn').disabled) return;
     const old = state.sourceLang;
     state.sourceLang = state.targetLang;
     state.targetLang = old;
@@ -548,12 +598,12 @@ svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.sta
     const translated=$('outputText').textContent;
     if($('inputText').value.trim() && translated && translated!==EMPTY_TEXT && !translated.startsWith('Terjemahan gagal'))$('inputText').value=translated;
     $('charCount').textContent=`${$('inputText').value.length} / 3000`;
-    if($('inputText').value.trim()) translateText(); else {$('outputText').textContent=EMPTY_TEXT; updateButtons(false, false); }
+    if($('inputText').value.trim()) translateText(); else {$('outputText').textContent=EMPTY_TEXT; updateButtons(false, false, false); }
   });
 
   $('clearBtn').addEventListener('click',()=>{
     clearTimeout(typingTimer);++requestId;$('inputText').value='';$('charCount').textContent='0 / 3000';
-    $('outputText').textContent=EMPTY_TEXT;$('outputText').className='output-text placeholder';$('statusText').textContent='Siap menerjemahkan';updateButtons(false, false);$('inputText').focus();
+    $('outputText').textContent=EMPTY_TEXT;$('outputText').className='output-text placeholder';$('statusText').textContent='Siap menerjemahkan';updateButtons(false, false, false);$('inputText').focus();
   });
 
   $('copyBtn').addEventListener('click',async()=>{
@@ -562,7 +612,6 @@ svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.sta
     catch (_) { showToast('Gagal menyalin.'); }
   });
 
-  // Tombol speaker untuk input teks asli
   $('speakInputBtn').addEventListener('click',()=>{
     const value=$('inputText').value.trim();
     if(!value || !('speechSynthesis' in window)){showToast('Fitur suara tidak didukung.');return;}
@@ -595,7 +644,7 @@ svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.sta
     updateHeaderLangUI();
     persist();
     $('charCount').textContent=`${item.source.length} / 3000`;updateLanguageLabels();
-    $('outputText').textContent=item.target;$('outputText').className='output-text';$('statusText').textContent='Dibuka dari koleksi';updateButtons(true, true);switchTab('translate');
+    $('outputText').textContent=item.target;$('outputText').className='output-text';$('statusText').textContent='Dibuka dari koleksi';updateButtons(true, true, false);switchTab('translate');
   }
   document.addEventListener('click',event=>{
     const entry=event.target.closest('[data-entry]');if(!entry)return;
