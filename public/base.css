@@ -781,10 +781,12 @@ body.dark .menu-panel { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgb
   .search-item.selected .label:before { background: #1558d6; bottom: -12px; }
 
   /* Hasil + sidebar: flex dulu (780-1079px), jadi grid di >=1080px */
+  /* 780-1079px (termasuk "situs desktop" di HP): jeda kiri 24px (sama dengan
+     padding header) dan jarak ke sidebar lebih rapat */
   .result-wrapper {
     display: flex;
-    gap: var(--page-column-gap);
-    padding: 12px 0 0;
+    gap: 20px;
+    padding: 12px 0 0 24px;
     background: var(--color-white);
   }
 
@@ -820,6 +822,8 @@ body.dark .menu-panel { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgb
       minmax(0, var(--page-container-width-desktop))
       minmax(0, var(--page-sidebar-width));
     justify-content: center;
+    gap: var(--page-column-gap);
+    padding-left: 0;
   }
 
   .main-result { grid-column: 1; }
