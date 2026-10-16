@@ -1,7 +1,6 @@
 export async function onRequest(context) {
   const { request } = context;
 
-  // Handling Preflight CORS
   if (request.method === "OPTIONS") {
     return new Response(null, {
       headers: {
@@ -17,64 +16,55 @@ export async function onRequest(context) {
 
   if (!query) {
     return new Response(JSON.stringify({ results: [] }), {
-      headers: { 
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*" 
-      }
+      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
     });
   }
 
-  // Daftar instance SearXNG publik yang umumnya stabil & mendukung API JSON
-  const PUBLIC_INSTANCES = [
-    "https://searx.be",
-    "https://searxng.site",
-    "https://search.bus-hit.me",
-    "https://searx.priv.pw"
-  ];
+  try {
+    // Menggunakan DuckDuckGo HTML Lite version yang ramah script
+    const targetUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
+    
+    const response = await fetch(targetUrl, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      }
+    });
 
-  let lastError = null;
+    const htmlText = await response.text();
 
-  // Coba giliran satu per satu jika ada instance yang gagal/memblokir
-  for (const instance of PUBLIC_INSTANCES) {
-    try {
-      const targetUrl = `${instance}/search?q=${encodeURIComponent(query)}&format=json`;
-      
-      const response = await fetch(targetUrl, {
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-          "Accept": "application/json"
-        }
+    // Sederhana: Parsing hasil pencarian dari HTML DuckDuckGo
+    // (Atau Anda bisa menggunakan API gratis lain jika punya)
+    const results = [];
+    const resultRegex = /<a class="result__url" href="([^"]+)"[^>]*>([\s\S]*?)<\/a>[\s\S]*?<a class="result__snippet"[^>]*>([\s\S]*?)<\/a>/g;
+    
+    let match;
+    while ((match = resultRegex.exec(htmlText)) !== null && results.length < 10) {
+      let rawUrl = match[1];
+      // Bersihkan URL redirect DuckDuckGo jika perlu
+      if (rawUrl.includes('uddg=')) {
+        try {
+          rawUrl = decodeURIComponent(rawUrl.split('uddg=')[1].split('&')[0]);
+        } catch (e) {}
+      }
+
+      results.push({
+        url: rawUrl,
+        title: match[2].replace(/<[^>]*>?/gm, '').trim(),
+        content: match[3].replace(/<[^>]*>?/gm, '').trim()
       });
-
-      // Cek apakah balasan benar-benar JSON
-      const contentType = response.headers.get("content-type") || "";
-      if (response.ok && contentType.includes("application/json")) {
-        const data = await response.json();
-        
-        return new Response(JSON.stringify(data), {
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*"
-          }
-        });
-      }
-    } catch (err) {
-      lastError = err;
     }
-  }
 
-  // Jika semua instance publik gagal
-  return new Response(
-    JSON.stringify({ 
-      error: "Gagal mengambil data JSON dari seluruh instance SearXNG publik.",
-      detail: lastError ? lastError.message : "Instance membalikkan respons HTML/Blocked." 
-    }), 
-    {
-      status: 502,
-      headers: { 
+    return new Response(JSON.stringify({ results }), {
+      headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*" 
+        "Access-Control-Allow-Origin": "*"
       }
-    }
-  );
+    });
+
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+    });
+  }
 }
