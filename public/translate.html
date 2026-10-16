@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terjemahan Pro - Layanan Terjemahan Online</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --surface-color: #ffffff;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --border-color: #dadce0;
+            --border-hover: #bdc1c6;
+            --primary-color: #1a73e8;
+            --primary-hover: #1557b0;
+            --primary-light: #e8f0fe;
+            --shadow: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
+            --shadow-sm: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+            --transition: all 0.2s ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #202124;
+            --surface-color: #292a2d;
+            --text-primary: #e8eaed;
+            --text-secondary: #9aa0a6;
+            --border-color: #5f6368;
+            --border-hover: #8ab4f8;
+            --primary-color: #8ab4f8;
+            --primary-hover: #aecbfa;
+            --primary-light: #3c4043;
+            --shadow: 0 1px 3px 0 rgba(0,0,0,0.5), 0 4px 8px 3px rgba(0,0,0,0.3);
+            --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.5), 0 1px 3px 1px rgba(0,0,0,0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Header / Navbar */
+        header {
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            box-shadow: 0 1px 2px 0 rgba(0,60,50,0.05);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            background: var(--primary-color);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--primary-light);
+            border-color: var(--border-hover);
+        }
+
+        /* Main Container */
+        main {
+            flex: 1;
+            max-width: 1280px;
+            width: 100%;
+            margin: 24px auto;
+            padding: 0 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Language Bar Toolbar */
+        .lang-bar {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .lang-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .lang-btn:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .lang-btn.active {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .select-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        select.lang-select {
+            appearance: none;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 32px 8px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        select.lang-select:hover, select.lang-select:focus {
+            border-color: var(--primary-color);
+            background-color: var(--primary-light);
+        }
+
+        .select-wrapper::after {
+            content: '▼';
+            font-size: 10px;
+            color: var(--text-secondary);
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .swap-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            margin: 0 12px;
+        }
+
+        .swap-btn:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            border-color: var(--border-hover);
+            transform: rotate(180deg);
+        }
+
+        /* Translation Workspace (Dual Panels) */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            flex: 1;
+            min-height: 420px;
+        }
+
+        @media (max-width: 768px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+            .lang-bar {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+            .swap-btn {
+                align-self: center;
+                margin: 4px 0;
+                transform: rotate(90deg);
+            }
+            .swap-btn:hover {
+                transform: rotate(270deg);
+            }
+        }
+
+        .panel {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            transition: border-color var(--transition);
+        }
+
+        .panel:focus-within {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow);
+        }
+
+        .panel-textarea {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            padding: 16px;
+            font-size: 18px;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+        }
+
+        .output-panel {
+            background-color: var(--bg-color);
+        }
+
+        .output-text {
+            flex: 1;
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            line-height: 1.5;
+            overflow-y: auto;
+            word-break: break-word;
+            white-space: pre-wrap;
+            color: var(--text-primary);
+        }
+
+        /* Panel Footer Toolbar */
+        .panel-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--surface-color);
+        }
+
+        .char-counter {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .panel-tools {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tool-icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tool-icon-btn:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 24px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            background-color: var(--surface-color);
+            margin-top: auto;
+        }
+
+        /* Loading Spinner */
+        .loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status-msg {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <!-- Header -->
+    <header>
+        <div class="logo-area">
+            <div class="logo-icon">T</div>
+            <div class="logo-text">Terjemahan Pro</div>
+        </div>
+        <div class="header-actions">
+            <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">
+                <span id="themeIcon">🌙</span> <span id="themeText">Mode Gelap</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main>
+        <!-- Language Selection Bar -->
+        <div class="lang-bar">
+            <div class="lang-group">
+                <button class="lang-btn active" onclick="setSourceLang('auto', this)">Deteksi Bahasa</button>
+                <button class="lang-btn" onclick="setSourceLang('id', this)">Indonesia</button>
+                <button class="lang-btn" onclick="setSourceLang('en', this)">Inggris</button>
+                <div class="select-wrapper">
+                    <select id="sourceLangSelect" class="lang-select" onchange="handleSelectChange('source', this.value)">
+                        <option value="auto">Bahasa Lainnya...</option>
+                        <option value="id">Indonesia</option>
+                        <option value="en">Inggris</option>
+                        <option value="es">Spanyol</option>
+                        <option value="fr">Prancis</option>
+                        <option value="de">Jerman</option>
+                        <option value="ja">Jepang</option>
+                        <option value="ko">Korea</option>
+                        <option value="zh-CN">Mandarin</option>
+                        <option value="ar">Arab</option>
+                        <option value="ru">Rusia</option>
+                        <option value="hi">Hindi</option>
+                        <option value="pt">Portugis</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="swap-btn" title="Tukar Bahasa" onclick="swapLanguages()">
+                ⇄
+            </button>
+
+            <div class="lang-group" style="justify-content: flex-end;">
+                <button class="lang-btn active" onclick="setTargetLang('id', this)">Indonesia</button>
+                <button class="lang-btn" onclick="setTargetLang('en', this)">Inggris</button>
+                <button class="lang-btn" onclick="setTargetLang('ja', this)">Jepang</button>
+                <div class="select-wrapper">
+                    <select id="targetLangSelect" class="lang-select" onchange="handleSelectChange('target', this.value)">
+                        <option value="id">Bahasa Lainnya...</option>
+                        <option value="id">Indonesia</option>
+                        <option value="en">Inggris</option>
+                        <option value="es">Spanyol</option>
+                        <option value="fr">Prancis</option>
+                        <option value="de">Jerman</option>
+                        <option value="ja">Jepang</option>
+                        <option value="ko">Korea</option>
+                        <option value="zh-CN">Mandarin</option>
+                        <option value="ar">Arab</option>
+                        <option value="ru">Rusia</option>
+                        <option value="hi">Hindi</option>
+                        <option value="pt">Portugis</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dual Text Panels -->
+        <div class="workspace">
+            <!-- Source Panel -->
+            <div class="panel">
+                <textarea 
+                    id="sourceText" 
+                    class="panel-textarea" 
+                    placeholder="Ketik teks untuk diterjemahkan..." 
+                    oninput="handleInput()"
+                ></textarea>
+                <div class="panel-footer">
+                    <div class="panel-tools">
+                        <button class="tool-icon-btn" title="Dengarkan Teks" onclick="speakText('source')">🔊</button>
+                        <button class="tool-icon-btn" title="Hapus Teks" onclick="clearText()">🗑️</button>
+                    </div>
+                    <div class="char-counter"><span id="charCount">0</span> / 5000</div>
+                </div>
+            </div>
+
+            <!-- Output Panel -->
+            <div class="panel output-panel">
+                <div id="outputText" class="output-text" placeholder="Terjemahan akan muncul di sini..."></div>
+                <div class="panel-footer">
+                    <div class="status-msg" id="statusMsg">Siap</div>
+                    <div class="panel-tools">
+                        <button class="tool-icon-btn" title="Dengarkan Terjemahan" onclick="speakText('target')">🔊</button>
+                        <button class="tool-icon-btn" title="Salin Terjemahan" onclick="copyResult()">📋</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2026 Terjemahan Pro. Desain Profesional responsif ala Google &amp; Yandex Translate.
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let currentSourceLang = 'auto';
+        let currentTargetLang = 'id';
+        let translationTimer = null;
+
+        // Theme Toggle Functionality
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            if (body.getAttribute('data-theme') === 'light') {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Mode Terang';
+            } else {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Mode Gelap';
+            }
+        }
+
+        // Set Source Language via Quick Buttons
+        function setSourceLang(lang, btnElement) {
+            currentSourceLang = lang;
+            const group = btnElement.parentElement;
+            group.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            
+            document.getElementById('sourceLangSelect').value = 'auto';
+            triggerTranslation();
+        }
+
+        // Set Target Language via Quick Buttons
+        function setTargetLang(lang, btnElement) {
+            currentTargetLang = lang;
+            const group = btnElement.parentElement;
+            group.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            
+            document.getElementById('targetLangSelect').value = lang;
+            triggerTranslation();
+        }
+
+        // Handle Dropdown Selection Change
+        function handleSelectChange(type, value) {
+            if (type === 'source') {
+                currentSourceLang = value;
+                // Clear active states on quick buttons if custom select used
+                const buttons = document.querySelectorAll('.lang-bar > .lang-group:first-child .lang-btn');
+                buttons.forEach(b => b.classList.remove('active'));
+            } else {
+                currentTargetLang = value;
+                const buttons = document.querySelectorAll('.lang-bar > .lang-group:last-child .lang-btn');
+                buttons.forEach(b => b.classList.remove('active'));
+            }
+            triggerTranslation();
+        }
+
+        // Swap Source and Target Languages
+        function swapLanguages() {
+            if (currentSourceLang === 'auto') return; // Cannot swap auto
+            
+            let temp = currentSourceLang;
+            currentSourceLang = currentTargetLang;
+            currentTargetLang = temp;
+
+            // Update UI Selectors & Buttons
+            document.getElementById('targetLangSelect').value = currentTargetLang;
+            document.getElementById('sourceLangSelect').value = currentSourceLang;
+
+            // Update active quick buttons if applicable
+            const sourceButtons = document.querySelectorAll('.lang-bar > .lang-group:first-child .lang-btn');
+            sourceButtons.forEach(b => {
+                b.classList.remove('active');
+                if (b.textContent.toLowerCase().includes(currentSourceLang === 'id' ? 'indonesia' : 'inggris')) {
+                    b.classList.add('active');
+                }
+            });
+
+            const targetButtons = document.querySelectorAll('.lang-bar > .lang-group:last-child .lang-btn');
+            targetButtons.forEach(b => {
+                b.classList.remove('active');
+                if (b.textContent.toLowerCase().includes(currentTargetLang === 'id' ? 'indonesia' : currentTargetLang === 'en' ? 'inggris' : 'jepang')) {
+                    b.classList.add('active');
+                }
+            });
+
+            // Swap text content as well if output exists
+            const sourceTextEl = document.getElementById('sourceText');
+            const outputTextEl = document.getElementById('outputText');
+            
+            if (outputTextEl.textContent.trim() !== '') {
+                sourceTextEl.value = outputTextEl.textContent;
+                handleInput();
+            }
+        }
+
+        // Handle Input Typing & Character Counter
+        function handleInput() {
+            const text = document.getElementById('sourceText').value;
+            const charCount = text.length;
+            document.getElementById('charCount').textContent = charCount;
+
+            if (charCount > 5000) {
+                document.getElementById('sourceText').value = text.substring(0, 5000);
+                document.getElementById('charCount').textContent = 5000;
+            }
+
+            clearTimeout(translationTimer);
+            if (text.trim() === '') {
+                document.getElementById('outputText').innerHTML = '';
+                document.getElementById('statusMsg').textContent = 'Siap';
+                return;
+            }
+
+            document.getElementById('statusMsg').innerHTML = '<span class="loader"></span> Menerjemahkan...';
+            translationTimer = setTimeout(triggerTranslation, 400); // Debounce 400ms
+        }
+
+        // Fetch Translation from Free Google Translate API Endpoint
+        async function triggerTranslation() {
+            const text = document.getElementById('sourceText').value.trim();
+            const outputDiv = document.getElementById('outputText');
+            const statusMsg = document.getElementById('statusMsg');
+
+            if (!text) {
+                outputDiv.innerHTML = '';
+                statusMsg.textContent = 'Siap';
+                return;
+            }
+
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${currentSourceLang}&tl=${currentTargetLang}&dt=t&q=${encodeURIComponent(text)}`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Gagal terhubung ke server terjemahan');
+                
+                const data = await response.json();
+                let translatedText = '';
+                if (data && data[0]) {
+                    data[0].forEach(item => {
+                        if (item[0]) translatedText += item[0];
+                    });
+                }
+
+                outputDiv.textContent = translatedText;
+                statusMsg.textContent = 'Terjemahan selesai';
+            } catch (error) {
+                console.error(error);
+                statusMsg.textContent = 'Terjadi kesalahan jaringan.';
+            }
+        }
+
+        // Clear Text
+        function clearText() {
+            document.getElementById('sourceText').value = '';
+            document.getElementById('outputText').innerHTML = '';
+            document.getElementById('charCount').textContent = '0';
+            document.getElementById('statusMsg').textContent = 'Siap';
+        }
+
+        // Copy Translated Result to Clipboard
+        function copyResult() {
+            const text = document.getElementById('outputText').textContent;
+            if (!text) return;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const statusMsg = document.getElementById('statusMsg');
+                const originalText = statusMsg.textContent;
+                statusMsg.textContent = 'Berhasil disalin ke klipboard!';
+                setTimeout(() => {
+                    statusMsg.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        // Text to Speech (Audio pronunciation)
+        function speakText(type) {
+            const text = type === 'source' ? document.getElementById('sourceText').value : document.getElementById('outputText').textContent;
+            if (!text) return;
+
+            const lang = type === 'source' ? (currentSourceLang === 'auto' ? 'id' : currentSourceLang) : currentTargetLang;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            window.speechSynthesis.speak(utterance);
+        }
+    </script>
+</body>
+</html>
