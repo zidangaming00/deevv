@@ -1155,18 +1155,21 @@ const Widgets = {
         });
 
         async function initWeather() {
-            // 1. Ambil data default dari SSR Cloudflare (window.__SSR_DATA__) sebagai data utama awal
+            // 1. Ambil data default dari SSR Cloudflare (window.__SSR_DATA__) dengan nama properti yang benar
             const serverLoc = window.__SSR_DATA__?.location;
             if (serverLoc) {
                 const cn = document.getElementById("cityName");
                 if (cn) cn.innerText = `${serverLoc.city}, ${serverLoc.country}`;
-                fetchWeatherForCoords(serverLoc.lat, serverLoc.lon);
+                // PERBAIKAN: Gunakan serverLoc.latitude dan serverLoc.longitude
+                if (serverLoc.latitude && serverLoc.longitude) {
+                    fetchWeatherForCoords(serverLoc.latitude, serverLoc.longitude);
+                }
             } else {
                 const cn = document.getElementById("cityName");
                 if (cn) cn.innerText = "Lokasi Tidak Diketahui";
             }
 
-            // 2. Langsung minta izin GPS untuk mendapatkan lokasi presisi tinggi
+            // 2. Minta izin GPS browser untuk lokasi yang lebih akurat
             if (!("geolocation" in navigator)) return;
 
             navigator.geolocation.getCurrentPosition(async (pos) => {
@@ -1174,7 +1177,6 @@ const Widgets = {
                 const lon = pos.coords.longitude;
 
                 try {
-                    // Lakukan reverse geocoding untuk mendapatkan nama wilayah presisi dari koordinat GPS
                     const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
                     const geoData = await geoRes.json();
                     const addr = geoData.address || {};
@@ -1183,13 +1185,13 @@ const Widgets = {
                     const cn = document.getElementById("cityName");
                     if (cn) cn.innerText = `${city}${state}, ID`;
                 } catch {
-                    // Jika reverse geocoding gagal, biarkan nama kota dari Cloudflare atau tampilkan koordinat
+                    // Abaikan jika reverse geocoding gagal
                 }
 
-                // Perbarui data cuaca berdasarkan koordinat GPS yang akurat
+                // Perbarui cuaca dengan koordinat GPS akurat dari browser
                 fetchWeatherForCoords(lat, lon);
             }, (err) => {
-                
+                // User menolak izin lokasi atau terjadi error GPS, biarkan pakai data Cloudflare
             }, {
                 timeout: 10000,
                 maximumAge: 60000
@@ -1204,7 +1206,7 @@ const Widgets = {
                 renderRealData();
             } catch (err) {
                 const sh = document.getElementById("subHead");
-                if(sh) sh.innerText = "Gagal memuat data dari API";
+                if(sh) sh.innerText = "Gagal memuat data";
             }
         }
 
