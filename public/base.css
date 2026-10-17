@@ -545,7 +545,7 @@ body.dark .burger-btn, body.dark .popup-menu {
 .burger-btn {
   position: absolute;
   top: 12px;
-  right: 15px;
+  left: 15px;
   z-index: 5;
   width: 38px;
   height: 38px;
@@ -892,9 +892,18 @@ body:has(.popup-menu.active) .burger-btn span:nth-child(3) { transform: translat
 
   .show-wrapper .more { width: 50%; }
 
-  /* Tombol burger: di pojok kanan, di ruang 72px yang sudah disiapkan header,
-     jadi susunan logo / kotak cari / tab tidak bergeser sedikit pun */
-  .burger-btn { top: 20px; right: 20px; }
+  /* Tombol burger pindah ke kanan (di ruang 72px yang sudah disiapkan header,
+     jadi susunan logo / kotak cari / tab tidak bergeser) dan panelnya keluar dari kanan */
+  .burger-btn { top: 20px; left: auto; right: 20px; }
+  .popup-menu {
+    left: auto;
+    right: -280px;
+    border-right: none;
+    border-left: 1px solid var(--border-color);
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+    transition: right 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .popup-menu.active { left: auto; right: 0; }
 }
 
 @media (min-width: 67.5rem) {
