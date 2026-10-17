@@ -519,169 +519,242 @@ body.dark .footer-copy {
 
 
 /* ==========================================================================
-   MENU GARIS TIGA (hamburger) + POPUP MENGAMBANG POJOK KANAN ATAS
-   Ukuran gampang diatur lewat 3 variabel di .menu-overlay
+   SIDEBAR MENU - disalin persis dari halaman index (burger + sidebar kiri)
+   Variabel index (--primary, --surface, dst) dibatasi ke komponen ini saja
+   supaya tidak bentrok dengan variabel --color-* milik halaman hasil.
    ========================================================================== */
 .page-header { position: relative; }
 
-.menu-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 5;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--color-text-dark);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+.burger-btn, .popup-menu {
+  --primary: #1a73e8;
+  --surface: #ffffff;
+  --text-main: #1f1f1f;
+  --text-muted: #5f6368;
+  --border-color: rgba(0, 0, 0, 0.08);
 }
-.menu-btn:active, .menu-btn:hover { background: var(--color-bg-alt); }
-
-.menu-overlay {
-  --menu-ico: 20px;   /* ukuran ikon */
-  --menu-fs: 15px;    /* ukuran teks menu */
-  --menu-row: 48px;   /* tinggi tiap baris */
-  --menu-bg: #f0f4f9;
-  --menu-item: #ffffff;
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  background: rgba(0, 0, 0, 0.28);
-  -webkit-backdrop-filter: blur(2px);
-  backdrop-filter: blur(2px);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity .18s ease, visibility 0s linear .18s;
+body.dark .burger-btn, body.dark .popup-menu {
+  --primary: #8ab4f8;
+  --surface: #22262b;
+  --text-main: #e8eaed;
+  --text-muted: #9aa0a6;
+  --border-color: rgba(255, 255, 255, 0.12);
 }
-.menu-overlay.open { opacity: 1; visibility: visible; transition: opacity .18s ease, visibility 0s; }
-body.dark .menu-overlay { --menu-bg: #1b1c1f; --menu-item: #26282c; background: rgba(0, 0, 0, 0.5); }
+.burger-btn, .popup-menu, .popup-menu * { -webkit-tap-highlight-color: transparent; }
 
-.menu-panel {
+/* Custom Burger Button */
+.burger-btn {
   position: absolute;
   top: 12px;
-  right: 12px;
-  width: min(272px, calc(100vw - 56px));
-  max-height: calc(100vh - 24px);
-  overflow-y: auto;
-  padding: 10px 10px 12px;
-  background: var(--menu-bg);
-  border-radius: 26px;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(0, 0, 0, 0.05);
-  transform-origin: top right;
-  transform: scale(.95);
-  opacity: 0;
-  transition: transform .18s ease, opacity .18s ease;
-}
-.menu-overlay.open .menu-panel { transform: none; opacity: 1; }
-body.dark .menu-panel { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08); }
-
-.menu-top { display: flex; justify-content: flex-end; padding: 0 0 10px; }
-.menu-close {
-  width: 36px;
-  height: 36px;
+  right: 15px;
+  z-index: 5;
+  width: 38px;
+  height: 38px;
+  border: none;
+  background: rgba(26, 115, 232, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--color-text-dark);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-.menu-close:active, .menu-close:hover { background: rgba(128,128,128,.18); }
-
-.menu-list { display: flex; flex-direction: column; gap: 12px; }
-.menu-group { display: flex; flex-direction: column; gap: 2px; }
-
-.menu-item {
-  display: flex;
   align-items: center;
-  gap: 14px;
-  width: 100%;
-  min-height: var(--menu-row);
-  padding: 0 16px;
-  border: none;
-  border-radius: 4px;
-  background: var(--menu-item);
-  color: var(--color-text-dark);
-  font-size: var(--menu-fs);
-  text-align: left;
-  text-decoration: none;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  gap: 4px;
+  transition: background 0.2s;
 }
-.menu-item span { flex: 1; font-size: var(--menu-fs); }
-.menu-item:active { filter: brightness(.95); }
-.menu-item:focus-visible, .menu-close:focus-visible { outline: 2px solid var(--color-title); outline-offset: -2px; }
-.menu-ico { flex: 0 0 auto; width: var(--menu-ico); height: var(--menu-ico); color: var(--color-text); }
-.menu-value { font-style: normal; font-size: 12.5px; color: var(--color-text-muted); }
+body.dark .burger-btn {
+  background: rgba(138, 180, 248, 0.12);
+}
+.burger-btn:hover {
+  background: rgba(26, 115, 232, 0.18);
+}
+body.dark .burger-btn:hover {
+  background: rgba(138, 180, 248, 0.2);
+}
+.burger-btn span {
+  display: block;
+  height: 2px;
+  width: 16px;
+  background: var(--primary);
+  border-radius: 2px;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s, width 0.2s;
+}
+.burger-btn span:nth-child(2) {
+  width: 10px;
+  align-self: flex-start;
+  margin-left: 11px;
+}
 
-.menu-group > .menu-item:first-child { border-radius: 18px 18px 4px 4px; }
-.menu-group > .menu-item:last-child  { border-radius: 4px 4px 18px 18px; }
-.menu-group > .menu-item:only-child  { border-radius: 18px; }
-
-/* Dialog pilihan tema */
-.theme-modal {
+/* ===== Sidebar Menu (Compact & Smaller Fonts) ===== */
+.popup-menu {
   position: fixed;
-  inset: 0;
-  z-index: 1;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
+  top: 0;
+  left: -280px;
+  width: 250px;
+  height: 100%;
+  background: var(--surface);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px;
+  z-index: 2000;
+  overflow-y: auto;
+  transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.popup-menu.active {
+  left: 0;
+}
+
+/* Backdrop untuk Sidebar */
+.sidebar-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 1999;
 }
-.theme-modal.open { display: flex; }
-.theme-card {
-  width: 100%;
-  max-width: 320px;
-  padding: 18px 8px 8px;
-  border-radius: 24px;
-  background: var(--menu-item);
-  color: var(--color-text-dark);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+.popup-menu.active ~ .sidebar-backdrop,
+body:has(.popup-menu.active) .sidebar-backdrop {
+  opacity: 1;
+  pointer-events: auto;
 }
-.theme-title { padding: 0 16px 8px; font-size: 16px; font-weight: 500; }
-.theme-choice {
+
+.popup-section-title {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 6px 12px 2px;
+  margin-top: 4px;
+}
+
+.popup-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 2px 0;
+}
+
+.popup-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 8px 4px;
+}
+
+.popup-menu a, .popup-menu button {
   display: flex;
   align-items: center;
-  gap: 14px;
+  justify-content: space-between;
   width: 100%;
-  height: 46px;
-  padding: 0 16px;
+  padding: 8px 12px;
+  text-decoration: none;
+  color: var(--text-main);
+  font-size: 13px;
+  font-weight: 500;
+  background: none;
   border: none;
-  border-radius: 12px;
-  background: transparent;
-  color: var(--color-text-dark);
-  font-size: 15px;
-  text-align: left;
+  border-radius: 10px;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  text-align: left;
+  transition: background 0.2s ease;
 }
-.theme-choice:active { background: rgba(128,128,128,.12); }
-.theme-choice i {
-  flex: 0 0 auto;
-  width: 18px;
-  height: 18px;
-  border: 2px solid var(--color-text-muted);
-  border-radius: 50%;
-  position: relative;
+.popup-menu a:hover, .popup-menu button:hover {
+  background: rgba(0, 0, 0, 0.04);
 }
-.theme-choice.active i { border-color: var(--color-title); }
-.theme-choice.active i::after {
-  content: "";
-  position: absolute;
-  inset: 3px;
-  border-radius: 50%;
-  background: var(--color-title);
+body.dark .popup-menu a:hover, body.dark .popup-menu button:hover {
+  background: rgba(255, 255, 255, 0.06);
 }
+
+.theme-status-text {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.theme-status-text svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Theme Dropdown Sub-menu dengan Animasi Bouncy */
+.theme-dropdown-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.theme-options-list {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease, margin 0.3s ease;
+  opacity: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.theme-options-inner {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 0 0 0 12px;
+}
+
+.theme-dropdown-container.open .theme-options-list {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  margin: 2px 0;
+}
+
+.theme-dropdown-container.open .theme-status-text svg {
+  transform: rotate(180deg);
+}
+
+.theme-option-btn {
+  padding: 7px 10px;
+  font-size: 12.5px;
+  font-weight: 400;
+  border-radius: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--text-main);
+  width: 100%;
+  transition: background 0.15s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.theme-option-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  transform: translateX(3px);
+}
+body.dark .theme-option-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+.theme-option-btn.active {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* Sidebar Footer Copyright */
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 12px 8px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border-color);
+}
+
+/* Burger -> X saat sidebar terbuka (sidebar ada di body, bukan di header) */
+body:has(.popup-menu.active) .burger-btn span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+body:has(.popup-menu.active) .burger-btn span:nth-child(2) { opacity: 0; transform: translateX(-6px); }
+body:has(.popup-menu.active) .burger-btn span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 
 /* ==========================================================================
    RESPONSIVE - semua media query base.css ada di sini, urut kecil -> besar.
@@ -690,7 +763,7 @@ body.dark .menu-panel { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgb
    67.5rem=1080   jarak hasil-sidebar 40px (di bawahnya 20px)
    90rem=1440     batas jeda kosong kiri melebar (120px -> 180px)
    Ditaruh paling bawah supaya aturan desktop menang atas aturan dasar yang
-   specificity-nya sama (mis. .menu-btn) tanpa perlu !important.
+   specificity-nya sama (mis. .burger-btn) tanpa perlu !important.
    ========================================================================== */
 
 @media (max-width: 480px) {
@@ -819,9 +892,9 @@ body.dark .menu-panel { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgb
 
   .show-wrapper .more { width: 50%; }
 
-  /* Menu garis tiga */
-  .menu-btn { top: 19px; right: 20px; }
-  .menu-panel { top: 14px; right: 18px; }
+  /* Tombol burger: di pojok kanan, di ruang 72px yang sudah disiapkan header,
+     jadi susunan logo / kotak cari / tab tidak bergeser sedikit pun */
+  .burger-btn { top: 20px; right: 20px; }
 }
 
 @media (min-width: 67.5rem) {
