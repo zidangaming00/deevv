@@ -12,6 +12,7 @@
   
   <style>
     :root {
+      --gutter: 16px;
       --primary: #1a73e8;
       --bg: #f7f8f9;
       --surface: #ffffff;
@@ -54,7 +55,7 @@
       align-items: center;
       min-height: 100vh;
       min-height: 100dvh;
-      padding: 12px clamp(16px, 5vw, 144px) 0;
+      padding: 20px 0 0;
       position: relative;
     }
 
@@ -63,12 +64,12 @@
     /* Header & Menu Button */
     header {
       width: 100%;
-      max-width: 380px;
+      max-width: 980px;
       display: flex;
       justify-content: flex-start;
       align-items: center;
       gap: 12px;
-      padding: 8px 0;
+      padding: 0 var(--gutter);
       position: relative;
     }
 
@@ -129,8 +130,8 @@
     /* ===== Dropdown Menu ===== */
     .popup-menu {
       position: absolute;
-      top: 54px;
-      left: 0;
+      top: 46px;
+      left: var(--gutter);
       width: 190px;
       background: var(--surface);
       border-radius: 22px;
@@ -232,11 +233,12 @@
     /* Main Container */
     .container {
       width: 100%;
-      max-width: 380px;
+      max-width: 412px;
+      padding: 0 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 56px;
+      margin-top: 64px;
       flex: 1 0 auto;
     }
 
@@ -280,7 +282,7 @@
       flex: 1;
       border: none;
       outline: none;
-      font-size: 16px;
+      font-size: 15px;
       padding: 8px 12px;
       min-width: 0;
       color: var(--text-main);
@@ -668,13 +670,11 @@
 
     /* Desktop Responsive View */
     @media (min-width: 600px) {
-      header { max-width: none; }
-      .container { max-width: 520px; }
+      .container { max-width: 552px; }
     }
 
     @media (min-width: 900px) {
-      body { padding: 20px 40px 0; }
-      .container { max-width: 640px; margin-top: clamp(16px, 9vh, 110px); }
+      .container { max-width: 672px; margin-top: clamp(24px, calc(9vh + 8px), 118px); }
       .img-logo { height: 84px; margin-bottom: 32px; }
       .search-wrapper { margin-bottom: 28px; }
       .search-box { padding: 10px 22px; }
@@ -688,9 +688,15 @@
       .popup-menu { width: 210px; }
     }
 
+    /* Samakan posisi tombol menu dengan halaman Translator */
+    @media (min-width: 768px) {
+      :root { --gutter: 40px; }
+      body { padding-top: 28px; }
+    }
+
     /* ---------- Footer (Persis seperti Privacy) ---------- */
     footer {
-      width: 100%;
+      width: calc(100% - 2 * var(--gutter));
       max-width: 960px;
       margin-top: 32px;
       padding: 32px 0 calc(24px + env(safe-area-inset-bottom, 0px));
