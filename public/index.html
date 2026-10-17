@@ -73,7 +73,6 @@
       position: relative;
     }
 
-    
     .icon-btn {
       background: none;
       border: none;
@@ -127,104 +126,173 @@
       margin-left: 11px;
     }
 
-    /* ===== Dropdown Menu ===== */
+    /* ===== Sidebar Menu (Compact & Smaller Fonts) ===== */
     .popup-menu {
-      position: absolute;
-      top: 46px;
-      left: var(--gutter);
-      width: 190px;
+      position: fixed;
+      top: 0;
+      left: -280px;
+      width: 250px;
+      height: 100%;
       background: var(--surface);
-      border-radius: 22px;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14), 0 2px 6px rgba(0, 0, 0, 0.05);
-      border: 1px solid var(--border-color);
-      display: none;
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+      border-right: 1px solid var(--border-color);
+      display: flex;
       flex-direction: column;
-      padding: 6px;
+      padding: 16px 12px;
       z-index: 2000;
-      transform-origin: 19px -8px;
+      overflow-y: auto;
+      transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .popup-menu.active {
-      display: flex;
-      animation: popupSpring 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    @keyframes popupSpring {
-      from { opacity: 0; transform: scale(0.7) translateY(-8px); }
-      to   { opacity: 1; transform: scale(1) translateY(0); }
+      left: 0;
     }
 
-    .popup-menu::before {
-      content: "";
-      position: absolute;
-      top: -6px;
-      left: 15px;
-      width: 11px;
-      height: 11px;
-      background: var(--surface);
-      border-top: 1px solid var(--border-color);
-      border-left: 1px solid var(--border-color);
-      border-top-left-radius: 3px;
-      transform: rotate(45deg);
+    /* Backdrop untuk Sidebar */
+    .sidebar-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 1999;
+    }
+    .popup-menu.active ~ .sidebar-backdrop,
+    body:has(.popup-menu.active) .sidebar-backdrop {
+      opacity: 1;
+      pointer-events: auto;
     }
 
-    .popup-list {
-      list-style: none;
+    .popup-section-title {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 6px 12px 2px;
+      margin-top: 4px;
+    }
+
+    .popup-group {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 1px;
+      padding: 2px 0;
     }
 
-    .popup-menu.active .popup-list li {
-      animation: itemIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-    }
-    .popup-menu.active .popup-list li:nth-child(1) { animation-delay: 0.04s; }
-    .popup-menu.active .popup-list li:nth-child(2) { animation-delay: 0.08s; }
-    .popup-menu.active .popup-list li:nth-child(3) { animation-delay: 0.12s; }
-    .popup-menu.active .popup-list li:nth-child(4) { animation-delay: 0.16s; }
-    @keyframes itemIn {
-      from { opacity: 0; transform: translateX(-10px) scale(0.96); }
-      to   { opacity: 1; transform: translateX(0) scale(1); }
+    .popup-divider {
+      height: 1px;
+      background: var(--border-color);
+      margin: 8px 4px;
     }
 
-    .popup-list a {
+    .popup-menu a, .popup-menu button {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 9px 12px;
+      justify-content: space-between;
+      width: 100%;
+      padding: 8px 12px;
       text-decoration: none;
       color: var(--text-main);
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 500;
-      border-radius: 14px;
-      transition: background 0.2s ease, color 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      background: none;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.2s ease;
     }
-    .popup-list a:hover {
-      background: rgba(26, 115, 232, 0.08);
-      color: var(--primary);
-      transform: translateX(3px);
+    .popup-menu a:hover, .popup-menu button:hover {
+      background: rgba(0, 0, 0, 0.04);
     }
-    body.dark .popup-list a:hover { background: rgba(138, 180, 248, 0.12); }
-    .popup-list a:active { transform: scale(0.97); }
+    body.dark .popup-menu a:hover, body.dark .popup-menu button:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
 
-    .list-icon-wrap {
-      width: 20px;
-      height: 20px;
+    .theme-status-text {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--text-muted);
       display: flex;
       align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
+      gap: 4px;
     }
-    .list-icon-wrap svg {
-      width: 20px;
-      height: 20px;
-      fill: none;
-      stroke: var(--text-muted);
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      overflow: visible;
-      transition: stroke 0.2s ease;
+    
+    .theme-status-text svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .popup-list a:hover .list-icon-wrap svg { stroke: var(--primary); }
+
+    /* Theme Dropdown Sub-menu dengan Animasi Bouncy */
+    .theme-dropdown-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .theme-options-list {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease, margin 0.3s ease;
+      opacity: 0;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .theme-options-inner {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      padding: 0 0 0 12px;
+    }
+    
+    .theme-dropdown-container.open .theme-options-list {
+      grid-template-rows: 1fr;
+      opacity: 1;
+      margin: 2px 0;
+    }
+
+    .theme-dropdown-container.open .theme-status-text svg {
+      transform: rotate(180deg);
+    }
+
+    .theme-option-btn {
+      padding: 7px 10px;
+      font-size: 12.5px;
+      font-weight: 400;
+      border-radius: 8px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      color: var(--text-main);
+      width: 100%;
+      transition: background 0.15s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .theme-option-btn:hover {
+      background: rgba(0, 0, 0, 0.05);
+      transform: translateX(3px);
+    }
+    body.dark .theme-option-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .theme-option-btn.active {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    /* Sidebar Footer Copyright */
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px 12px 8px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+    }
 
     header:has(.popup-menu.active) .burger-btn span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
     header:has(.popup-menu.active) .burger-btn span:nth-child(2) { opacity: 0; transform: translateX(-6px); }
@@ -685,7 +753,6 @@
       .info-card-value { font-size: 20px; }
       .info-card-sub { font-size: 13px; }
       .trending-title { font-size: 15px; }
-      .popup-menu { width: 210px; }
     }
 
     /* Samakan posisi tombol menu dengan halaman Translator */
@@ -694,7 +761,7 @@
       body { padding-top: 28px; }
     }
 
-    /* ---------- Footer (Persis seperti Privacy) ---------- */
+    /* ---------- Footer ---------- */
     footer {
       width: calc(100% - 2 * var(--gutter));
       max-width: 960px;
@@ -752,51 +819,69 @@
       <span></span>
     </button>
 
+    <div class="sidebar-backdrop" id="sidebar_backdrop"></div>
+
     <div class="popup-menu" id="popup_menu">
-      <ul class="popup-list">
-        <li>
-          <a href="/">
-            <div class="list-icon-wrap">
-              <svg viewBox="0 0 24 24"><path class="ic-roof" d="M3.5 11.2 12 3.8l8.5 7.4"/><path d="M6 10v9.2c0 .44.36.8.8.8H10v-5h4v5h3.2c.44 0 .8-.36.8-.8V10"/></svg>
+      <!-- Search Group -->
+      <div class="popup-section-title" data-i18n="catSearch">Search</div>
+      <div class="popup-group">
+        <a href="index.html">
+          <span data-i18n="menuHomepage">Homepage</span>
+        </a>
+        
+        <!-- Theme Dropdown Container -->
+        <div class="theme-dropdown-container" id="theme_dropdown_container">
+          <button type="button" id="theme_dropdown_toggle">
+            <span data-i18n="menuDisplayTheme">Display theme</span>
+            <span class="theme-status-text">
+              <span id="theme_status_label">Terang</span>
+              <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+            </span>
+          </button>
+          <div class="theme-options-list">
+            <div class="theme-options-inner">
+              <button type="button" class="theme-option-btn" data-theme="light" data-i18n="themeLight">Terang</button>
+              <button type="button" class="theme-option-btn" data-theme="dark" data-i18n="themeDark">Gelap</button>
+              <button type="button" class="theme-option-btn" data-theme="system" data-i18n="themeSystem">Sistem</button>
             </div>
-            <span data-i18n="menuHome">Home</span>
-          </a>
-        </li>
-        <li>
-          <a href="settings">
-            <div class="list-icon-wrap">
-              <svg viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/><circle class="ic-knob ic-knob-a" cx="15" cy="7" r="2.3"/><circle class="ic-knob ic-knob-b" cx="9" cy="17" r="2.3"/></svg>
-            </div>
-            <span data-i18n="menuSettings">Settings</span>
-          </a>
-        </li>
-        <li>
-          <a href="privacy.html">
-            <div class="list-icon-wrap">
-              <svg viewBox="0 0 24 24"><path d="M12 3.5 19 6v5.5c0 4.2-2.9 7.4-7 9-4.1-1.6-7-4.8-7-9V6z"/><path class="ic-check" d="m9 12 2.2 2.2L15.2 10"/></svg>
-            </div>
-            <span data-i18n="menuPrivacy">Privacy</span>
-          </a>
-        </li>
-        <li>
-          <a href="/search?q=weather">
-            <div class="list-icon-wrap">
-              <svg viewBox="0 0 24 24"><path class="ic-cloud" d="M7.5 18.5h9a3.5 3.5 0 0 0 .4-6.97A5 5 0 0 0 7.3 10.9a3.8 3.8 0 0 0 .2 7.6z"/></svg>
-            </div>
-            <span data-i18n="menuWeather">Cuaca</span>
-          </a>
-        </li>
+          </div>
+        </div>
 
-<li>
-  <a href="/translate">
-    <div class="list-icon-wrap">
-      <svg viewBox="0 0 24 24"><path d="M4 5h11M9.5 3v2c0 5-2.5 8-6 10"/><path d="M6 10c1.3 1.8 3 3.2 5 4M14 19l3.5-9 3.5 9M15.3 16h4.4"/></svg>
-    </div>
-    <span data-i18n="menuTranslate">Terjemahan</span>
-  </a>
-</li>
+        <a href="settings">
+          <span data-i18n="menuSettings">Settings</span>
+        </a>
+      </div>
 
-      </ul>
+      <div class="popup-divider"></div>
+
+      <!-- Apps Group -->
+      <div class="popup-section-title" data-i18n="catApps">Apps</div>
+      <div class="popup-group">
+        <a href="/search?q=weather">
+          <span data-i18n="menuWeather">Weather</span>
+        </a>
+        <a href="/translate">
+          <span data-i18n="menuTranslate">Translate</span>
+        </a>
+      </div>
+
+      <div class="popup-divider"></div>
+
+      <!-- Learn more Group -->
+      <div class="popup-section-title" data-i18n="catLearnMore">Learn more</div>
+      <div class="popup-group">
+        <a href="about.html">
+          <span data-i18n="menuAbout">About</span>
+        </a>
+        <a href="privacy.html">
+          <span data-i18n="menuPrivacy">Privacy</span>
+        </a>
+      </div>
+
+      <!-- Sidebar Footer Copyright -->
+      <div class="sidebar-footer">
+        &copy; 2026 Deevv Search.
+      </div>
     </div>
   </header>
 
@@ -908,11 +993,19 @@
 
     const LANG_DICT = {
         en: {
-            menuHome: "Home",
+            catSearch: "Search",
+            catApps: "Apps",
+            catLearnMore: "Learn more",
+            menuHomepage: "Homepage",
             menuSettings: "Settings",
             menuPrivacy: "Privacy",
             menuWeather: "Weather",
-            menuTranslate: "Translator",
+            menuTranslate: "Translate",
+            menuAbout: "About",
+            menuDisplayTheme: "Display theme",
+            themeLight: "Light",
+            themeDark: "Dark",
+            themeSystem: "System",
             searchPlaceholder: "Search with Deevv",
             voiceTitle: "Voice search",
             favTitle: "Favorite Sites",
@@ -942,11 +1035,19 @@
             darkThemeOff: "Dark theme: Off"
         },
         id: {
-            menuHome: "Home",
-            menuSettings: "Settings",
-            menuPrivacy: "Privacy",
+            catSearch: "Pencarian",
+            catApps: "Aplikasi",
+            catLearnMore: "Informasi",
+            menuHomepage: "Beranda",
+            menuSettings: "Pengaturan",
+            menuPrivacy: "Privasi",
             menuWeather: "Cuaca",
-            menuTranslate: "Penerjemah",
+            menuTranslate: "Terjemahan",
+            menuAbout: "Tentang",
+            menuDisplayTheme: "Tema tampilan",
+            themeLight: "Terang",
+            themeDark: "Gelap",
+            themeSystem: "Sistem",
             searchPlaceholder: "Cari di Deevv",
             voiceTitle: "Pencarian Suara",
             favTitle: "Situs Favorit",
@@ -1009,12 +1110,33 @@
       }
     }
 
+    function updateThemeStatusLabel(themePref) {
+      var labelEl = document.getElementById('theme_status_label');
+      if (!labelEl) return;
+      if (themePref === 'dark') {
+        labelEl.textContent = getText('themeDark');
+      } else if (themePref === 'light') {
+        labelEl.textContent = getText('themeLight');
+      } else {
+        labelEl.textContent = getText('themeSystem');
+      }
+
+      // Tandai tombol aktif pada dropdown
+      document.querySelectorAll('.theme-option-btn').forEach(btn => {
+        if (btn.getAttribute('data-theme') === themePref) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
+
     function applyTheme() {
       try {
         var config = typeof getData === 'function' ? getData() : {};
-        var themePref = config.theme;
+        var themePref = config.theme || 'system';
         var prefersDark = matchMedia("(prefers-color-scheme: dark)").matches;
-        var isDark = themePref === "dark" || (themePref === "system" && prefersDark) || (!themePref && prefersDark);
+        var isDark = themePref === "dark" || (themePref === "system" && prefersDark);
         
         if (isDark) {
           document.body.classList.add("dark");
@@ -1022,13 +1144,11 @@
           document.body.classList.remove("dark");
         }
         updateThemeBtnText(isDark);
+        updateThemeStatusLabel(themePref);
       } catch(e) {}
     }
 
-    function toggleTheme() {
-      var currentlyDark = document.body.classList.contains("dark");
-      var newTheme = currentlyDark ? "light" : "dark";
-      
+    function setTheme(newTheme) {
       if (typeof updateSetting === "function") {
         updateSetting("theme", newTheme);
       } else {
@@ -1037,11 +1157,38 @@
       applyTheme();
     }
 
+    function toggleTheme() {
+      var config = typeof getData === 'function' ? getData() : {};
+      var currentPref = config.theme || 'system';
+      var newTheme = currentPref === 'dark' ? 'light' : (currentPref === 'light' ? 'system' : 'dark');
+      setTheme(newTheme);
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       applyTheme();
       var themeBtn = document.getElementById('theme-toggle-btn');
       if (themeBtn) {
         themeBtn.addEventListener('click', toggleTheme);
+      }
+
+      // Setup dropdown tema di sidebar
+      const themeContainer = document.getElementById('theme_dropdown_container');
+      const themeToggleBtn = document.getElementById('theme_dropdown_toggle');
+
+      if (themeToggleBtn && themeContainer) {
+        themeToggleBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          themeContainer.classList.toggle('open');
+        });
+
+        document.querySelectorAll('.theme-option-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const selectedTheme = btn.getAttribute('data-theme');
+            setTheme(selectedTheme);
+            themeContainer.classList.remove('open');
+          });
+        });
       }
     });
 
@@ -1304,15 +1451,22 @@
 
     const menuBtn = document.getElementById('menu_btn');
     const popupMenu = document.getElementById('popup_menu');
+    const sidebarBackdrop = document.getElementById('sidebar_backdrop');
 
     menuBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       popupMenu.classList.toggle('active');
     });
 
+    sidebarBackdrop.addEventListener('click', () => {
+      popupMenu.classList.remove('active');
+      document.getElementById('theme_dropdown_container')?.classList.remove('open');
+    });
+
     document.addEventListener('click', (e) => {
       if (!popupMenu.contains(e.target) && !menuBtn.contains(e.target)) {
         popupMenu.classList.remove('active');
+        document.getElementById('theme_dropdown_container')?.classList.remove('open');
       }
     });
 
@@ -1518,9 +1672,7 @@
       };
 
       recognition.onend = () => {
-        // Berhenti sendiri tanpa hasil (diam / tidak terdengar)
         if (voiceActive && !gotSpeech) { voiceNotHeard(); return; }
-        // Ada hasil sementara tapi tidak ada hasil final: pakai teks terakhir
         if (voiceActive && gotSpeech && input.value.trim()) {
           voiceActive = false;
           setTimeout(() => {
