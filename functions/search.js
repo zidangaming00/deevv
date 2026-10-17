@@ -163,32 +163,38 @@ export async function onRequestGet(context) {
         </div>  
       </div>`;
 
-  // ssr data
-const cleanItems = (ssrData?.items || []).map(item =>
-  Object.fromEntries(
-    Object.entries(item).filter(([_, value]) => typeof value !== 'object' || value === null)
-  )
-);
+  // 1. Bersihkan items dengan aman dari undefined
+  const cleanItems = (ssrData?.items || []).map(item => {
+    if (!item) return {};
+    return Object.fromEntries(
+      Object.entries(item).filter(([_, value]) => value !== undefined && (typeof value !== 'object' || value === null))
+    );
+  });
 
-// 2. Format struktur akhir sesuai kebutuhan
-const transformedData = {
-  type: ssrData?.engine || "",
-  query: ssrData?.query || "",
-  searchInfo: {
-    search_time: ssrData?.searchInformation?.formattedSearchTime || "",
-    total_results: ssrData?.searchInformation?.formattedTotalResults || ""
-  },
-  results_data: cleanItems,
-  queries: ssrData?.queries || null,
-  // Lokasi dari Cloudflare (dipakai widget cuaca di script.js: __SSR_DATA__.location)
-  location: request.cf && request.cf.city
-    ? { city: request.cf.city, country: request.cf.country || "" }
-    : null
-};
+  // 2. Format struktur akhir dengan aman (Pastikan request.cf tersedia atau gunakan fallback aman)
+  const cf = request.cf || {};
+  const transformedData = {
+    type: ssrData?.engine || "",
+    query: ssrData?.query || "",
+    searchInfo: {
+      search_time: ssrData?.searchInformation?.formattedSearchTime || "",
+      total_results: ssrData?.searchInformation?.formattedTotalResults || ""
+    },
+    results_data: cleanItems,
+    queries: ssrData?.queries || null,
+    // Ambil data lokasi beserta latitude dan longitude dari Cloudflare (dengan fallback aman agar tidak undefined)
+    location: (cf && cf.city)
+      ? { 
+          city: cf.city, 
+          country: cf.country || "",
+          latitude: cf.latitude || null,
+          longitude: cf.longitude || null
+        }
+      : null
+  };
 
-// 3. Stringify untuk SSR
-const initialDataJson = transformedData ? JSON.stringify(transformedData).replace(/</g, "\\u003c") : "null";
-
+  // 3. Stringify untuk SSR
+  const initialDataJson = transformedData ? JSON.stringify(transformedData).replace(/</g, "\\u003c") : "null";
 
   const html = buildPageShell({
     q,
@@ -199,10 +205,8 @@ const initialDataJson = transformedData ? JSON.stringify(transformedData).replac
   });
 
   return new Response(html, {
-  headers: { 
-    "Content-Type": "text/html; charset=UTF-8" 
-  },
-});
-
-  
+    headers: { 
+      "Content-Type": "text/html; charset=UTF-8" 
+    },
+  });
 }
