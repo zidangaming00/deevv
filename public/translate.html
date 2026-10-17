@@ -43,6 +43,7 @@ button,select,textarea{font:inherit}button{color:inherit}button:focus-visible,te
 .burger-btn {
   width: 38px;
   height: 38px;
+  padding: 0;
   border: none;
   background: rgba(26, 115, 232, 0.1);
   border-radius: 10px;
@@ -61,18 +62,19 @@ body.dark .burger-btn:hover { background: rgba(138, 180, 248, 0.2); }
   display: block;
   height: 2px;
   width: 16px;
-  background: var(--accent);
+  background: #1a73e8;
   border-radius: 2px;
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s, width 0.2s;
 }
+:root.dark .burger-btn span { background: #8ab4f8; }
 .burger-btn span:nth-child(2) {
   width: 10px;
-  align-self: flex-end;
-  margin-right: 11px;
+  align-self: flex-start;
+  margin-left: 11px;
 }
 
 header:has(.sidebar-overlay.show) .burger-btn span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
-header:has(.sidebar-overlay.show) .burger-btn span:nth-child(2) { opacity: 0; transform: translateX(6px); }
+header:has(.sidebar-overlay.show) .burger-btn span:nth-child(2) { opacity: 0; transform: translateX(-6px); }
 header:has(.sidebar-overlay.show) .burger-btn span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 
 .icon-btn{width:40px;height:40px;border:0;background:transparent;border-radius:10px;display:grid;place-items:center;cursor:pointer;color:var(--muted);transition:background .15s,color .15s}
@@ -120,11 +122,18 @@ main {
 /* Modal Pemilihan Bahasa */
 .lang-modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(3px);z-index:300;display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .2s}
 .lang-modal-overlay.show{opacity:1;pointer-events:auto}
-.lang-modal{background:var(--surface);border-radius:24px;width:min(90vw, 340px);max-height:80vh;display:flex;flex-direction:column;box-shadow:0 16px 40px rgba(0,0,0,0.15);transform:translateY(15px);transition:transform .2s}
+.lang-modal{background:var(--surface);border-radius:20px;width:min(86vw, 280px);max-height:min(60vh, 440px);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 16px 40px rgba(0,0,0,0.15);transform:translateY(15px);transition:transform .2s}
 .lang-modal-overlay.show .lang-modal{transform:translateY(0)}
-.lang-modal-header{padding:20px 20px 12px;font-size:16px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
-.lang-modal-body{padding:10px 14px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
-.lang-option{width:100%;padding:12px 14px;border-radius:12px;font-size:14px;font-weight:500;color:var(--text);background:transparent;border:0;cursor:pointer;text-align:left;display:flex;align-items:center;transition:background .15s}
+.lang-modal-header{padding:12px 10px 6px 16px;font-size:15px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.lang-modal-body{position:relative;padding:10px 8px 16px;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 10px,#000 calc(100% - 14px),transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 10px,#000 calc(100% - 14px),transparent 100%);display:flex;flex-direction:column;gap:2px}
+.lang-option{width:100%;padding:9px 12px;border-radius:10px;font-size:14px;font-weight:500;color:var(--text);background:transparent;border:0;cursor:pointer;text-align:left;display:flex;align-items:center;transition:background .15s}
+.lang-search{padding:0 10px 4px}
+.lang-search input{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:10px;padding:8px 12px;font-size:14px;outline:none}
+.lang-search input:focus{border-color:var(--accent)}
+.lang-empty{padding:14px 12px;font-size:13px;color:var(--muted)}
+.lang-modal-overlay.desk{background:transparent;backdrop-filter:none;display:block}
+.lang-modal-overlay.desk .lang-modal{position:fixed;max-height:min(62vh,440px);border-radius:16px;border:1px solid var(--line);box-shadow:0 12px 32px rgba(0,0,0,.14)}
+.lang-modal-overlay.desk .lang-modal-body{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:2px 6px}
 .lang-option:hover{background:var(--hover)}
 .lang-option.selected{background:var(--accent-soft);color:var(--accent);font-weight:650}
 
@@ -243,7 +252,7 @@ main {
       <div class="brand-name">Deevv <span>Translator</span></div>
     </div>
   </div>
-  <button class="icon-btn" id="themeToggle" type="button" aria-label="Ganti tema" title="Ganti tema"><svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg></button>
+  <button class="icon-btn" id="themeToggle" type="button" aria-label="Ganti tema" title="Ganti tema" data-i18n-aria="themeToggle" data-i18n-title="themeToggle"><svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg></button>
 </header>
 
 <main>
@@ -252,27 +261,27 @@ main {
     <!-- Bar Bahasa ala Yandex Lebih Ramping -->
     <div class="lang-header-bar">
       <button class="lang-btn-text" id="sourceLangBtn" type="button">ENGLISH</button>
-      <button class="swap-btn" id="swapBtn" type="button" aria-label="Tukar bahasa" title="Tukar bahasa"><svg viewBox="0 0 24 24"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg></button>
+      <button class="swap-btn" id="swapBtn" type="button" aria-label="Tukar bahasa" title="Tukar bahasa" data-i18n-aria="swapLangs" data-i18n-title="swapLangs"><svg viewBox="0 0 24 24"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg></button>
       <button class="lang-btn-text" id="targetLangBtn" type="button">JAPANESE</button>
     </div>
 
     <div class="text-pane">
-      <div class="pane-label"><span>Teks asli</span><span id="sourceLanguageLabel">English</span></div>
-      <textarea class="textarea" id="inputText" maxlength="3000" placeholder="Ketik atau tempel teks di sini..." aria-label="Teks yang ingin diterjemahkan"></textarea>
+      <div class="pane-label"><span data-i18n="originalText">Teks asli</span><span id="sourceLanguageLabel">English</span></div>
+      <textarea class="textarea" id="inputText" maxlength="3000" placeholder="Ketik atau tempel teks di sini..." aria-label="Teks yang ingin diterjemahkan" data-i18n-placeholder="inputPlaceholder" data-i18n-aria="inputAria"></textarea>
       <div class="pane-footer"><span class="count" id="charCount">0 / 3000</span><div class="actions">
         <!-- Tombol speaker untuk input teks asli -->
-        <button class="action-btn" id="speakInputBtn" type="button" aria-label="Dengarkan teks asli" title="Dengarkan teks asli" disabled><svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5ZM15.5 8.5a5 5 0 0 1 0 7m2.5-9.5a9 9 0 0 1 0 12"/></svg></button>
-        <button class="action-btn" id="clearBtn" type="button" aria-label="Hapus teks" title="Hapus teks"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg></button>
+        <button class="action-btn" id="speakInputBtn" type="button" aria-label="Dengarkan teks asli" title="Dengarkan teks asli" data-i18n-aria="listenOriginal" data-i18n-title="listenOriginal" disabled><svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5ZM15.5 8.5a5 5 0 0 1 0 7m2.5-9.5a9 9 0 0 1 0 12"/></svg></button>
+        <button class="action-btn" id="clearBtn" type="button" aria-label="Hapus teks" title="Hapus teks" data-i18n-aria="clearText" data-i18n-title="clearText"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg></button>
       </div></div>
     </div>
     
     <div class="output-pane">
-      <div class="pane-label"><span>Terjemahan</span><span id="targetLanguageLabel">Japanese</span></div>
+      <div class="pane-label"><span data-i18n="translation">Terjemahan</span><span id="targetLanguageLabel">Japanese</span></div>
       <div class="output-text placeholder" id="outputText" aria-live="polite"></div>
-      <div class="output-footer"><span class="status" id="statusText">Siap menerjemahkan</span><div class="actions">
-        <button class="action-btn" id="speakBtn" type="button" aria-label="Dengarkan terjemahan" title="Dengarkan terjemahan" disabled><svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5ZM15.5 8.5a5 5 0 0 1 0 7m2.5-9.5a9 9 0 0 1 0 12"/></svg></button>
-        <button class="action-btn" id="copyBtn" type="button" aria-label="Salin" title="Salin" disabled><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg></button>
-        <button class="action-btn" id="saveBtn" type="button" aria-label="Simpan" title="Simpan" disabled><svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg></button>
+      <div class="output-footer"><span class="status" id="statusText" data-i18n="statusReady">Siap menerjemahkan</span><div class="actions">
+        <button class="action-btn" id="speakBtn" type="button" aria-label="Dengarkan terjemahan" title="Dengarkan terjemahan" data-i18n-aria="listenTranslation" data-i18n-title="listenTranslation" disabled><svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5ZM15.5 8.5a5 5 0 0 1 0 7m2.5-9.5a9 9 0 0 1 0 12"/></svg></button>
+        <button class="action-btn" id="copyBtn" type="button" aria-label="Salin" title="Salin" data-i18n-aria="copy" data-i18n-title="copy" disabled><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg></button>
+        <button class="action-btn" id="saveBtn" type="button" aria-label="Simpan" title="Simpan" data-i18n-aria="save" data-i18n-title="save" disabled><svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg></button>
       </div></div>
     </div>
   </div>
@@ -280,15 +289,15 @@ main {
 
 <section class="page" id="historyPage" data-page="history">
   <div>
-    <p class="eyebrow">Koleksi pribadi</p><h1 class="page-title">Histori</h1><p class="page-desc">Semua riwayat terjemahan yang pernah kamu lakukan.</p>
-    <div class="collection-toolbar"><span id="historyCount">0 terjemahan</span><button class="text-link" id="clearHistoryBtn" type="button">Hapus histori</button></div>
+    <p class="eyebrow" data-i18n="eyebrow">Koleksi pribadi</p><h1 class="page-title" data-i18n="historyTitle">Histori</h1><p class="page-desc" data-i18n="historyDesc">Semua riwayat terjemahan yang pernah kamu lakukan.</p>
+    <div class="collection-toolbar"><span id="historyCount">0 terjemahan</span><button class="text-link" id="clearHistoryBtn" type="button" data-i18n="clearHistory">Hapus histori</button></div>
   </div>
   <div class="collection-list" id="historyList"></div>
 </section>
 
 <section class="page" id="savedPage" data-page="saved">
   <div>
-    <p class="eyebrow">Koleksi pribadi</p><h1 class="page-title">Tersimpan</h1><p class="page-desc">Daftar terjemahan penting yang telah kamu tandai bintang.</p>
+    <p class="eyebrow" data-i18n="eyebrow">Koleksi pribadi</p><h1 class="page-title" data-i18n="savedTitle">Tersimpan</h1><p class="page-desc" data-i18n="savedDesc">Daftar terjemahan penting yang telah kamu tandai bintang.</p>
     <div class="collection-toolbar"><span id="savedCount">0 tersimpan</span></div>
   </div>
   <div class="collection-list" id="savedList"></div>
@@ -298,12 +307,12 @@ main {
 
 <!-- Sidebar Navigation Drawer -->
 <div class="sidebar-overlay" id="sidebarOverlay">
-  <nav class="sidebar" aria-label="Navigasi Utama">
+  <nav class="sidebar" aria-label="Navigasi Utama" data-i18n-aria="navAria">
     <div class="sidebar-header">Deevv Translator</div>
     <div class="nav-list">
-      <button class="nav-item" type="button" data-tab="translate"><svg viewBox="0 0 24 24"><path d="M4 5h11M9.5 3v2c0 5-2.5 8-6 10"/><path d="M6 10c1.3 1.8 3 3.2 5 4M14 19l3.5-9 3.5 9M15.3 16h4.4"/></svg><span>Terjemahan</span></button>
-      <button class="nav-item" type="button" data-tab="history"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5m4-1v5l3 2"/></svg><span>Histori</span></button>
-      <button class="nav-item" type="button" data-tab="saved"><svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg><span>Tersimpan</span></button>
+      <button class="nav-item" type="button" data-tab="translate"><svg viewBox="0 0 24 24"><path d="M4 5h11M9.5 3v2c0 5-2.5 8-6 10"/><path d="M6 10c1.3 1.8 3 3.2 5 4M14 19l3.5-9 3.5 9M15.3 16h4.4"/></svg><span data-i18n="navTranslate">Terjemahan</span></button>
+      <button class="nav-item" type="button" data-tab="history"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5m4-1v5l3 2"/></svg><span data-i18n="navHistory">Histori</span></button>
+      <button class="nav-item" type="button" data-tab="saved"><svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg><span data-i18n="navSaved">Tersimpan</span></button>
     </div>
   </nav>
 </div>
@@ -311,7 +320,8 @@ main {
 <!-- Language Popup Modal -->
 <div class="lang-modal-overlay" id="langModalOverlay">
   <div class="lang-modal">
-    <div class="lang-modal-header"><span id="langModalTitle">Pilih Bahasa</span><button class="icon-btn" id="closeLangModal" type="button" style="width:32px;height:32px;"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="lang-modal-header"><span id="langModalTitle" data-i18n="chooseLang">Pilih bahasa</span><button class="icon-btn" id="closeLangModal" type="button" style="width:30px;height:30px;"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="lang-search"><input id="langSearch" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Cari bahasa..." data-i18n-placeholder="searchLang" data-i18n-aria="searchLang"></div>
     <div class="lang-modal-body" id="langModalBody"></div>
   </div>
 </div>
@@ -324,18 +334,175 @@ main {
     <h3 class="modal-title" id="modalTitle">Konfirmasi</h3>
     <p class="modal-desc" id="modalDesc">Apakah Anda yakin?</p>
     <div class="modal-actions">
-      <button class="modal-btn cancel" id="modalCancel">Batal</button>
-      <button class="modal-btn confirm" id="modalConfirm">Hapus</button>
+      <button class="modal-btn cancel" id="modalCancel" data-i18n="cancel">Batal</button>
+      <button class="modal-btn confirm" id="modalConfirm" data-i18n="delete">Hapus</button>
     </div>
   </div>
 </div>
 
+<script src="cookie.js"></script>
 <script>
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
+  // ---------- Bahasa antarmuka: dari pengaturan cookie (sama seperti index) ----------
+  const settingsObj = typeof getData === 'function' ? getData() : {};
+  const isIdLang = settingsObj.lang !== "en";
+
+  const LANG_DICT = {
+    en: {
+      chooseLang: "Choose language",
+      searchLang: "Search language...",
+      noLangFound: "No language found",
+      navAria: "Main navigation",
+      themeToggle: "Toggle theme",
+      swapLangs: "Swap languages",
+      originalText: "Original text",
+      inputPlaceholder: "Type or paste text here...",
+      inputAria: "Text to translate",
+      listenOriginal: "Listen to original text",
+      clearText: "Clear text",
+      translation: "Translation",
+      statusReady: "Ready to translate",
+      listenTranslation: "Listen to translation",
+      copy: "Copy",
+      save: "Save",
+      navTranslate: "Translate",
+      navHistory: "History",
+      navSaved: "Saved",
+      eyebrow: "Personal collection",
+      historyTitle: "History",
+      historyDesc: "All the translations you have made.",
+      clearHistory: "Clear history",
+      savedTitle: "Saved",
+      savedDesc: "Important translations you have starred.",
+      countHistory: "{n} translations",
+      countSaved: "{n} saved",
+      emptyHistoryTitle: "History is empty",
+      emptyHistoryDesc: "No translation history has been recorded on this device yet.",
+      emptySavedTitle: "Nothing saved yet",
+      emptySavedDesc: "Tap the star icon on a translation to save it here.",
+      cancel: "Cancel",
+      delete: "Delete",
+      sameLangOutput: "Choose two different languages.",
+      statusSameLang: "Same language",
+      translating: "Translating…",
+      statusProcessing: "Processing",
+      statusDone: "Translation complete",
+      translateFailed: "Translation failed. Check your internet connection and try again.",
+      statusFailed: "Translation failed",
+      waiting: "Waiting for text…",
+      statusOpened: "Opened from collection",
+      toastStorageFull: "Storage is full or unavailable.",
+      toastCopied: "Translation copied.",
+      toastCopyFailed: "Couldn't copy.",
+      toastNoVoice: "Speech is not supported.",
+      toastRemovedSaved: "Removed from Saved.",
+      toastAddedSaved: "Added to Saved.",
+      confirmDeleteTitle: "Delete item",
+      confirmDeleteDesc: "Delete this translation from the list?",
+      toastItemDeleted: "Item deleted.",
+      toastHistoryEmpty: "History is already empty.",
+      confirmClearTitle: "Clear all history",
+      confirmClearDesc: "This will delete all of your translation history.",
+      toastHistoryCleared: "History cleared."
+    },
+    id: {
+      chooseLang: "Pilih bahasa",
+      searchLang: "Cari bahasa...",
+      noLangFound: "Bahasa tidak ditemukan",
+      navAria: "Navigasi Utama",
+      themeToggle: "Ganti tema",
+      swapLangs: "Tukar bahasa",
+      originalText: "Teks asli",
+      inputPlaceholder: "Ketik atau tempel teks di sini...",
+      inputAria: "Teks yang ingin diterjemahkan",
+      listenOriginal: "Dengarkan teks asli",
+      clearText: "Hapus teks",
+      translation: "Terjemahan",
+      statusReady: "Siap menerjemahkan",
+      listenTranslation: "Dengarkan terjemahan",
+      copy: "Salin",
+      save: "Simpan",
+      navTranslate: "Terjemahan",
+      navHistory: "Histori",
+      navSaved: "Tersimpan",
+      eyebrow: "Koleksi pribadi",
+      historyTitle: "Histori",
+      historyDesc: "Semua riwayat terjemahan yang pernah kamu lakukan.",
+      clearHistory: "Hapus histori",
+      savedTitle: "Tersimpan",
+      savedDesc: "Daftar terjemahan penting yang telah kamu tandai bintang.",
+      countHistory: "{n} terjemahan",
+      countSaved: "{n} tersimpan",
+      emptyHistoryTitle: "Histori Kosong",
+      emptyHistoryDesc: "Belum ada riwayat terjemahan yang tercatat di perangkat ini.",
+      emptySavedTitle: "Belum Ada Tersimpan",
+      emptySavedDesc: "Tandai terjemahan dengan ikon bintang untuk menyimpannya di sini.",
+      cancel: "Batal",
+      delete: "Hapus",
+      sameLangOutput: "Pilih dua bahasa yang berbeda.",
+      statusSameLang: "Bahasa sama",
+      translating: "Menerjemahkan…",
+      statusProcessing: "Sedang memproses",
+      statusDone: "Terjemahan selesai",
+      translateFailed: "Terjemahan gagal. Periksa koneksi internet lalu coba lagi.",
+      statusFailed: "Gagal menerjemahkan",
+      waiting: "Menunggu teks…",
+      statusOpened: "Dibuka dari koleksi",
+      toastStorageFull: "Penyimpanan penuh atau tidak tersedia.",
+      toastCopied: "Terjemahan berhasil disalin.",
+      toastCopyFailed: "Gagal menyalin.",
+      toastNoVoice: "Fitur suara tidak didukung.",
+      toastRemovedSaved: "Dihapus dari Tersimpan.",
+      toastAddedSaved: "Disimpan ke Tersimpan.",
+      confirmDeleteTitle: "Hapus Item",
+      confirmDeleteDesc: "Hapus terjemahan ini dari daftar?",
+      toastItemDeleted: "Item dihapus.",
+      toastHistoryEmpty: "Histori sudah kosong.",
+      confirmClearTitle: "Hapus Semua Histori",
+      confirmClearDesc: "Tindakan ini akan menghapus seluruh catatan riwayat terjemahan Anda.",
+      toastHistoryCleared: "Histori dibersihkan."
+    }
+  };
+
+  function getText(key) {
+    const lang = isIdLang ? 'id' : 'en';
+    return LANG_DICT[lang] && LANG_DICT[lang][key] !== undefined ? LANG_DICT[lang][key] : LANG_DICT.en[key];
+  }
+  const isFailText = text => text === getText('translateFailed');
+
+  function applyTranslations() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const text = getText(el.getAttribute('data-i18n'));
+      if (text !== undefined) el.textContent = text;
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const text = getText(el.getAttribute('data-i18n-placeholder'));
+      if (text !== undefined) el.setAttribute('placeholder', text);
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+      const text = getText(el.getAttribute('data-i18n-title'));
+      if (text !== undefined) el.setAttribute('title', text);
+    });
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+      const text = getText(el.getAttribute('data-i18n-aria'));
+      if (text !== undefined) el.setAttribute('aria-label', text);
+    });
+    document.documentElement.lang = isIdLang ? 'id' : 'en';
+  }
+  applyTranslations();
+
   const STORAGE_KEY = 'deevv-translator-v23';
-  const LANG_NAMES = {id:'Indonesia',en:'English',ja:'Jepang',es:'Spanyol',fr:'Prancis',de:'Jerman',ko:'Korea','zh-CN':'Mandarin'};
+  // Semua bahasa yang didukung layanan terjemahan (kode Google Translate)
+  const LANG_CODES = ['af','sq','am','ar','hy','az','eu','be','bn','bs','bg','ca','ceb','ny','zh-CN','zh-TW','co','hr','cs','da','nl','en','eo','et','tl','fi','fr','fy','gl','ka','de','el','gu','ht','ha','haw','iw','hi','hmn','hu','is','ig','id','ga','it','ja','jv','kn','kk','km','rw','ko','ku','ky','lo','la','lv','lt','lb','mk','mg','ms','ml','mt','mi','mr','mn','my','ne','no','or','ps','fa','pl','pt','pa','ro','ru','sm','gd','sr','st','sn','sd','si','sk','sl','so','es','su','sw','sv','tg','ta','tt','te','th','tr','tk','uk','ur','ug','uz','vi','cy','xh','yi','yo','zu'];
+  const UI_LOCALE = isIdLang ? 'id' : 'en';
+  const NAMES_EN = {af:'Afrikaans',sq:'Albanian',am:'Amharic',ar:'Arabic',hy:'Armenian',az:'Azerbaijani',eu:'Basque',be:'Belarusian',bn:'Bengali',bs:'Bosnian',bg:'Bulgarian',ca:'Catalan',ceb:'Cebuano',ny:'Chichewa','zh-CN':'Chinese (Simplified)','zh-TW':'Chinese (Traditional)',co:'Corsican',hr:'Croatian',cs:'Czech',da:'Danish',nl:'Dutch',en:'English',eo:'Esperanto',et:'Estonian',tl:'Filipino',fi:'Finnish',fr:'French',fy:'Frisian',gl:'Galician',ka:'Georgian',de:'German',el:'Greek',gu:'Gujarati',ht:'Haitian Creole',ha:'Hausa',haw:'Hawaiian',iw:'Hebrew',hi:'Hindi',hmn:'Hmong',hu:'Hungarian',is:'Icelandic',ig:'Igbo',id:'Indonesian',ga:'Irish',it:'Italian',ja:'Japanese',jv:'Javanese',kn:'Kannada',kk:'Kazakh',km:'Khmer',rw:'Kinyarwanda',ko:'Korean',ku:'Kurdish (Kurmanji)',ky:'Kyrgyz',lo:'Lao',la:'Latin',lv:'Latvian',lt:'Lithuanian',lb:'Luxembourgish',mk:'Macedonian',mg:'Malagasy',ms:'Malay',ml:'Malayalam',mt:'Maltese',mi:'Maori',mr:'Marathi',mn:'Mongolian',my:'Myanmar (Burmese)',ne:'Nepali',no:'Norwegian',or:'Odia',ps:'Pashto',fa:'Persian',pl:'Polish',pt:'Portuguese',pa:'Punjabi',ro:'Romanian',ru:'Russian',sm:'Samoan',gd:'Scots Gaelic',sr:'Serbian',st:'Sesotho',sn:'Shona',sd:'Sindhi',si:'Sinhala',sk:'Slovak',sl:'Slovenian',so:'Somali',es:'Spanish',su:'Sundanese',sw:'Swahili',sv:'Swedish',tg:'Tajik',ta:'Tamil',tt:'Tatar',te:'Telugu',th:'Thai',tr:'Turkish',tk:'Turkmen',uk:'Ukrainian',ur:'Urdu',ug:'Uyghur',uz:'Uzbek',vi:'Vietnamese',cy:'Welsh',xh:'Xhosa',yi:'Yiddish',yo:'Yoruba',zu:'Zulu'};
+  const NAMES_ID = {af:'Afrikaans',sq:'Albania',am:'Amharik',ar:'Arab',hy:'Armenia',az:'Azerbaijan',eu:'Basque',be:'Belarusia',bn:'Bengali',bs:'Bosnia',bg:'Bulgaria',ca:'Katalan',ceb:'Cebuano',ny:'Nyanja (Chichewa)','zh-CN':'Mandarin (Sederhana)','zh-TW':'Mandarin (Tradisional)',co:'Korsika',hr:'Kroasia',cs:'Ceko',da:'Denmark',nl:'Belanda',en:'Inggris',eo:'Esperanto',et:'Estonia',tl:'Filipino',fi:'Finlandia',fr:'Prancis',fy:'Frisia',gl:'Galisia',ka:'Georgia',de:'Jerman',el:'Yunani',gu:'Gujarati',ht:'Kreol Haiti',ha:'Hausa',haw:'Hawaii',iw:'Ibrani',hi:'Hindi',hmn:'Hmong',hu:'Hungaria',is:'Islandia',ig:'Igbo',id:'Indonesia',ga:'Irlandia',it:'Italia',ja:'Jepang',jv:'Jawa',kn:'Kannada',kk:'Kazakh',km:'Khmer',rw:'Kinyarwanda',ko:'Korea',ku:'Kurdi (Kurmanji)',ky:'Kirgiz',lo:'Laos',la:'Latin',lv:'Latvia',lt:'Lituania',lb:'Luksemburg',mk:'Makedonia',mg:'Malagasi',ms:'Melayu',ml:'Malayalam',mt:'Malta',mi:'Maori',mr:'Marathi',mn:'Mongolia',my:'Myanmar (Burma)',ne:'Nepal',no:'Norwegia',or:'Odia',ps:'Pashto',fa:'Persia',pl:'Polandia',pt:'Portugis',pa:'Punjabi',ro:'Rumania',ru:'Rusia',sm:'Samoa',gd:'Gaelik Skotlandia',sr:'Serbia',st:'Sesotho',sn:'Shona',sd:'Sindhi',si:'Sinhala',sk:'Slovakia',sl:'Slovenia',so:'Somalia',es:'Spanyol',su:'Sunda',sw:'Swahili',sv:'Swedia',tg:'Tajik',ta:'Tamil',tt:'Tatar',te:'Telugu',th:'Thailand',tr:'Turki',tk:'Turkmen',uk:'Ukraina',ur:'Urdu',ug:'Uighur',uz:'Uzbek',vi:'Vietnam',cy:'Wales',xh:'Xhosa',yi:'Yiddish',yo:'Yoruba',zu:'Zulu'};
+  const buildLangName = code => (isIdLang ? NAMES_ID : NAMES_EN)[code] || NAMES_EN[code] || code;
+  const LANG_NAMES = Object.fromEntries(LANG_CODES.map(code => [code, buildLangName(code)]));
+  // Kode suara (TTS) yang berbeda dari kode terjemahan
+  const ttsLang = code => ({'iw':'he','tl':'fil-PH','no':'nb-NO'}[code] || code);
   const EMPTY_TEXT = '';
   let typingTimer = null, toastTimer = null, requestId = 0;
   let state = {history:[], saved:[], theme:'light', sourceLang:null, targetLang:null};
@@ -382,7 +549,7 @@ main {
 
   function persist() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-    catch (_) { showToast('Penyimpanan penuh atau tidak tersedia.'); }
+    catch (_) { showToast(getText('toastStorageFull')); }
   }
   function showToast(message) {
     const toast = $('toast'); toast.textContent = message; toast.classList.add('show');
@@ -405,31 +572,55 @@ main {
     modalCallback = null;
   });
 
-  const languagesList = [
-    {value:'id', text:'Indonesia'},
-    {value:'en', text:'English'},
-    {value:'ja', text:'Jepang'},
-    {value:'es', text:'Spanyol'},
-    {value:'fr', text:'Prancis'},
-    {value:'de', text:'Jerman'},
-    {value:'ko', text:'Korea'},
-    {value:'zh-CN', text:'Mandarin'}
-  ];
+  // Urut A–Z mengikuti bahasa antarmuka
+  const collator = new Intl.Collator(UI_LOCALE, {sensitivity:'base'});
+  const languagesList = LANG_CODES.map(value => ({value, text: LANG_NAMES[value]})).sort((a, b) => collator.compare(a.text, b.text));
+  const isDesktop = () => window.matchMedia('(min-width:768px)').matches;
 
   function updateHeaderLangUI() {
     $('sourceLangBtn').textContent = (LANG_NAMES[state.sourceLang] || state.sourceLang).toUpperCase();
     $('targetLangBtn').textContent = (LANG_NAMES[state.targetLang] || state.targetLang).toUpperCase();
   }
 
-  function openLangModal(type) {
-    activeLangType = type;
-    $('langModalTitle').textContent = type === 'sourceLang' ? 'Pilih Bahasa Asli' : 'Pilih Bahasa Terjemahan';
-    const body = $('langModalBody');
-    body.innerHTML = languagesList.map(lang => 
-      `<button class="lang-option ${state[type] === lang.value ? 'selected' : ''}" type="button" data-val="${lang.value}">${lang.text}</button>`
-    ).join('');
-    $('langModalOverlay').classList.add('show');
+  function renderLangOptions(filter = '') {
+    const q = filter.trim().toLowerCase();
+    const list = q ? languagesList.filter(l => l.text.toLowerCase().includes(q) || l.value.toLowerCase() === q) : languagesList;
+    $('langModalBody').innerHTML = list.length
+      ? list.map(lang => `<button class="lang-option ${state[activeLangType] === lang.value ? 'selected' : ''}" type="button" data-val="${lang.value}">${escapeHTML(lang.text)}</button>`).join('')
+      : `<div class="lang-empty">${getText('noLangFound')}</div>`;
   }
+
+  function closeLangModal() { $('langModalOverlay').classList.remove('show'); }
+
+  function openLangModal(type, anchor) {
+    activeLangType = type;
+    $('langModalTitle').textContent = getText('chooseLang');
+    $('langSearch').value = '';
+    renderLangOptions();
+
+    const overlay = $('langModalOverlay'), modal = overlay.querySelector('.lang-modal');
+    const desk = isDesktop();
+    overlay.classList.toggle('desk', desk);
+    if (desk) {
+      // Desktop: panel di bawah bar bahasa, selebar kartu terjemahan (bukan popup di tengah)
+      const bar = document.querySelector('.lang-header-bar').getBoundingClientRect();
+      const card = document.querySelector('.translate-card').getBoundingClientRect();
+      modal.style.top = (bar.bottom + 6) + 'px';
+      modal.style.left = card.left + 'px';
+      modal.style.width = card.width + 'px';
+    } else {
+      modal.style.top = modal.style.left = modal.style.width = '';
+    }
+    overlay.classList.add('show');
+    const bodyEl = $('langModalBody'), selected = bodyEl.querySelector('.selected');
+    bodyEl.scrollTop = selected ? Math.max(0, selected.offsetTop - (bodyEl.clientHeight - selected.offsetHeight) / 2) : 0;
+    if (desk) $('langSearch').focus();
+  }
+
+  $('langSearch').addEventListener('input', () => renderLangOptions($('langSearch').value));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLangModal(); });
+  window.addEventListener('resize', closeLangModal);
+  window.addEventListener('scroll', () => { if ($('langModalOverlay').classList.contains('desk')) closeLangModal(); }, {passive:true});
 
   $('closeLangModal').addEventListener('click', () => $('langModalOverlay').classList.remove('show'));$('langModalOverlay').addEventListener('click', (e) => { if(e.target === $('langModalOverlay'))$('langModalOverlay').classList.remove('show'); });
 
@@ -450,7 +641,7 @@ main {
     return String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   }
   function formatTime(timestamp) {
-    try { return new Intl.DateTimeFormat('id-ID',{dateStyle:'medium',timeStyle:'short'}).format(new Date(timestamp)); }
+    try { return new Intl.DateTimeFormat(isIdLang ? 'id-ID' : 'en-US',{dateStyle:'medium',timeStyle:'short'}).format(new Date(timestamp)); }
     catch (_) { return ''; }
   }
   function iconStar() { return '<svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg>'; }
@@ -469,15 +660,15 @@ main {
         <div class="entry-meta"><span>${escapeHTML(LANG_NAMES[item.sl] || item.sl)} → ${escapeHTML(LANG_NAMES[item.tl] || item.tl)}</span><span>·</span><span>${escapeHTML(formatTime(item.time))}</span></div>
       </div>
       <div class="entry-actions">
-        <button class="star-btn ${saved?'saved':''}" type="button" data-action="star" aria-label="Simpan" title="Simpan">${iconStar()}</button>
-        ${showDelete?`<button class="star-btn delete-btn" type="button" data-action="delete" aria-label="Hapus" title="Hapus">${iconTrash()}</button>`:''}
+        <button class="star-btn ${saved?'saved':''}" type="button" data-action="star" aria-label="${getText('save')}" title="${getText('save')}">${iconStar()}</button>
+        ${showDelete?`<button class="star-btn delete-btn" type="button" data-action="delete" aria-label="${getText('delete')}" title="${getText('delete')}">${iconTrash()}</button>`:''}
       </div></article>`;
   }
   function renderLists() {
-    $('historyCount').textContent = `${state.history.length} terjemahan`;
-    $('historyList').innerHTML = state.history.length ? state.history.map(item=>entryMarkup(item,true)).join('') : renderEmpty('Histori Kosong','Belum ada riwayat terjemahan yang tercatat di perangkat ini.','<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5m4-1v5l3 2"/></svg>');
-    $('savedCount').textContent = `${state.saved.length} tersimpan`;
-    $('savedList').innerHTML = state.saved.length ? state.saved.map(item=>entryMarkup(item,true)).join('') : renderEmpty('Belum Ada Tersimpan','Tandai terjemahan dengan ikon bintang untuk menyimpannya di sini.','<svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg>');
+    $('historyCount').textContent = getText('countHistory').replace('{n}', state.history.length);
+    $('historyList').innerHTML = state.history.length ? state.history.map(item=>entryMarkup(item,true)).join('') : renderEmpty(getText('emptyHistoryTitle'),getText('emptyHistoryDesc'),'<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5m4-1v5l3 2"/></svg>');
+    $('savedCount').textContent = getText('countSaved').replace('{n}', state.saved.length);
+    $('savedList').innerHTML = state.saved.length ? state.saved.map(item=>entryMarkup(item,true)).join('') : renderEmpty(getText('emptySavedTitle'),getText('emptySavedDesc'),'<svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg>');
   }
 
   function switchTab(tab, updateHistory = true) {
@@ -538,19 +729,19 @@ main {
     updateLanguageLabels();
     if (!source) {
       $('outputText').textContent=EMPTY_TEXT; 
-      $('outputText').className='output-text placeholder';$('statusText').textContent='Siap menerjemahkan'; 
+      $('outputText').className='output-text placeholder';$('statusText').textContent=getText('statusReady'); 
       updateButtons(false, false, false); 
       return;
     }
     if (sl === tl) {
-      $('outputText').textContent='Pilih dua bahasa yang berbeda.'; 
-      $('outputText').className='output-text placeholder';$('statusText').textContent='Bahasa sama'; 
+      $('outputText').textContent=getText('sameLangOutput'); 
+      $('outputText').className='output-text placeholder';$('statusText').textContent=getText('statusSameLang'); 
       updateButtons(false, true, false); 
       return;
     }
     const current = ++requestId;
-    $('outputText').textContent='Menerjemahkan…'; 
-    $('outputText').className='output-text loading';$('statusText').textContent='Sedang memproses'; 
+    $('outputText').textContent=getText('translating'); 
+    $('outputText').className='output-text loading';$('statusText').textContent=getText('statusProcessing'); 
     updateButtons(false, true, true); // Tombol swap dinonaktifkan saat sedang menerjemahkan
     try {
       const url=`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(sl)}&tl=${encodeURIComponent(tl)}&dt=t&q=${encodeURIComponent(source)}`;
@@ -561,13 +752,13 @@ main {
       if(current!==requestId) return;
       if(!result) throw new Error('Hasil kosong');
       $('outputText').textContent=result; 
-      $('outputText').className='output-text';$('statusText').textContent='Terjemahan selesai'; 
+      $('outputText').className='output-text';$('statusText').textContent=getText('statusDone'); 
       updateButtons(true, true, false); // Tombol swap kembali diaktifkan
       addHistory(source,result,sl,tl);
     } catch (_) {
       if(current!==requestId) return;
-      $('outputText').textContent='Terjemahan gagal. Periksa koneksi internet lalu coba lagi.';
-      $('outputText').className='output-text placeholder error';$('statusText').textContent='Gagal menerjemahkan'; 
+      $('outputText').textContent=getText('translateFailed');
+      $('outputText').className='output-text placeholder error';$('statusText').textContent=getText('statusFailed'); 
       updateButtons(false, true, false); // Tombol swap kembali diaktifkan
     }
   }
@@ -577,11 +768,11 @@ main {
     clearTimeout(typingTimer); ++requestId;
     if(!text.trim()) {
       $('outputText').textContent=EMPTY_TEXT; 
-      $('outputText').className='output-text placeholder';$('statusText').textContent='Siap menerjemahkan'; 
+      $('outputText').className='output-text placeholder';$('statusText').textContent=getText('statusReady'); 
       updateButtons(false, false, false); 
       return;
     }
-    $('outputText').textContent='Menunggu teks…';$('outputText').className='output-text loading';
+    $('outputText').textContent=getText('waiting');$('outputText').className='output-text loading';
     updateButtons(false, true, true); // Tombol swap dinonaktifkan saat menunggu debounce
     typingTimer=setTimeout(translateText,550);
   }
@@ -596,45 +787,45 @@ main {
     persist();
     updateLanguageLabels();
     const translated=$('outputText').textContent;
-    if($('inputText').value.trim() && translated && translated!==EMPTY_TEXT && !translated.startsWith('Terjemahan gagal'))$('inputText').value=translated;
+    if($('inputText').value.trim() && translated && translated!==EMPTY_TEXT && !isFailText(translated))$('inputText').value=translated;
     $('charCount').textContent=`${$('inputText').value.length} / 3000`;
     if($('inputText').value.trim()) translateText(); else {$('outputText').textContent=EMPTY_TEXT; updateButtons(false, false, false); }
   });
 
   $('clearBtn').addEventListener('click',()=>{
     clearTimeout(typingTimer);++requestId;$('inputText').value='';$('charCount').textContent='0 / 3000';
-    $('outputText').textContent=EMPTY_TEXT;$('outputText').className='output-text placeholder';$('statusText').textContent='Siap menerjemahkan';updateButtons(false, false, false);$('inputText').focus();
+    $('outputText').textContent=EMPTY_TEXT;$('outputText').className='output-text placeholder';$('statusText').textContent=getText('statusReady');updateButtons(false, false, false);$('inputText').focus();
   });
 
   $('copyBtn').addEventListener('click',async()=>{
     const value=$('outputText').textContent;
-    try { await navigator.clipboard.writeText(value);showToast('Terjemahan berhasil disalin.'); }
-    catch (_) { showToast('Gagal menyalin.'); }
+    try { await navigator.clipboard.writeText(value);showToast(getText('toastCopied')); }
+    catch (_) { showToast(getText('toastCopyFailed')); }
   });
 
   $('speakInputBtn').addEventListener('click',()=>{
     const value=$('inputText').value.trim();
-    if(!value || !('speechSynthesis' in window)){showToast('Fitur suara tidak didukung.');return;}
+    if(!value || !('speechSynthesis' in window)){showToast(getText('toastNoVoice'));return;}
     speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(value);
-    const language=state.sourceLang;utterance.lang=language==='zh-CN'?'zh-CN':language;
+    utterance.lang=ttsLang(state.sourceLang);
     speechSynthesis.speak(utterance);
   });
 
   $('speakBtn').addEventListener('click',()=>{
     const value=$('outputText').textContent;
-    if(!('speechSynthesis' in window)){showToast('Fitur suara tidak didukung.');return;}
+    if(!('speechSynthesis' in window)){showToast(getText('toastNoVoice'));return;}
     speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(value);
-    const language=state.targetLang;utterance.lang=language==='zh-CN'?'zh-CN':language;
+    utterance.lang=ttsLang(state.targetLang);
     speechSynthesis.speak(utterance);
   });
 
   $('saveBtn').addEventListener('click',()=>{
     const source=$('inputText').value.trim(),target=$('outputText').textContent;
-    if(!source||!target||target===EMPTY_TEXT||target.startsWith('Terjemahan gagal'))return;
+    if(!source||!target||target===EMPTY_TEXT||isFailText(target))return;
     let item=state.history.find(x=>x.source===source&&x.target===target&&x.sl===state.sourceLang&&x.tl===state.targetLang);
     if(!item)item=addHistory(source,target,state.sourceLang,state.targetLang);
-    if(isSaved(item.id)){state.saved=state.saved.filter(x=>x.id!==item.id);showToast('Dihapus dari Tersimpan.');}
-    else {state.saved=[item,...state.saved.filter(x=>x.id!==item.id)].slice(0,200);showToast('Disimpan ke Tersimpan.');}
+    if(isSaved(item.id)){state.saved=state.saved.filter(x=>x.id!==item.id);showToast(getText('toastRemovedSaved'));}
+    else {state.saved=[item,...state.saved.filter(x=>x.id!==item.id)].slice(0,200);showToast(getText('toastAddedSaved'));}
     persist();renderLists();
   });
   function restoreEntry(item) {
@@ -644,7 +835,7 @@ main {
     updateHeaderLangUI();
     persist();
     $('charCount').textContent=`${item.source.length} / 3000`;updateLanguageLabels();
-    $('outputText').textContent=item.target;$('outputText').className='output-text';$('statusText').textContent='Dibuka dari koleksi';updateButtons(true, true, false);switchTab('translate');
+    $('outputText').textContent=item.target;$('outputText').className='output-text';$('statusText').textContent=getText('statusOpened');updateButtons(true, true, false);switchTab('translate');
   }
   document.addEventListener('click',event=>{
     const entry=event.target.closest('[data-entry]');if(!entry)return;
@@ -652,20 +843,20 @@ main {
     const item=state.history.find(x=>x.id===id)||state.saved.find(x=>x.id===id);
     const action=event.target.closest('[data-action]')?.dataset.action;
     if(action==='star' && item){
-      if(isSaved(id)){state.saved=state.saved.filter(x=>x.id!==id);showToast('Dihapus dari Tersimpan.');}
-      else {state.saved=[item,...state.saved].slice(0,200);showToast('Disimpan ke Tersimpan.');}
+      if(isSaved(id)){state.saved=state.saved.filter(x=>x.id!==id);showToast(getText('toastRemovedSaved'));}
+      else {state.saved=[item,...state.saved].slice(0,200);showToast(getText('toastAddedSaved'));}
       persist();renderLists();return;
     }
     if(action==='delete'){
-      showConfirm('Hapus Item', 'Hapus terjemahan ini dari daftar?', () => {
+      showConfirm(getText('confirmDeleteTitle'), getText('confirmDeleteDesc'), () => {
         state.history=state.history.filter(x=>x.id!==id);state.saved=state.saved.filter(x=>x.id!==id);
-        persist();renderLists();showToast('Item dihapus.');
+        persist();renderLists();showToast(getText('toastItemDeleted'));
       });
       return;
     }
     if(!action && event.target.closest('.entry-main') && item)restoreEntry(item);
   });
-  $('clearHistoryBtn').addEventListener('click',()=>{ if(!state.history.length){showToast('Histori sudah kosong.');return;} showConfirm('Hapus Semua Histori', 'Tindakan ini akan menghapus seluruh catatan riwayat terjemahan Anda.', () => { const savedIds=new Set(state.saved.map(x=>x.id)); state.history=state.history.filter(x=>savedIds.has(x.id)); persist();renderLists();showToast('Histori dibersihkan.'); }); });$('themeToggle').addEventListener('click',()=>{
+  $('clearHistoryBtn').addEventListener('click',()=>{ if(!state.history.length){showToast(getText('toastHistoryEmpty'));return;} showConfirm(getText('confirmClearTitle'), getText('confirmClearDesc'), () => { const savedIds=new Set(state.saved.map(x=>x.id)); state.history=state.history.filter(x=>savedIds.has(x.id)); persist();renderLists();showToast(getText('toastHistoryCleared')); }); });$('themeToggle').addEventListener('click',()=>{
     state.theme=state.theme==='dark'?'light':'dark';
     document.documentElement.classList.toggle('dark',state.theme==='dark');
     $('themeIcon').innerHTML=state.theme==='dark'
