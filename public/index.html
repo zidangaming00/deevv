@@ -54,7 +54,7 @@
       align-items: center;
       min-height: 100vh;
       min-height: 100dvh;
-      padding: 24px clamp(16px, 5vw, 144px) 0;
+      padding: 12px clamp(16px, 5vw, 144px) 0;
       position: relative;
     }
 
@@ -63,13 +63,15 @@
     /* Header & Menu Button */
     header {
       width: 100%;
-      max-width: 320px;
+      max-width: 380px;
       display: flex;
-      justify-content: flex-end;
+      justify-content: flex-start;
       align-items: center;
+      gap: 12px;
       padding: 8px 0;
       position: relative;
     }
+
     
     .icon-btn {
       background: none;
@@ -128,7 +130,7 @@
     .popup-menu {
       position: absolute;
       top: 54px;
-      right: 0;
+      left: 0;
       width: 190px;
       background: var(--surface);
       border-radius: 22px;
@@ -138,7 +140,7 @@
       flex-direction: column;
       padding: 6px;
       z-index: 2000;
-      transform-origin: calc(100% - 19px) -8px;
+      transform-origin: 19px -8px;
     }
     .popup-menu.active {
       display: flex;
@@ -153,7 +155,7 @@
       content: "";
       position: absolute;
       top: -6px;
-      right: 15px;
+      left: 15px;
       width: 11px;
       height: 11px;
       background: var(--surface);
@@ -178,7 +180,7 @@
     .popup-menu.active .popup-list li:nth-child(3) { animation-delay: 0.12s; }
     .popup-menu.active .popup-list li:nth-child(4) { animation-delay: 0.16s; }
     @keyframes itemIn {
-      from { opacity: 0; transform: translateX(10px) scale(0.96); }
+      from { opacity: 0; transform: translateX(-10px) scale(0.96); }
       to   { opacity: 1; transform: translateX(0) scale(1); }
     }
 
@@ -230,17 +232,17 @@
     /* Main Container */
     .container {
       width: 100%;
-      max-width: 320px;
+      max-width: 380px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 30px;
+      margin-top: 56px;
       flex: 1 0 auto;
     }
 
     .img-logo {
       height: 64px;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
       pointer-events: none;
       user-select: none;
     }
@@ -249,7 +251,7 @@
     .search-wrapper {
       position: relative;
       width: 100%;
-      margin-bottom: 16px;
+      margin-bottom: 24px;
     }
 
     .search-box {
@@ -259,7 +261,7 @@
       box-shadow: var(--shadow-soft);
       display: flex;
       align-items: center;
-      padding: 6px 16px;
+      padding: 6px 7px 6px 16px;
       transition: box-shadow 0.2s, border-radius 0.2s;
       border: 1px solid transparent;
     }
@@ -278,8 +280,9 @@
       flex: 1;
       border: none;
       outline: none;
-      font-size: 15px;
+      font-size: 16px;
       padding: 8px 12px;
+      min-width: 0;
       color: var(--text-main);
       background: transparent;
     }
@@ -300,7 +303,7 @@
       padding: 14px 16px;
       box-shadow: var(--shadow-soft);
       border: 1px solid var(--border-color);
-      margin-bottom: 32px;
+      margin-bottom: 0;
     }
     .info-col { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
     .info-divider { background: var(--border-color); }
@@ -332,10 +335,10 @@
     /* Situs favorit */
     .favs { 
       width: 100%; 
-      margin-bottom: 24px; 
+      margin-bottom: 28px; 
     }
     .favs .trending-title { 
-      margin-bottom: 8px; 
+      margin-bottom: 12px; 
     }
     .section-btn {
       margin-left: auto;
@@ -343,7 +346,7 @@
       border: none;
       cursor: pointer;
       font: inherit;
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 500;
       color: var(--primary);
       padding: 4px 10px;
@@ -357,7 +360,7 @@
       width: 100%;
       justify-content: center;
       align-content: flex-start;
-      gap: 8px;
+      gap: 12px;
       min-height: 86px;
       box-sizing: border-box;
     }
@@ -395,7 +398,7 @@
       text-decoration: none;
       color: var(--text-main);
       font: inherit;
-      font-size: 12px;
+      font-size: 13px;
       transition: background 0.15s, opacity 220ms cubic-bezier(.34, 1.56, .64, 1), transform 260ms cubic-bezier(.34, 1.56, .64, 1);
     }
     .fav:hover { background: rgba(0, 0, 0, 0.04); }
@@ -420,11 +423,13 @@
     .fav-ico img { object-fit: contain; image-rendering: auto; }
     .fav-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .fav-add .fav-ico {
-      background: var(--surface);
+      background: rgba(26, 115, 232, 0.06);
       color: var(--primary);
-      border: 1px dashed rgba(26, 115, 232, 0.45);
+      border: 1.5px dashed var(--primary);
+      border-radius: 16px;
       box-shadow: none;
     }
+    body.dark .fav-add .fav-ico { background: rgba(138, 180, 248, 0.1); }
     .fav-add .fav-ico svg { width: 22px; height: 22px; fill: currentColor; }
     
     .fav-remove {
@@ -579,7 +584,7 @@
 
     /* Judul section (dipakai Situs Favorit) */
     .trending-title {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       color: var(--text-muted);
       margin-bottom: 12px;
@@ -634,6 +639,15 @@
       width: 40px;
       height: 40px;
     }
+    .voice-overlay.error .voice-mic-ripple {
+      background: #9aa0a6;
+      animation: none;
+    }
+    .voice-overlay.error .voice-status-text {
+      font-size: 17px;
+      line-height: 1.5;
+      max-width: 320px;
+    }
     .voice-close-btn {
       position: absolute;
       top: 20px;
@@ -678,8 +692,8 @@
     footer {
       width: 100%;
       max-width: 960px;
-      margin-top: 56px;
-      padding: 24px 0 24px;
+      margin-top: 32px;
+      padding: 32px 0 calc(24px + env(safe-area-inset-bottom, 0px));
       border-top: 1px solid var(--line);
       display: flex;
       flex-direction: column;
@@ -801,7 +815,7 @@
     <!-- Situs favorit -->
     <section class="favs" id="favs">
       <div class="trending-title">
-        <svg class="trending-icon" viewBox="0 0 24 24"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+        <svg class="trending-icon" viewBox="0 0 24 24"><path d="M22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"/></svg>
         <span data-i18n="favTitle">Situs Favorit</span>
         <button type="button" class="section-btn" id="favs_edit" data-i18n="favEdit">Ubah</button>
       </div>
@@ -913,6 +927,10 @@
             dialogSave: "Save",
             voiceListening: "Listening...",
             errorInvalidUrl: "Invalid site URL. Example: example.com",
+            errorUrlTooLong: "The URL is too long (max 200 characters).",
+            voiceNoSpeech: "Didn't hear anything, try again",
+            voiceDenied: "Microphone permission is off. Allow microphone access for this site in your browser settings, then try again.",
+            voiceBlocked: "The microphone can't be accessed. Make sure the site uses HTTPS and microphone access is allowed.",
             removeAria: "Remove ",
             darkThemeOn: "Dark theme: On",
             darkThemeOff: "Dark theme: Off"
@@ -943,6 +961,10 @@
             dialogSave: "Simpan",
             voiceListening: "Katakan sekarang...",
             errorInvalidUrl: "Alamat situs belum valid. Contoh: example.com",
+            errorUrlTooLong: "Alamat terlalu panjang (maks. 200 karakter).",
+            voiceNoSpeech: "Tidak terdengar, coba lagi",
+            voiceDenied: "Izin mikrofon belum diberikan. Aktifkan izin mikrofon untuk situs ini di pengaturan browser, lalu coba lagi.",
+            voiceBlocked: "Mikrofon tidak bisa diakses. Pastikan situs memakai HTTPS dan izin mikrofon aktif.",
             removeAria: "Hapus ",
             darkThemeOn: "Tema gelap: Aktif",
             darkThemeOff: "Tema gelap: Nonaktif"
@@ -1252,7 +1274,13 @@
       }
       const host = new URL(url).hostname.replace(/^www\./, '');
       const name = favNameInput.value.trim() || (host.split('.')[0].charAt(0).toUpperCase() + host.split('.')[0].slice(1));
-      favs.push({ name: name.slice(0, 20), url: new URL(url).origin + '/' });
+      const fullUrl = new URL(url).href;
+      if (fullUrl.length > 200) {
+        e.preventDefault();
+        favError.textContent = getText('errorUrlTooLong');
+        return;
+      }
+      favs.push({ name: name.slice(0, 20), url: fullUrl });
       saveFavs();
       renderFavs();
     });
@@ -1417,44 +1445,100 @@
       recognition.lang = isIdLang ? 'id-ID' : 'en-US';
       recognition.interimResults = true;
 
+      const VOICE_TIMEOUT_MS = 7000;
+      let voiceTimer = null;
+      let gotSpeech = false;
+      let voiceActive = false;
+
+      function clearVoiceTimer() {
+        if (voiceTimer) { clearTimeout(voiceTimer); voiceTimer = null; }
+      }
+
+      function endVoice(message) {
+        clearVoiceTimer();
+        voiceActive = false;
+        if (message) voiceStatus.textContent = message;
+        setTimeout(() => voiceOverlay.classList.remove('active', 'error'), message ? 1500 : 0);
+      }
+
+      function showVoiceError(message) {
+        clearVoiceTimer();
+        voiceActive = false;
+        voiceOverlay.classList.add('active', 'error');
+        voiceStatus.textContent = message;
+      }
+
+      function voiceNotHeard() {
+        if (!voiceActive || gotSpeech) return;
+        try { recognition.abort(); } catch (err) {}
+        endVoice(getText('voiceNoSpeech'));
+      }
+
       voiceBtn.addEventListener('click', () => {
         try {
+          gotSpeech = false;
+          voiceActive = true;
+          voiceOverlay.classList.remove('error');
           recognition.start();
           voiceOverlay.classList.add('active');
           voiceStatus.textContent = getText('voiceListening');
+          clearVoiceTimer();
+          voiceTimer = setTimeout(voiceNotHeard, VOICE_TIMEOUT_MS);
         } catch (err) {
-          alert("Akses mikrofon diblokir. Pastikan web dijalankan dengan HTTPS!");
+          showVoiceError(getText('voiceBlocked'));
         }
       });
 
       recognition.onresult = (event) => {
         const transcript = Array.from(event.results)
           .map(result => result[0].transcript)
-          .join('');
-        
+          .join('')
+          .trim();
+
+        if (!transcript) return;
+        gotSpeech = true;
+        clearVoiceTimer();
+
         voiceStatus.textContent = transcript;
         input.value = transcript;
 
         if (event.results[0].isFinal) {
+          voiceActive = false;
           setTimeout(() => {
-            voiceOverlay.classList.remove('active');
+            voiceOverlay.classList.remove('active', 'error');
             searchForm.submit();
           }, 600);
         }
       };
 
-      recognition.onerror = (event) => {
-        if (event.error === 'not-allowed') {
-          alert("Akses mikrofon tidak diizinkan di browser.");
-        } else {
-          voiceStatus.textContent = isIdLang ? "Tidak terdengar. Coba lagi." : "Didn't catch that. Try again.";
+      recognition.onend = () => {
+        // Berhenti sendiri tanpa hasil (diam / tidak terdengar)
+        if (voiceActive && !gotSpeech) { voiceNotHeard(); return; }
+        // Ada hasil sementara tapi tidak ada hasil final: pakai teks terakhir
+        if (voiceActive && gotSpeech && input.value.trim()) {
+          voiceActive = false;
+          setTimeout(() => {
+            voiceOverlay.classList.remove('active', 'error');
+            searchForm.submit();
+          }, 400);
         }
-        setTimeout(() => voiceOverlay.classList.remove('active'), 1500);
+      };
+
+      recognition.onerror = (event) => {
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          showVoiceError(getText('voiceDenied'));
+        } else if (event.error === 'aborted') {
+          // dihentikan manual
+        } else {
+          if (!gotSpeech) endVoice(getText('voiceNoSpeech'));
+        }
       };
 
       closeVoice.addEventListener('click', () => {
-        recognition.stop();
-        voiceOverlay.classList.remove('active');
+        voiceActive = false;
+        clearVoiceTimer();
+        try { recognition.abort(); } catch (err) {}
+        voiceOverlay.classList.remove('active', 'error');
       });
     } else {
       voiceBtn.style.display = 'none';
