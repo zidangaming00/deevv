@@ -10,12 +10,6 @@ export async function onRequestGet(context) {
   const { request, env } = context;
   const url = new URL(request.url);
 
-  // Ambil data lokasi otomatis dari IP via Cloudflare request.cf
-  const clientCity = request.cf?.city || "Tangerang Selatan";
-  const clientCountry = request.cf?.country || "ID";
-  const clientLat = request.cf?.latitude || "-6.2886";
-  const clientLon = request.cf?.longitude || "106.7179";
-
   const q = (url.searchParams.get("q") || "").trim();
   const p = url.searchParams.get("p");
   const hl = url.searchParams.get("hl");
@@ -136,64 +130,61 @@ export async function onRequestGet(context) {
     ? "min-width:var(--page-max-width);max-width:var(--page-max-width)"
     : "";
 
-  const bodyHtml = `
-<div class="app" id="main-bx">
-  <div class="page-header">
-    <button type="button" class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false" aria-controls="menuOverlay">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
-    </button>
-    <div class="page-header__inner">
-      <div class="logo-slot">
-        <a title="${isIdLang ? "Kembali" : "Back"}" href="/"><img alt="Logo" src="/images/logo.png"></a>
-      </div>
-      <div class="header">
-        <div class="search-box">
-          <div class="search-field">
-            <input type="search" id="sear_21829_input" value="${escapeHTML(q)}" name="q" class="search-input" autocomplete="off" placeholder="${getText(isIdLang, "placeholder")}">
-            <div role="button" class="search-toggle inpbtun" id="xclarGh" title="${isIdLang ? "Cari" : "Search"}"></div>
-            <div role="button" class="cleartext inpbtun" style="display:${q ? "block" : "none"}" id="Chasprn" title="${isIdLang ? "Hapus" : "Clear"}"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="search-menu">
-      ${tabs}
-    </div>
-  </div>
-  <div class="results-section">
-    <div class="result-wrapper">
-      <div class="main-result" style="${mainResultStyle}">${mainResultInner}</div>
-    </div>
-  </div>
-</div>`;
+  const bodyHtml = `  
+      <div class="app" id="main-bx">  
+        <div class="page-header">  
+          <button type="button" class="burger-btn" id="menu_btn" title="Menu" aria-label="Menu" aria-expanded="false" aria-controls="popup_menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <div class="page-header__inner">  
+            
+            <div class="logo-slot"><a title="Kembali" href="/"><img alt="Logo" src="/images/logo.png"></a></div>
+  
+            <div class="header">  
+              <div class="search-box">  
+                <div class="search-field">  
+                  <input type="search" id="sear_21829_input" value="${escapeHTML(q)}" name="q" class="search-input" autocomplete="off" placeholder="${getText(isIdLang, "placeholder")}">  
+                  <div role="button" class="search-toggle inpbtun" id="xclarGh" title="Cari"></div>  
+                  <div role="button" class="cleartext inpbtun" style="display:none" id="Chasprn" title="Hapus"></div>  
+                </div>  
+              </div>  
+            </div>  
+          </div>  
+          <div class="search-menu">  
+            ${tabs}
+          </div>  
+        </div>  
+        <div class="results-section">  
+          <div class="result-wrapper">
+            <div class="main-result" style="${mainResultStyle}">${mainResultInner}</div>
+          </div>  
+        </div>  
+      </div>`;
 
   // ssr data
-  const cleanItems = (ssrData?.items || []).map(item =>
-    Object.fromEntries(
-      Object.entries(item).filter(([_, value]) => typeof value !== 'object' || value === null)
-    )
-  );
+const cleanItems = (ssrData?.items || []).map(item =>
+  Object.fromEntries(
+    Object.entries(item).filter(([_, value]) => typeof value !== 'object' || value === null)
+  )
+);
 
-  // 2. Format struktur akhir sesuai kebutuhan (disertakan properti location dari Cloudflare CF)
-  const transformedData = {
-    type: ssrData?.engine || "",
-    query: ssrData?.query || "",
-    searchInfo: {
-      search_time: ssrData?.searchInformation?.formattedSearchTime || "",
-      total_results: ssrData?.searchInformation?.formattedTotalResults || ""
-    },
-    location: {
-      city: clientCity,
-      country: clientCountry,
-      lat: clientLat,
-      lon: clientLon
-    },
-    results_data: cleanItems,
-    queries: ssrData?.queries || null
-  };
+// 2. Format struktur akhir sesuai kebutuhan
+const transformedData = {
+  type: ssrData?.engine || "",
+  query: ssrData?.query || "",
+  searchInfo: {
+    search_time: ssrData?.searchInformation?.formattedSearchTime || "",
+    total_results: ssrData?.searchInformation?.formattedTotalResults || ""
+  },
+  results_data: cleanItems,
+  queries: ssrData?.queries || null
+};
 
-  // 3. Stringify untuk SSR
-  const initialDataJson = transformedData ? JSON.stringify(transformedData).replace(/</g, "\\u003c") : "null";
+// 3. Stringify untuk SSR
+const initialDataJson = transformedData ? JSON.stringify(transformedData).replace(/</g, "\\u003c") : "null";
+
 
   const html = buildPageShell({
     q,
@@ -204,8 +195,10 @@ export async function onRequestGet(context) {
   });
 
   return new Response(html, {
-    headers: { 
-      "Content-Type": "text/html; charset=UTF-8" 
-    },
-  });
+  headers: { 
+    "Content-Type": "text/html; charset=UTF-8" 
+  },
+});
+
+  
 }
