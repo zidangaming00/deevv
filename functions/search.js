@@ -179,7 +179,11 @@ const transformedData = {
     total_results: ssrData?.searchInformation?.formattedTotalResults || ""
   },
   results_data: cleanItems,
-  queries: ssrData?.queries || null
+  queries: ssrData?.queries || null,
+  // Lokasi dari Cloudflare (dipakai widget cuaca di script.js: __SSR_DATA__.location)
+  location: request.cf && request.cf.city
+    ? { city: request.cf.city, country: request.cf.country || "" }
+    : null
 };
 
 // 3. Stringify untuk SSR
