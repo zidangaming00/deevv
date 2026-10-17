@@ -58,6 +58,10 @@ const LANG_DICT = {
         aiThinking: "Thinking", justNow: "Just now",
         menu: "Menu", close: "Close", menuHome: "Home", menuTheme: "Display theme", menuSettings: "Preferences", menuAbout: "About", menuPrivacy: "Privacy policy",
         themeSystem: "System", themeLight: "Light", themeDark: "Dark",
+        // --- sidebar (sama dengan halaman index) ---
+        sbCatSearch: "Search", sbCatApps: "Apps", sbCatLearn: "Learn more",
+        sbHome: "Homepage", sbTheme: "Display theme", sbSettings: "Preferences",
+        sbWeather: "Weather", sbTranslate: "Translate", sbAbout: "About", sbPrivacy: "Privacy",
         // --- tambahan: sebelumnya hardcode ---
         titleSuffix: "Search", back: "Back", search: "Search", clear: "Clear",
         statsLine: "About {count} results ({time} seconds)",
@@ -82,6 +86,10 @@ const LANG_DICT = {
         aiThinking: "Berpikir", justNow: "Baru saja",
         menu: "Menu", close: "Tutup", menuHome: "Beranda", menuTheme: "Tema tampilan", menuSettings: "Preferensi", menuAbout: "Tentang", menuPrivacy: "Kebijakan privasi",
         themeSystem: "Sistem", themeLight: "Terang", themeDark: "Gelap",
+        // --- sidebar (sama dengan halaman index) ---
+        sbCatSearch: "Pencarian", sbCatApps: "Aplikasi", sbCatLearn: "Informasi",
+        sbHome: "Beranda", sbTheme: "Tema tampilan", sbSettings: "Preferensi",
+        sbWeather: "Cuaca", sbTranslate: "Terjemahan", sbAbout: "Tentang", sbPrivacy: "Privasi",
         // --- tambahan: sebelumnya hardcode ---
         titleSuffix: "Penelusuran", back: "Kembali", search: "Cari", clear: "Hapus",
         statsLine: "Sekitar {count} hasil ({time} detik)",
@@ -1683,10 +1691,12 @@ const UI = {
     UI.setupMenu();
   },
 
-    // ---------- TOMBOL GARIS TIGA ----------
+    // ---------- TOMBOL BURGER (sama dengan halaman index) ----------
     menuBtnHtml: () => `
-          <button type="button" class="menu-btn" id="menuBtn" aria-label="${getText("menu")}" aria-expanded="false" aria-controls="menuOverlay">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
+          <button type="button" class="burger-btn" id="menu_btn" title="${getText("menu")}" aria-label="${getText("menu")}" aria-expanded="false" aria-controls="popup_menu">
+            <span></span>
+            <span></span>
+            <span></span>
           </button>`,
 
     // Dipanggil saat halaman sudah di-render server (SSR). TIDAK mengganti/menghapus elemen:
@@ -1697,12 +1707,12 @@ const UI = {
         const input = document.querySelector(".search-input");
         if (!header || !input) return false;
 
-        if (!document.getElementById("menuBtn")) header.insertAdjacentHTML("afterbegin", UI.menuBtnHtml());
-        if (!document.getElementById("menuOverlay")) document.body.insertAdjacentHTML("beforeend", UI.menuHtml());
+        if (!document.getElementById("menu_btn")) header.insertAdjacentHTML("afterbegin", UI.menuBtnHtml());
+        if (!document.getElementById("popup_menu")) document.body.insertAdjacentHTML("beforeend", UI.menuHtml());
 
         // Samakan teks dengan bahasa aktif (kalau sudah sama, tidak ada perubahan visual)
-        const menuBtn = document.getElementById("menuBtn");
-        if (menuBtn) menuBtn.setAttribute("aria-label", getText("menu"));
+        const menuBtn = document.getElementById("menu_btn");
+        if (menuBtn) { menuBtn.setAttribute("aria-label", getText("menu")); menuBtn.title = getText("menu"); }
         input.placeholder = getText("placeholder");
         const setTitle = (sel, key) => { const el = document.querySelector(sel); if (el) el.title = getText(key); };
         setTitle(".logo-slot a", "back");
@@ -1718,88 +1728,112 @@ const UI = {
         return true;
     },
 
-    // ---------- MENU GARIS TIGA ----------
-    menuHtml: () => {
-        // Ikon outline konsisten (garis 1.75, ujung membulat)
-        const icons = {
-            home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v11a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9"/>',
-            theme: '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/>',
-            settings: '<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h10M18 18h2"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="16" cy="18" r="2"/>',
-            about: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/>',
-            privacy: '<path d="M12 3 4.5 6v5.5c0 4.5 3.2 8 7.5 9.5 4.3-1.5 7.5-5 7.5-9.5V6L12 3z"/><path d="m9 12 2 2 4-4"/>'
-        };
-        const ico = (k) => `<svg class="menu-ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[k]}</svg>`;
-        return `
-        <div class="menu-overlay" id="menuOverlay" role="dialog" aria-modal="true" aria-label="${getText("menu")}" aria-hidden="true">
-          <div class="menu-panel">
-            <div class="menu-top">
-              <button type="button" class="menu-close" id="menuClose" aria-label="${getText("close")}">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    // ---------- SIDEBAR MENU (sama persis dengan halaman index) ----------
+    menuHtml: () => `
+        <div class="sidebar-backdrop" id="sidebar_backdrop"></div>
+
+        <div class="popup-menu" id="popup_menu">
+          <!-- Search Group -->
+          <div class="popup-section-title">${getText("sbCatSearch")}</div>
+          <div class="popup-group">
+            <a href="/">
+              <span>${getText("sbHome")}</span>
+            </a>
+
+            <!-- Theme Dropdown Container -->
+            <div class="theme-dropdown-container" id="theme_dropdown_container">
+              <button type="button" id="theme_dropdown_toggle">
+                <span>${getText("sbTheme")}</span>
+                <span class="theme-status-text">
+                  <span id="theme_status_label">${getText("themeLight")}</span>
+                  <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+                </span>
               </button>
+              <div class="theme-options-list">
+                <div class="theme-options-inner">
+                  <button type="button" class="theme-option-btn" data-theme="light">${getText("themeLight")}</button>
+                  <button type="button" class="theme-option-btn" data-theme="dark">${getText("themeDark")}</button>
+                  <button type="button" class="theme-option-btn" data-theme="system">${getText("themeSystem")}</button>
+                </div>
+              </div>
             </div>
-            <nav class="menu-list">
-              <div class="menu-group">
-                <a class="menu-item" href="/">${ico("home")}<span>${getText("menuHome")}</span></a>
-              </div>
-              <div class="menu-group">
-                <button type="button" class="menu-item" id="menuThemeBtn">${ico("theme")}<span>${getText("menuTheme")}</span><em class="menu-value" id="menuThemeValue"></em></button>
-                <a class="menu-item" href="/settings">${ico("settings")}<span>${getText("menuSettings")}</span></a>
-              </div>
-              <div class="menu-group">
-                <a class="menu-item" href="/about">${ico("about")}<span>${getText("menuAbout")}</span></a>
-                <a class="menu-item" href="/privacy">${ico("privacy")}<span>${getText("menuPrivacy")}</span></a>
-              </div>
-            </nav>
+
+            <a href="/settings">
+              <span>${getText("sbSettings")}</span>
+            </a>
           </div>
-          <div class="theme-modal" id="themeModal" aria-hidden="true">
-            <div class="theme-card" role="radiogroup" aria-label="${getText("menuTheme")}">
-              <div class="theme-title">${getText("menuTheme")}</div>
-              <button type="button" class="theme-choice" role="radio" data-theme="system"><i></i>${getText("themeSystem")}</button>
-              <button type="button" class="theme-choice" role="radio" data-theme="light"><i></i>${getText("themeLight")}</button>
-              <button type="button" class="theme-choice" role="radio" data-theme="dark"><i></i>${getText("themeDark")}</button>
-            </div>
+
+          <div class="popup-divider"></div>
+
+          <!-- Apps Group -->
+          <div class="popup-section-title">${getText("sbCatApps")}</div>
+          <div class="popup-group">
+            <a href="/search?q=weather">
+              <span>${getText("sbWeather")}</span>
+            </a>
+            <a href="/translate">
+              <span>${getText("sbTranslate")}</span>
+            </a>
           </div>
-        </div>`;
-    },
+
+          <div class="popup-divider"></div>
+
+          <!-- Learn more Group -->
+          <div class="popup-section-title">${getText("sbCatLearn")}</div>
+          <div class="popup-group">
+            <a href="/about">
+              <span>${getText("sbAbout")}</span>
+            </a>
+            <a href="/privacy">
+              <span>${getText("sbPrivacy")}</span>
+            </a>
+          </div>
+
+          <!-- Sidebar Footer Copyright -->
+          <div class="sidebar-footer">
+            &copy; 2026 Deevv Search.
+          </div>
+        </div>`,
 
     setupMenu: () => {
-        const btn = document.getElementById("menuBtn");
-        const overlay = document.getElementById("menuOverlay");
-        const closeBtn = document.getElementById("menuClose");
-        const themeBtn = document.getElementById("menuThemeBtn");
-        const themeValue = document.getElementById("menuThemeValue");
-        const modal = document.getElementById("themeModal");
-        if (!btn || !overlay) return;
+        const menuBtn = document.getElementById("menu_btn");
+        const popupMenu = document.getElementById("popup_menu");
+        const sidebarBackdrop = document.getElementById("sidebar_backdrop");
+        const themeContainer = document.getElementById("theme_dropdown_container");
+        const themeToggleBtn = document.getElementById("theme_dropdown_toggle");
+        const themeLabel = document.getElementById("theme_status_label");
+        if (!menuBtn || !popupMenu) return;
 
-        const openMenu = () => {
-            overlay.classList.add("open");
-            overlay.setAttribute("aria-hidden", "false");
-            btn.setAttribute("aria-expanded", "true");
-            document.documentElement.style.overflow = "hidden";
-            closeBtn.focus({ preventScroll: true });
-        };
-        const closeModal = () => {
-            modal.classList.remove("open");
-            modal.setAttribute("aria-hidden", "true");
-        };
         const closeMenu = () => {
-            closeModal();
-            overlay.classList.remove("open");
-            overlay.setAttribute("aria-hidden", "true");
-            btn.setAttribute("aria-expanded", "false");
-            document.documentElement.style.overflow = "";
-            btn.focus({ preventScroll: true });
+            popupMenu.classList.remove("active");
+            menuBtn.setAttribute("aria-expanded", "false");
+            themeContainer?.classList.remove("open");
         };
 
-        btn.addEventListener("click", openMenu);
-        closeBtn.addEventListener("click", closeMenu);
-        overlay.addEventListener("click", (e) => { if (e.target === overlay) closeMenu(); }); // klik area gelap
-        document.addEventListener("keydown", (e) => {
-            if (e.key !== "Escape" || !overlay.classList.contains("open")) return;
-            if (modal.classList.contains("open")) closeModal(); else closeMenu();
+        menuBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const on = popupMenu.classList.toggle("active");
+            menuBtn.setAttribute("aria-expanded", on ? "true" : "false");
         });
 
-        // --- Tema: Sistem / Terang / Gelap (disimpan lewat updateSetting dari cookie.js) ---
+        sidebarBackdrop?.addEventListener("click", closeMenu);
+
+        // Klik di luar sidebar menutupnya (dipasang sekali; elemen dicari ulang tiap klik)
+        if (!UI._menuDocBound) {
+            UI._menuDocBound = true;
+            document.addEventListener("click", (e) => {
+                const pm = document.getElementById("popup_menu");
+                const mb = document.getElementById("menu_btn");
+                if (!pm || !mb) return;
+                if (!pm.contains(e.target) && !mb.contains(e.target)) {
+                    pm.classList.remove("active");
+                    mb.setAttribute("aria-expanded", "false");
+                    document.getElementById("theme_dropdown_container")?.classList.remove("open");
+                }
+            });
+        }
+
+        // --- Tema: Terang / Gelap / Sistem (disimpan lewat updateSetting dari cookie.js) ---
         const labels = { system: getText("themeSystem"), light: getText("themeLight"), dark: getText("themeDark") };
         const currentPref = () => {
             const v = getData().theme; // baca ulang dari cookie.js, sama seperti halaman settings
@@ -1813,29 +1847,29 @@ const UI = {
         };
         const paintTheme = () => {
             const pref = currentPref();
-            themeValue.textContent = labels[pref];
-            modal.querySelectorAll(".theme-choice").forEach(o => {
-                const on = o.dataset.theme === pref;
-                o.classList.toggle("active", on);
-                o.setAttribute("aria-checked", on ? "true" : "false");
+            if (themeLabel) themeLabel.textContent = labels[pref];
+            popupMenu.querySelectorAll(".theme-option-btn").forEach(btn => {
+                btn.classList.toggle("active", btn.getAttribute("data-theme") === pref);
             });
         };
         paintTheme();
 
-        themeBtn.addEventListener("click", () => {
-            modal.classList.add("open");
-            modal.setAttribute("aria-hidden", "false");
-        });
-        modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
-        modal.querySelectorAll(".theme-choice").forEach(o => {
-            o.addEventListener("click", () => {
-                const pref = o.dataset.theme;
-                updateSetting("theme", pref); // cookie.js, sama seperti halaman settings
-                applyTheme(pref);
-                paintTheme();
-                closeModal();
+        if (themeToggleBtn && themeContainer) {
+            themeToggleBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                themeContainer.classList.toggle("open");
             });
-        });
+            popupMenu.querySelectorAll(".theme-option-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const pref = btn.getAttribute("data-theme");
+                    updateSetting("theme", pref); // cookie.js, sama seperti halaman settings
+                    applyTheme(pref);
+                    paintTheme();
+                    themeContainer.classList.remove("open");
+                });
+            });
+        }
     },
 
     setupEventListeners: () => {
