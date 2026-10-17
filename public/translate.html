@@ -8,8 +8,8 @@
 <!-- Memuat Google Sans Flex resmi dari Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:light;--bg:#f8f9fa;--surface:#ffffff;--text:#1a1d20;--muted:#68717a;--line:#eaedf0;--accent:#1b6ef3;--accent-soft:#eef4ff;--hover:#f1f3f5;--shadow:0 4px 20px rgba(0,0,0,.03);--nav-bg:rgba(255,255,255,.95)}
-:root.dark{color-scheme:dark;--bg:#121418;--surface:#1b1e24;--text:#f1f3f7;--muted:#9aa0a6;--line:#2b2f38;--accent:#7baaf7;--accent-soft:rgba(138, 180, 248, 0.12);--hover:#252932;--shadow:0 4px 20px rgba(0,0,0,.2);--nav-bg:rgba(27,30,36,.95)}
+:root{color-scheme:light;--bg:#f8f9fa;--surface:#ffffff;--text:#1a1d20;--muted:#4f5862;--line:#eaedf0;--accent:#1b6ef3;--accent-soft:#eef4ff;--hover:#f1f3f5;--shadow:0 4px 20px rgba(0,0,0,.03);--nav-bg:rgba(255,255,255,.95)}
+:root.dark{color-scheme:dark;--bg:#121418;--surface:#1b1e24;--text:#f1f3f7;--muted:#b0b8c1;--line:#2b2f38;--accent:#7baaf7;--accent-soft:rgba(138, 180, 248, 0.12);--hover:#252932;--shadow:0 4px 20px rgba(0,0,0,.2);--nav-bg:rgba(27,30,36,.95)}
 *{box-sizing:border-box}
 
 html, body {
@@ -30,7 +30,6 @@ body{
 
 button,select,textarea{font:inherit}button{color:inherit}button:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-/* Kontainer utama diset lebar 980px agar mode desktop lebih optimal */
 .app{width:min(100%,980px);margin:0 auto;padding:0 16px;transition:max-width .2s ease;display:flex;flex-direction:column;flex:1}
 
 .topbar{display:flex;align-items:center;justify-content:space-between;height:38px;margin-bottom:20px;padding:0;flex-shrink:0}
@@ -39,7 +38,6 @@ button,select,textarea{font:inherit}button{color:inherit}button:focus-visible,te
 .brand-name{font-size:20px;font-weight:700;letter-spacing:-.5px}
 .brand-name span{color:var(--accent)}
 
-/* Styling tombol garis tiga (burger button) */
 .burger-btn {
   width: 38px;
   height: 38px;
@@ -107,10 +105,10 @@ main {
 .nav-item:hover{background:var(--hover);color:var(--text)}
 .nav-item.active{background:var(--accent-soft);color:var(--accent)}
 
-/* Yandex-style Language Bar Header (Ramping) */
+/* Yandex-style Language Bar Header */
 .translate-card{background:var(--surface);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}
 .lang-header-bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--surface)}
-.lang-btn-text{background:transparent;border:0;font-size:14px;font-weight:750;color:var(--muted);padding:6px;cursor:pointer;text-align:center;letter-spacing:.03em;border-radius:8px;transition:background .15s, color .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lang-btn-text{background:transparent;border:0;font-size:14px;font-weight:750;color:var(--text);padding:6px;cursor:pointer;text-align:center;letter-spacing:.03em;border-radius:8px;transition:background .15s, color .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lang-btn-text:hover{background:var(--hover);color:var(--text)}
 
 .swap-btn{width:32px;height:32px;border:0;border-radius:50%;background:var(--hover);color:var(--text);display:grid;place-items:center;cursor:pointer;margin:0 auto;transition:transform .2s,background .15s,opacity .15s}
@@ -124,25 +122,70 @@ main {
 .lang-modal-overlay.show{opacity:1;pointer-events:auto}
 .lang-modal{background:var(--surface);border-radius:20px;width:min(86vw, 280px);max-height:min(60vh, 440px);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 16px 40px rgba(0,0,0,0.15);transform:translateY(15px);transition:transform .2s}
 .lang-modal-overlay.show .lang-modal{transform:translateY(0)}
-.lang-modal-header{padding:12px 10px 6px 16px;font-size:15px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.lang-modal-header{padding:12px 10px 6px 16px;font-size:16px;font-weight:700;display:flex;justify-content:space-between;align-items:center;color:var(--text)}
 .lang-modal-body{position:relative;padding:10px 8px 16px;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 10px,#000 calc(100% - 14px),transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 10px,#000 calc(100% - 14px),transparent 100%);display:flex;flex-direction:column;gap:2px}
-.lang-option{width:100%;padding:9px 12px;border-radius:10px;font-size:14px;font-weight:500;color:var(--text);background:transparent;border:0;cursor:pointer;text-align:left;display:flex;align-items:center;transition:background .15s}
-.lang-search{padding:0 10px 4px}
-.lang-search input{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:10px;padding:8px 12px;font-size:14px;outline:none}
-.lang-search input:focus{border-color:var(--accent)}
-.lang-empty{padding:14px 12px;font-size:13px;color:var(--muted)}
-.lang-modal-overlay.desk{background:transparent;backdrop-filter:none;display:block}
-.lang-modal-overlay.desk .lang-modal{position:fixed;max-height:min(62vh,440px);border-radius:16px;border:1px solid var(--line);box-shadow:0 12px 32px rgba(0,0,0,.14)}
-.lang-modal-overlay.desk .lang-modal-body{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:2px 6px}
+
+.lang-option{width:100%;padding:6px 12px;border-radius:6px;font-size:14px;font-weight:500;color:var(--text);background:transparent;border:0;cursor:pointer;text-align:left;display:flex;align-items:center;transition:background .15s;break-inside:avoid;}
 .lang-option:hover{background:var(--hover)}
 .lang-option.selected{background:var(--accent-soft);color:var(--accent);font-weight:650}
 
+.lang-search{padding:0 10px 4px}
+.lang-search input{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:10px;padding:8px 12px;font-size:14px;outline:none}
+.lang-search input:focus{border-color:var(--accent)}
+.lang-empty{padding:14px 12px;font-size:14px;color:var(--muted)}
+.lang-section{padding:14px 14px 6px;font-size:14px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text)}
+.lang-section:first-child{padding-top:2px}
+
+.lang-group{
+  font-size:12px;
+  font-weight:600;
+  color:var(--muted);
+  padding:8px 12px 2px 2px;
+  break-inside:avoid;
+  display:block;
+}
+
+/* Yandex Style Mode Desktop: Mengalir Vertikal dari Atas ke Bawah per Kolom */
+.lang-modal-overlay.desk{background:transparent;backdrop-filter:none;display:block}
+.lang-modal-overlay.desk .lang-modal{position:fixed;max-height:min(62vh,440px);border-radius:16px;border:1px solid var(--line);box-shadow:0 12px 32px rgba(0,0,0,.14)}
+.lang-modal-overlay.desk .lang-modal-body{
+  display:block;
+  column-count: 4;
+  column-gap: 8px;
+  padding: 12px 16px;
+}
+.lang-modal-overlay.desk .lang-option {
+  position: relative;
+  padding-left: 20px;
+}
+.lang-modal-overlay.desk .lang-option.has-letter::before {
+  content: attr(data-letter);
+  position: absolute;
+  left: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+@media (max-width:767px){
+  .lang-modal-overlay:not(.desk){background:var(--surface);backdrop-filter:none;display:block}
+  .lang-modal-overlay:not(.desk) .lang-modal{width:100%;max-width:none;height:100%;max-height:none;border-radius:0;box-shadow:none}
+  .lang-modal-overlay:not(.desk) .lang-modal-header{padding:max(14px, env(safe-area-inset-top)) 12px 10px 20px;font-size:16px}
+  .lang-modal-overlay:not(.desk) .lang-search{padding:0 16px 8px}
+  .lang-modal-overlay:not(.desk) .lang-search input{padding:10px 14px;font-size:14px}
+  .lang-modal-overlay:not(.desk) .lang-modal-body{flex:1;padding:12px 12px calc(20px + env(safe-area-inset-bottom, 0px))}
+  /* Label & Opsi HP: Maks Font-Weight 500 & Ukuran Lebih Kecil (13px) */
+  .lang-modal-overlay:not(.desk) .lang-section { font-size: 13px; font-weight: 500; color: var(--muted); padding: 10px 12px 4px; }
+  .lang-modal-overlay:not(.desk) .lang-option { padding: 10px 12px; font-size: 13px; font-weight: 450; }
+}
+
 .text-pane{padding:22px 24px 16px;display:flex;flex-direction:column}
-.pane-label{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--muted);margin-bottom:10px;font-weight:500}
+.pane-label{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--text);margin-bottom:10px;font-weight:600}
 
 .textarea{display:block;width:100%;height:115px;min-height:115px;max-height:115px;resize:none;border:0;outline:none;background:transparent;color:var(--text);font-size:18px;line-height:1.65;padding:0;box-shadow:none}
 .textarea:focus,.textarea:focus-visible,.textarea:active{outline:none!important;border:0!important;box-shadow:none!important}
-.textarea::placeholder{color:var(--muted);opacity:.7}
+.textarea::placeholder{color:var(--muted);opacity:.8}
 
 .pane-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}
 .count{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
@@ -153,7 +196,7 @@ main {
 
 .output-pane{border-top:1px solid var(--line);padding:20px 24px 18px;min-height:140px;display:flex;flex-direction:column;justify-content:space-between}
 .output-text{font-size:18px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;min-height:60px;color:var(--text)}
-.output-text.placeholder{font-size:14px;color:var(--muted);opacity:.5}
+.output-text.placeholder{font-size:14px;color:var(--muted);opacity:.8}
 .output-text.loading{color:var(--muted);font-size:14px}
 .output-footer{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
 .status{font-size:14px;color:var(--muted)}
@@ -170,7 +213,7 @@ main {
 .entry-main{min-width:0;flex:1;cursor:pointer}
 .entry-source{font-size:16px;font-weight:650;color:var(--text);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .entry-target{font-size:14px;color:var(--muted);margin-top:4px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.entry-meta{font-size:14px;color:var(--muted);margin-top:10px;display:flex;align-items:center;gap:8px;opacity:.8}
+.entry-meta{font-size:14px;color:var(--muted);margin-top:10px;display:flex;align-items:center;gap:8px}
 .entry-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
 
 .star-btn{width:36px;height:36px;border:0;border-radius:10px;background:var(--hover);color:var(--muted);display:grid;place-items:center;cursor:pointer;transition:background .15s,color .15s}
@@ -269,7 +312,6 @@ main {
       <div class="pane-label"><span data-i18n="originalText">Teks asli</span><span id="sourceLanguageLabel">English</span></div>
       <textarea class="textarea" id="inputText" maxlength="3000" placeholder="Ketik atau tempel teks di sini..." aria-label="Teks yang ingin diterjemahkan" data-i18n-placeholder="inputPlaceholder" data-i18n-aria="inputAria"></textarea>
       <div class="pane-footer"><span class="count" id="charCount">0 / 3000</span><div class="actions">
-        <!-- Tombol speaker untuk input teks asli -->
         <button class="action-btn" id="speakInputBtn" type="button" aria-label="Dengarkan teks asli" title="Dengarkan teks asli" data-i18n-aria="listenOriginal" data-i18n-title="listenOriginal" disabled><svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5ZM15.5 8.5a5 5 0 0 1 0 7m2.5-9.5a9 9 0 0 1 0 12"/></svg></button>
         <button class="action-btn" id="clearBtn" type="button" aria-label="Hapus teks" title="Hapus teks" data-i18n-aria="clearText" data-i18n-title="clearText"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg></button>
       </div></div>
@@ -328,7 +370,7 @@ main {
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<!-- Custom Confirm Modal Playful & Rounded -->
+<!-- Custom Confirm Modal -->
 <div class="modal-overlay" id="customModal">
   <div class="modal-box">
     <h3 class="modal-title" id="modalTitle">Konfirmasi</h3>
@@ -345,7 +387,6 @@ main {
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
-  // ---------- Bahasa antarmuka: dari pengaturan cookie (sama seperti index) ----------
   const settingsObj = typeof getData === 'function' ? getData() : {};
   const isIdLang = settingsObj.lang !== "en";
 
@@ -353,6 +394,8 @@ main {
     en: {
       chooseLang: "Choose language",
       searchLang: "Search language...",
+      recentlyUsed: "Recently used",
+      allLanguages: "All languages",
       noLangFound: "No language found",
       navAria: "Main navigation",
       themeToggle: "Toggle theme",
@@ -410,6 +453,8 @@ main {
     id: {
       chooseLang: "Pilih bahasa",
       searchLang: "Cari bahasa...",
+      recentlyUsed: "Baru digunakan",
+      allLanguages: "Semua bahasa",
       noLangFound: "Bahasa tidak ditemukan",
       navAria: "Navigasi Utama",
       themeToggle: "Ganti tema",
@@ -494,14 +539,12 @@ main {
   applyTranslations();
 
   const STORAGE_KEY = 'deevv-translator-v23';
-  // Semua bahasa yang didukung layanan terjemahan (kode Google Translate)
   const LANG_CODES = ['af','sq','am','ar','hy','az','eu','be','bn','bs','bg','ca','ceb','ny','zh-CN','zh-TW','co','hr','cs','da','nl','en','eo','et','tl','fi','fr','fy','gl','ka','de','el','gu','ht','ha','haw','iw','hi','hmn','hu','is','ig','id','ga','it','ja','jv','kn','kk','km','rw','ko','ku','ky','lo','la','lv','lt','lb','mk','mg','ms','ml','mt','mi','mr','mn','my','ne','no','or','ps','fa','pl','pt','pa','ro','ru','sm','gd','sr','st','sn','sd','si','sk','sl','so','es','su','sw','sv','tg','ta','tt','te','th','tr','tk','uk','ur','ug','uz','vi','cy','xh','yi','yo','zu'];
   const UI_LOCALE = isIdLang ? 'id' : 'en';
   const NAMES_EN = {af:'Afrikaans',sq:'Albanian',am:'Amharic',ar:'Arabic',hy:'Armenian',az:'Azerbaijani',eu:'Basque',be:'Belarusian',bn:'Bengali',bs:'Bosnian',bg:'Bulgarian',ca:'Catalan',ceb:'Cebuano',ny:'Chichewa','zh-CN':'Chinese (Simplified)','zh-TW':'Chinese (Traditional)',co:'Corsican',hr:'Croatian',cs:'Czech',da:'Danish',nl:'Dutch',en:'English',eo:'Esperanto',et:'Estonian',tl:'Filipino',fi:'Finnish',fr:'French',fy:'Frisian',gl:'Galician',ka:'Georgian',de:'German',el:'Greek',gu:'Gujarati',ht:'Haitian Creole',ha:'Hausa',haw:'Hawaiian',iw:'Hebrew',hi:'Hindi',hmn:'Hmong',hu:'Hungarian',is:'Icelandic',ig:'Igbo',id:'Indonesian',ga:'Irish',it:'Italian',ja:'Japanese',jv:'Javanese',kn:'Kannada',kk:'Kazakh',km:'Khmer',rw:'Kinyarwanda',ko:'Korean',ku:'Kurdish (Kurmanji)',ky:'Kyrgyz',lo:'Lao',la:'Latin',lv:'Latvian',lt:'Lithuanian',lb:'Luxembourgish',mk:'Macedonian',mg:'Malagasy',ms:'Malay',ml:'Malayalam',mt:'Maltese',mi:'Maori',mr:'Marathi',mn:'Mongolian',my:'Myanmar (Burmese)',ne:'Nepali',no:'Norwegian',or:'Odia',ps:'Pashto',fa:'Persian',pl:'Polish',pt:'Portuguese',pa:'Punjabi',ro:'Romanian',ru:'Russian',sm:'Samoan',gd:'Scots Gaelic',sr:'Serbian',st:'Sesotho',sn:'Shona',sd:'Sindhi',si:'Sinhala',sk:'Slovak',sl:'Slovenian',so:'Somali',es:'Spanish',su:'Sundanese',sw:'Swahili',sv:'Swedish',tg:'Tajik',ta:'Tamil',tt:'Tatar',te:'Telugu',th:'Thai',tr:'Turkish',tk:'Turkmen',uk:'Ukrainian',ur:'Urdu',ug:'Uyghur',uz:'Uzbek',vi:'Vietnamese',cy:'Welsh',xh:'Xhosa',yi:'Yiddish',yo:'Yoruba',zu:'Zulu'};
   const NAMES_ID = {af:'Afrikaans',sq:'Albania',am:'Amharik',ar:'Arab',hy:'Armenia',az:'Azerbaijan',eu:'Basque',be:'Belarusia',bn:'Bengali',bs:'Bosnia',bg:'Bulgaria',ca:'Katalan',ceb:'Cebuano',ny:'Nyanja (Chichewa)','zh-CN':'Mandarin (Sederhana)','zh-TW':'Mandarin (Tradisional)',co:'Korsika',hr:'Kroasia',cs:'Ceko',da:'Denmark',nl:'Belanda',en:'Inggris',eo:'Esperanto',et:'Estonia',tl:'Filipino',fi:'Finlandia',fr:'Prancis',fy:'Frisia',gl:'Galisia',ka:'Georgia',de:'Jerman',el:'Yunani',gu:'Gujarati',ht:'Kreol Haiti',ha:'Hausa',haw:'Hawaii',iw:'Ibrani',hi:'Hindi',hmn:'Hmong',hu:'Hungaria',is:'Islandia',ig:'Igbo',id:'Indonesia',ga:'Irlandia',it:'Italia',ja:'Jepang',jv:'Jawa',kn:'Kannada',kk:'Kazakh',km:'Khmer',rw:'Kinyarwanda',ko:'Korea',ku:'Kurdi (Kurmanji)',ky:'Kirgiz',lo:'Laos',la:'Latin',lv:'Latvia',lt:'Lituania',lb:'Luksemburg',mk:'Makedonia',mg:'Malagasi',ms:'Melayu',ml:'Malayalam',mt:'Malta',mi:'Maori',mr:'Marathi',mn:'Mongolia',my:'Myanmar (Burma)',ne:'Nepal',no:'Norwegia',or:'Odia',ps:'Pashto',fa:'Persia',pl:'Polandia',pt:'Portugis',pa:'Punjabi',ro:'Rumania',ru:'Rusia',sm:'Samoa',gd:'Gaelik Skotlandia',sr:'Serbia',st:'Sesotho',sn:'Shona',sd:'Sindhi',si:'Sinhala',sk:'Slovakia',sl:'Slovenia',so:'Somalia',es:'Spanyol',su:'Sunda',sw:'Swahili',sv:'Swedia',tg:'Tajik',ta:'Tamil',tt:'Tatar',te:'Telugu',th:'Thailand',tr:'Turki',tk:'Turkmen',uk:'Ukraina',ur:'Urdu',ug:'Uighur',uz:'Uzbek',vi:'Vietnam',cy:'Wales',xh:'Xhosa',yi:'Yiddish',yo:'Yoruba',zu:'Zulu'};
   const buildLangName = code => (isIdLang ? NAMES_ID : NAMES_EN)[code] || NAMES_EN[code] || code;
   const LANG_NAMES = Object.fromEntries(LANG_CODES.map(code => [code, buildLangName(code)]));
-  // Kode suara (TTS) yang berbeda dari kode terjemahan
   const ttsLang = code => ({'iw':'he','tl':'fil-PH','no':'nb-NO'}[code] || code);
   const EMPTY_TEXT = '';
   let typingTimer = null, toastTimer = null, requestId = 0;
@@ -572,7 +615,6 @@ main {
     modalCallback = null;
   });
 
-  // Urut A–Z mengikuti bahasa antarmuka
   const collator = new Intl.Collator(UI_LOCALE, {sensitivity:'base'});
   const languagesList = LANG_CODES.map(value => ({value, text: LANG_NAMES[value]})).sort((a, b) => collator.compare(a.text, b.text));
   const isDesktop = () => window.matchMedia('(min-width:768px)').matches;
@@ -582,27 +624,64 @@ main {
     $('targetLangBtn').textContent = (LANG_NAMES[state.targetLang] || state.targetLang).toUpperCase();
   }
 
+  const RECENT_KEY = 'deevv.translator.recentLangs';
+  function loadRecents() {
+    try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]').filter(code => LANG_NAMES[code]); } catch (_) { return []; }
+  }
+  function pushRecent(code) {
+    const list = [code, ...loadRecents().filter(c => c !== code)].slice(0, 6);
+    try { localStorage.setItem(RECENT_KEY, JSON.stringify(list)); } catch (_) {}
+  }
+  const groupLetter = text => (text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').charAt(0) || '#').toUpperCase();
+
   function renderLangOptions(filter = '') {
     const q = filter.trim().toLowerCase();
     const list = q ? languagesList.filter(l => l.text.toLowerCase().includes(q) || l.value.toLowerCase() === q) : languagesList;
-    $('langModalBody').innerHTML = list.length
-      ? list.map(lang => `<button class="lang-option ${state[activeLangType] === lang.value ? 'selected' : ''}" type="button" data-val="${lang.value}">${escapeHTML(lang.text)}</button>`).join('')
-      : `<div class="lang-empty">${getText('noLangFound')}</div>`;
+    const optionHTML = (l, firstLetter = null) => {
+      const isSelected = state[activeLangType] === l.value;
+      const letterAttr = firstLetter ? `data-letter="${firstLetter}" class="lang-option has-letter ${isSelected ? 'selected' : ''}"` : `class="lang-option ${isSelected ? 'selected' : ''}"`;
+      return `<button ${letterAttr} type="button" data-val="${l.value}">${escapeHTML(l.text)}</button>`;
+    };
+    
+    let html = '';
+    if (!list.length) {
+      html = `<div class="lang-empty">${getText('noLangFound')}</div>`;
+    } else if (isDesktop()) {
+      // Style ala Yandex: Mengalir lurus dari atas ke bawah, pindah ke kolom berikutnya jika bawah penuh
+      let currentLetter = '';
+      list.forEach(l => {
+        const letter = groupLetter(l.text);
+        if (letter !== currentLetter) {
+          currentLetter = letter;
+          html += optionHTML(l, letter);
+        } else {
+          html += optionHTML(l);
+        }
+      });
+    } else if (!q) {
+      const currentCode = state[activeLangType];
+      const recentCodes = [currentCode, ...loadRecents().filter(c => c !== currentCode)].slice(0, 5);
+      html = `<div class="lang-section">${getText('recentlyUsed')}</div>`
+        + recentCodes.map(code => optionHTML({value: code, text: LANG_NAMES[code]})).join('')
+        + `<div class="lang-section">${getText('allLanguages')}</div>`
+        + list.map(l => optionHTML(l)).join('');
+    } else {
+      html = list.map(l => optionHTML(l)).join('');
+    }
+    $('langModalBody').innerHTML = html;
   }
 
   function closeLangModal() { $('langModalOverlay').classList.remove('show'); }
 
-  function openLangModal(type, anchor) {
+  function openLangModal(type) {
     activeLangType = type;
-    $('langModalTitle').textContent = getText('chooseLang');
-    $('langSearch').value = '';
+    $('langModalTitle').textContent = getText('chooseLang');$('langSearch').value = '';
     renderLangOptions();
 
     const overlay = $('langModalOverlay'), modal = overlay.querySelector('.lang-modal');
     const desk = isDesktop();
     overlay.classList.toggle('desk', desk);
     if (desk) {
-      // Desktop: panel di bawah bar bahasa, selebar kartu terjemahan (bukan popup di tengah)
       const bar = document.querySelector('.lang-header-bar').getBoundingClientRect();
       const card = document.querySelector('.translate-card').getBoundingClientRect();
       modal.style.top = (bar.bottom + 6) + 'px';
@@ -611,16 +690,23 @@ main {
     } else {
       modal.style.top = modal.style.left = modal.style.width = '';
     }
+    openScrollY = window.scrollY;
     overlay.classList.add('show');
     const bodyEl = $('langModalBody'), selected = bodyEl.querySelector('.selected');
-    bodyEl.scrollTop = selected ? Math.max(0, selected.offsetTop - (bodyEl.clientHeight - selected.offsetHeight) / 2) : 0;
-    if (desk) $('langSearch').focus();
+    bodyEl.scrollTop = (desk && selected) ? Math.max(0, selected.offsetTop - (bodyEl.clientHeight - selected.offsetHeight) / 2) : 0;
+    if (desk) $('langSearch').focus({preventScroll:true});
   }
 
   $('langSearch').addEventListener('input', () => renderLangOptions($('langSearch').value));
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLangModal(); });
-  window.addEventListener('resize', closeLangModal);
-  window.addEventListener('scroll', () => { if ($('langModalOverlay').classList.contains('desk')) closeLangModal(); }, {passive:true});
+  let lastViewportW = window.innerWidth;
+  window.addEventListener('resize', () => {
+    if (window.innerWidth !== lastViewportW) { lastViewportW = window.innerWidth; closeLangModal(); }
+  });
+  let openScrollY = 0;
+  window.addEventListener('scroll', () => {
+    if ($('langModalOverlay').classList.contains('desk') && Math.abs(window.scrollY - openScrollY) > 40) closeLangModal();
+  }, {passive:true});
 
   $('closeLangModal').addEventListener('click', () => $('langModalOverlay').classList.remove('show'));$('langModalOverlay').addEventListener('click', (e) => { if(e.target === $('langModalOverlay'))$('langModalOverlay').classList.remove('show'); });
 
@@ -628,6 +714,7 @@ main {
     const btn = e.target.closest('.lang-option');
     if(!btn || !activeLangType) return;
     state[activeLangType] = btn.dataset.val;
+    pushRecent(btn.dataset.val);
     updateHeaderLangUI();
     $('langModalOverlay').classList.remove('show');
     persist();
@@ -665,10 +752,8 @@ main {
       </div></article>`;
   }
   function renderLists() {
-    $('historyCount').textContent = getText('countHistory').replace('{n}', state.history.length);
-    $('historyList').innerHTML = state.history.length ? state.history.map(item=>entryMarkup(item,true)).join('') : renderEmpty(getText('emptyHistoryTitle'),getText('emptyHistoryDesc'),'<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5m4-1v5l3 2"/></svg>');
-    $('savedCount').textContent = getText('countSaved').replace('{n}', state.saved.length);
-    $('savedList').innerHTML = state.saved.length ? state.saved.map(item=>entryMarkup(item,true)).join('') : renderEmpty(getText('emptySavedTitle'),getText('emptySavedDesc'),'<svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg>');
+    $('historyCount').textContent = getText('countHistory').replace('{n}', state.history.length);$('historyList').innerHTML = state.history.length ? state.history.map(item=>entryMarkup(item,true)).join('') : renderEmpty(getText('emptyHistoryTitle'),getText('emptyHistoryDesc'),'<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5m4-1v5l3 2"/></svg>');
+    $('savedCount').textContent = getText('countSaved').replace('{n}', state.saved.length);$('savedList').innerHTML = state.saved.length ? state.saved.map(item=>entryMarkup(item,true)).join('') : renderEmpty(getText('emptySavedTitle'),getText('emptySavedDesc'),'<svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg>');
   }
 
   function switchTab(tab, updateHistory = true) {
@@ -713,7 +798,6 @@ main {
     $('speakBtn').disabled = !enabled; 
     $('saveBtn').disabled = !enabled;
     $('speakInputBtn').disabled = !inputEnabled;
-    // Mengunci tombol swap saat proses terjemahan sedang berlangsung
     $('swapBtn').disabled = isTranslating;
   }
   function addHistory(source,target,sl,tl) {
@@ -742,7 +826,7 @@ main {
     const current = ++requestId;
     $('outputText').textContent=getText('translating'); 
     $('outputText').className='output-text loading';$('statusText').textContent=getText('statusProcessing'); 
-    updateButtons(false, true, true); // Tombol swap dinonaktifkan saat sedang menerjemahkan
+    updateButtons(false, true, true);
     try {
       const url=`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(sl)}&tl=${encodeURIComponent(tl)}&dt=t&q=${encodeURIComponent(source)}`;
       const response=await fetch(url);
@@ -753,13 +837,13 @@ main {
       if(!result) throw new Error('Hasil kosong');
       $('outputText').textContent=result; 
       $('outputText').className='output-text';$('statusText').textContent=getText('statusDone'); 
-      updateButtons(true, true, false); // Tombol swap kembali diaktifkan
+      updateButtons(true, true, false);
       addHistory(source,result,sl,tl);
     } catch (_) {
       if(current!==requestId) return;
       $('outputText').textContent=getText('translateFailed');
       $('outputText').className='output-text placeholder error';$('statusText').textContent=getText('statusFailed'); 
-      updateButtons(false, true, false); // Tombol swap kembali diaktifkan
+      updateButtons(false, true, false);
     }
   }
   function handleTyping() {
@@ -773,7 +857,7 @@ main {
       return;
     }
     $('outputText').textContent=getText('waiting');$('outputText').className='output-text loading';
-    updateButtons(false, true, true); // Tombol swap dinonaktifkan saat menunggu debounce
+    updateButtons(false, true, true);
     typingTimer=setTimeout(translateText,550);
   }
   $('inputText').addEventListener('input',handleTyping);
