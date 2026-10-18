@@ -58,7 +58,7 @@ const LANG_DICT = {
         aiThinking: "Thinking", justNow: "Just now",
         menu: "Menu", close: "Close", menuHome: "Home", menuTheme: "Display theme", menuSettings: "Preferences", menuAbout: "About", menuPrivacy: "Privacy policy",
         themeSystem: "System", themeLight: "Light", themeDark: "Dark",
-        // --- sidebar (sama dengan halaman index) ---
+        // --- sidebar (kini dikelola ui-modal.js; kunci ini cadangan) ---
         sbCatSearch: "Search", sbCatApps: "Apps", sbCatLearn: "Learn more",
         sbHome: "Homepage", sbTheme: "Display theme", sbSettings: "Preferences",
         sbWeather: "Weather", sbTranslate: "Translate", sbAbout: "About", sbPrivacy: "Privacy",
@@ -86,7 +86,7 @@ const LANG_DICT = {
         aiThinking: "Berpikir", justNow: "Baru saja",
         menu: "Menu", close: "Tutup", menuHome: "Beranda", menuTheme: "Tema tampilan", menuSettings: "Preferensi", menuAbout: "Tentang", menuPrivacy: "Kebijakan privasi",
         themeSystem: "Sistem", themeLight: "Terang", themeDark: "Gelap",
-        // --- sidebar (sama dengan halaman index) ---
+        // --- sidebar (kini dikelola ui-modal.js; kunci ini cadangan) ---
         sbCatSearch: "Pencarian", sbCatApps: "Aplikasi", sbCatLearn: "Informasi",
         sbHome: "Beranda", sbTheme: "Tema tampilan", sbSettings: "Preferensi",
         sbWeather: "Cuaca", sbTranslate: "Terjemahan", sbAbout: "Tentang", sbPrivacy: "Privasi",
@@ -1686,11 +1686,11 @@ const UI = {
           <div class="result-wrapper">${existingMainResult || '<div class="main-result"></div>'}</div> 
         </div> 
       </div> 
-      ${UI.menuHtml()}`;
+      `;
 
     document.body.innerHTML = bodyHtml;
     UI.setupEventListeners();
-    UI.setupMenu();
+    UI.loadUiModal();
   },
 
     // ---------- TOMBOL BURGER (sama dengan halaman index) ----------
@@ -1710,7 +1710,6 @@ const UI = {
         if (!header || !input) return false;
 
         if (!document.getElementById("menu_btn")) header.insertAdjacentHTML("afterbegin", UI.menuBtnHtml());
-        if (!document.getElementById("popup_menu")) document.body.insertAdjacentHTML("beforeend", UI.menuHtml());
 
         // Samakan teks dengan bahasa aktif (kalau sudah sama, tidak ada perubahan visual)
         const menuBtn = document.getElementById("menu_btn");
@@ -1726,152 +1725,18 @@ const UI = {
         });
 
         UI.setupEventListeners();
-        UI.setupMenu();
+        UI.loadUiModal();
         return true;
     },
 
-    // ---------- SIDEBAR MENU (sama persis dengan halaman index) ----------
-    menuHtml: () => `
-        <div class="sidebar-backdrop" id="sidebar_backdrop"></div>
-
-        <div class="popup-menu" id="popup_menu">
-          <!-- Search Group -->
-          <div class="popup-section-title">${getText("sbCatSearch")}</div>
-          <div class="popup-group">
-            <a href="/">
-              <span>${getText("sbHome")}</span>
-            </a>
-
-            <!-- Theme Dropdown Container -->
-            <div class="theme-dropdown-container" id="theme_dropdown_container">
-              <button type="button" id="theme_dropdown_toggle">
-                <span>${getText("sbTheme")}</span>
-                <span class="theme-status-text">
-                  <span id="theme_status_label">${getText("themeLight")}</span>
-                  <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
-                </span>
-              </button>
-              <div class="theme-options-list">
-                <div class="theme-options-inner">
-                  <button type="button" class="theme-option-btn" data-theme="light">${getText("themeLight")}</button>
-                  <button type="button" class="theme-option-btn" data-theme="dark">${getText("themeDark")}</button>
-                  <button type="button" class="theme-option-btn" data-theme="system">${getText("themeSystem")}</button>
-                </div>
-              </div>
-            </div>
-
-            <a href="/settings">
-              <span>${getText("sbSettings")}</span>
-            </a>
-          </div>
-
-          <div class="popup-divider"></div>
-
-          <!-- Apps Group -->
-          <div class="popup-section-title">${getText("sbCatApps")}</div>
-          <div class="popup-group">
-            <a href="/search?q=weather">
-              <span>${getText("sbWeather")}</span>
-            </a>
-            <a href="/translate">
-              <span>${getText("sbTranslate")}</span>
-            </a>
-          </div>
-
-          <div class="popup-divider"></div>
-
-          <!-- Learn more Group -->
-          <div class="popup-section-title">${getText("sbCatLearn")}</div>
-          <div class="popup-group">
-            <a href="/about">
-              <span>${getText("sbAbout")}</span>
-            </a>
-            <a href="/privacy">
-              <span>${getText("sbPrivacy")}</span>
-            </a>
-          </div>
-
-          <!-- Sidebar Footer Copyright -->
-          <div class="sidebar-footer">
-            &copy; 2026 Deevv Search.
-          </div>
-        </div>`,
-
-    setupMenu: () => {
-        const menuBtn = document.getElementById("menu_btn");
-        const popupMenu = document.getElementById("popup_menu");
-        const sidebarBackdrop = document.getElementById("sidebar_backdrop");
-        const themeContainer = document.getElementById("theme_dropdown_container");
-        const themeToggleBtn = document.getElementById("theme_dropdown_toggle");
-        const themeLabel = document.getElementById("theme_status_label");
-        if (!menuBtn || !popupMenu) return;
-
-        const closeMenu = () => {
-            popupMenu.classList.remove("active");
-            menuBtn.setAttribute("aria-expanded", "false");
-            themeContainer?.classList.remove("open");
-        };
-
-        menuBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            const on = popupMenu.classList.toggle("active");
-            menuBtn.setAttribute("aria-expanded", on ? "true" : "false");
-        });
-
-        sidebarBackdrop?.addEventListener("click", closeMenu);
-
-        // Klik di luar sidebar menutupnya (dipasang sekali; elemen dicari ulang tiap klik)
-        if (!UI._menuDocBound) {
-            UI._menuDocBound = true;
-            document.addEventListener("click", (e) => {
-                const pm = document.getElementById("popup_menu");
-                const mb = document.getElementById("menu_btn");
-                if (!pm || !mb) return;
-                if (!pm.contains(e.target) && !mb.contains(e.target)) {
-                    pm.classList.remove("active");
-                    mb.setAttribute("aria-expanded", "false");
-                    document.getElementById("theme_dropdown_container")?.classList.remove("open");
-                }
-            });
-        }
-
-        // --- Tema: Terang / Gelap / Sistem (disimpan lewat updateSetting dari cookie.js) ---
-        const labels = { system: getText("themeSystem"), light: getText("themeLight"), dark: getText("themeDark") };
-        const currentPref = () => {
-            const v = getData().theme; // baca ulang dari cookie.js, sama seperti halaman settings
-            return v === "dark" || v === "system" ? v : "light";
-        };
-        const applyTheme = (pref) => {
-            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-            const isDark = pref === "dark" || (pref === "system" && prefersDark);
-            document.body.classList.toggle("dark", isDark);
-            document.documentElement.classList.toggle("dark", isDark);
-        };
-        const paintTheme = () => {
-            const pref = currentPref();
-            if (themeLabel) themeLabel.textContent = labels[pref];
-            popupMenu.querySelectorAll(".theme-option-btn").forEach(btn => {
-                btn.classList.toggle("active", btn.getAttribute("data-theme") === pref);
-            });
-        };
-        paintTheme();
-
-        if (themeToggleBtn && themeContainer) {
-            themeToggleBtn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                themeContainer.classList.toggle("open");
-            });
-            popupMenu.querySelectorAll(".theme-option-btn").forEach(btn => {
-                btn.addEventListener("click", (e) => {
-                    e.stopPropagation();
-                    const pref = btn.getAttribute("data-theme");
-                    updateSetting("theme", pref); // cookie.js, sama seperti halaman settings
-                    applyTheme(pref);
-                    paintTheme();
-                    themeContainer.classList.remove("open");
-                });
-            });
-        }
+    // ---------- SIDEBAR MENU ----------
+    // Sidebar tidak lagi di-hardcode di sini: disuntikkan oleh ui-modal.js,
+    // sama seperti halaman index. Di sini hanya memastikan skripnya dimuat.
+    loadUiModal: () => {
+        if (document.querySelector('script[src*="ui-modal.js"]')) return;
+        const s = document.createElement("script");
+        s.src = "/ui-modal.js";
+        document.body.appendChild(s);
     },
 
     setupEventListeners: () => {
@@ -1987,10 +1852,10 @@ const UI = {
                 });
             }
 
-            // Injeksi skrip feedback-modal.js otomatis jika belum ada
-            if (!document.querySelector('script[src*="feedback-modal.js"]')) {
+            // Injeksi skrip ui-modal.js otomatis jika belum ada
+            if (!document.querySelector('script[src*="ui-modal.js"]')) {
                 const fbScript = document.createElement("script");
-                fbScript.src = "/feedback-modal.js";
+                fbScript.src = "/ui-modal.js";
                 document.body.appendChild(fbScript);
             }
         }

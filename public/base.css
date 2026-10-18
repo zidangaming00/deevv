@@ -519,27 +519,18 @@ body.dark .footer-copy {
 
 
 /* ==========================================================================
-   SIDEBAR MENU - disalin persis dari halaman index (burger + sidebar kiri)
-   Variabel index (--primary, --surface, dst) dibatasi ke komponen ini saja
-   supaya tidak bentrok dengan variabel --color-* milik halaman hasil.
+   TOMBOL BURGER - panel sidebar-nya sekarang disuntikkan oleh ui-modal.js
+   (sama seperti halaman index). Di sini hanya gaya tombol burger.
    ========================================================================== */
 .page-header { position: relative; }
 
-.burger-btn, .popup-menu {
+.burger-btn {
   --primary: #1a73e8;
-  --surface: #ffffff;
-  --text-main: #1f1f1f;
-  --text-muted: #5f6368;
-  --border-color: rgba(0, 0, 0, 0.08);
 }
-body.dark .burger-btn, body.dark .popup-menu {
+body.dark .burger-btn {
   --primary: #8ab4f8;
-  --surface: #22262b;
-  --text-main: #e8eaed;
-  --text-muted: #9aa0a6;
-  --border-color: rgba(255, 255, 255, 0.12);
 }
-.burger-btn, .popup-menu, .popup-menu * { -webkit-tap-highlight-color: transparent; }
+.burger-btn { -webkit-tap-highlight-color: transparent; }
 
 /* Custom Burger Button */
 .burger-btn {
@@ -583,173 +574,6 @@ body.dark .burger-btn:hover {
   margin-left: 11px;
 }
 
-/* ===== Sidebar Menu (Compact & Smaller Fonts) ===== */
-.popup-menu {
-  position: fixed;
-  top: 0;
-  left: -280px;
-  width: 250px;
-  height: 100%;
-  background: var(--surface);
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
-  border-right: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  padding: 16px 12px;
-  z-index: 2000;
-  overflow-y: auto;
-  transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.popup-menu.active {
-  left: 0;
-}
-
-/* Backdrop untuk Sidebar */
-.sidebar-backdrop {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-  z-index: 1999;
-}
-.popup-menu.active ~ .sidebar-backdrop,
-body:has(.popup-menu.active) .sidebar-backdrop {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.popup-section-title {
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  padding: 6px 12px 2px;
-  margin-top: 4px;
-}
-
-.popup-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  padding: 2px 0;
-}
-
-.popup-divider {
-  height: 1px;
-  background: var(--border-color);
-  margin: 8px 4px;
-}
-
-.popup-menu a, .popup-menu button {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 8px 12px;
-  text-decoration: none;
-  color: var(--text-main);
-  font-size: 13px;
-  font-weight: 500;
-  background: none;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.2s ease;
-}
-.popup-menu a:hover, .popup-menu button:hover {
-  background: rgba(0, 0, 0, 0.04);
-}
-body.dark .popup-menu a:hover, body.dark .popup-menu button:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.theme-status-text {
-  font-size: 11.5px;
-  font-weight: 500;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.theme-status-text svg {
-  width: 14px;
-  height: 14px;
-  fill: currentColor;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-/* Theme Dropdown Sub-menu dengan Animasi Bouncy */
-.theme-dropdown-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.theme-options-list {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease, margin 0.3s ease;
-  opacity: 0;
-  margin: 0;
-  overflow: hidden;
-}
-
-.theme-options-inner {
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  padding: 0 0 0 12px;
-}
-
-.theme-dropdown-container.open .theme-options-list {
-  grid-template-rows: 1fr;
-  opacity: 1;
-  margin: 2px 0;
-}
-
-.theme-dropdown-container.open .theme-status-text svg {
-  transform: rotate(180deg);
-}
-
-.theme-option-btn {
-  padding: 7px 10px;
-  font-size: 12.5px;
-  font-weight: 400;
-  border-radius: 8px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  color: var(--text-main);
-  width: 100%;
-  transition: background 0.15s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.theme-option-btn:hover {
-  background: rgba(0, 0, 0, 0.05);
-  transform: translateX(3px);
-}
-body.dark .theme-option-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-.theme-option-btn.active {
-  font-weight: 600;
-  color: var(--primary);
-}
-
-/* Sidebar Footer Copyright */
-.sidebar-footer {
-  margin-top: auto;
-  padding: 16px 12px 8px;
-  font-size: 11.5px;
-  color: var(--text-muted);
-  border-top: 1px solid var(--border-color);
-}
 
 /* Burger -> X saat sidebar terbuka (sidebar ada di body, bukan di header) */
 body:has(.popup-menu.active) .burger-btn span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
@@ -893,17 +717,8 @@ body:has(.popup-menu.active) .burger-btn span:nth-child(3) { transform: translat
   .show-wrapper .more { width: 50%; }
 
   /* Tombol burger pindah ke kanan (di ruang 72px yang sudah disiapkan header,
-     jadi susunan logo / kotak cari / tab tidak bergeser) dan panelnya keluar dari kanan */
+     jadi susunan logo / kotak cari / tab tidak bergeser). Panel sidebar diatur ui-modal.js */
   .burger-btn { top: 20px; left: auto; right: 20px; }
-  .popup-menu {
-    left: auto;
-    right: -280px;
-    border-right: none;
-    border-left: 1px solid var(--border-color);
-    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
-    transition: right 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .popup-menu.active { left: auto; right: 0; }
 }
 
 @media (min-width: 67.5rem) {
