@@ -27,7 +27,7 @@
       --press: rgba(128, 128, 128, 0.1);
     }
 
-    body.dark {
+    html.dark, body.dark {
       --primary: #8ab4f8;        
       --bg: #171717;             
       --surface: #22262b;        
@@ -86,7 +86,7 @@
       transition: background 0.2s, color 0.2s;
     }
     .icon-btn:hover { background: rgba(0,0,0,0.05); color: var(--text-main); }
-    body.dark .icon-btn:hover { background: rgba(255,255,255,0.08); }
+    html.dark .icon-btn:hover, body.dark .icon-btn:hover { background: rgba(255,255,255,0.08); }
 
     /* Custom Burger Button */
     .burger-btn {
@@ -103,13 +103,13 @@
       gap: 4px;
       transition: background 0.2s;
     }
-    body.dark .burger-btn {
+    html.dark .burger-btn, body.dark .burger-btn {
       background: rgba(138, 180, 248, 0.12);
     }
     .burger-btn:hover {
       background: rgba(26, 115, 232, 0.18);
     }
-    body.dark .burger-btn:hover {
+    html.dark .burger-btn:hover, body.dark .burger-btn:hover {
       background: rgba(138, 180, 248, 0.2);
     }
     .burger-btn span {
@@ -304,7 +304,7 @@
       transition: background 0.15s, opacity 220ms cubic-bezier(.34, 1.56, .64, 1), transform 260ms cubic-bezier(.34, 1.56, .64, 1);
     }
     .fav:hover { background: rgba(0, 0, 0, 0.04); }
-    body.dark .fav:hover { background: rgba(255, 255, 255, 0.06); }
+    html.dark .fav:hover, body.dark .fav:hover { background: rgba(255, 255, 255, 0.06); }
     .fav:focus-visible, .section-btn:focus-visible {
       outline: 2px solid var(--primary);
       outline-offset: 2px;
@@ -321,7 +321,8 @@
       box-shadow: var(--shadow-soft);
       overflow: hidden;
     }
-    .fav-ico.has-img { background: #fff !important; border: 1px solid var(--border-color); }
+    /* Diperbaiki agar di mode gelap background favicon-nya ikut warna surface */
+    .fav-ico.has-img { background: var(--surface) !important; border: 1px solid var(--border-color); }
     .fav-ico img { object-fit: contain; image-rendering: auto; }
     .fav-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .fav-add .fav-ico {
@@ -331,7 +332,7 @@
       border-radius: 16px;
       box-shadow: none;
     }
-    body.dark .fav-add .fav-ico { background: rgba(138, 180, 248, 0.1); }
+    html.dark .fav-add .fav-ico, body.dark .fav-add .fav-ico { background: rgba(138, 180, 248, 0.1); }
     .fav-add .fav-ico svg { width: 22px; height: 22px; fill: currentColor; }
     
     .fav-remove {
@@ -428,7 +429,7 @@
     .btn-text { background: none; color: var(--primary); }
     .btn-text:hover { background: rgba(26, 115, 232, 0.08); }
     .btn-fill { background: var(--primary); color: #fff; }
-    body.dark .btn-fill { color: #121212; }
+    html.dark .btn-fill, body.dark .btn-fill { color: #121212; }
 
     /* Suggestion Dropdown */
     .suggest-box {
@@ -510,7 +511,7 @@
       pointer-events: none;
       transition: opacity 0.3s ease;
     }
-    body.dark .voice-overlay {
+    html.dark .voice-overlay, body.dark .voice-overlay {
       background: rgba(18, 18, 18, 0.98);
     }
     .voice-overlay.active {
@@ -912,6 +913,9 @@
       if (themeBtn) {
         themeBtn.addEventListener('click', toggleTheme);
       }
+      var config = typeof getData === 'function' ? getData() : {};
+      var isDark = document.documentElement.classList.contains('dark');
+      updateThemeBtnText(isDark);
     });
 
     // Tanggal hari ini
