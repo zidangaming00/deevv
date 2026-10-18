@@ -213,7 +213,7 @@
             catSearch: "Search", catApps: "Apps", catLearnMore: "Learn more", catTranslateGroup: "Translation",
             homepage: "Homepage", settings: "Preferences", displayTheme: "Display theme",
             light: "Light", dark: "Dark", system: "System",
-            weather: "Weather", translate: "Translate", history: "History", saved: "Saved",
+            weather: "Weather", translate: "Translate", maps: "Maps", history: "History", saved: "Saved",
             about: "About", privacy: "Privacy", feedback: "Feedback",
             fbTitle: "Send Feedback",
             fbDesc: "Help us improve Deevv Search by selecting a category and sharing your thoughts.",
@@ -229,7 +229,7 @@
             catSearch: "Pencarian", catApps: "Aplikasi", catLearnMore: "Lebih banyak", catTranslateGroup: "Terjemahan",
             homepage: "Beranda", settings: "Preferensi", displayTheme: "Tema tampilan",
             light: "Terang", dark: "Gelap", system: "Sistem",
-            weather: "Cuaca", translate: "Terjemahan", history: "Riwayat", saved: "Tersimpan",
+            weather: "Cuaca", translate: "Terjemahan", maps: "Peta", history: "Riwayat", saved: "Tersimpan",
             about: "Tentang", privacy: "Privasi", feedback: "Masukan",
             fbTitle: "Kirim Masukan",
             fbDesc: "Bantu kami meningkatkan Deevv Search dengan memilih kategori dan memberikan ulasan.",
@@ -296,8 +296,9 @@
                 <div class="popup-divider"></div>
                 <div class="popup-section-title">${t.catApps}</div>
                 <div class="popup-group">
-                    <a href="/search?q=weather"><span>${t.weather}</span></a>
+                    <a href="/weather"><span>${t.weather}</span></a>
                     <a href="/translate"><span>${t.translate}</span></a>
+                    <a href="/maps"><span>${t.maps}</span></a>
                 </div>
                 <div class="popup-divider"></div>
                 <div class="popup-section-title">${t.catLearnMore}</div>
