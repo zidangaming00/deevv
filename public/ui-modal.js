@@ -392,7 +392,9 @@
 
     buildModal();
 
-    document.addEventListener('DOMContentLoaded', () => {
+    function initUiModal() {
+        if (window.__uiModalReady) return;
+        window.__uiModalReady = true;
         const header = document.querySelector('header');
         if (header) {
             header.appendChild(sidebar);
@@ -443,7 +445,14 @@
                 });
             });
         }
-    });
+    }
+
+    // Jalan langsung kalau DOM sudah siap (mis. skrip disuntikkan dinamis di halaman SERP)
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initUiModal);
+    } else {
+        initUiModal();
+    }
 
     function setupChips(containerId) {
         const container = overlay.querySelector('#' + containerId);

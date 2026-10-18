@@ -524,13 +524,25 @@ body.dark .footer-copy {
    ========================================================================== */
 .page-header { position: relative; }
 
-.burger-btn {
+.burger-btn, .popup-menu, .fb-overlay {
   --primary: #1a73e8;
+  --surface: #ffffff;
+  --text-main: #1f1f1f;
+  --text-muted: #5f6368;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --bg: #f7f8f9;
+  --press: rgba(128, 128, 128, 0.1);
 }
-body.dark .burger-btn {
+body.dark .burger-btn, body.dark .popup-menu, body.dark .fb-overlay {
   --primary: #8ab4f8;
+  --surface: #22262b;
+  --text-main: #e8eaed;
+  --text-muted: #9aa0a6;
+  --border-color: rgba(255, 255, 255, 0.12);
+  --bg: #171717;
+  --press: rgba(128, 128, 128, 0.14);
 }
-.burger-btn { -webkit-tap-highlight-color: transparent; }
+.burger-btn, .popup-menu, .popup-menu * { -webkit-tap-highlight-color: transparent; }
 
 /* Custom Burger Button */
 .burger-btn {
@@ -719,6 +731,17 @@ body:has(.popup-menu.active) .burger-btn span:nth-child(3) { transform: translat
   /* Tombol burger pindah ke kanan (di ruang 72px yang sudah disiapkan header,
      jadi susunan logo / kotak cari / tab tidak bergeser). Panel sidebar diatur ui-modal.js */
   .burger-btn { top: 20px; left: auto; right: 20px; }
+  /* Panel sidebar (CSS-nya dari ui-modal.js) keluar dari kanan di desktop; 'body' menaikkan
+     specificity supaya menang atas style yang disuntikkan ui-modal.js belakangan */
+  body .popup-menu {
+    left: auto;
+    right: -280px;
+    border-right: none;
+    border-left: 1px solid var(--border-color);
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+    transition: right 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  body .popup-menu.active { left: auto; right: 0; }
 }
 
 @media (min-width: 67.5rem) {
