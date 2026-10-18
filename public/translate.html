@@ -25,6 +25,7 @@
   --text:#1a1d20;
   --muted:#4f5862;
   --shadow:0 4px 20px rgba(0,0,0,.03);
+  --pill-active:rgba(26, 115, 232, 0.12);
 }
 
 body.dark, :root.dark {
@@ -42,19 +43,20 @@ body.dark, :root.dark {
   --text:#f1f3f7;
   --muted:#b0b8c1;
   --shadow:0 4px 20px rgba(0,0,0,.2);
+  --pill-active:rgba(138, 180, 248, 0.18);
 }
 
 *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
 
 html, body {
-  height: 100%;
+  min-height: 100%;
 }
 
 body{
   background: var(--bg);
   color: var(--text);
   font-family: 'Google Sans Flex', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  padding: 20px 0 30px;
+  padding: 20px 0 calc(84px + env(safe-area-inset-bottom, 0px)); /* Ruang bawah untuk bottom bar mobile */
   transition: background .2s, color .2s;
   font-size: 14px;
   font-weight: 400;
@@ -68,7 +70,7 @@ button:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outl
 
 .app{width:min(100%,980px);margin:0 auto;padding:0 16px;transition:max-width .2s ease;display:flex;flex-direction:column;flex:1}
 
-/* Header layout simetris dengan keseimbangan tombol kiri & kanan */
+/* Header layout simetris */
 .topbar{
   display:grid;
   grid-template-columns: 1fr auto 1fr;
@@ -85,7 +87,7 @@ button:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outl
 .brand-name{font-size:20px;font-weight:700;letter-spacing:-.5px;text-align:center}
 .brand-name span{color:var(--accent)}
 
-/* Custom Burger Button */
+/* Custom Burger Button Navigasi Ekosistem Deevv */
 .burger-btn {
   width: 38px;
   height: 38px;
@@ -128,7 +130,6 @@ header:has(.popup-menu.active) .burger-btn span:nth-child(1) { transform: transl
 header:has(.popup-menu.active) .burger-btn span:nth-child(2) { opacity: 0; transform: translateX(-6px); }
 header:has(.popup-menu.active) .burger-btn span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 
-/* Tombol Saved di kanan disamakan gaya kontainernya agar seimbang */
 .icon-btn{
   width:38px;
   height:38px;
@@ -152,7 +153,7 @@ body.dark .icon-btn:hover {
   background: rgba(138, 180, 248, 0.2);
 }
 
-svg{display:block}.icon-btn svg,.action-btn svg,.nav-item svg,.swap-btn svg,.star-btn svg,.empty-icon svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+svg{display:block}.icon-btn svg,.action-btn svg,.nav-bar svg,.swap-btn svg,.star-btn svg,.empty-icon svg,.dict-title svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
 main {
   flex: 1;
@@ -168,6 +169,106 @@ main {
 .eyebrow{font-size:14px;color:var(--muted);font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin:0 0 6px}
 .page-title{font-size:20px;letter-spacing:-.8px;font-weight:700;margin:0}
 .page-desc{color:var(--muted);font-size:14px;line-height:1.5;margin:6px 0 20px;font-weight:400}
+
+/* BOTTOM NAVIGATION BAR (ALA INSTAGRAM MOBILE) */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(66px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 200;
+}
+
+.bottom-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 100%;
+  font-family: inherit;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.bottom-nav-pill {
+  width: 56px;
+  height: 32px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: background .2s ease, color .2s ease;
+}
+
+.bottom-nav-item.active .bottom-nav-pill {
+  background: var(--pill-active);
+  color: var(--accent);
+}
+
+.bottom-nav-pill svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke-width .2s ease;
+}
+.bottom-nav-item.active .bottom-nav-pill svg { stroke-width: 2.2; }
+.bottom-nav-item[data-target="saved"].active .bottom-nav-pill svg { fill: currentColor; fill-opacity: .18; }
+
+.bottom-nav-label {
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: .01em;
+  color: var(--muted);
+  transition: color .2s ease;
+  white-space: nowrap;
+}
+.bottom-nav-item.active .bottom-nav-label { color: var(--accent); font-weight: 650; }
+
+/* Navigasi Desktop versi Tab Atas */
+.desktop-nav {
+  display: none;
+  gap: 6px;
+}
+
+.desktop-nav-btn {
+  border: none;
+  background: transparent;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+
+.desktop-nav-btn:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.desktop-nav-btn.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
 
 /* Language Bar Header */
 .translate-card{background:var(--surface);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}
@@ -235,7 +336,6 @@ main {
   .lang-modal-overlay:not(.desk) .lang-option { padding: 10px 12px; font-size: 15px; font-weight: 450; }
 }
 
-/* Padding dikecilkan */
 .text-pane{padding:14px 18px 12px;display:flex;flex-direction:column}
 
 .textarea{display:block;width:100%;height:115px;min-height:115px;max-height:115px;resize:none;border:0;outline:none;background:transparent;color:var(--text);font-size:18px;line-height:1.65;padding:0;box-shadow:none;font-weight:400}
@@ -257,14 +357,19 @@ main {
 .status{font-size:14px;color:var(--muted);font-weight:400}
 
 /* Word Usage & Details Section */
-.dict-section{margin-top:20px;display:none;flex-direction:column;gap:16px;animation:appear .2s ease}
-.dict-card{background:var(--surface);border-radius:20px;padding:20px 24px;box-shadow:var(--shadow)}
+.dict-section{margin-top:16px;margin-bottom:16px;display:none;flex-direction:column;gap:12px;animation:appear .2s ease}
+.dict-card{background:var(--surface);border-radius:20px;padding:16px 20px;box-shadow:var(--shadow)}
 .dict-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.dict-title svg{width:18px;height:18px;color:var(--accent)}
-.pos-tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);margin-bottom:8px;text-transform:lowercase}
-.dict-synonyms{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.dict-title svg{width:20px;height:20px;color:var(--accent);stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.word-header{font-size:14px;font-weight:700;color:var(--text);margin-top:6px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.pos-tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);text-transform:lowercase}
+.dict-synonyms{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;margin-bottom:10px}
 .synonym-chip{font-size:13px;padding:4px 10px;border-radius:12px;background:var(--hover);color:var(--text);cursor:pointer;transition:background .15s}
 .synonym-chip:hover{background:var(--accent-soft);color:var(--accent)}
+
+/* Tombol Bookmark / Save Konsisten Berubah Filled */
+.action-btn.saved{color:#f59e0b;background:#fef3c7}
+.action-btn.saved svg{fill:currentColor}
 
 /* History & Saved List */
 .collection-toolbar{display:flex;align-items:center;justify-content:space-between;margin:0 0 16px;padding:0;flex-shrink:0}
@@ -272,7 +377,7 @@ main {
 .text-link{border:0;background:none;color:var(--accent);font-size:14px;font-weight:500;cursor:pointer;padding:4px 8px;border-radius:8px;transition:background .15s}
 .text-link:hover{background:var(--accent-soft)}
 
-.collection-list{display:flex;flex-direction:column;gap:12px;overflow-y:auto;flex:1;min-height:0;padding-bottom:4px}
+.collection-list{display:flex;flex-direction:column;gap:12px;overflow-y:auto;flex:1;min-height:0;padding-bottom:12px}
 .entry{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:18px 20px;background:var(--surface);border-radius:20px;box-shadow:var(--shadow);transition:transform .15s, box-shadow .15s;flex-shrink:0}
 .entry:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.05)}
 .entry-main{min-width:0;flex:1;cursor:pointer}
@@ -313,9 +418,14 @@ main {
 
 /* OPTIMASI DESAIN DESKTOP */
 @media(min-width: 768px) {
-  body { padding: 28px 0 40px; }
+  body { padding: 28px 0 30px; }
   .app { padding: 0 40px; }
   .topbar { margin-bottom: 24px; }
+
+  /* Sembunyikan bottom nav di desktop & pakai tab topbar */
+  .bottom-nav { display: none; }
+  .desktop-nav { display: flex; }
+
   .translate-card {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -351,6 +461,7 @@ main {
 <div class="app">
 <header class="topbar">
   <div class="topbar-left">
+    <!-- Tombol burger sidebar navigasi ekosistem Deevv -->
     <button class="burger-btn" id="menu_btn" type="button" aria-label="Menu" title="Menu Navigasi">
       <span></span>
       <span></span>
@@ -361,10 +472,12 @@ main {
     <div class="brand-name">Deevv <span>Translate</span></div>
   </div>
   <div class="topbar-right">
-    <!-- Tombol Saved dengan ikon bookmark & kontainer seimbang -->
-    <button class="icon-btn" id="navSavedBtn" type="button" aria-label="Tersimpan" title="Tersimpan">
-      <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-    </button>
+    <!-- Navigasi Desktop (Hanya muncul di layar lebar) -->
+    <nav class="desktop-nav" id="desktopNav">
+      <button class="desktop-nav-btn active" data-target="translate" type="button" data-i18n="navTranslate">Terjemah</button>
+      <button class="desktop-nav-btn" data-target="saved" type="button" data-i18n="savedTitle">Tersimpan</button>
+      <button class="desktop-nav-btn" data-target="history" type="button" data-i18n="historyTitle">Histori</button>
+    </nav>
   </div>
 </header>
 
@@ -390,7 +503,8 @@ main {
       <div class="output-footer"><span class="status" id="statusText" data-i18n="statusReady">Siap menerjemahkan</span><div class="actions">
         <button class="action-btn" id="speakBtn" type="button" aria-label="Dengarkan terjemahan" title="Dengarkan terjemahan" data-i18n-aria="listenTranslation" data-i18n-title="listenTranslation" disabled><svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5ZM15.5 8.5a5 5 0 0 1 0 7m2.5-9.5a9 9 0 0 1 0 12"/></svg></button>
         <button class="action-btn" id="copyBtn" type="button" aria-label="Salin" title="Salin" data-i18n-aria="copy" data-i18n-title="copy" disabled><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg></button>
-        <button class="action-btn" id="saveBtn" type="button" aria-label="Simpan" title="Simpan" data-i18n-aria="save" data-i18n-title="save" disabled><svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg></button>
+        <!-- Tombol Simpan (Bookmark) -->
+        <button class="action-btn" id="saveBtn" type="button" aria-label="Simpan" title="Simpan" data-i18n-aria="save" data-i18n-title="save" disabled><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
       </div></div>
     </div>
   </div>
@@ -399,8 +513,8 @@ main {
   <div class="dict-section" id="dictSection">
     <div class="dict-card">
       <div class="dict-title">
-        <svg viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
-        <span>Penggunaan Kata & Variasi</span>
+        <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span data-i18n="dictTitle">Penggunaan Kata & Variasi</span>
       </div>
       <div id="dictContent"></div>
     </div>
@@ -417,13 +531,35 @@ main {
 
 <section class="page" id="savedPage" data-page="saved">
   <div>
-    <p class="eyebrow" data-i18n="eyebrow">Koleksi pribadi</p><h1 class="page-title" data-i18n="savedTitle">Tersimpan</h1><p class="page-desc" data-i18n="savedDesc">Daftar terjemahan penting yang telah kamu tandai bintang.</p>
+    <p class="eyebrow" data-i18n="eyebrow">Koleksi pribadi</p><h1 class="page-title" data-i18n="savedTitle">Tersimpan</h1><p class="page-desc" data-i18n="savedDesc">Daftar terjemahan penting yang telah kamu tandai bookmark.</p>
     <div class="collection-toolbar"><span id="savedCount">0 tersimpan</span></div>
   </div>
   <div class="collection-list" id="savedList"></div>
 </section>
 </main>
 </div>
+
+<!-- BOTTOM NAVIGATION BAR MOBILE (Pill Indicator) -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="bottom-nav-item active" data-target="translate" type="button">
+    <div class="bottom-nav-pill">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+    </div>
+    <span class="bottom-nav-label" data-i18n="navTranslate">Terjemah</span>
+  </button>
+  <button class="bottom-nav-item" data-target="saved" type="button">
+    <div class="bottom-nav-pill">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    </div>
+    <span class="bottom-nav-label" data-i18n="savedTitle">Tersimpan</span>
+  </button>
+  <button class="bottom-nav-item" data-target="history" type="button">
+    <div class="bottom-nav-pill">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+    </div>
+    <span class="bottom-nav-label" data-i18n="historyTitle">Histori</span>
+  </button>
+</nav>
 
 <!-- Language Popup Modal -->
 <div class="lang-modal-overlay" id="langModalOverlay">
@@ -449,7 +585,6 @@ main {
 </div>
 
 <script src="cookie.js"></script>
-<!-- Memuat modul terpadu sidebar dinamis & feedback modal -->
 <script src="ui-modal.js"></script>
 <script>
 (() => {
@@ -479,13 +614,13 @@ main {
       historyDesc: "All the translations you have made.",
       clearHistory: "Clear history",
       savedTitle: "Saved",
-      savedDesc: "Important translations you have starred.",
+      savedDesc: "Important translations you have bookmarked.",
       countHistory: "{n} translations",
       countSaved: "{n} saved",
       emptyHistoryTitle: "History is empty",
       emptyHistoryDesc: "No translation history has been recorded on this device yet.",
       emptySavedTitle: "Nothing saved yet",
-      emptySavedDesc: "Tap the star icon on a translation to save it here.",
+      emptySavedDesc: "Tap the bookmark icon on a translation to save it here.",
       cancel: "Cancel",
       delete: "Delete",
       sameLangOutput: "Choose two different languages.",
@@ -509,7 +644,10 @@ main {
       toastHistoryEmpty: "History is already empty.",
       confirmClearTitle: "Clear all history",
       confirmClearDesc: "This will delete all of your translation history.",
-      toastHistoryCleared: "History cleared."
+      toastHistoryCleared: "History cleared.",
+      viewHistory: "View History",
+      dictTitle: "Word Usage & Variations",
+      navTranslate: "Translate"
     },
     id: {
       chooseLang: "Pilih bahasa",
@@ -531,13 +669,13 @@ main {
       historyDesc: "Semua riwayat terjemahan yang pernah kamu lakukan.",
       clearHistory: "Hapus histori",
       savedTitle: "Tersimpan",
-      savedDesc: "Daftar terjemahan penting yang telah kamu tandai bintang.",
+      savedDesc: "Daftar terjemahan penting yang telah kamu tandai bookmark.",
       countHistory: "{n} terjemahan",
       countSaved: "{n} tersimpan",
       emptyHistoryTitle: "Histori Kosong",
       emptyHistoryDesc: "Belum ada riwayat terjemahan yang tercatat di perangkat ini.",
       emptySavedTitle: "Belum Ada Tersimpan",
-      emptySavedDesc: "Tandai terjemahan dengan ikon bintang untuk menyimpannya di sini.",
+      emptySavedDesc: "Tandai terjemahan dengan ikon bookmark untuk menyimpannya di sini.",
       cancel: "Batal",
       delete: "Hapus",
       sameLangOutput: "Pilih dua bahasa yang berbeda.",
@@ -561,7 +699,10 @@ main {
       toastHistoryEmpty: "Histori sudah kosong.",
       confirmClearTitle: "Hapus Semua Histori",
       confirmClearDesc: "Tindakan ini akan menghapus seluruh catatan riwayat terjemahan Anda.",
-      toastHistoryCleared: "Histori dibersihkan."
+      toastHistoryCleared: "Histori dibersihkan.",
+      viewHistory: "Lihat Histori",
+      dictTitle: "Penggunaan Kata & Variasi",
+      navTranslate: "Terjemah"
     }
   };
 
@@ -783,7 +924,12 @@ main {
 
   $('sourceLangBtn').addEventListener('click', () => openLangModal('sourceLang'));$('targetLangBtn').addEventListener('click', () => openLangModal('targetLang'));
 
-  $('navSavedBtn').addEventListener('click', () => switchTab('saved'));
+  // Event handler switch tab untuk Bottom Nav Mobile & Desktop Nav Topbar
+  document.querySelectorAll('.bottom-nav-item, .desktop-nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      switchTab(btn.dataset.target);
+    });
+  });
 
   function escapeHTML(value) {
     return String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -792,13 +938,30 @@ main {
     try { return new Intl.DateTimeFormat(isIdLang ? 'id-ID' : 'en-US',{dateStyle:'medium',timeStyle:'short'}).format(new Date(timestamp)); }
     catch (_) { return ''; }
   }
-  function iconStar() { return '<svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg>'; }
+  function iconBookmark() { return '<svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>'; }
   function iconTrash() { return '<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg>'; }
 
   function renderEmpty(title, description, icon) {
     return `<div class="empty"><div class="empty-icon">${icon}</div><div class="empty-title">${title}</div><div class="empty-copy">${description}</div></div>`;
   }
   function isSaved(id) { return state.saved.some(item => item.id === id); }
+  
+  function updateSaveButtonState() {
+    const source = $('inputText').value.trim();
+    const target = $('outputText').textContent;
+    const saveBtn = $('saveBtn');
+    if (!source || !target || target === EMPTY_TEXT || isFailText(target)) {
+      saveBtn.classList.remove('saved');
+      return;
+    }
+    const currentItem = state.history.find(x => x.source === source && x.target === target && x.sl === state.sourceLang && x.tl === state.targetLang);
+    if (currentItem && isSaved(currentItem.id)) {
+      saveBtn.classList.add('saved');
+    } else {
+      saveBtn.classList.remove('saved');
+    }
+  }
+
   function entryMarkup(item, showDelete = false) {
     const saved = isSaved(item.id);
     return `<article class="entry" data-entry="${escapeHTML(item.id)}">
@@ -808,13 +971,13 @@ main {
         <div class="entry-meta"><span>${escapeHTML(LANG_NAMES[item.sl] || item.sl)} → ${escapeHTML(LANG_NAMES[item.tl] || item.tl)}</span><span>·</span><span>${escapeHTML(formatTime(item.time))}</span></div>
       </div>
       <div class="entry-actions">
-        <button class="star-btn ${saved?'saved':''}" type="button" data-action="star" aria-label="${getText('save')}" title="${getText('save')}">${iconStar()}</button>
+        <button class="star-btn ${saved?'saved':''}" type="button" data-action="star" aria-label="${getText('save')}" title="${getText('save')}">${iconBookmark()}</button>
         ${showDelete?`<button class="star-btn delete-btn" type="button" data-action="delete" aria-label="${getText('delete')}" title="${getText('delete')}">${iconTrash()}</button>`:''}
       </div></article>`;
   }
   function renderLists() {
     $('historyCount').textContent = getText('countHistory').replace('{n}', state.history.length);$('historyList').innerHTML = state.history.length ? state.history.map(item=>entryMarkup(item,true)).join('') : renderEmpty(getText('emptyHistoryTitle'),getText('emptyHistoryDesc'),'<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5m4-1v5l3 2"/></svg>');
-    $('savedCount').textContent = getText('countSaved').replace('{n}', state.saved.length);$('savedList').innerHTML = state.saved.length ? state.saved.map(item=>entryMarkup(item,true)).join('') : renderEmpty(getText('emptySavedTitle'),getText('emptySavedDesc'),'<svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg>');
+    $('savedCount').textContent = getText('countSaved').replace('{n}', state.saved.length);$('savedList').innerHTML = state.saved.length ? state.saved.map(item=>entryMarkup(item,true)).join('') : renderEmpty(getText('emptySavedTitle'),getText('emptySavedDesc'),'<svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>');
   }
 
   function switchTab(tab, updateHistory = true) {
@@ -832,9 +995,15 @@ main {
     }
 
     document.querySelectorAll('.page').forEach(page => page.classList.toggle('active', page.dataset.page === activeTab));
+    
+    // Update status active pada bottom nav & desktop nav
+    document.querySelectorAll('.bottom-nav-item').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.target === activeTab);
+    });
+    document.querySelectorAll('.desktop-nav-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.target === activeTab);
+    });
 
-    const popupMenu = $('popup_menu');
-    if (popupMenu) popupMenu.classList.remove('active');
     if (activeTab === 'history' || activeTab === 'saved') renderLists();
   }
 
@@ -864,7 +1033,12 @@ main {
     return item;
   }
 
-  /* Render Kamus / Detail Penggunaan Kata Dinamis */
+  window.handleSynonymClick = function(word) {
+    const inputEl = $('inputText');
+    inputEl.value = word;
+    inputEl.dispatchEvent(new Event('input'));
+  };
+
   function renderDictionaryData(dictData) {
     const dictSection = $('dictSection');
     const dictContent = $('dictContent');
@@ -876,20 +1050,48 @@ main {
 
     let html = '';
     dictData.forEach(entry => {
-      const pos = entry[0] || '';
-      const words = entry[1] || [];
+      const wordLabel = entry.word ? `<div class="word-header">Kata: ${escapeHTML(entry.word)}</div>` : '';
+      const pos = entry[0] || entry.pos || '';
+      const words = entry[1] || entry.words || [];
       
-      html += `<div style="margin-bottom:14px;">`;
+      html += `<div style="margin-bottom:12px;">${wordLabel}`;
       if (pos) html += `<span class="pos-tag">${escapeHTML(pos)}</span>`;
       html += `<div class="dict-synonyms">`;
       words.forEach(w => {
-        html += `<span class="synonym-chip" onclick="document.getElementById('inputText').value='${escapeHTML(w)}';document.getElementById('inputText').dispatchEvent(new Event('input'));">${escapeHTML(w)}</span>`;
+        html += `<span class="synonym-chip" onclick="window.handleSynonymClick('${escapeHTML(w).replace(/'/g, "\\'")}')">${escapeHTML(w)}</span>`;
       });
       html += `</div></div>`;
     });
 
     dictContent.innerHTML = html;
     dictSection.style.display = 'flex';
+  }
+
+  async function fetchWordsDetails(sourceText, sl, tl) {
+    const stopWords = new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','is','are','was','were','be','been','it','this','that','bro']);
+    const words = sourceText.replace(/[^\w\s]/gi, '').split(/\s+/).filter(w => w.length > 2 && !stopWords.has(w.toLowerCase()));
+    
+    const targetWords = words.length > 0 ? words.slice(0, 2) : sourceText.trim().split(/\s+/).slice(0, 1);
+    const results = [];
+
+    for (const w of targetWords) {
+      try {
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(sl)}&tl=${encodeURIComponent(tl)}&dt=bd&q=${encodeURIComponent(w)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data[1]) {
+          data[1].forEach(item => {
+            results.push({
+              word: w,
+              pos: item[0],
+              words: item[1]
+            });
+          });
+        }
+      } catch (_) {}
+    }
+
+    return results.length ? results : null;
   }
 
   async function translateText() {
@@ -899,6 +1101,7 @@ main {
       $('outputText').className='output-text placeholder';$('statusText').textContent=getText('statusReady'); 
       updateButtons(false, false, false); 
       renderDictionaryData(null);
+      updateSaveButtonState();
       return;
     }
     if (sl === tl) {
@@ -906,6 +1109,7 @@ main {
       $('outputText').className='output-text placeholder';$('statusText').textContent=getText('statusSameLang'); 
       updateButtons(false, true, false); 
       renderDictionaryData(null);
+      updateSaveButtonState();
       return;
     }
     const current = ++requestId;
@@ -915,7 +1119,6 @@ main {
     renderDictionaryData(null);
 
     try {
-      /* Menambahkan parameter &dt=bd untuk mengambil data kamus/penggunaan kata */
       const url=`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(sl)}&tl=${encodeURIComponent(tl)}&dt=t&dt=bd&q=${encodeURIComponent(source)}`;
       const response=await fetch(url);
       if(!response.ok) throw new Error('HTTP '+response.status);
@@ -927,15 +1130,22 @@ main {
       $('outputText').className='output-text';$('statusText').textContent=getText('statusDone'); 
       updateButtons(true, true, false);
       addHistory(source,result,sl,tl);
+      updateSaveButtonState();
 
-      if (data[1]) {
+      if (data[1] && data[1].length) {
         renderDictionaryData(data[1]);
+      } else {
+        const wordDetails = await fetchWordsDetails(source, sl, tl);
+        if (current === requestId) {
+          renderDictionaryData(wordDetails);
+        }
       }
     } catch (_) {
       if(current!==requestId) return;
       $('outputText').textContent=getText('translateFailed');
       $('outputText').className='output-text placeholder error';$('statusText').textContent=getText('statusFailed'); 
       updateButtons(false, true, false);
+      updateSaveButtonState();
     }
   }
 
@@ -948,6 +1158,7 @@ main {
       $('outputText').className='output-text placeholder';$('statusText').textContent=getText('statusReady'); 
       updateButtons(false, false, false); 
       renderDictionaryData(null);
+      updateSaveButtonState();
       return;
     }
     $('outputText').textContent=getText('waiting');$('outputText').className='output-text loading';
@@ -966,12 +1177,12 @@ main {
     const translated=$('outputText').textContent;
     if($('inputText').value.trim() && translated && translated!==EMPTY_TEXT && !isFailText(translated))$('inputText').value=translated;
     $('charCount').textContent=`${$('inputText').value.length} / 3000`;
-    if($('inputText').value.trim()) translateText(); else {$('outputText').textContent=EMPTY_TEXT; updateButtons(false, false, false); renderDictionaryData(null); }
+    if($('inputText').value.trim()) translateText(); else {$('outputText').textContent=EMPTY_TEXT; updateButtons(false, false, false); renderDictionaryData(null); updateSaveButtonState(); }
   });
 
   $('clearBtn').addEventListener('click',()=>{
     clearTimeout(typingTimer);++requestId;$('inputText').value='';$('charCount').textContent='0 / 3000';
-    $('outputText').textContent=EMPTY_TEXT;$('outputText').className='output-text placeholder';$('statusText').textContent=getText('statusReady');updateButtons(false, false, false);renderDictionaryData(null);$('inputText').focus();
+    $('outputText').textContent=EMPTY_TEXT;$('outputText').className='output-text placeholder';$('statusText').textContent=getText('statusReady');updateButtons(false, false, false);renderDictionaryData(null);updateSaveButtonState();$('inputText').focus();
   });
 
   $('copyBtn').addEventListener('click',async()=>{
@@ -1001,9 +1212,16 @@ main {
     if(!source||!target||target===EMPTY_TEXT||isFailText(target))return;
     let item=state.history.find(x=>x.source===source&&x.target===target&&x.sl===state.sourceLang&&x.tl===state.targetLang);
     if(!item)item=addHistory(source,target,state.sourceLang,state.targetLang);
-    if(isSaved(item.id)){state.saved=state.saved.filter(x=>x.id!==item.id);showToast(getText('toastRemovedSaved'));}
-    else {state.saved=[item,...state.saved.filter(x=>x.id!==item.id)].slice(0,200);showToast(getText('toastAddedSaved'));}
-    persist();renderLists();
+    if(isSaved(item.id)){
+      state.saved=state.saved.filter(x=>x.id!==item.id);
+      showToast(getText('toastRemovedSaved'));
+    } else {
+      state.saved=[item,...state.saved.filter(x=>x.id!==item.id)].slice(0,200);
+      showToast(getText('toastAddedSaved'));
+    }
+    persist();
+    updateSaveButtonState();
+    renderLists();
   });
 
   function restoreEntry(item) {
@@ -1013,7 +1231,9 @@ main {
     updateHeaderLangUI();
     persist();
     $('charCount').textContent=`${item.source.length} / 3000`;
-    $('outputText').textContent=item.target;$('outputText').className='output-text';$('statusText').textContent=getText('statusOpened');updateButtons(true, true, false);switchTab('translate');
+    $('outputText').textContent=item.target;$('outputText').className='output-text';$('statusText').textContent=getText('statusOpened');updateButtons(true, true, false);
+    updateSaveButtonState();
+    switchTab('translate');
   }
 
   document.addEventListener('click',event=>{
@@ -1024,12 +1244,15 @@ main {
     if(action==='star' && item){
       if(isSaved(id)){state.saved=state.saved.filter(x=>x.id!==id);showToast(getText('toastRemovedSaved'));}
       else {state.saved=[item,...state.saved].slice(0,200);showToast(getText('toastAddedSaved'));}
-      persist();renderLists();return;
+      persist();renderLists();
+      updateSaveButtonState();
+      return;
     }
     if(action==='delete'){
       showConfirm(getText('confirmDeleteTitle'), getText('confirmDeleteDesc'), () => {
         state.history=state.history.filter(x=>x.id!==id);state.saved=state.saved.filter(x=>x.id!==id);
         persist();renderLists();showToast(getText('toastItemDeleted'));
+        updateSaveButtonState();
       });
       return;
     }

@@ -219,7 +219,7 @@
             fbTitle: "Send Feedback",
             fbDesc: "Help us improve Deevv Search by selecting a category and sharing your thoughts.",
             fbTopicLabel: "What can be improved?",
-            fbTopics: ["UI / Design", "Search Features", "Speed", "Other"],
+            fbTopics: ["UI", "Search Features", "Speed", "Other"],
             fbRatingLabel: "Overall experience",
             fbRatings: ["Very Satisfied", "Fairly Good", "Needs Improvement"],
             fbPlaceholder: "Write your feedback details here...",
@@ -227,7 +227,7 @@
             fbSuccess: "Successfully sent. Thank you!"
         },
         id: {
-            catSearch: "Pencarian", catApps: "Aplikasi", catLearnMore: "Informasi", catTranslateGroup: "Terjemahan",
+            catSearch: "Pencarian", catApps: "Aplikasi", catLearnMore: "Lebih banyak", catTranslateGroup: "Terjemahan",
             homepage: "Beranda", settings: "Preferensi", displayTheme: "Tema tampilan",
             light: "Terang", dark: "Gelap", system: "Sistem",
             weather: "Cuaca", translate: "Terjemahan", history: "Riwayat", saved: "Tersimpan",
@@ -235,7 +235,7 @@
             fbTitle: "Kirim Masukan",
             fbDesc: "Bantu kami meningkatkan Deevv Search dengan memilih kategori dan memberikan ulasan.",
             fbTopicLabel: "Apa yang bisa ditingkatkan?",
-            fbTopics: ["Tampilan / UI", "Fitur Pencarian", "Kecepatan", "Lainnya"],
+            fbTopics: ["Tampilan", "Fitur Pencarian", "Kecepatan", "Lainnya"],
             fbRatingLabel: "Bagaimana pengalaman Anda secara keseluruhan?",
             fbRatings: ["Sangat Puas", "Cukup Baik", "Perlu Perbaikan"],
             fbPlaceholder: "Tulis detail masukan Anda di sini...",
@@ -273,41 +273,7 @@
 
         let sidebarContent = '';
 
-        if (isTranslatePage) {
-            sidebarContent = `
-                <div class="popup-section-title">${t.catSearch}</div>
-                <div class="popup-group">
-                    <a href="index.html"><span>${t.homepage}</span></a>
-                    <div class="theme-dropdown-container" id="theme_dropdown_container">
-                        <button type="button" id="theme_dropdown_toggle">
-                            <span>${t.displayTheme}</span>
-                            <span class="theme-status-text">
-                                <span id="theme_status_label">${themeLabel}</span>
-                                <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
-                            </span>
-                        </button>
-                        <div class="theme-options-list">
-                            <div class="theme-options-inner">
-                                <button type="button" class="theme-option-btn ${currentTheme === 'light' ? 'active' : ''}" data-theme="light">${t.light}</button>
-                                <button type="button" class="theme-option-btn ${currentTheme === 'dark' ? 'active' : ''}" data-theme="dark">${t.dark}</button>
-                                <button type="button" class="theme-option-btn ${currentTheme === 'system' ? 'active' : ''}" data-theme="system">${t.system}</button>
-                            </div>
-                        </div>
-                    </div>
-                    <a href="settings"><span>${t.settings}</span></a>
-                </div>
 
-                <div class="popup-divider"></div>
-
-        <div class="popup-section-title">${t.catTranslateGroup}</div>
-        <div class="popup-group">
-            <a href="/translate" class="${!window.location.search.includes('tab=') && (currentPath === '/translate' || currentPath === '/translate/') ? 'active-menu' : ''}"><span>${t.translate}</span></a>
-            <a href="/translate?tab=history" class="${window.location.search.includes('tab=history') ? 'active-menu' : ''}"><span>${t.history}</span></a>
-            <a href="/translate?tab=saved" class="${window.location.search.includes('tab=saved') ? 'active-menu' : ''}"><span>${t.saved}</span></a>
-        </div>
-
-            `;
-        } else {
             sidebarContent = `
                 <div class="popup-section-title">${t.catSearch}</div>
                 <div class="popup-group">
@@ -344,7 +310,7 @@
                     <button type="button" onclick="openFeedbackModal()"><span>${t.feedback}</span></button>
                 </div>
             `;
-        }
+        
 
         sidebar.innerHTML = sidebarContent + `<div class="sidebar-footer">&copy; 2026 Deevv Search.</div>`;
     }
@@ -392,9 +358,7 @@
 
     buildModal();
 
-    function initUiModal() {
-        if (window.__uiModalReady) return;
-        window.__uiModalReady = true;
+    document.addEventListener('DOMContentLoaded', () => {
         const header = document.querySelector('header');
         if (header) {
             header.appendChild(sidebar);
@@ -445,14 +409,7 @@
                 });
             });
         }
-    }
-
-    // Jalan langsung kalau DOM sudah siap (mis. skrip disuntikkan dinamis di halaman SERP)
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initUiModal);
-    } else {
-        initUiModal();
-    }
+    });
 
     function setupChips(containerId) {
         const container = overlay.querySelector('#' + containerId);
