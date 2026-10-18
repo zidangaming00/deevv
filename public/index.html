@@ -126,174 +126,6 @@
       margin-left: 11px;
     }
 
-    /* ===== Sidebar Menu (Compact & Smaller Fonts) ===== */
-    .popup-menu {
-      position: fixed;
-      top: 0;
-      left: -280px;
-      width: 250px;
-      height: 100%;
-      background: var(--surface);
-      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
-      border-right: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      padding: 16px 12px;
-      z-index: 2000;
-      overflow-y: auto;
-      transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .popup-menu.active {
-      left: 0;
-    }
-
-    /* Backdrop untuk Sidebar */
-    .sidebar-backdrop {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.4);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
-      z-index: 1999;
-    }
-    .popup-menu.active ~ .sidebar-backdrop,
-    body:has(.popup-menu.active) .sidebar-backdrop {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .popup-section-title {
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.4px;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      padding: 6px 12px 2px;
-      margin-top: 4px;
-    }
-
-    .popup-group {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-      padding: 2px 0;
-    }
-
-    .popup-divider {
-      height: 1px;
-      background: var(--border-color);
-      margin: 8px 4px;
-    }
-
-    .popup-menu a, .popup-menu button {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      padding: 8px 12px;
-      text-decoration: none;
-      color: var(--text-main);
-      font-size: 13px;
-      font-weight: 500;
-      background: none;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      text-align: left;
-      transition: background 0.2s ease;
-    }
-    .popup-menu a:hover, .popup-menu button:hover {
-      background: rgba(0, 0, 0, 0.04);
-    }
-    body.dark .popup-menu a:hover, body.dark .popup-menu button:hover {
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .theme-status-text {
-      font-size: 11.5px;
-      font-weight: 500;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    
-    .theme-status-text svg {
-      width: 14px;
-      height: 14px;
-      fill: currentColor;
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    /* Theme Dropdown Sub-menu dengan Animasi Bouncy */
-    .theme-dropdown-container {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-    }
-
-    .theme-options-list {
-      display: grid;
-      grid-template-rows: 0fr;
-      transition: grid-template-rows 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease, margin 0.3s ease;
-      opacity: 0;
-      margin: 0;
-      overflow: hidden;
-    }
-
-    .theme-options-inner {
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-      padding: 0 0 0 12px;
-    }
-    
-    .theme-dropdown-container.open .theme-options-list {
-      grid-template-rows: 1fr;
-      opacity: 1;
-      margin: 2px 0;
-    }
-
-    .theme-dropdown-container.open .theme-status-text svg {
-      transform: rotate(180deg);
-    }
-
-    .theme-option-btn {
-      padding: 7px 10px;
-      font-size: 12.5px;
-      font-weight: 400;
-      border-radius: 8px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      text-align: left;
-      color: var(--text-main);
-      width: 100%;
-      transition: background 0.15s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .theme-option-btn:hover {
-      background: rgba(0, 0, 0, 0.05);
-      transform: translateX(3px);
-    }
-    body.dark .theme-option-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-    }
-    .theme-option-btn.active {
-      font-weight: 600;
-      color: var(--primary);
-    }
-
-    /* Sidebar Footer Copyright */
-    .sidebar-footer {
-      margin-top: auto;
-      padding: 16px 12px 8px;
-      font-size: 11.5px;
-      color: var(--text-muted);
-      border-top: 1px solid var(--border-color);
-    }
-
     header:has(.popup-menu.active) .burger-btn span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
     header:has(.popup-menu.active) .burger-btn span:nth-child(2) { opacity: 0; transform: translateX(-6px); }
     header:has(.popup-menu.active) .burger-btn span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
@@ -808,8 +640,6 @@
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; transition: none !important; }
     }
-
-
   </style>
 </head>
 <body>
@@ -820,71 +650,7 @@
       <span></span>
       <span></span>
     </button>
-
-    <div class="sidebar-backdrop" id="sidebar_backdrop"></div>
-
-    <div class="popup-menu" id="popup_menu">
-      <!-- Search Group -->
-      <div class="popup-section-title" data-i18n="catSearch">Search</div>
-      <div class="popup-group">
-        <a href="index.html">
-          <span data-i18n="menuHomepage">Homepage</span>
-        </a>
-        
-        <!-- Theme Dropdown Container -->
-        <div class="theme-dropdown-container" id="theme_dropdown_container">
-          <button type="button" id="theme_dropdown_toggle">
-            <span data-i18n="menuDisplayTheme">Display theme</span>
-            <span class="theme-status-text">
-              <span id="theme_status_label">Terang</span>
-              <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
-            </span>
-          </button>
-          <div class="theme-options-list">
-            <div class="theme-options-inner">
-              <button type="button" class="theme-option-btn" data-theme="light" data-i18n="themeLight">Terang</button>
-              <button type="button" class="theme-option-btn" data-theme="dark" data-i18n="themeDark">Gelap</button>
-              <button type="button" class="theme-option-btn" data-theme="system" data-i18n="themeSystem">Sistem</button>
-            </div>
-          </div>
-        </div>
-
-        <a href="settings">
-          <span data-i18n="menuSettings">Preferences</span>
-        </a>
-      </div>
-
-      <div class="popup-divider"></div>
-
-      <!-- Apps Group -->
-      <div class="popup-section-title" data-i18n="catApps">Apps</div>
-      <div class="popup-group">
-        <a href="/search?q=weather">
-          <span data-i18n="menuWeather">Weather</span>
-        </a>
-        <a href="/translate">
-          <span data-i18n="menuTranslate">Translate</span>
-        </a>
-      </div>
-
-      <div class="popup-divider"></div>
-
-      <!-- Learn more Group -->
-      <div class="popup-section-title" data-i18n="catLearnMore">Learn more</div>
-      <div class="popup-group">
-        <a href="about.html">
-          <span data-i18n="menuAbout">About</span>
-        </a>
-        <a href="privacy.html">
-          <span data-i18n="menuPrivacy">Privacy</span>
-        </a>
-      </div>
-
-      <!-- Sidebar Footer Copyright -->
-      <div class="sidebar-footer">
-        &copy; 2026 Deevv Search.
-      </div>
-    </div>
+    <!-- Sidebar otomatis disuntikkan secara dinamis oleh feedback-modal.js -->
   </header>
 
   <div class="container">
@@ -987,7 +753,7 @@
   </div>
 
   <script src="cookie.js"></script>
-  <script src="feedback-modal.js"></script>
+  <script src="ui-modal.js"></script>
 
   <script>
     const settingsObj = typeof getData === 'function' ? getData() : {};
@@ -1123,7 +889,6 @@
         labelEl.textContent = getText('themeSystem');
       }
 
-      // Tandai tombol aktif pada dropdown
       document.querySelectorAll('.theme-option-btn').forEach(btn => {
         if (btn.getAttribute('data-theme') === themePref) {
           btn.classList.add('active');
@@ -1171,26 +936,6 @@
       var themeBtn = document.getElementById('theme-toggle-btn');
       if (themeBtn) {
         themeBtn.addEventListener('click', toggleTheme);
-      }
-
-      // Setup dropdown tema di sidebar
-      const themeContainer = document.getElementById('theme_dropdown_container');
-      const themeToggleBtn = document.getElementById('theme_dropdown_toggle');
-
-      if (themeToggleBtn && themeContainer) {
-        themeToggleBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          themeContainer.classList.toggle('open');
-        });
-
-        document.querySelectorAll('.theme-option-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const selectedTheme = btn.getAttribute('data-theme');
-            setTheme(selectedTheme);
-            themeContainer.classList.remove('open');
-          });
-        });
       }
     });
 
@@ -1289,29 +1034,6 @@
       return h;
     }
 
-    function syncFavAddButton() {
-      const existing = favsGrid.querySelector('.fav-add')?.closest('.fav-item');
-      if (favs.length < FAV_MAX && !existing) {
-        const item = document.createElement('div');
-        item.className = 'fav-item';
-        const add = document.createElement('button');
-        add.type = 'button';
-        add.className = 'fav fav-add';
-        add.innerHTML = `<div class="fav-ico"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div><span class="fav-name">${getText('favAdd')}</span>`;
-        add.addEventListener('click', () => {
-          favForm.reset();
-          favError.textContent = '';
-          favDialog.showModal();
-          favUrlInput.focus();
-        });
-        item.appendChild(add);
-        favsGrid.appendChild(item);
-      } else if (favs.length >= FAV_MAX && existing) {
-        existing.remove();
-      }
-      favsGrid.classList.toggle('is-empty', favs.length === 0);
-    }
-
     function renderFavs() {
       favsGrid.innerHTML = '';
       favsGrid.classList.toggle('is-empty', favs.length === 0);
@@ -1374,7 +1096,6 @@
             if (!favs.length) favsBox.classList.remove('editing');
             favsEdit.classList.toggle('is-hidden', favs.length === 0);
             favsEdit.textContent = favsBox.classList.contains('editing') ? getText('favDone') : getText('favEdit');
-            syncFavAddButton();
           };
           item.addEventListener('transitionend', function onRemoveTransition(event) {
             if (event.target !== item || event.propertyName !== 'opacity') return;
@@ -1450,27 +1171,6 @@
     const voiceOverlay = document.getElementById('voice_overlay');
     const voiceStatus = document.getElementById('voice_status');
     const closeVoice = document.getElementById('close_voice');
-
-    const menuBtn = document.getElementById('menu_btn');
-    const popupMenu = document.getElementById('popup_menu');
-    const sidebarBackdrop = document.getElementById('sidebar_backdrop');
-
-    menuBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      popupMenu.classList.toggle('active');
-    });
-
-    sidebarBackdrop.addEventListener('click', () => {
-      popupMenu.classList.remove('active');
-      document.getElementById('theme_dropdown_container')?.classList.remove('open');
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!popupMenu.contains(e.target) && !menuBtn.contains(e.target)) {
-        popupMenu.classList.remove('active');
-        document.getElementById('theme_dropdown_container')?.classList.remove('open');
-      }
-    });
 
     function fetchSuggestions(query) {
       fetch('https://datasearch.searchdata.workers.dev/suggest?q=' + encodeURIComponent(query))
