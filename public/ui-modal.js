@@ -117,7 +117,6 @@
         }
         .popup-menu a:hover, .popup-menu button:hover { background: rgba(0, 0, 0, 0.04); }
         body.dark .popup-menu a:hover, body.dark .popup-menu button:hover { background: rgba(255, 255, 255, 0.06); }
-        .popup-menu a.active-menu { background: rgba(26, 115, 232, 0.08); font-weight: 600; color: var(--primary, #1a73e8); }
         
         .theme-status-text {
             font-size: 11.5px; font-weight: 500; color: var(--text-muted, #5f6368);
@@ -261,8 +260,6 @@
 
     function buildSidebar() {
         const t = I18N_DATA[getLang()];
-        const currentPath = window.location.pathname;
-        const isTranslatePage = currentPath.includes('translate');
         const currentTheme = (typeof getData === 'function' ? getData().theme : 'system') || 'system';
         
         const themeNames = {
@@ -277,7 +274,7 @@
             sidebarContent = `
                 <div class="popup-section-title">${t.catSearch}</div>
                 <div class="popup-group">
-                    <a href="index.html" class="${currentPath.endsWith('index.html') || currentPath === '/' ? 'active-menu' : ''}"><span>${t.homepage}</span></a>
+                    <a href="/"><span>${t.homepage}</span></a>
                     <div class="theme-dropdown-container" id="theme_dropdown_container">
                         <button type="button" id="theme_dropdown_toggle">
                             <span>${t.displayTheme}</span>
@@ -358,7 +355,9 @@
 
     buildModal();
 
-    document.addEventListener('DOMContentLoaded', () => {
+    function initUiModal() {
+        if (window.__uiModalReady) return;
+        window.__uiModalReady = true;
         const header = document.querySelector('header');
         if (header) {
             header.appendChild(sidebar);
@@ -409,7 +408,14 @@
                 });
             });
         }
-    });
+    }
+
+    // Jalan langsung kalau DOM sudah siap (mis. skrip disuntikkan dinamis di halaman SERP)
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initUiModal);
+    } else {
+        initUiModal();
+    }
 
     function setupChips(containerId) {
         const container = overlay.querySelector('#' + containerId);
