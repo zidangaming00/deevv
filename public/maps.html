@@ -171,6 +171,7 @@ body.dark .burger-btn{background:rgba(138,180,248,.12)}.burger-btn:hover{backgro
 .nb-then[hidden]{display:none}.nb-then svg{width:22px;height:22px;fill:#fff}
 .nb-ico{width:52px;height:52px;display:flex;align-items:center;justify-content:center;flex-shrink:0}.nb-ico svg{width:46px;height:46px;fill:#fff;transition:transform .3s}
 .nb-dist{font-size:26px;font-weight:700;line-height:1.1}.nb-text{font-size:16px;opacity:.95;margin-top:3px;line-height:1.25}
+body.navigating .nav-banner{display:flex}body.navigating .top,body.navigating .sheet-nav,body.navigating .panel-close{display:none!important}
 /* Panel navigasi bawah */
 body.navigating #sheet-title{display:none}body.navigating .sheet-content{overflow:hidden}
 .nv{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 4px 0}
@@ -259,7 +260,6 @@ body.navigating #sheet-title{display:none}body.navigating .sheet-content{overflo
 <div class="toast" id="toast"></div>
 <div id="map"></div>
 
-<script src="/js/cookie.js"></script>
 <script>
 /* Cadangan kalau cookie.js tidak termuat: baca/tulis cookie "settings" (JSON) yang sama */
 if(typeof getData!=='function'){window.getData=function(){try{var m=document.cookie.match(/(?:^|; )settings=([^;]*)/);if(!m)return{};try{return JSON.parse(decodeURIComponent(m[1]))}catch(e){return JSON.parse(m[1])}}catch(e){return{}}}}
