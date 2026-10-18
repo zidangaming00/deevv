@@ -299,12 +299,13 @@
 
                 <div class="popup-divider"></div>
 
-                <div class="popup-section-title">${t.catTranslateGroup}</div>
-                <div class="popup-group">
-                    <a href="/translate" class="${currentPath === '/translate' || currentPath === '/translate/' ? 'active-menu' : ''}"><span>${t.translate}</span></a>
-                    <a href="/translate/history" class="${currentPath.includes('history') ? 'active-menu' : ''}"><span>${t.history}</span></a>
-                    <a href="/translate/saved" class="${currentPath.includes('saved') ? 'active-menu' : ''}"><span>${t.saved}</span></a>
-                </div>
+        <div class="popup-section-title">${t.catTranslateGroup}</div>
+        <div class="popup-group">
+            <a href="/translate" class="${!window.location.search.includes('tab=') && (currentPath === '/translate' || currentPath === '/translate/') ? 'active-menu' : ''}"><span>${t.translate}</span></a>
+            <a href="/translate?tab=history" class="${window.location.search.includes('tab=history') ? 'active-menu' : ''}"><span>${t.history}</span></a>
+            <a href="/translate?tab=saved" class="${window.location.search.includes('tab=saved') ? 'active-menu' : ''}"><span>${t.saved}</span></a>
+        </div>
+
             `;
         } else {
             sidebarContent = `
