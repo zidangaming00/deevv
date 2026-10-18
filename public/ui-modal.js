@@ -1,5 +1,58 @@
-// feedback-modal.js — Modul Terpadu: Sidebar Dinamis (Multi-halaman) & Popup Masukan (Bilingual)
+// ui-modal.js — Modul Terpadu: Sidebar Dinamis, Tema, & Popup Masukan
 (function() {
+    // --- 1. FUNGSI MANAJEMEN TEMA GLOBAL ---
+    window.applyTheme = function() {
+        try {
+            var config = typeof getData === 'function' ? getData() : {};
+            var themePref = config.theme || 'system';
+            var prefersDark = matchMedia("(prefers-color-scheme: dark)").matches;
+            var isDark = themePref === "dark" || (themePref === "system" && prefersDark);
+            
+            if (isDark) {
+                document.body.classList.add("dark");
+                document.documentElement.classList.add("dark");
+            } else {
+                document.body.classList.remove("dark");
+                document.documentElement.classList.remove("dark");
+            }
+            
+            // Perbarui teks status tema di sidebar jika ada
+            var labelEl = document.getElementById('theme_status_label');
+            if (labelEl) {
+                const lang = (typeof getData === 'function' && getData().lang === 'en') ? 'en' : 'id';
+                const themeNames = {
+                    en: { light: "Light", dark: "Dark", system: "System" },
+                    id: { light: "Terang", dark: "Gelap", system: "Sistem" }
+                };
+                labelEl.textContent = themeNames[lang][themePref] || themeNames[lang]['system'];
+            }
+
+            document.querySelectorAll('.theme-option-btn').forEach(btn => {
+                if (btn.getAttribute('data-theme') === themePref) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        } catch(e) {}
+    };
+
+    window.setTheme = function(newTheme) {
+        if (typeof updateSetting === "function") {
+            updateSetting("theme", newTheme);
+        } else {
+            document.cookie = "theme=" + newTheme + "; path=/; max-age=31536000; SameSite=Lax";
+        }
+        window.applyTheme();
+    };
+
+    // Jalankan applyTheme saat pertama kali dimuat
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', window.applyTheme);
+    } else {
+        window.applyTheme();
+    }
+
     const style = document.createElement('style');
     style.textContent = `
         /* --- STYLE SIDEBAR & BACKDROP --- */
@@ -156,7 +209,6 @@
     `;
     document.head.appendChild(style);
 
-    // Kamus Dua Bahasa Terpadu (Menambahkan terjemahan untuk Translate, History, Saved)
     const I18N_DATA = {
         en: {
             catSearch: "Search", catApps: "Apps", catLearnMore: "Learn more", catTranslateGroup: "Translation",
@@ -199,7 +251,6 @@
         } catch(e) { return 'id'; }
     }
 
-    // --- 1. RENDER & MASUKKAN SIDEBAR KE DOM SECARA DINAMIS ---
     const backdrop = document.createElement('div');
     backdrop.className = 'sidebar-backdrop';
     backdrop.id = 'sidebar_backdrop';
@@ -213,12 +264,16 @@
         const currentPath = window.location.pathname;
         const isTranslatePage = currentPath.includes('translate');
         const currentTheme = (typeof getData === 'function' ? getData().theme : 'system') || 'system';
-        const themeLabel = currentTheme === 'dark' ? t.dark : (currentTheme === 'light' ? t.light : t.system);
+        
+        const themeNames = {
+            en: { light: "Light", dark: "Dark", system: "System" },
+            id: { light: "Terang", dark: "Gelap", system: "Sistem" }
+        };
+        const themeLabel = themeNames[getLang()][currentTheme] || themeNames[getLang()]['system'];
 
         let sidebarContent = '';
 
         if (isTranslatePage) {
-            // === STRUKTUR KHUSUS HALAMAN TRANSLATE ===
             sidebarContent = `
                 <div class="popup-section-title">${t.catSearch}</div>
                 <div class="popup-group">
@@ -246,22 +301,12 @@
 
                 <div class="popup-section-title">${t.catTranslateGroup}</div>
                 <div class="popup-group">
-                    <a href="/translate" class="active-menu"><span>${t.translate}</span></a>
-                    <a href="/translate/history"><span>${t.history}</span></a>
-                    <a href="/translate/saved"><span>${t.saved}</span></a>
-                </div>
-
-                <div class="popup-divider"></div>
-
-                <div class="popup-section-title">${t.catLearnMore}</div>
-                <div class="popup-group">
-                    <a href="about.html"><span>${t.about}</span></a>
-                    <a href="privacy.html"><span>${t.privacy}</span></a>
-                    <button type="button" onclick="openFeedbackModal()"><span>${t.feedback}</span></button>
+                    <a href="/translate" class="${currentPath === '/translate' || currentPath === '/translate/' ? 'active-menu' : ''}"><span>${t.translate}</span></a>
+                    <a href="/translate/history" class="${currentPath.includes('history') ? 'active-menu' : ''}"><span>${t.history}</span></a>
+                    <a href="/translate/saved" class="${currentPath.includes('saved') ? 'active-menu' : ''}"><span>${t.saved}</span></a>
                 </div>
             `;
         } else {
-            // === STRUKTUR STANDAR (HALAMAN UTAMA, DLL) ===
             sidebarContent = `
                 <div class="popup-section-title">${t.catSearch}</div>
                 <div class="popup-group">
@@ -305,7 +350,6 @@
 
     buildSidebar();
 
-    // --- 2. RENDER FEEDBACK MODAL KE DOM ---
     const overlay = document.createElement('div');
     overlay.className = 'fb-overlay';
 
@@ -358,7 +402,6 @@
         }
         document.body.appendChild(overlay);
 
-        // Event listener Sidebar & Tema
         const menuBtn = document.getElementById('menu_btn');
         if (menuBtn) {
             menuBtn.addEventListener('click', (e) => {
@@ -391,11 +434,9 @@
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const selectedTheme = btn.getAttribute('data-theme');
-                    if (typeof setTheme === 'function') {
-                        setTheme(selectedTheme);
-                    } else {
-                        document.cookie = "theme=" + selectedTheme + "; path=/; max-age=31536000";
-                        location.reload();
+                    // Menggunakan fungsi setTheme yang aman secara global
+                    if (typeof window.setTheme === 'function') {
+                        window.setTheme(selectedTheme);
                     }
                     themeContainer.classList.remove('open');
                 });
@@ -403,7 +444,6 @@
         }
     });
 
-    // --- 3. EVENT HANDLER FEEDBACK MODAL ---
     function setupChips(containerId) {
         const container = overlay.querySelector('#' + containerId);
         if (!container) return;
@@ -437,7 +477,6 @@
             const selectedRating = overlay.querySelector('#fb-rating-chips .fb-chip.active')?.dataset.rating || '';
             const detailText = currentTextarea.value.trim();
             
-            console.log({ topic: selectedTopic, rating: selectedRating, detail: detailText });
             const msg = I18N_DATA[getLang()].fbSuccess;
 
             if (typeof showToast === 'function') {

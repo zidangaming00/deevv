@@ -898,32 +898,6 @@
       });
     }
 
-    function applyTheme() {
-      try {
-        var config = typeof getData === 'function' ? getData() : {};
-        var themePref = config.theme || 'system';
-        var prefersDark = matchMedia("(prefers-color-scheme: dark)").matches;
-        var isDark = themePref === "dark" || (themePref === "system" && prefersDark);
-        
-        if (isDark) {
-          document.body.classList.add("dark");
-        } else {
-          document.body.classList.remove("dark");
-        }
-        updateThemeBtnText(isDark);
-        updateThemeStatusLabel(themePref);
-      } catch(e) {}
-    }
-
-    function setTheme(newTheme) {
-      if (typeof updateSetting === "function") {
-        updateSetting("theme", newTheme);
-      } else {
-        document.cookie = "theme=" + newTheme + "; path=/; max-age=31536000";
-      }
-      applyTheme();
-    }
-
     function toggleTheme() {
       var config = typeof getData === 'function' ? getData() : {};
       var currentPref = config.theme || 'system';
