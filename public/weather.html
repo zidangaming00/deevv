@@ -131,10 +131,17 @@ header:has(.popup-menu.active) .burger-btn span:nth-child(3){transform:translate
 const cfg = typeof getData === 'function' ? getData() : {};
 const ID = cfg.lang !== 'en', LOC = ID ? 'id-ID' : 'en-US';
 const T = {
-  en:{navToday:'Today',g_morning:'Good morning',g_day:'Good afternoon',g_dusk:'Good evening',g_night:'Good night',tip_storm:'Thunderstorms possible. Better to stay indoors.',tip_rain:'Bring an umbrella or a raincoat before heading out.',tip_snow:'Dress warm before you go out.',tip_wet:'High chance of rain today, keep an umbrella handy.',tip_hot:'It feels hot out there. Drink plenty of water.',tip_uv:'UV is high. Wear sunscreen outdoors.',tip_morning:'Hope you have a great day ahead.',tip_day:'Nice conditions to get things done.',tip_dusk:'A good time to slow down and unwind.',tip_night:'Rest well tonight.',next7:'Next 7 days',sunpath:'Sun path',moonpath:'Moon path',p_morning:'Morning',p_day:'Afternoon',p_dusk:'Evening',p_night:'Night',h:'h',m:'m',navWeek:'7 days',navPlaces:'Places',searchPh:'Search city...',myLoc:'My location',savedPlaces:'Saved places',noSaved:'No saved places yet. Tap the bookmark on the Today page to add one.',noResult:'No places found.',now:'Now',today:'Today',hourly:'Next 24 hours',details:'Details',feels:'Feels like',humidity:'Humidity',wind:'Wind',pressure:'Pressure',uv:'UV index',rain:'Chance of rain',sunrise:'Sunrise',sunset:'Sunset',hi:'H',lo:'L',err:'Could not load weather.',retry:'Try again',save:'Save place',unsave:'Remove place',saved:'Place saved',removed:'Place removed',locating:'Finding your location...',geoFail:'Location unavailable. Check permission.',here:'My location',w:{0:'Clear sky',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Light showers',81:'Showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm, hail',99:'Severe thunderstorm'}},
-  id:{navToday:'Hari ini',g_morning:'Selamat pagi',g_day:'Selamat siang',g_dusk:'Selamat sore',g_night:'Selamat malam',tip_storm:'Ada potensi petir. Sebaiknya tetap di dalam ruangan.',tip_rain:'Bawa payung atau jas hujan sebelum keluar.',tip_snow:'Pakai pakaian hangat sebelum keluar.',tip_wet:'Peluang hujan tinggi hari ini, siapkan payung.',tip_hot:'Cuaca terasa panas, perbanyak minum air.',tip_uv:'Indeks UV tinggi, pakai tabir surya saat di luar.',tip_morning:'Semoga harimu menyenangkan.',tip_day:'Cuaca bersahabat untuk beraktivitas.',tip_dusk:'Waktu yang pas untuk bersantai.',tip_night:'Selamat beristirahat.',next7:'7 hari ke depan',sunpath:'Perjalanan matahari',moonpath:'Perjalanan bulan',p_morning:'Pagi',p_day:'Siang',p_dusk:'Sore',p_night:'Malam',h:'j',m:'m',navWeek:'7 hari',navPlaces:'Lokasi',searchPh:'Cari kota...',myLoc:'Lokasi saya',savedPlaces:'Lokasi tersimpan',noSaved:'Belum ada lokasi tersimpan. Ketuk ikon bookmark di halaman Hari ini untuk menambah.',noResult:'Lokasi tidak ditemukan.',now:'Sekarang',today:'Hari ini',hourly:'24 jam ke depan',details:'Detail',feels:'Terasa seperti',humidity:'Kelembapan',wind:'Angin',pressure:'Tekanan',uv:'Indeks UV',rain:'Peluang hujan',sunrise:'Matahari terbit',sunset:'Matahari terbenam',hi:'T',lo:'R',err:'Gagal memuat cuaca.',retry:'Coba lagi',save:'Simpan lokasi',unsave:'Hapus lokasi',saved:'Lokasi disimpan',removed:'Lokasi dihapus',locating:'Mencari lokasimu...',geoFail:'Lokasi tidak tersedia. Periksa izin.',here:'Lokasi saya',w:{0:'Cerah',1:'Cerah berawan tipis',2:'Berawan sebagian',3:'Mendung',45:'Berkabut',51:'Gerimis ringan',53:'Gerimis',55:'Gerimis lebat',61:'Hujan ringan',63:'Hujan',65:'Hujan lebat',71:'Salju ringan',73:'Salju',75:'Salju lebat',80:'Hujan sesaat ringan',81:'Hujan sesaat',82:'Hujan sesaat lebat',95:'Badai petir',96:'Badai petir, es',99:'Badai petir hebat'}}
+  en:{navToday:'Today',g_morning:'Good morning',g_day:'Good afternoon',g_dusk:'Good evening',g_night:'Good night',tip_storm:'Thunderstorms possible. Better to stay indoors.',tip_rain:'Bring an umbrella or a raincoat before heading out.',tip_snow:'Dress warm before you go out.',tip_wet:'High chance of rain today, keep an umbrella handy.',tip_hot:'It feels hot out there. Drink plenty of water.',tip_uv:'UV is high. Wear sunscreen outdoors.',tip_morning:'Hope you have a great day ahead.',tip_day:'Nice conditions to get things done.',tip_dusk:'A good time to slow down and unwind.',tip_night:'Rest well tonight.',next7:'Next 7 days',sunpath:'Sun path',moonpath:'Moon path',night_label:'Night',p_morning:'Morning',p_day:'Afternoon',p_dusk:'Evening',p_night:'Night',h:'h',m:'m',navWeek:'7 days',navPlaces:'Places',searchPh:'Search city...',myLoc:'My location',savedPlaces:'Saved places',noSaved:'No saved places yet. Tap the bookmark on the Today page to add one.',noResult:'No places found.',now:'Now',today:'Today',hourly:'Next 24 hours',details:'Details',feels:'Feels like',humidity:'Humidity',wind:'Wind',pressure:'Pressure',uv:'UV index',rain:'Chance of rain',sunrise:'Sunrise',sunset:'Sunset',hi:'H',lo:'L',err:'Could not load weather.',retry:'Try again',save:'Save place',unsave:'Remove place',saved:'Place saved',removed:'Place removed',locating:'Finding your location...',geoFail:'Location unavailable. Check permission.',here:'My location',w:{0:'Clear sky',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Light showers',81:'Showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm, hail',99:'Severe thunderstorm'}},
+  id:{navToday:'Hari ini',g_morning:'Selamat pagi',g_day:'Selamat siang',g_dusk:'Selamat sore',g_night:'Selamat malam',tip_storm:'Ada potensi petir. Sebaiknya tetap di dalam ruangan.',tip_rain:'Bawa payung atau jas hujan sebelum keluar.',tip_snow:'Pakai pakaian hangat sebelum keluar.',tip_wet:'Peluang hujan tinggi hari ini, siapkan payung.',tip_hot:'Cuaca terasa panas, perbanyak minum air.',tip_uv:'Indeks UV tinggi, pakai tabir surya saat di luar.',tip_morning:'Semoga harimu menyenangkan.',tip_day:'Cuaca bersahabat untuk beraktivitas.',tip_dusk:'Waktu yang pas untuk bersantai.',tip_night:'Selamat beristirahat.',next7:'7 hari ke depan',sunpath:'Perjalanan matahari',moonpath:'Perjalanan bulan',night_label:'Malam',p_morning:'Pagi',p_day:'Siang',p_dusk:'Sore',p_night:'Malam',h:'j',m:'m',navWeek:'7 hari',navPlaces:'Lokasi',searchPh:'Cari kota...',myLoc:'Lokasi saya',savedPlaces:'Lokasi tersimpan',noSaved:'Belum ada lokasi tersimpan. Ketuk ikon bookmark di halaman Hari ini untuk menambah.',noResult:'Lokasi tidak ditemukan.',now:'Sekarang',today:'Hari ini',hourly:'24 jam ke depan',details:'Detail',feels:'Terasa seperti',humidity:'Kelembapan',wind:'Angin',pressure:'Tekanan',uv:'Indeks UV',rain:'Peluang hujan',sunrise:'Matahari terbit',sunset:'Matahari terbenam',hi:'T',lo:'R',err:'Gagal memuat cuaca.',retry:'Coba lagi',save:'Simpan lokasi',unsave:'Hapus lokasi',saved:'Lokasi disimpan',removed:'Lokasi dihapus',locating:'Mencari lokasimu...',geoFail:'Lokasi tidak tersedia. Periksa izin.',here:'Lokasi saya',w:{0:'Cerah',1:'Cerah berawan tipis',2:'Berawan sebagian',3:'Mendung',45:'Berkabut',51:'Gerimis ringan',53:'Gerimis',55:'Gerimis lebat',61:'Hujan ringan',63:'Hujan',65:'Hujan lebat',71:'Salju ringan',73:'Salju',75:'Salju lebat',80:'Hujan sesaat ringan',81:'Hujan sesaat',82:'Hujan sesaat lebat',95:'Badai petir',96:'Badai petir, es',99:'Badai petir hebat'}}
 };
 const L = ID ? T.id : T.en, t = k => L[k] ?? T.en[k];
+
+// Format jam dinamis: Standar Indonesia menggunakan titik satu (.), standar global menggunakan titik dua (:)
+const fmtTime = s => {
+  const timeStr = s.slice(11, 16);
+  return ID ? timeStr.replace(':', '.') : timeStr;
+};
+
 const P = {
  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2m-15.07-7.07 1.41 1.41m11.32 11.32 1.41 1.41m0-14.14-1.41 1.41M6.34 17.66l-1.41 1.41"/>',
  moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
@@ -204,11 +211,13 @@ async function load() {
     $('retry').onclick = load;
   }
 }
-const hhmm = s => s.slice(11, 16);
+
 function hourLabel(s) {
   const h = +s.slice(11, 13);
-  return ID ? `${String(h).padStart(2, '0')}.00` : `${h % 12 || 12} ${h < 12 ? 'AM' : 'PM'}`;
+  const timeRaw = ID ? `${String(h).padStart(2, '0')}.00` : `${h % 12 || 12} ${h < 12 ? 'AM' : 'PM'}`;
+  return timeRaw;
 }
+
 const mins = s => +s.slice(11, 13) * 60 + +s.slice(14, 16);
 function dayPart(c, d) {
   const n = mins(c.time), sr = mins(d.sunrise[0]), ss = mins(d.sunset[0]);
@@ -220,16 +229,14 @@ function dayPart(c, d) {
 
 function sunArc(c, d) {
   const n = mins(c.time), sr = mins(d.sunrise[0]), ss = mins(d.sunset[0]);
-  const isNightPath = n >= (ss + 1); // Aktif minimal 1 menit di atas sunset jam akhir
+  const isNightPath = n >= (ss + 1); 
   
   if (!isNightPath) {
-    // Tampilan Sun Path (Siang Hari) dengan emoji ☀️
     const len = ss - sr;
     const p = Math.min(1, Math.max(0, (n - sr) / len)), th = Math.PI * (1 - p), off = n < sr || n > ss;
     return `<div class="arc-cap">${t('sunpath')}</div><svg viewBox="0 0 300 112" class="arc" aria-hidden="true"><path d="M10 96H290" class="arc-b"/><path d="M24 96A126 84 0 0 1 276 96" class="arc-l" fill="none"/>${off ? '' : `<path d="M24 96A126 84 0 0 1 276 96" class="arc-p" pathLength="100" stroke-dasharray="${(p * 100).toFixed(1)} 100"/>`}<text x="${(150 + 126 * Math.cos(th)).toFixed(1)}" y="${(96 - 84 * Math.sin(th)).toFixed(1)}" class="arc-d${off ? ' off' : ''}">☀️</text></svg>
-    <div class="arc-t"><span>${svg('rise')}${hhmm(d.sunrise[0])}</span><em>${Math.floor(len / 60)} ${t('h')} ${len % 60} ${t('m')}</em><span>${svg('set')}${hhmm(d.sunset[0])}</span></div>`;
+    <div class="arc-t"><span>${svg('rise')}${fmtTime(d.sunrise[0])}</span><em>${Math.floor(len / 60)} ${t('h')} ${len % 60} ${t('m')}</em><span>${svg('set')}${fmtTime(d.sunset[0])}</span></div>`;
   } else {
-    // Tampilan Moon Path (Malam Hari) dengan emoji 🌕
     const nextSr = sr + 1440; 
     const nightLen = nextSr - ss;
     const p = Math.min(1, Math.max(0, (n - ss) / nightLen)), th = Math.PI * (1 - p);
@@ -241,7 +248,7 @@ function sunArc(c, d) {
       <path d="M24 96A126 84 0 0 1 276 96" stroke="#8ab4f8" stroke-width="2.5" fill="none" pathLength="100" stroke-dasharray="${(p * 100).toFixed(1)} 100"/>
       <text x="${(150 + 126 * Math.cos(th)).toFixed(1)}" y="${(96 - 84 * Math.sin(th)).toFixed(1)}" class="arc-d">🌕</text>
     </svg>
-    <div class="arc-t"><span>${svg('set')}${hhmm(d.sunset[0])}</span><em>Malam</em><span>${svg('rise')}${hhmm(d.sunrise[0])}</span></div>`;
+    <div class="arc-t"><span>${svg('set')}${fmtTime(d.sunset[0])}</span><em>${t('night_label')}</em><span>${svg('rise')}${fmtTime(d.sunrise[0])}</span></div>`;
   }
 }
 
@@ -264,7 +271,7 @@ function render() {
   
   $('todayBody').innerHTML = `
    <div class="hero" data-time="${part}" data-tone="${tone}">
-     <div class="hero-top">${svg('pin')}<div class="place-name">${esc(S.cur.n)}</div><span class="place-time">${t('p_' + part)} · ${hhmm(c.time).replace(':', ID ? '.' : ':')}</span>
+     <div class="hero-top">${svg('pin')}<div class="place-name">${esc(S.cur.n)}</div><span class="place-time">${t('p_' + part)} · ${fmtTime(c.time)}</span>
        <button class="icon-btn${isSaved(S.cur) ? ' on' : ''}" id="saveBtn" type="button" aria-label="${isSaved(S.cur) ? t('unsave') : t('save')}">${svg('mark')}</button></div>
      <div class="greet"><b>${t('g_' + part)}</b><span>${t(tipKey)}</span></div>
      <div class="hero-main"><div class="temp">${deg(c.temperature_2m)}<sup>${us}</sup></div><div class="hero-icon">${svg(ic)}</div></div>
