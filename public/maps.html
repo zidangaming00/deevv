@@ -127,7 +127,6 @@ body.dark .burger-btn{background:rgba(138,180,248,.12)}.burger-btn:hover{backgro
 .dist{font-size:12px;color:var(--accent);font-weight:550;flex-shrink:0}
 .photo-container{position:relative;width:100%;height:190px;border-radius:16px;overflow:hidden;margin:10px 0;background:var(--hover)}
 .photo-container .ph{width:100%;height:100%}.photo-container .pp{width:34px;height:34px}
-/* Foto tempat: pratinjau peta (bangunan & label) dulu, diganti foto asli bila ada */
 .ph{position:relative;overflow:hidden;background:var(--hover);isolation:isolate}
 .ph .mp{position:absolute;left:50%;top:50%;width:512px;height:512px;pointer-events:none;transition:opacity .4s}
 .ph .mp img{position:absolute;width:256px;height:256px;display:block;max-width:none;user-select:none}
@@ -164,10 +163,10 @@ body.dark .burger-btn{background:rgba(138,180,248,.12)}.burger-btn:hover{backgro
 .user-dot::after{content:"";position:absolute;inset:-9px;border-radius:50%;background:rgba(26,115,232,.22);animation:pulse 2s ease-out infinite;z-index:-1}
 @keyframes pulse{from{transform:scale(.5);opacity:1}to{transform:scale(1.4);opacity:0}}
 
-/* Navigasi aktif */
+/* Navigasi aktif - WARNA DIUBAH MENJADI BIRU */
 .nav-banner{display:none;position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:16px;right:16px;z-index:1000;flex-direction:column;align-items:flex-start;color:#fff}
-.nb-main{width:100%;background:#0b5f5c;border-radius:22px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 16px rgba(0,0,0,.3);position:relative;z-index:1}
-.nb-then{background:#0b5f5c;border-radius:0 0 18px 18px;padding:14px 16px 8px;margin:-8px 0 0 8px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.nb-main{width:100%;background:#1a73e8;border-radius:22px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 16px rgba(0,0,0,.3);position:relative;z-index:1}
+.nb-then{background:#1a73e8;border-radius:0 0 18px 18px;padding:14px 16px 8px;margin:-8px 0 0 8px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(0,0,0,.25)}
 .nb-then[hidden]{display:none}.nb-then svg{width:22px;height:22px;fill:#fff}
 .nb-ico{width:52px;height:52px;display:flex;align-items:center;justify-content:center;flex-shrink:0}.nb-ico svg{width:46px;height:46px;fill:#fff;transition:transform .3s}
 .nb-dist{font-size:26px;font-weight:700;line-height:1.1}.nb-text{font-size:16px;opacity:.95;margin-top:3px;line-height:1.25}
@@ -178,7 +177,7 @@ body.navigating #sheet-title{display:none}body.navigating .sheet-content{overflo
 .nv-btn{width:56px;height:56px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--text);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .nv-btn:active{background:var(--press)}.nv-btn svg{width:26px;height:26px}.nv-btn.go{color:var(--accent)}.nv-btn[hidden]{visibility:hidden}
 .nv-mid{flex:1;text-align:center;min-width:0}
-.nv-dur{font-size:30px;font-weight:700;color:#1e8e3e;line-height:1.1}
+.nv-dur{font-size:30px;font-weight:700;color:#1a73e8;line-height:1.1}
 .nv-sub{font-size:15px;color:var(--muted);margin-top:4px}
 
 /* Popup & toast */
@@ -261,13 +260,11 @@ body.navigating #sheet-title{display:none}body.navigating .sheet-content{overflo
 <div id="map"></div>
 
 <script>
-/* Cadangan kalau cookie.js tidak termuat: baca/tulis cookie "settings" (JSON) yang sama */
 if(typeof getData!=='function'){window.getData=function(){try{var m=document.cookie.match(/(?:^|; )settings=([^;]*)/);if(!m)return{};try{return JSON.parse(decodeURIComponent(m[1]))}catch(e){return JSON.parse(m[1])}}catch(e){return{}}}}
 if(typeof updateSetting!=='function'){window.updateSetting=function(k,v){var d=getData();d[k]=v;document.cookie='settings='+encodeURIComponent(JSON.stringify(d))+'; path=/; max-age=31536000; SameSite=Lax'}}
 </script>
 <script src="ui-modal.js"></script>
 <script>
-/* Jika sidebar (ui-modal.js) tidak termuat dari /js/, coba path lain; kalau tetap gagal burger memberi tahu */
 addEventListener('load',function(){
   if(document.getElementById('popup_menu'))return;
   var c=['js/ui-modal.js','ui-modal.js','/ui-modal.js','../js/ui-modal.js'],i=0;
@@ -319,9 +316,7 @@ const store={
 };
 const isDesk=()=>matchMedia('(min-width:768px)').matches;
 
-/* Tema diatur ui-modal.js (cookie settings); cukup ikuti perubahan tema sistem */
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>window.applyTheme&&window.applyTheme());
-
 
 let userCoords=DEFAULT.slice(),located=false,currentPlace=null,mode='explore',catReq=0,searchTimer=null,searchAbort=null;
 const map=L.map('map',{zoomControl:false,attributionControl:false,rotate:true,touchRotate:true,rotateControl:false,bearing:0,center:DEFAULT,zoom:10});
@@ -329,6 +324,13 @@ const roadmap=L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
 const satellite=L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{maxZoom:20,subdomains:['mt0','mt1','mt2','mt3']});
 roadmap.addTo(map);
 const markers=L.layerGroup().addTo(map),routeLayer=L.layerGroup().addTo(map),markerIndex=new Map();
+
+/* Mencegah garis rute tertinggal saat peta diputar/di-zoom/digeser */
+map.on('move viewreset zoom rotate', () => {
+  if (nav && nav.line) {
+    nav.line.setLatLngs(nav.coords.slice(nav.i));
+  }
+});
 
 const origin=()=>{
   if(located&&Array.isArray(userCoords)&&userCoords.length===2&&Number.isFinite(userCoords[0])&&Number.isFinite(userCoords[1]))return userCoords;
@@ -406,9 +408,6 @@ const getPlaceName=(lat,lon)=>cached(`r${lat.toFixed(3)},${lon.toFixed(3)}`,9000
   return[p.district||p.locality||p.name,p.city||p.county].filter(Boolean).join(', ');
 });
 
-/* ===== Foto & pratinjau tempat =====
-   Urutan: foto dari data tempat (image/wikimedia_commons/wikipedia) -> artikel Wikipedia terdekat yang namanya cocok
-   -> pratinjau peta zoom dekat lokasi itu sendiri (bangunan & nama jalan, selalu ada). Tidak ada foto stok/acak. */
 const PHOTO_KEY='deevv_maps_photos_v1';
 const phReg=new Map(),phMem=new Map();
 let phStore=store.get(PHOTO_KEY,{});if(!phStore||typeof phStore!=='object'||Array.isArray(phStore))phStore={};
@@ -833,9 +832,7 @@ function showDetail(p,fly=true){
 
   $('sheet-title').textContent=p.name;$('sheet-detail').innerHTML=h;
   $('sheet-content').scrollTop=0;
-  hydratePhotos($('sheet-detail'),true);
-  $('d-route').onclick=()=>previewRoute(currentPlace);$('d-start').onclick=()=>quickStart(currentPlace);
-  $('d-save').onclick=saveCurrentPlace;$('d-share').onclick=()=>sharePlace(currentPlace);$('d-close').onclick=closeDetail;
+  hydratePhotos($('sheet-detail'),true);$('d-route').onclick=()=>previewRoute(currentPlace);$('d-start').onclick=()=>quickStart(currentPlace);$('d-save').onclick=saveCurrentPlace;$('d-share').onclick=()=>sharePlace(currentPlace);$('d-close').onclick=closeDetail;
   setSheet(400);
   requestAnimationFrame(()=>{$('sheet-content').scrollTop=0});
 }
@@ -845,9 +842,11 @@ async function quickStart(p){
   if(!located){previewRoute(p);return}
   toast('Menghitung rute…');
   try{
-    const r=await fetchRoute(p);routeLayer.clearLayers();
-    r.line=L.polyline(r.coords,{color:'#1a73e8',weight:6,opacity:.9}).addTo(routeLayer);
-    currentPlace=p;previewData=r;startNav(r);
+    const routes=await fetchRoutes(p);
+    if(!routes.length)throw new Error('no route');
+    currentPlace=p;
+    renderRouteLines(routes, 0);
+    startNav(routes[0]);
   }catch(_){toast('Rute tidak dapat dihitung saat ini')}
 }
 function saveCurrentPlace(){
@@ -895,7 +894,6 @@ function setMode(m,after){
     c.classList.add('switching-in');setTimeout(()=>c.classList.remove('switching-in'),220);
   },140);
 }
-/* Kembali dari Tersimpan: pulihkan panel yang tadi dibuka (detail atau daftar), bukan reset ke awal */
 function restoreExplore(){
   const sn=exploreSnap;exploreSnap=null;
   if(sn&&sn.kind==='detail'&&sn.place){
@@ -903,9 +901,7 @@ function restoreExplore(){
   }else if(sn&&sn.kind==='list'&&sn.list){
     $('sheet-title').textContent=sn.list.title;showList(sn.list.places,sn.list.label,true);
   }else{resetToWelcome();return}
-  requestAnimationFrame(()=>{setSheet(sn.h);$('sheet-content').scrollTop=sn.scroll||0});
-}
-$('tab-explore').onclick=()=>{if(mode==='saved')setMode('explore')};
+  requestAnimationFrame(()=>{setSheet(sn.h);$('sheet-content').scrollTop=sn.scroll\vert{}\vert{}0}); }$('tab-explore').onclick=()=>{if(mode==='saved')setMode('explore')};
 $('tab-saved').onclick=()=>setMode('saved');$('saved-close').onclick=()=>setMode('explore');
 
 $('panel-close').onclick=(e)=>{
@@ -992,23 +988,72 @@ function stepText(s){
 }
 const stepIcon=s=>s.maneuver?.type==='arrive'?ic('pin'):`<svg viewBox="0 0 24 24" style="transform:rotate(${MOD[s.maneuver?.modifier]||0}deg)"><path d="${ICON.up}"/></svg>`;
 
-async function fetchRoute(dest){
+/* Mengambil beberapa rute (Rute Tercepat + Rute Alternatif) */
+async function fetchRoutes(dest){
   if(!located||!validateCoord(userCoords[0],userCoords[1]))throw new Error('No user origin');
   if(!dest||!validateCoord(dest.lat,dest.lon))throw new Error('No valid destination');
   
-  const url=`https://router.project-osrm.org/route/v1/driving/${userCoords[1]},${userCoords[0]};${dest.lon},${dest.lat}?overview=full&geometries=geojson&steps=true`;
+  const url=`https://router.project-osrm.org/route/v1/driving/${userCoords[1]},${userCoords[0]};${dest.lon},${dest.lat}?overview=full&geometries=geojson&steps=true&alternatives=true`;
   const d=await fetchJSON(url,{},20000);
   if(!d.routes?.length)throw new Error('no route');
-  const rt=d.routes[0],coords=rt.geometry.coordinates.map(([x,y])=>[y,x]),cum=[0];
-  for(let i=1;i<coords.length;i++)cum.push(cum[i-1]+L.latLng(coords[i-1]).distanceTo(coords[i]));
-  let last=0;
-  const steps=(rt.legs[0]?.steps||[]).map(s=>{
-    const loc=[s.maneuver.location[1],s.maneuver.location[0]];let best=last,bd=Infinity;
-    for(let k=last;k<coords.length;k++){const dd2=L.latLng(loc).distanceTo(coords[k]);if(dd2<bd){bd=dd2;best=k}if(bd<3)break}
-    last=best;return{idx:best,text:stepText(s),icon:stepIcon(s),maneuver:s.maneuver};
+
+  return d.routes.map((rt, index) => {
+    const coords=rt.geometry.coordinates.map(([x,y])=>[y,x]),cum=[0];
+    for(let i=1;i<coords.length;i++)cum.push(cum[i-1]+L.latLng(coords[i-1]).distanceTo(coords[i]));
+    let last=0;
+    const steps=(rt.legs[0]?.steps||[]).map(s=>{
+      const loc=[s.maneuver.location[1],s.maneuver.location[0]];let best=last,bd=Infinity;
+      for(let k=last;k<coords.length;k++){const dd2=L.latLng(loc).distanceTo(coords[k]);if(dd2<bd){bd=dd2;best=k}if(bd<3)break}
+      last=best;return{idx:best,text:stepText(s),icon:stepIcon(s),maneuver:s.maneuver};
+    });
+    return {dest, coords, cum, steps, dist:rt.distance, dur:rt.duration, i:0, off:0, isAlt: index > 0, index};
   });
-  return{dest,coords,cum,steps,dist:rt.distance,dur:rt.duration,i:0,off:0};
 }
+
+let activeRoutes = [];
+let activeRouteIdx = 0;
+
+/* Merender rute utama (biru) dan alternatif (biru putus-putus & bisa dipencet) */
+function renderRouteLines(routes, selectedIdx = 0) {
+  routeLayer.clearLayers();
+  activeRoutes = routes;
+  activeRouteIdx = selectedIdx;
+
+  // Gambar rute alternatif dulu (berada di bawah)
+  routes.forEach((r, idx) => {
+    if (idx === selectedIdx) return;
+    const line = L.polyline(r.coords, {
+      color: '#4285f4',
+      weight: 6,
+      opacity: 0.65,
+      dashArray: '6, 8',
+      interactive: true
+    }).addTo(routeLayer);
+    r.line = line;
+
+    // Klik rute alternatif untuk berpindah rute
+    line.on('click', () => {
+      renderRouteLines(routes, idx);
+      const sel = routes[idx];
+      $('sheet-title').textContent = `${fmtDur(sel.dur)} · ${fmtDist(sel.dist)}`;
+      $('sheet-detail').querySelector('.hint').innerHTML = `Rute mobil menuju <b>${esc(sel.dest.name)}</b>${idx > 0 ? ' (Alternatif)' : ' (Tercepat)'}. Tiba sekitar ${clock(new Date(Date.now()+sel.dur*1000))}.`;
+      toast(idx === 0 ? 'Pindah ke rute tercepat' : 'Pindah ke rute alternatif');
+    });
+  });
+
+  // Gambar rute utama (di atas)
+  const mainRoute = routes[selectedIdx];
+  const mainLine = L.polyline(mainRoute.coords, {
+    color: '#1a73e8',
+    weight: 7,
+    opacity: 0.95,
+    interactive: true
+  }).addTo(routeLayer);
+  mainRoute.line = mainLine;
+
+  fit(mainLine.getBounds(), 18);
+}
+
 async function previewRoute(p){
   if(!p){$('sheet-title').textContent='Rute';$('sheet-detail').innerHTML='<div class="hint">Pilih tempat tujuan dulu, lalu ketuk tombol Rute.</div>';setSheet(SHEET_MIN);return}
   if(!located){
@@ -1017,24 +1062,27 @@ async function previewRoute(p){
   }
   $('sheet-title').textContent='Menghitung rute…';$('sheet-detail').innerHTML='<div class="hint">Mencari rute tercepat dengan mobil…</div>';setSheet(SHEET_MIN);
   try{
-    const r=await fetchRoute(p);routeLayer.clearLayers();
-    r.line=L.polyline(r.coords,{color:'#1a73e8',weight:6,opacity:.9}).addTo(routeLayer);
-    fit(r.line.getBounds(),18);currentPlace=p;previewData=r;
+    const routes=await fetchRoutes(p);
+    renderRouteLines(routes, 0);
+    const r = routes[0];
+    currentPlace=p;
     $('panel-close').style.display='flex';$('sheet-title').textContent=`${fmtDur(r.dur)} · ${fmtDist(r.dist)}`;
-    $('sheet-detail').innerHTML=`<div class="hint">Rute mobil menuju <b>${esc(p.name)}</b>. Tiba sekitar ${clock(new Date(Date.now()+r.dur*1000))}.</div><div class="btns"><button class="btn primary" id="btn-start-nav" type="button">${ic('nav')}Mulai navigasi</button></div>`;
-    $('btn-start-nav').onclick=()=>startNav(r);setSheet(SHEET_MIN);
+    $('sheet-detail').innerHTML=`<div class="hint">Rute mobil tercepat menuju <b>${esc(p.name)}</b>. Tiba sekitar ${clock(new Date(Date.now()+r.dur*1000))}. ${routes.length > 1 ? '<br><small style="color:var(--accent)">*Garis putus-putus adalah jalan alternatif, ketuk untuk memilih.</small>' : ''}</div><div class="btns"><button class="btn primary" id="btn-start-nav" type="button">${ic('nav')}Mulai navigasi</button></div>`;
+    $('btn-start-nav').onclick=()=>startNav(activeRoutes[activeRouteIdx]);setSheet(SHEET_MIN);
   }catch(_){toast('Rute tidak dapat dihitung saat ini');showDetail(p,false)}
 }
-let previewData=null;
+
 function startNav(r){
   nav=r;following=true;document.body.classList.add('navigating');
-  if(!r.line)r.line=L.polyline(r.coords,{color:'#1a73e8',weight:7,opacity:.95}).addTo(routeLayer);
+  // Bersihkan rute alternatif yang tidak terpilih saat navigasi berjalan
+  routeLayer.clearLayers();
+  r.line=L.polyline(r.coords,{color:'#1a73e8',weight:7,opacity:.95}).addTo(routeLayer);
+
   $('sheet-title').textContent=`Menuju ${currentPlace?.name||r.dest.name}`;
   $('sheet-detail').innerHTML=`<div class="nv"><button class="nv-btn" id="btn-stop" type="button" aria-label="Akhiri navigasi" title="Akhiri navigasi">${ic('close')}</button>
-    <div class="nv-mid"><div class="nv-dur" id="ns-dur">–</div><div class="nv-sub"><span id="ns-dist">–</span> • <span id="ns-eta">–</span></div></div>
+    <div class="nv-mid"><div class="nv-dur" id="ns-dur">${fmtDur(r.dur)}</div><div class="nv-sub"><span id="ns-dist">${fmtDist(r.dist)}</span> • <span id="ns-eta">${clock(new Date(Date.now()+r.dur*1000))}</span></div></div>
     <button class="nv-btn go" id="btn-recenter" type="button" aria-label="Pusatkan" title="Pusatkan" hidden>${ic('nav')}</button></div>`;
-  $('btn-recenter').onclick=()=>{following=true;$('btn-recenter').hidden=true;map.setZoom(18);kick()};
-  $('btn-stop').onclick=()=>endNav(false);
+  $('btn-recenter').onclick=()=>{following=true;$('btn-recenter').hidden=true;map.setZoom(18);kick()};$('btn-stop').onclick=()=>endNav(false);
   setSheet(132);
   dispB=map.getBearing();tgtB=dispB;
   startWatch(true,false);
@@ -1059,7 +1107,8 @@ async function reroute(){
   const n=nav;if(!n)return;
   n.rerouting=true;toast('Menghitung ulang rute…');
   try{
-    const r=await fetchRoute(n.dest);if(nav!==n)return;
+    const routes=await fetchRoutes(n.dest);if(nav!==n)return;
+    const r = routes[0];
     routeLayer.clearLayers();r.line=L.polyline(r.coords,{color:'#1a73e8',weight:7,opacity:.95}).addTo(routeLayer);nav=r;
   }catch(_){if(nav===n){n.off=0;n.rerouting=false}}
 }
@@ -1073,8 +1122,6 @@ map.on('dragstart',()=>{if(nav&&following){following=false;const b=$('btn-recent
 const sheet=$('sheet'),fabGroup=$('fab-group');
 let startY=0,lastY=0,startH=0,dragging=false;
 const getSheetMax=()=>mode==='saved'?innerHeight:Math.min(innerHeight*.72,innerHeight-95);
-/* Tombol melayang naik bersama panel, tapi berhenti tepat di bawah kolom pencarian + chip.
-   Setelah batas itu panel terus naik dan menutupi tombol (z-index tombol di bawah panel). */
 function placeFabs(h){
   if(isDesk())return;
   const topEdge=$('top').getBoundingClientRect().bottom,maxB=Math.max(16,innerHeight-topEdge-12-fabGroup.offsetHeight);
