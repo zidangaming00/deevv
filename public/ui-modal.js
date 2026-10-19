@@ -201,6 +201,7 @@
         .popup-menu a:hover, .popup-menu button:hover { background: rgba(0, 0, 0, 0.04); }
         body.dark .popup-menu {
           --text-main: #e8eaed;
+          --text-muted: #9aa0a6;
           --border-color: rgba(255,255,255,0.12);
           --surface: #1b1e24;
         }
@@ -243,7 +244,7 @@
         }
         .app-dialog-overlay.show { opacity: 1; pointer-events: auto; }
         .app-dialog-box {
-            background: var(--surface, #ffffff); border-radius: 28px; padding: 22px 20px 18px;
+            background: var(--surface, #ffffff); border-radius: 26px; padding: 18px 16px 14px;
             width: min(88vw, 310px); box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             transform: scale(0.92); transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
             text-align: center; color: var(--text-main, #1f1f1f);
