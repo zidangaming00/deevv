@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#f7f8fa">
 <title>Deevv Translate</title>
 <!-- Memuat Google Sans Flex resmi dari Google Fonts -->
@@ -66,8 +66,7 @@ body{
 
 button,select,textarea{font:inherit}
 button{color:inherit}
-button:focus-visible,textarea:focus-visible,[role=button]:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+button:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .app{width:min(100%,980px);margin:0 auto;padding:0 16px;transition:max-width .2s ease;display:flex;flex-direction:column;flex:1}
 
@@ -369,7 +368,7 @@ main {
 .synonym-chip:hover{background:var(--accent-soft);color:var(--accent)}
 
 /* Tombol Bookmark / Save Konsisten Berubah Filled */
-.action-btn.saved{color:var(--accent)}
+.action-btn.saved{color:#f59e0b}
 .action-btn.saved svg{fill:currentColor}
 
 /* History & Saved List */
@@ -389,10 +388,9 @@ main {
 
 .star-btn{width:36px;height:36px;border:0;border-radius:10px;background:var(--hover);color:var(--muted);display:grid;place-items:center;cursor:pointer;transition:background .15s,color .15s}
 .star-btn:hover{background:var(--accent-soft);color:var(--accent)}
-.star-btn.saved{color:var(--accent)}
+.star-btn.saved{color:#f59e0b}
 .star-btn.saved svg{fill:currentColor}
 .delete-btn:hover{color:#ef4444;background:#fee2e2}
-body.dark .delete-btn:hover,:root.dark .delete-btn:hover{background:rgba(239,68,68,.16)}
 
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 20px;color:var(--muted);margin:auto}
 .empty-icon{width:56px;height:56px;margin-bottom:14px;border-radius:20px;background:var(--surface);box-shadow:var(--shadow);display:grid;place-items:center;color:var(--accent)}
@@ -401,7 +399,7 @@ body.dark .delete-btn:hover,:root.dark .delete-btn:hover{background:rgba(239,68,
 .empty-copy{font-size:14px;color:var(--muted);max-width:260px;font-weight:400}
 
 /* Toast & Popup Konfirmasi */
-.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translate(-50%,10px);opacity:0;pointer-events:none;background:#1e2124;color:white;padding:12px 20px;border-radius:16px;font-size:14px;font-weight:400;box-shadow:0 10px 30px rgba(0,0,0,0.2);transition:opacity .2s,transform .2s;z-index:400;text-align:center}
+.toast{position:fixed;left:50%;bottom:32px;transform:translate(-50%,10px);opacity:0;pointer-events:none;background:#1e2124;color:white;padding:12px 20px;border-radius:16px;font-size:14px;font-weight:400;box-shadow:0 10px 30px rgba(0,0,0,0.2);transition:opacity .2s,transform .2s;z-index:400;text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);display:grid;place-items:center;z-index:350;opacity:0;pointer-events:none;transition:opacity .2s}
@@ -427,7 +425,6 @@ body.dark .delete-btn:hover,:root.dark .delete-btn:hover{background:rgba(239,68,
   /* Sembunyikan bottom nav di desktop & pakai tab topbar */
   .bottom-nav { display: none; }
   .desktop-nav { display: flex; }
-  .toast { bottom: 32px; }
 
   .translate-card {
     display: grid;
@@ -467,7 +464,7 @@ body.dark .delete-btn:hover,:root.dark .delete-btn:hover{background:rgba(239,68,
 <header class="topbar">
   <div class="topbar-left">
     <!-- Tombol burger sidebar navigasi ekosistem Deevv -->
-    <button class="burger-btn" id="menu_btn" type="button" aria-label="Menu" title="Menu Navigasi" data-i18n-aria="menuNav" data-i18n-title="menuNav">
+    <button class="burger-btn" id="menu_btn" type="button" aria-label="Menu" title="Menu Navigasi">
       <span></span>
       <span></span>
       <span></span>
@@ -569,7 +566,7 @@ body.dark .delete-btn:hover,:root.dark .delete-btn:hover{background:rgba(239,68,
 <!-- Language Popup Modal -->
 <div class="lang-modal-overlay" id="langModalOverlay">
   <div class="lang-modal">
-    <div class="lang-modal-header"><span id="langModalTitle" data-i18n="chooseLang">Pilih bahasa</span><button class="icon-btn" id="closeLangModal" type="button" style="width:30px;height:30px;" aria-label="Close" data-i18n-aria="close"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="lang-modal-header"><span id="langModalTitle" data-i18n="chooseLang">Pilih bahasa</span><button class="icon-btn" id="closeLangModal" type="button" style="width:30px;height:30px;"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
     <div class="lang-search"><input id="langSearch" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Cari bahasa..." data-i18n-placeholder="searchLang" data-i18n-aria="searchLang"></div>
     <div class="lang-modal-body" id="langModalBody"></div>
   </div>
@@ -652,10 +649,7 @@ body.dark .delete-btn:hover,:root.dark .delete-btn:hover{background:rgba(239,68,
       toastHistoryCleared: "History cleared.",
       viewHistory: "View History",
       dictTitle: "Word Usage & Variations",
-      navTranslate: "Translate",
-      menuNav: "Navigation menu",
-      close: "Close",
-      wordLabel: "Word:"
+      navTranslate: "Translate"
     },
     id: {
       chooseLang: "Pilih bahasa",
@@ -710,10 +704,7 @@ body.dark .delete-btn:hover,:root.dark .delete-btn:hover{background:rgba(239,68,
       toastHistoryCleared: "Histori dibersihkan.",
       viewHistory: "Lihat Histori",
       dictTitle: "Penggunaan Kata & Variasi",
-      navTranslate: "Terjemah",
-      menuNav: "Menu navigasi",
-      close: "Tutup",
-      wordLabel: "Kata:"
+      navTranslate: "Terjemah"
     }
   };
 
@@ -802,7 +793,6 @@ body.dark .delete-btn:hover,:root.dark .delete-btn:hover{background:rgba(239,68,
       const prefersDark = matchMedia("(prefers-color-scheme: dark)").matches;
       const isDark = themePref === "dark" || (themePref === "system" && prefersDark);
       
-      const tc = document.querySelector('meta[name="theme-color"]'); if (tc) tc.setAttribute('content', isDark ? '#121418' : '#f7f8fa');
       document.body.classList.toggle("dark", isDark);
       document.documentElement.classList.toggle("dark", isDark);
     } catch(e) {}
@@ -1062,7 +1052,7 @@ body.dark .delete-btn:hover,:root.dark .delete-btn:hover{background:rgba(239,68,
 
     let html = '';
     dictData.forEach(entry => {
-      const wordLabel = entry.word ? `<div class="word-header">${getText('wordLabel')} ${escapeHTML(entry.word)}</div>` : '';
+      const wordLabel = entry.word ? `<div class="word-header">Kata: ${escapeHTML(entry.word)}</div>` : '';
       const pos = entry[0] || entry.pos || '';
       const words = entry[1] || entry.words || [];
       
@@ -1070,7 +1060,7 @@ body.dark .delete-btn:hover,:root.dark .delete-btn:hover{background:rgba(239,68,
       if (pos) html += `<span class="pos-tag">${escapeHTML(pos)}</span>`;
       html += `<div class="dict-synonyms">`;
       words.forEach(w => {
-        html += `<span class="synonym-chip" role="button" tabindex="0" data-word="${escapeHTML(w)}">${escapeHTML(w)}</span>`;
+        html += `<span class="synonym-chip" onclick="window.handleSynonymClick('${escapeHTML(w).replace(/'/g, "\\'")}')">${escapeHTML(w)}</span>`;
       });
       html += `</div></div>`;
     });
@@ -1078,15 +1068,6 @@ body.dark .delete-btn:hover,:root.dark .delete-btn:hover{background:rgba(239,68,
     dictContent.innerHTML = html;
     dictSection.style.display = 'flex';
   }
-
-  const pickSynonym = e => {
-    const chip = e.target.closest('.synonym-chip');
-    if (!chip) return;
-    if (e.type === 'keydown') { if (e.key !== 'Enter' && e.key !== ' ') return; e.preventDefault(); }
-    window.handleSynonymClick(chip.dataset.word);
-  };
-  $('dictContent').addEventListener('click', pickSynonym);
-  $('dictContent').addEventListener('keydown', pickSynonym);
 
   async function fetchWordsDetails(sourceText, sl, tl) {
     const stopWords = new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','is','are','was','were','be','been','it','this','that','bro']);
@@ -1256,12 +1237,6 @@ body.dark .delete-btn:hover,:root.dark .delete-btn:hover{background:rgba(239,68,
     updateSaveButtonState();
     switchTab('translate');
   }
-
-  document.addEventListener('keydown',event=>{
-    if(event.key!=='Enter' && event.key!==' ')return;
-    const main=event.target.closest('.entry-main');if(!main)return;
-    event.preventDefault();main.click();
-  });
 
   document.addEventListener('click',event=>{
     const entry=event.target.closest('[data-entry]');if(!entry)return;

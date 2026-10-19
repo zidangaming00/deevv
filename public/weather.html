@@ -102,12 +102,12 @@ header:has(.popup-menu.active) .burger-btn span:nth-child(3){transform:translate
 .row-t{flex:1;min-width:0}.row-t b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row-t span{font-size:12px;color:var(--muted)}
 .empty,.msg{text-align:center;color:var(--muted);padding:28px 12px;line-height:1.6}.msg button{margin-top:10px;border:0;background:var(--accent);color:#fff;padding:9px 18px;border-radius:12px;font-weight:600;cursor:pointer}
 .skel{height:180px;border-radius:28px;background:linear-gradient(90deg,var(--hover),transparent,var(--hover));background-size:200% 100%;animation:sh 1.2s infinite}@keyframes sh{to{background-position:-200% 0}}
-.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translate(-50%,10px);opacity:0;pointer-events:none;background:#1e2124;color:#fff;padding:11px 18px;border-radius:14px;font-size:13px;transition:opacity .2s,transform .2s;z-index:400}.toast.show{opacity:1;transform:translate(-50%,0)}
+
 @media(min-width:768px){.day{grid-template-columns:90px 32px minmax(110px,1fr) minmax(120px,240px) 84px;gap:16px}.day-bar{display:block}}
 @media(min-width:768px){#todayPage.active{display:grid;grid-template-columns:minmax(300px,350px) minmax(0,1fr);grid-template-areas:"s s" "h d" "r r" "w w";gap:16px;align-items:start}
 .search-wrap{grid-area:s}.hero{grid-area:h;align-self:stretch;min-height:300px}.hcard{grid-area:r;min-width:0}.wcard{display:block;grid-area:w}.desktop-nav-btn[data-target=week]{display:none}.panel{grid-area:d;align-self:stretch;min-width:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:8px 28px;align-items:stretch;padding:16px 20px}.arcw{display:flex;flex-direction:column}.arcw .arc{margin:auto auto 0;flex-shrink:0}.arcw .arc-t{margin:2px auto auto;width:100%}
 .greet{margin-bottom:auto}.temp{font-size:80px}.rows-head+.drow{border-top:0}.drow{padding:11px 0}[data-page=week]{max-width:760px;width:100%;margin:0 auto}.chips{display:flex}.chips:empty{display:none}[data-page=places]{display:none!important}}
-@media(min-width:768px){body{padding:28px 0 30px}.app{padding:0 40px}.bottom-nav{display:none}.desktop-nav{display:flex}.toast{bottom:32px}}
+@media(min-width:768px){body{padding:28px 0 30px}.app{padding:0 40px}.bottom-nav{display:none}.desktop-nav{display:flex}}
 </style>
 <script>(()=>{try{const e=document.cookie.match(/(?:^|;)\s*settings=([^;]*)/);if(e){const t=JSON.parse(decodeURIComponent(e[1]));("dark"===t.theme||"system"===t.theme&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.documentElement.classList.add("dark"),document.documentElement.lang=t.lang&&"en"!==t.lang?"id":"en"}}catch(e){}})();</script>
 
@@ -142,7 +142,7 @@ header:has(.popup-menu.active) .burger-btn span:nth-child(3){transform:translate
   <button class="bottom-nav-item" data-target="week" type="button"><div class="bottom-nav-pill"><svg viewBox="0 0 24 24"><path d="M8 2v4M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg></div><span class="bottom-nav-label" data-i18n="navWeek"></span></button>
   <button class="bottom-nav-item" data-target="places" type="button"><div class="bottom-nav-pill"><svg viewBox="0 0 24 24"><path d="M20 10c0 5-5.5 10.2-7.4 11.8a1 1 0 0 1-1.2 0C9.5 20.2 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></div><span class="bottom-nav-label" data-i18n="navPlaces"></span></button>
 </nav>
-<div class="toast" id="toast"></div>
+
 <script src="cookie.js"></script>
 <script src="ui-modal.js"></script>
 <script>
@@ -224,7 +224,7 @@ let S = { view: 'list', places: [], cur: { n: 'Jakarta', c: 'Indonesia', lat: -6
 try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (_) {}
 const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) {} };
 const esc = v => String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const toast = m => { const e = $('toast'); e.textContent = m; e.classList.add('show'); clearTimeout(toast.id); toast.id = setTimeout(() => e.classList.remove('show'), 2000); };
+
 const isSaved = p => S.places.some(x => x.lat === p.lat && x.lon === p.lon);
 const deg = n => Math.round(n);
 
@@ -389,8 +389,8 @@ function setView(v) {
   }, 190);
 }
 function toggleSave() {
-  if (isSaved(S.cur)) { S.places = S.places.filter(x => !(x.lat === S.cur.lat && x.lon === S.cur.lon)); toast(t('removed')); }
-  else { S.places.unshift({ ...S.cur }); toast(t('saved')); }
+  if (isSaved(S.cur)) { S.places = S.places.filter(x => !(x.lat === S.cur.lat && x.lon === S.cur.lon)); showToast(t('removed')); }
+  else { S.places.unshift({ ...S.cur }); showToast(t('saved')); }
   persist(); if (data) render(); renderSaved();
 }
 function pick(p) { S.cur = { n: p.n, c: p.c, lat: p.lat, lon: p.lon }; persist(); $('q').value = ''; $('drop').classList.remove('show');$('q').blur(); renderSaved(); tab('today'); load(); }
@@ -434,8 +434,8 @@ q.addEventListener('input', e => {
   }, 350);
 });
 function locate() {
-  if (!navigator.geolocation) return toast(t('geoFail'));
-  drop.classList.remove('show'); toast(t('locating'));
+  if (!navigator.geolocation) return showToast(t('geoFail'));
+  drop.classList.remove('show'); showToast(t('locating'));
   navigator.geolocation.getCurrentPosition(async pos => {
     const lat = +pos.coords.latitude.toFixed(4), lon = +pos.coords.longitude.toFixed(4); let n = t('here'), c = '';
     try {
@@ -443,7 +443,7 @@ function locate() {
       n = g.city || g.locality || n; c = g.countryName || '';
     } catch (_) {}
     pick({ n, c, lat, lon });
-  }, () => toast(t('geoFail')), { timeout: 10000, maximumAge: 300000 });
+  }, () => showToast(t('geoFail')), { timeout: 10000, maximumAge: 300000 });
 }
 $('locBtn').addEventListener('click', locate);
 i18n(); renderSaved(); load();
