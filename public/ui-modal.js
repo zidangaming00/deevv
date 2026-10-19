@@ -187,16 +187,38 @@
         en:{
             catSearch:"Search",catApps:"Apps",catLearnMore:"Learn more",homepage:"Homepage",settings:"Preferences",displayTheme:"Display theme",light:"Light",dark:"Dark",system:"System",weather:"Weather",translate:"Translate",maps:"Maps",about:"About",privacy:"Privacy",feedback:"Feedback",
             fbTitle:"Send Feedback",fbDesc:"Help us improve Deevv Search by selecting a category and sharing your thoughts.",
-            fbTopicLabel:"What can be improved?",fbTopics:["UI", "Fitur", "Kecepatan", "Lainnya"],
-            fbRatingLabel:"Overall experience",fbRatings:["Sangat puas", "Cukup puas", "Perlu peningkatan"],
+            fbTopicLabel:"What can be improved?",
+            fbTopics:[
+                {label:"UI", value:"Ui"},
+                {label:"Features", value:"Fitur"},
+                {label:"Speed", value:"Kecepatan"},
+                {label:"Other", value:"Lainnya"}
+            ],
+            fbRatingLabel:"Overall experience",
+            fbRatings:[
+                {label:"Very satisfied", value:"Sangat puas"},
+                {label:"Quite satisfied", value:"Cukup puas"},
+                {label:"Needs improvement", value:"Perlu peningkatan"}
+            ],
             fbPlaceholder:"Write your feedback details here...",fbCancel:"Cancel",fbSubmit:"Send",
-            fbSuccess:"Feedback terkirim"
+            fbSuccess:"Feedback sent"
         },
         id:{
             catSearch:"Pencarian",catApps:"Aplikasi",catLearnMore:"Lebih banyak",homepage:"Beranda",settings:"Preferensi",displayTheme:"Tema tampilan",light:"Terang",dark:"Gelap",system:"Sistem",weather:"Cuaca",translate:"Terjemahan",maps:"Peta",about:"Tentang",privacy:"Privasi",feedback:"Masukan",
             fbTitle:"Kirim Masukan",fbDesc:"Bantu kami meningkatkan Deevv Search dengan memilih kategori dan memberikan ulasan.",
-            fbTopicLabel:"Apa yang bisa ditingkatkan?",fbTopics:["UI", "Fitur", "Kecepatan", "Lainnya"],
-            fbRatingLabel:"Bagaimana pengalaman Anda secara keseluruhan?",fbRatings:["Sangat puas", "Cukup puas", "Perlu peningkatan"],
+            fbTopicLabel:"Apa yang bisa ditingkatkan?",
+            fbTopics:[
+                {label:"UI", value:"Ui"},
+                {label:"Fitur", value:"Fitur"},
+                {label:"Kecepatan", value:"Kecepatan"},
+                {label:"Lainnya", value:"Lainnya"}
+            ],
+            fbRatingLabel:"Bagaimana pengalaman Anda secara keseluruhan?",
+            fbRatings:[
+                {label:"Sangat puas", value:"Sangat puas"},
+                {label:"Cukup puas", value:"Cukup puas"},
+                {label:"Perlu peningkatan", value:"Perlu peningkatan"}
+            ],
             fbPlaceholder:"Tulis detail masukan Anda di sini...",fbCancel:"Batal",fbSubmit:"Kirim",
             fbSuccess:"Feedback terkirim"
         }
@@ -273,13 +295,13 @@
                 <div class="fb-section">
                     <div class="fb-label-group">${a.fbTopicLabel}</div>
                     <div class="fb-chips" id="fb-topic-chips">
-                        ${a.fbTopics.map(function(b,c){return`<button type="button" class="fb-chip ${c===0?"active":""}" data-topic="${b}">${b}</button>`}).join("")}
+                        ${a.fbTopics.map(function(b,c){return`<button type="button" class="fb-chip ${c===0?"active":""}" data-topic="${b.value}">${b.label}</button>`}).join("")}
                     </div>
                 </div>
                 <div class="fb-section">
                     <div class="fb-label-group">${a.fbRatingLabel}</div>
                     <div class="fb-chips" id="fb-rating-chips">
-                        ${a.fbRatings.map(function(b,c){return`<button type="button" class="fb-chip ${c===0?"active":""}" data-rating="${b}">${b}</button>`}).join("")}
+                        ${a.fbRatings.map(function(b,c){return`<button type="button" class="fb-chip ${c===0?"active":""}" data-rating="${b.value}">${b.label}</button>`}).join("")}
                     </div>
                 </div>
                 <div class="fb-section">
