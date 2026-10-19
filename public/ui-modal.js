@@ -1,17 +1,18 @@
 (function(){
     var e=window, f=document;
 
-    // --- GLOBAL TOAST (Bisa dipanggil dari file lain, misal: showToast("Pesan")) ---
-    var globalToast = f.createElement("div");
-    globalToast.className = "deevv-global-toast";
-    f.body.appendChild(globalToast);
+    // --- GLOBAL TOAST (Desain, class, & style sama persis dengan weather.html) ---
+    var toastEl=f.createElement("div");
+    toastEl.className="toast";
+    toastEl.id="toast";
+    f.body.appendChild(toastEl);
 
     e.showToast = function(msg) {
-        globalToast.textContent = msg;
-        globalToast.classList.add("show");
+        toastEl.textContent = msg;
+        toastEl.classList.add("show");
         setTimeout(function() {
-            globalToast.classList.remove("show");
-        }, 3000);
+            toastEl.classList.remove("show");
+        }, 2300);
     };
 
     function g(){
@@ -163,21 +164,20 @@
             border-top-color: var(--primary, #1a73e8); border-radius: 50%; animation: fb-spin 0.7s linear infinite;
         }
 
-        /* --- STYLING TOAST PROFESIONAL ALA GOOGLE WEATHER --- */
-        .deevv-global-toast {
-            position: fixed; left: 50%; bottom: 32px;
+        /* --- TOAST STYLE PERSIS WEATHER.HTML --- */
+        .toast {
+            position: fixed;
+            left: 50%; bottom: 32px;
             transform: translate(-50%, 10px);
             opacity: 0; pointer-events: none;
-            background: #1e2124; color: #ffffff;
+            background: #1e2124; color: white;
             padding: 12px 20px; border-radius: 16px;
-            font-size: 14px; font-weight: 500;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-            transition: opacity .2s ease, transform .2s ease;
+            font-size: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: opacity .2s, transform .2s;
             z-index: 40000; text-align: center;
+            white-space: nowrap;
         }
-        .deevv-global-toast.show {
-            opacity: 1; transform: translate(-50%, 0);
-        }
+        .toast.show { opacity: 1; transform: translate(-50%,0); }
 
         @keyframes fb-spin { to { transform: rotate(360deg); } }
     `;
@@ -190,7 +190,7 @@
             fbTopicLabel:"What can be improved?",fbTopics:["UI", "Search Features", "Speed", "Other"],
             fbRatingLabel:"Overall experience",fbRatings:["Very Satisfied", "Fairly Good", "Needs Improvement"],
             fbPlaceholder:"Write your feedback details here...",fbCancel:"Cancel",fbSubmit:"Send",
-            fbSuccess:"Feedback sent successfully. Thank you!"
+            fbSuccess:"Feedback sent"
         },
         id:{
             catSearch:"Pencarian",catApps:"Aplikasi",catLearnMore:"Lebih banyak",homepage:"Beranda",settings:"Preferensi",displayTheme:"Tema tampilan",light:"Terang",dark:"Gelap",system:"Sistem",weather:"Cuaca",translate:"Terjemahan",maps:"Peta",about:"Tentang",privacy:"Privasi",feedback:"Masukan",
@@ -198,7 +198,7 @@
             fbTopicLabel:"Apa yang bisa ditingkatkan?",fbTopics:["UI", "Fitur Pencarian", "Kecepatan", "Lainnya"],
             fbRatingLabel:"Bagaimana pengalaman Anda secara keseluruhan?",fbRatings:["Sangat Puas", "Cukup Baik", "Perlu Perbaikan"],
             fbPlaceholder:"Tulis detail masukan Anda di sini...",fbCancel:"Batal",fbSubmit:"Kirim",
-            fbSuccess:"Masukan berhasil dikirim. Terima kasih!"
+            fbSuccess:"Feedback terkirim"
         }
     };
 
@@ -346,7 +346,7 @@
             
             c.disabled=!0;
 
-            // Memperbaiki pengiriman Google Form menggunakan URLSearchParams dengan entry ID yang sesuai
+            // Memastikan data Google Form terkirim sempurna dengan parameter entry yang valid
             var n=new URLSearchParams();
             n.append("entry.85101616", k);
             n.append("entry.367332078", l);
