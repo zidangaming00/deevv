@@ -167,7 +167,7 @@
         /* --- STYLE TOAST PERSIS WEATHER.HTML --- */
         .toast {
             position: fixed;
-            left: 50%; bottom: 105px;
+            left: 50%; bottom: 85px;
             transform: translate(-50%, 10px);
             opacity: 0; pointer-events: none;
             background: #1e2124; color: white;
