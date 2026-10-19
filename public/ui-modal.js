@@ -232,13 +232,13 @@
         /* --- STYLE POPUP CONFIRMATION & INFO (MENGGELAP TANPA BLUR) --- */
         .app-dialog-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.45);
+            background: rgba(0, 0, 0, 0.6);
             display: grid; place-items: center; z-index: 35000;
             opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
         }
         .app-dialog-overlay.show { opacity: 1; pointer-events: auto; }
         .app-dialog-box {
-            background: var(--surface, #ffffff); border-radius: 28px; padding: 24px 22px 20px;
+            background: var(--surface, #ffffff); border-radius: 28px; padding: 22px 20px 18px;
             width: min(88vw, 310px); box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             transform: scale(0.92); transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
             text-align: center; color: var(--text-main, #1f1f1f);

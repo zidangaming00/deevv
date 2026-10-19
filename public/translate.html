@@ -398,18 +398,6 @@ main {
 .empty-title{font-size:16px;font-weight:700;margin-bottom:4px;color:var(--text)}
 .empty-copy{font-size:14px;color:var(--muted);max-width:260px;font-weight:400}
 
-.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);display:grid;place-items:center;z-index:350;opacity:0;pointer-events:none;transition:opacity .2s}
-.modal-overlay.show{opacity:1;pointer-events:auto}
-.modal-box{background:var(--surface);border-radius:24px;padding:20px 18px;width:min(88vw, 290px);box-shadow:0 24px 50px rgba(0,0,0,0.15);transform:scale(.95);transition:transform .2s;text-align:center}
-.modal-overlay.show .modal-box{transform:scale(1)}
-.modal-title{font-size:17px;font-weight:700;margin:0 0 6px;color:var(--text)}
-.modal-desc{font-size:14px;color:var(--muted);line-height:1.45;margin:0 0 16px;font-weight:400}
-.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.modal-btn{padding:10px 14px;border-radius:14px;font-size:14px;font-weight:500;cursor:pointer;border:0;transition:transform .1s, opacity .15s}
-.modal-btn:active{transform:scale(0.97)}
-.modal-btn.cancel{background:var(--hover);color:var(--text)}
-.modal-btn.confirm{background:var(--accent);color:#fff}
-
 .error{color:#ef4444}
 
 /* OPTIMASI DESAIN DESKTOP */
@@ -565,18 +553,6 @@ main {
     <div class="lang-modal-header"><span id="langModalTitle" data-i18n="chooseLang">Pilih bahasa</span><button class="icon-btn" id="closeLangModal" type="button" style="width:30px;height:30px;"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
     <div class="lang-search"><input id="langSearch" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Cari bahasa..." data-i18n-placeholder="searchLang" data-i18n-aria="searchLang"></div>
     <div class="lang-modal-body" id="langModalBody"></div>
-  </div>
-</div>
-
-<!-- Custom Confirm Modal -->
-<div class="modal-overlay" id="customModal">
-  <div class="modal-box">
-    <h3 class="modal-title" id="modalTitle">Konfirmasi</h3>
-    <p class="modal-desc" id="modalDesc">Apakah Anda yakin?</p>
-    <div class="modal-actions">
-      <button class="modal-btn cancel" id="modalCancel" data-i18n="cancel">Batal</button>
-      <button class="modal-btn confirm" id="modalConfirm" data-i18n="delete">Hapus</button>
-    </div>
   </div>
 </div>
 
@@ -740,7 +716,6 @@ main {
   const EMPTY_TEXT = '';
   let typingTimer = null, requestId = 0;
   let state = {history:[], saved:[], theme:'light', sourceLang:null, targetLang:null};
-  let modalCallback = null;
   let activeLangType = null;
 
   function detectBrowserLanguages() {
@@ -796,18 +771,6 @@ main {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
     catch (_) { showToast(getText('toastStorageFull')); }
   }
-
-  function showConfirm(title, desc, onConfirm) {
-    $('modalTitle').textContent = title;
-    $('modalDesc').textContent = desc;
-    modalCallback = onConfirm;
-    $('customModal').classList.add('show');
-  }
-  $('modalCancel').addEventListener('click', () => { $('customModal').classList.remove('show'); modalCallback = null; });
-  $('modalConfirm').addEventListener('click', () => { $('customModal').classList.remove('show');
-    if (modalCallback) modalCallback();
-    modalCallback = null;
-  });
 
   const collator = new Intl.Collator(UI_LOCALE, {sensitivity:'base'});
   const languagesList = LANG_CODES.map(value => ({value, text: LANG_NAMES[value]})).sort((a, b) => collator.compare(a.text, b.text));
@@ -1241,17 +1204,42 @@ main {
       return;
     }
     if(action==='delete'){
-      showConfirm(getText('confirmDeleteTitle'), getText('confirmDeleteDesc'), () => {
-        state.history=state.history.filter(x=>x.id!==id);state.saved=state.saved.filter(x=>x.id!==id);
-        persist();renderLists();showToast(getText('toastItemDeleted'));
-        updateSaveButtonState();
+      showConfirm({
+        title: getText('confirmDeleteTitle'),
+        info: getText('confirmDeleteDesc')
+      }).then(confirmed => {
+        if(confirmed) {
+          state.history=state.history.filter(x=>x.id!==id);
+          state.saved=state.saved.filter(x=>x.id!==id);
+          persist();
+          renderLists();
+          showToast(getText('toastItemDeleted'));
+          updateSaveButtonState();
+        }
       });
       return;
     }
     if(!action && event.target.closest('.entry-main') && item)restoreEntry(item);
   });
 
-  $('clearHistoryBtn').addEventListener('click',()=>{ if(!state.history.length){showToast(getText('toastHistoryEmpty'));return;} showConfirm(getText('confirmClearTitle'), getText('confirmClearDesc'), () => { const savedIds=new Set(state.saved.map(x=>x.id)); state.history=state.history.filter(x=>savedIds.has(x.id)); persist();renderLists();showToast(getText('toastHistoryCleared')); }); });
+  $('clearHistoryBtn').addEventListener('click',()=>{ 
+    if(!state.history.length){
+      showToast(getText('toastHistoryEmpty'));
+      return;
+    } 
+    showConfirm({
+      title: getText('confirmClearTitle'),
+      info: getText('confirmClearDesc')
+    }).then(confirmed => {
+      if(confirmed) {
+        const savedIds=new Set(state.saved.map(x=>x.id)); 
+        state.history=state.history.filter(x=>savedIds.has(x.id)); 
+        persist();
+        renderLists();
+        showToast(getText('toastHistoryCleared'));
+      }
+    }); 
+  });
 
   applyTheme();
   updateHeaderLangUI();
