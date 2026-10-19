@@ -84,8 +84,9 @@ body.dark .burger-btn{background:rgba(138,180,248,.12)}.burger-btn:hover{backgro
 .pd-open b{font-weight:650}.pd-open b.on{color:#1e8e3e}.pd-open b.off{color:#d93025}
 .pd-pills{display:flex;gap:8px;overflow-x:auto;margin:14px -16px 0;padding:0 16px 2px;scrollbar-width:none;touch-action:pan-x pan-y}
 .pd-pills::-webkit-scrollbar{display:none}
-.pd-pills .btn{flex-shrink:0;height:40px;padding:0 18px;border:0;font-weight:600;font-size:14px;white-space:nowrap}
+.pd-pills .btn{flex-shrink:0;height:36px;padding:0 14px;border:0;font-weight:600;font-size:14px;white-space:nowrap;gap:7px;border-radius:20px}.pd-pills .btn svg{width:18px;height:18px}
 .pd-pills .btn.tint{background:var(--accent-soft);color:var(--accent)}
+.route-modes{display:flex;gap:7px;overflow-x:auto;margin:0 0 14px;padding:2px 0 5px;scrollbar-width:none}.route-modes::-webkit-scrollbar{display:none}.route-mode{min-width:74px;flex:1;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--muted);padding:10px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-size:14px;font-weight:550;white-space:nowrap}.route-mode svg{width:21px;height:21px}.route-mode.active{background:var(--accent-soft);color:var(--accent);border-color:transparent}.route-action{width:100%;height:42px;border:0;border-radius:22px;background:var(--accent);color:#fff;font-size:16px;font-weight:650;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px}.route-action svg{width:19px;height:19px}
 .pd-photos{display:flex;gap:8px;overflow-x:auto;margin:16px -16px 0;padding:0 16px;scrollbar-width:none;scroll-snap-type:x proximity;scroll-padding:0 16px;touch-action:pan-x pan-y}
 .pd-photos::-webkit-scrollbar{display:none}
 .pd-slide{position:relative;flex:0 0 78%;max-width:300px;height:176px;border-radius:16px;overflow:hidden;scroll-snap-align:start}
@@ -274,6 +275,9 @@ const ICON={
   clock:'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z',
   share:'M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z',
   nav:'M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z',
+  car:'M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11l2 2v5h-2v2h-3v-2H8v2H5v-2H3v-5l2-2zm2.1-1h9.8l-1-3H8.1l-1 3zM6.5 15a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm11 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z',
+  motorcycle:'M5 16a3 3 0 1 1 2.8-4H11l-2-3H7V7h3l3 4h2l-2-3h3l2 3a3 3 0 1 1-2.8 5H9.8A3 3 0 0 1 5 16zm0-2a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm11 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z',
+  walk:'M13 5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm-2 2-3 5 3 2-1 6h2l2-7-2-2 1-2 2 3h4v-2h-3l-2-4a2 2 0 0 0-3-1z',
   bookmarkFill:'M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z',
   close:'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z',
   directions:'M22.43 10.59l-9.01-9.01c-.75-.75-2.07-1.32-2.83 0l-9 9c-.78.78-.78 2.04 0 2.82l9 9c.39.39.9.58 1.41.58.51 0 1.02-.19 1.41-.58l8.99-8.99c.79-.76.79-2.03.03-2.82zM13 14.5V12h-4v3H7v-5c0-.55.45-1 1-1h5V6.5l3.5 3.5-3.5 3.5z',
@@ -1022,21 +1026,40 @@ function renderRouteLines(routes, selectedIdx = 0) {
   }
 }
 
+let selectedTravelMode = 'driving';
+const TRAVEL_MODES=[
+  {id:'driving',label:'Mobil',icon:'car'},
+  {id:'two-wheeler',label:'Motor',icon:'motorcycle'},
+  {id:'walking',label:'Jalan kaki',icon:'walk'}
+];
+function routeModeMarkup(){return `<div class="route-modes" role="group" aria-label="Pilih moda perjalanan">${TRAVEL_MODES.map(m=>`<button type="button" class="route-mode ${selectedTravelMode===m.id?'active':''}" data-travel-mode="${m.id}" aria-pressed="${selectedTravelMode===m.id}">${ic(m.icon)}<span>${m.label}</span></button>`).join('')}</div>`}
+function bindRouteModes(p){
+  document.querySelectorAll('[data-travel-mode]').forEach(b=>b.onclick=()=>{selectedTravelMode=b.dataset.travelMode;previewRoute(p)});
+}
+function googleDirectionsUrl(p){return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${p.lat},${p.lon}`)}&travelmode=${encodeURIComponent(selectedTravelMode)}&dir_action=navigate`}
+
 async function previewRoute(p){
   if(!p){$('sheet-title').textContent='Rute';$('sheet-detail').innerHTML='<div class="hint">Pilih tempat tujuan dulu, lalu ketuk tombol Rute.</div>';setSheet(SHEET_MIN);return}
   if(!located){
     $('sheet-detail').innerHTML=`<div class="location-fallback"><b>Lokasi diperlukan untuk rute</b><p>Aktifkan izin lokasi agar rute dapat dihitung dari posisimu.</p><div class="btns"><button class="btn primary" id="btn-request-location" type="button">Aktifkan lokasi</button></div></div>`;
     bindFallback();setSheet(300);return;
   }
-  $('sheet-title').textContent='Menghitung rute…';$('sheet-detail').innerHTML='<div class="hint">Mencari rute tercepat dengan mobil…</div>';setSheet(SHEET_MIN);
+  currentPlace=p;$('panel-close').style.display='flex';
+  if(selectedTravelMode!=='driving'){
+    const modeLabel=TRAVEL_MODES.find(m=>m.id===selectedTravelMode)?.label||'perjalanan';
+    $('sheet-title').textContent='Pilih rute';
+    $('sheet-detail').innerHTML=`${routeModeMarkup()}<div class="hint">Rute ${modeLabel.toLowerCase()} akan dibuka di Google Maps agar petunjuk arah mengikuti moda yang dipilih.</div><button class="route-action" id="btn-open-google-route" type="button">${ic('nav')}Buka rute di Google Maps</button>`;
+    bindRouteModes(p);$('btn-open-google-route').onclick=()=>window.open(googleDirectionsUrl(p),'_blank','noopener');setSheet(330);return;
+  }
+  $('sheet-title').textContent='Menghitung rute…';$('sheet-detail').innerHTML=`${routeModeMarkup()}<div class="hint">Mencari rute mobil tercepat…</div>`;bindRouteModes(p);setSheet(SHEET_MIN);
   try{
     const routes=await fetchRoutes(p);
     renderRouteLines(routes, 0);
     const r = routes[0];
     currentPlace=p;
     $('panel-close').style.display='flex';$('sheet-title').textContent=`${fmtDur(r.dur)} · ${fmtDist(r.dist)}`;
-    $('sheet-detail').innerHTML=`<div class="hint">Rute mobil tercepat menuju <b>${esc(p.name)}</b>. Tiba sekitar ${clock(new Date(Date.now()+r.dur*1000))}. ${routes.length > 1 ? '<br><small style="color:var(--accent)">*Garis putus-putus adalah jalan alternatif, ketuk untuk memilih.</small>' : ''}</div><div class="btns"><button class="btn primary" id="btn-start-nav" type="button">${ic('nav')}Mulai navigasi</button></div>`;
-    $('btn-start-nav').onclick=()=>startNav(activeRoutes[activeRouteIdx]);setSheet(SHEET_MIN);
+    $('sheet-detail').innerHTML=`${routeModeMarkup()}<div class="hint">Rute mobil tercepat menuju <b>${esc(p.name)}</b>. Tiba sekitar ${clock(new Date(Date.now()+r.dur*1000))}. ${routes.length > 1 ? '<br><small style="color:var(--accent)">Garis putus-putus menunjukkan jalan alternatif; ketuk untuk memilih.</small>' : ''}</div><button class="route-action" id="btn-start-nav" type="button">${ic('nav')}Mulai navigasi</button>`;
+    bindRouteModes(p);$('btn-start-nav').onclick=()=>startNav(activeRoutes[activeRouteIdx]);setSheet(340);
   }catch(_){toast('Rute tidak dapat dihitung saat ini');showDetail(p,false)}
 }
 
