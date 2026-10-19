@@ -1,7 +1,7 @@
 (function(){
     var e=window, f=document;
 
-    // --- TOAST GLOBAL PERSIS 100% DENGAN WEATHER.HTML ---
+    // --- 1. TOAST GLOBAL PRESISI ---
     var toastEl=f.createElement("div");
     toastEl.className="toast";
     toastEl.id="toast";
@@ -15,7 +15,127 @@
         }, 2300);
     };
 
-    function g(){
+    // --- 2. POPUP MODAL DIALOG (CONFIRMATION & INFO) ---
+    var dialogOverlay = f.createElement("div");
+    dialogOverlay.className = "app-dialog-overlay";
+    dialogOverlay.id = "app_dialog_overlay";
+    dialogOverlay.innerHTML = `
+        <div class="app-dialog-box" role="dialog" aria-modal="true">
+            <h3 class="app-dialog-title" id="app_dialog_title"></h3>
+            <p class="app-dialog-desc" id="app_dialog_desc"></p>
+            <div class="app-dialog-actions" id="app_dialog_actions"></div>
+        </div>
+    `;
+    f.body.appendChild(dialogOverlay);
+
+    function getLang() {
+        try {
+            var a = typeof getData == "function" ? getData() : {};
+            return a.lang == "en" ? "en" : "id";
+        } catch(b) { return "id"; }
+    }
+
+    /**
+     * Fungsi Confirmation Modal (Berbasis Promise / .then)
+     * Contoh Penggunaan:
+     * showConfirm({
+     *   title: "Clear all history",
+     *   info: "This will delete all of your translation history."
+     * }).then(function(confirmed) {
+     *   if (confirmed) { // user menekan tombol konfirmasi }
+     * });
+     */
+    e.showConfirm = function(options) {
+        options = options || {};
+        var isEn = getLang() === "en";
+        var title = options.title || (isEn ? "Confirmation" : "Konfirmasi");
+        var info = options.info || options.desc || "";
+        var cancelText = options.cancelText || (isEn ? "Cancel" : "Batal");
+        var confirmText = options.confirmText || (isEn ? "Delete" : "Hapus");
+        var isDanger = options.isDanger !== false; // Default true (merah/biru aksen)
+
+        f.getElementById("app_dialog_title").textContent = title;
+        f.getElementById("app_dialog_desc").textContent = info;
+
+        var actionsContainer = f.getElementById("app_dialog_actions");
+        actionsContainer.innerHTML = `
+            <button class="app-dialog-btn cancel" id="app_dialog_cancel">${cancelText}</button>
+            <button class="app-dialog-btn confirm ${isDanger ? 'danger' : ''}" id="app_dialog_confirm">${confirmText}</button>
+        `;
+
+        dialogOverlay.classList.add("show");
+
+        return new Promise(function(resolve) {
+            var btnCancel = f.getElementById("app_dialog_cancel");
+            var btnConfirm = f.getElementById("app_dialog_confirm");
+
+            function close(result) {
+                dialogOverlay.classList.remove("show");
+                btnCancel.removeEventListener("click", onCancel);
+                btnConfirm.removeEventListener("click", onConfirm);
+                dialogOverlay.removeEventListener("click", onBackdrop);
+                resolve(result);
+            }
+
+            function onCancel() { close(false); }
+            function onConfirm() { close(true); }
+            function onBackdrop(evt) {
+                if (evt.target === dialogOverlay) close(false);
+            }
+
+            btnCancel.addEventListener("click", onCancel);
+            btnConfirm.addEventListener("click", onConfirm);
+            dialogOverlay.addEventListener("click", onBackdrop);
+        });
+    };
+
+    /**
+     * Fungsi Info Modal (Sekedar Tombol OK)
+     * Contoh Penggunaan:
+     * showInfo({
+     *   title: "Informasi",
+     *   info: "Penyimpanan lokal telah diperbarui."
+     * }).then(function() { // dipanggil saat OK ditekan });
+     */
+    e.showInfo = function(options) {
+        options = options || {};
+        var isEn = getLang() === "en";
+        var title = options.title || (isEn ? "Information" : "Informasi");
+        var info = options.info || options.desc || "";
+        var okText = options.okText || "OK";
+
+        f.getElementById("app_dialog_title").textContent = title;
+        f.getElementById("app_dialog_desc").textContent = info;
+
+        var actionsContainer = f.getElementById("app_dialog_actions");
+        actionsContainer.innerHTML = `
+            <button class="app-dialog-btn confirm single" id="app_dialog_ok">${okText}</button>
+        `;
+
+        dialogOverlay.classList.add("show");
+
+        return new Promise(function(resolve) {
+            var btnOk = f.getElementById("app_dialog_ok");
+
+            function close() {
+                dialogOverlay.classList.remove("show");
+                btnOk.removeEventListener("click", onOk);
+                dialogOverlay.removeEventListener("click", onBackdrop);
+                resolve(true);
+            }
+
+            function onOk() { close(); }
+            function onBackdrop(evt) {
+                if (evt.target === dialogOverlay) close();
+            }
+
+            btnOk.addEventListener("click", onOk);
+            dialogOverlay.addEventListener("click", onBackdrop);
+        });
+    };
+
+    // --- 3. THEME MANAGEMENT ---
+    function applyTheme(){
         try{
             var a=typeof getData=="function"?getData():{},
                 b=a.theme||"system",
@@ -26,7 +146,7 @@
             
             var h=f.getElementById("theme_status_label");
             if(h){
-                var k=typeof getData=="function"&&getData().lang=="en"?"en":"id",
+                var k=getLang(),
                     l={en:{light:"Light",dark:"Dark",system:"System"},id:{light:"Terang",dark:"Gelap",system:"Sistem"}};
                 h.textContent=l[k][b]||l[k].system;
             }
@@ -35,18 +155,19 @@
             });
         }catch(n){}
     }
-    e.applyTheme=g;
+    e.applyTheme=applyTheme;
     e.setTheme=function(a){
         typeof updateSetting=="function"?updateSetting("theme",a):f.cookie="theme="+a+"; path=/; max-age=31536000; SameSite=Lax";
-        g();
+        applyTheme();
     };
 
     if(f.readyState==="loading"){
-        f.addEventListener("DOMContentLoaded",g);
+        f.addEventListener("DOMContentLoaded",applyTheme);
     } else {
-        g();
+        applyTheme();
     }
 
+    // --- 4. CSS STYLES ---
     var p=f.createElement("style");
     p.textContent=`
         /* --- STYLE SIDEBAR & BACKDROP --- */
@@ -107,6 +228,47 @@
             margin-top: auto; padding: 16px 12px 8px; font-size: 11.5px;
             color: var(--text-muted, #5f6368); border-top: 1px solid var(--border-color, rgba(0,0,0,0.08));
         }
+
+        /* --- STYLE POPUP CONFIRMATION & INFO (MENGGELAP TANPA BLUR) --- */
+        .app-dialog-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: grid; place-items: center; z-index: 35000;
+            opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+        }
+        .app-dialog-overlay.show { opacity: 1; pointer-events: auto; }
+        .app-dialog-box {
+            background: var(--surface, #ffffff); border-radius: 28px; padding: 24px 22px 20px;
+            width: min(88vw, 310px); box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            transform: scale(0.92); transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-align: center; color: var(--text-main, #1f1f1f);
+        }
+        .app-dialog-overlay.show .app-dialog-box { transform: scale(1); }
+        .app-dialog-title {
+            font-size: 18px; font-weight: 700; margin: 0 0 8px;
+            color: var(--text-main, #1f1f1f); letter-spacing: -0.3px;
+        }
+        .app-dialog-desc {
+            font-size: 14px; color: var(--text-muted, #5f6368); line-height: 1.45;
+            margin: 0 0 20px; font-weight: 400;
+        }
+        .app-dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .app-dialog-btn {
+            padding: 12px 16px; border-radius: 20px; font-size: 14px; font-weight: 600;
+            cursor: pointer; border: 0; transition: transform 0.1s ease, opacity 0.15s ease, background 0.15s ease;
+            font-family: inherit;
+        }
+        .app-dialog-btn:active { transform: scale(0.96); }
+        .app-dialog-btn.cancel {
+            background: var(--hover, rgba(0,0,0,0.05)); color: var(--text-main, #1f1f1f);
+        }
+        body.dark .app-dialog-btn.cancel { background: rgba(255,255,255,0.08); color: #f1f3f7; }
+        .app-dialog-btn.confirm {
+            background: var(--accent, #1b6ef3); color: #ffffff;
+        }
+        .app-dialog-btn.confirm.single { grid-column: 1 / -1; }
+
+        /* --- STYLE FEEDBACK MODAL --- */
         .fb-overlay {
             position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center;
             padding: 16px; background: rgba(0, 0, 0, 0.5); opacity: 0; visibility: hidden;
@@ -164,25 +326,29 @@
             border-top-color: var(--primary, #1a73e8); border-radius: 50%; animation: fb-spin 0.7s linear infinite;
         }
 
-        /* --- STYLE TOAST PERSIS WEATHER.HTML --- */
+        /* --- STYLE TOAST GLOBAL PRESISI --- */
         .toast {
-            position: fixed;
-            left: 50%; bottom: 100px;
+            position: fixed; left: 50%;
+            bottom: calc(82px + env(safe-area-inset-bottom, 0px));
             transform: translate(-50%, 10px);
             opacity: 0; pointer-events: none;
             background: #1e2124; color: white;
             padding: 12px 20px; border-radius: 16px;
             font-size: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             transition: opacity .2s, transform .2s;
-            z-index: 40000; text-align: center;
-            white-space: nowrap;
+            z-index: 40000; text-align: center; white-space: nowrap;
         }
         .toast.show { opacity: 1; transform: translate(-50%,0); }
+
+        @media (min-width: 768px) {
+            .toast { bottom: 28px; }
+        }
 
         @keyframes fb-spin { to { transform: rotate(360deg); } }
     `;
     f.head.appendChild(p);
 
+    // --- 5. KAMUS TRANSLASI KAMAR SIDEBAR & FEEDBACK ---
     var q={
         en:{
             catSearch:"Search",catApps:"Apps",catLearnMore:"Learn more",homepage:"Homepage",settings:"Preferences",displayTheme:"Display theme",light:"Light",dark:"Dark",system:"System",weather:"Weather",translate:"Translate",maps:"Maps",about:"About",privacy:"Privacy",feedback:"Feedback",
@@ -224,21 +390,14 @@
         }
     };
 
-    function r(){
-        try{
-            var a=typeof getData=="function"?getData():{};
-            return a.lang=="en"?"en":"id";
-        }catch(b){return"id";}
-    }
-
     var s=f.createElement("div");s.className="sidebar-backdrop";s.id="sidebar_backdrop";
     var t=f.createElement("div");t.className="popup-menu";t.id="popup_menu";
 
-    function u(){
-        var a=q[r()],
+    function renderSidebar(){
+        var a=q[getLang()],
             b=typeof getData=="function"?getData().theme||"system":"system",
             c={en:{light:"Light",dark:"Dark",system:"System"},id:{light:"Terang",dark:"Gelap",system:"Sistem"}},
-            d=c[r()][b]||c[r()].system;
+            d=c[getLang()][b]||c[getLang()].system;
         t.innerHTML=`
             <div class="popup-section-title">${a.catSearch}</div>
             <div class="popup-group">
@@ -277,11 +436,11 @@
             </div>
         <div class="sidebar-footer">&copy; 2026 Deevv Search.</div>`;
     }
-    u();
+    renderSidebar();
 
     var v=f.createElement("div");v.className="fb-overlay";
-    function w(){
-        var a=q[r()];
+    function renderFeedback(){
+        var a=q[getLang()];
         v.innerHTML=`
             <div class="fb-card" role="dialog" aria-modal="true">
                 <div class="fb-loading-wrap" id="fb-loading"><div class="fb-spinner"></div></div>
@@ -305,7 +464,7 @@
                     </div>
                 </div>
                 <div class="fb-section">
-                    <div class="fb-label-group">${r()==="en"?"Additional Notes":"Catatan atau Saran Tambahan"}</div>
+                    <div class="fb-label-group">${getLang()==="en"?"Additional Notes":"Catatan atau Saran Tambahan"}</div>
                     <textarea class="fb-textarea" placeholder="${a.fbPlaceholder}"></textarea>
                 </div>
                 <div class="fb-footer">
@@ -315,9 +474,9 @@
             </div>
         `;
     }
-    w();
+    renderFeedback();
 
-    function x(){
+    function initUI(){
         if(!e.__uiModalReady){
             e.__uiModalReady=!0;
             var a=f.querySelector("header");
@@ -332,12 +491,12 @@
         }
     }
     if(f.readyState==="loading"){
-        f.addEventListener("DOMContentLoaded",x);
+        f.addEventListener("DOMContentLoaded",initUI);
     } else {
-        x();
+        initUI();
     }
 
-    function y(a){
+    function bindChips(a){
         var b=v.querySelector("#"+a);
         b&&b.querySelectorAll(".fb-chip").forEach(function(c){
             c.addEventListener("click",function(){
@@ -347,19 +506,19 @@
         });
     }
 
-    function z(){
+    function initFeedbackEvents(){
         var a=v.querySelector(".fb-close"),
             b=v.querySelector(".fb-btn-cancel"),
             c=v.querySelector(".fb-btn-submit"),
             d=v.querySelector(".fb-textarea");
         
-        y("fb-topic-chips");
-        y("fb-rating-chips");
+        bindChips("fb-topic-chips");
+        bindChips("fb-rating-chips");
         
-        var h=function(){v.classList.remove("show")};
-        a.addEventListener("click",h);
-        b.addEventListener("click",h);
-        v.addEventListener("click",function(k){if(k.target===v)h();});
+        var closeFb=function(){v.classList.remove("show")};
+        a.addEventListener("click",closeFb);
+        b.addEventListener("click",closeFb);
+        v.addEventListener("click",function(k){if(k.target===v)closeFb();});
         
         c.addEventListener("click",function(){
             var k=v.querySelector("#fb-topic-chips .fb-chip.active")?.dataset.topic||"",
@@ -368,7 +527,6 @@
             
             c.disabled=!0;
 
-            // Membuat Hidden Iframe untuk mengirim data form secara background tanpa redirect & bypass CORS
             var iframeName = "hidden_iframe_" + Date.now();
             var iframe = f.createElement("iframe");
             iframe.name = iframeName;
@@ -398,33 +556,32 @@
             f.body.appendChild(form);
             form.submit();
 
-            // Beri jeda singkat untuk memastikan form terkirim ke iframe, lalu bersihkan dan tampilkan toast
             setTimeout(function(){
                 try {
                     f.body.removeChild(form);
                     f.body.removeChild(iframe);
                 } catch(_){}
                 
-                var az = q[r()].fbSuccess;
+                var az = q[getLang()].fbSuccess;
                 e.showToast(az);
                 c.disabled = !1;
-                h();
+                closeFb();
             }, 800);
         });
     }
-    z();
+    initFeedbackEvents();
 
-    var A=!1;
+    var isFbOpened=!1;
     e.openFeedbackModal=function(){
         t.classList.remove("active");
-        w();
-        z();
+        renderFeedback();
+        initFeedbackEvents();
         var a=v.querySelector(".fb-textarea"),b=v.querySelector("#fb-loading");
         a.value="";
         v.classList.add("show");
-        if(!A){
+        if(!isFbOpened){
             b.classList.add("show");
-            setTimeout(function(){b.classList.remove("show");A=!0},650);
+            setTimeout(function(){b.classList.remove("show");isFbOpened=!0},650);
         }
     };
 })();
