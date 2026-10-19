@@ -1,7 +1,7 @@
 (function(){
     var e=window, f=document;
 
-    // --- GLOBAL TOAST (Desain, class, & style sama persis dengan weather.html) ---
+    // --- TOAST GLOBAL PERSIS 100% DENGAN WEATHER.HTML ---
     var toastEl=f.createElement("div");
     toastEl.className="toast";
     toastEl.id="toast";
@@ -164,7 +164,7 @@
             border-top-color: var(--primary, #1a73e8); border-radius: 50%; animation: fb-spin 0.7s linear infinite;
         }
 
-        /* --- TOAST STYLE PERSIS WEATHER.HTML --- */
+        /* --- STYLE TOAST PERSIS WEATHER.HTML --- */
         .toast {
             position: fixed;
             left: 50%; bottom: 32px;
@@ -187,16 +187,16 @@
         en:{
             catSearch:"Search",catApps:"Apps",catLearnMore:"Learn more",homepage:"Homepage",settings:"Preferences",displayTheme:"Display theme",light:"Light",dark:"Dark",system:"System",weather:"Weather",translate:"Translate",maps:"Maps",about:"About",privacy:"Privacy",feedback:"Feedback",
             fbTitle:"Send Feedback",fbDesc:"Help us improve Deevv Search by selecting a category and sharing your thoughts.",
-            fbTopicLabel:"What can be improved?",fbTopics:["UI", "Search Features", "Speed", "Other"],
-            fbRatingLabel:"Overall experience",fbRatings:["Very Satisfied", "Fairly Good", "Needs Improvement"],
+            fbTopicLabel:"What can be improved?",fbTopics:["UI", "Fitur", "Kecepatan", "Lainnya"],
+            fbRatingLabel:"Overall experience",fbRatings:["Sangat puas", "Cukup puas", "Perlu peningkatan"],
             fbPlaceholder:"Write your feedback details here...",fbCancel:"Cancel",fbSubmit:"Send",
-            fbSuccess:"Feedback sent"
+            fbSuccess:"Feedback terkirim"
         },
         id:{
             catSearch:"Pencarian",catApps:"Aplikasi",catLearnMore:"Lebih banyak",homepage:"Beranda",settings:"Preferensi",displayTheme:"Tema tampilan",light:"Terang",dark:"Gelap",system:"Sistem",weather:"Cuaca",translate:"Terjemahan",maps:"Peta",about:"Tentang",privacy:"Privasi",feedback:"Masukan",
             fbTitle:"Kirim Masukan",fbDesc:"Bantu kami meningkatkan Deevv Search dengan memilih kategori dan memberikan ulasan.",
-            fbTopicLabel:"Apa yang bisa ditingkatkan?",fbTopics:["UI", "Fitur Pencarian", "Kecepatan", "Lainnya"],
-            fbRatingLabel:"Bagaimana pengalaman Anda secara keseluruhan?",fbRatings:["Sangat Puas", "Cukup Baik", "Perlu Perbaikan"],
+            fbTopicLabel:"Apa yang bisa ditingkatkan?",fbTopics:["UI", "Fitur", "Kecepatan", "Lainnya"],
+            fbRatingLabel:"Bagaimana pengalaman Anda secara keseluruhan?",fbRatings:["Sangat puas", "Cukup puas", "Perlu peningkatan"],
             fbPlaceholder:"Tulis detail masukan Anda di sini...",fbCancel:"Batal",fbSubmit:"Kirim",
             fbSuccess:"Feedback terkirim"
         }
@@ -346,11 +346,13 @@
             
             c.disabled=!0;
 
-            // Memastikan data Google Form terkirim sempurna dengan parameter entry yang valid
+            // Memperbaiki parameter entry Google Form agar data terekam/masuk dengan benar
             var n=new URLSearchParams();
             n.append("entry.85101616", k);
             n.append("entry.367332078", l);
             n.append("entry.370803403", m);
+            n.append("fvv", "1");
+            n.append("fbzx", "-8826898762026546185");
 
             fetch("https://docs.google.com/forms/u/0/d/e/1FAIpQLSc1uScj1D4ELT_3ptqSG87GXaThMS9p0f-v8_AYW1KtmmvYPQ/formResponse",{
                 method:"POST",
