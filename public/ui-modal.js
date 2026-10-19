@@ -201,6 +201,8 @@
         .popup-menu a:hover, .popup-menu button:hover { background: rgba(0, 0, 0, 0.04); }
         body.dark .popup-menu {
           --text-main: #e8eaed;
+          --border-color: rgba(255,255,255,0.12);
+          --surface: #1b1e24;
         }
         body.dark .popup-menu a:hover, body.dark .popup-menu button:hover { background: rgba(255, 255, 255, 0.06); }
         .theme-status-text {
