@@ -1,4 +1,53 @@
-(function(){var e=window,f=document;function g(){try{var a=typeof getData=="function"?getData():{},b=a.theme||"system",c=matchMedia("(prefers-color-scheme: dark)").matches,d=b==="dark"||b==="system"&&c;d?(f.body.classList.add("dark"),f.documentElement.classList.add("dark")):(f.body.classList.remove("dark"),f.documentElement.classList.remove("dark"));var h=f.getElementById("theme_status_label");if(h){var k=typeof getData=="function"&&getData().lang=="en"?"en":"id",l={en:{light:"Light",dark:"Dark",system:"System"},id:{light:"Terang",dark:"Gelap",system:"Sistem"}};h.textContent=l[k][b]||l[k].system}f.querySelectorAll(".theme-option-btn").forEach(function(m){m.getAttribute("data-theme")===b?m.classList.add("active"):m.classList.remove("active")})}catch(n){}}e.applyTheme=g;e.setTheme=function(a){typeof updateSetting=="function"?updateSetting("theme",a):f.cookie="theme="+a+"; path=/; max-age=31536000; SameSite=Lax";g()};f.readyState==="loading"?f.addEventListener("DOMContentLoaded",g):g();var p=f.createElement("style");p.textContent=`
+(function(){
+    var e=window, f=document;
+
+    // --- GLOBAL TOAST (Bisa dipanggil dari file lain, misal: showToast("Pesan")) ---
+    var globalToast = f.createElement("div");
+    globalToast.className = "deevv-global-toast";
+    f.body.appendChild(globalToast);
+
+    e.showToast = function(msg) {
+        globalToast.textContent = msg;
+        globalToast.classList.add("show");
+        setTimeout(function() {
+            globalToast.classList.remove("show");
+        }, 3000);
+    };
+
+    function g(){
+        try{
+            var a=typeof getData=="function"?getData():{},
+                b=a.theme||"system",
+                c=matchMedia("(prefers-color-scheme: dark)").matches,
+                d=b==="dark"||b==="system"&&c;
+            
+            d?(f.body.classList.add("dark"),f.documentElement.classList.add("dark")):(f.body.classList.remove("dark"),f.documentElement.classList.remove("dark"));
+            
+            var h=f.getElementById("theme_status_label");
+            if(h){
+                var k=typeof getData=="function"&&getData().lang=="en"?"en":"id",
+                    l={en:{light:"Light",dark:"Dark",system:"System"},id:{light:"Terang",dark:"Gelap",system:"Sistem"}};
+                h.textContent=l[k][b]||l[k].system;
+            }
+            f.querySelectorAll(".theme-option-btn").forEach(function(m){
+                m.getAttribute("data-theme")===b?m.classList.add("active"):m.classList.remove("active");
+            });
+        }catch(n){}
+    }
+    e.applyTheme=g;
+    e.setTheme=function(a){
+        typeof updateSetting=="function"?updateSetting("theme",a):f.cookie="theme="+a+"; path=/; max-age=31536000; SameSite=Lax";
+        g();
+    };
+
+    if(f.readyState==="loading"){
+        f.addEventListener("DOMContentLoaded",g);
+    } else {
+        g();
+    }
+
+    var p=f.createElement("style");
+    p.textContent=`
         /* --- STYLE SIDEBAR & BACKDROP --- */
         .popup-menu {
             position: fixed; top: 0; left: -280px; width: 250px; height: 100%;
@@ -113,14 +162,23 @@
             width: 34px; height: 34px; border: 3px solid var(--border-color, rgba(0,0,0,0.15));
             border-top-color: var(--primary, #1a73e8); border-radius: 50%; animation: fb-spin 0.7s linear infinite;
         }
-        /* --- CUSTOM TOAST NOTIFICATION --- */
-        .custom-toast-notification {
-            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
-            background: var(--surface, #323232); color: var(--text-inverse, #fff); padding: 12px 24px;
-            border-radius: 12px; font-size: 13.5px; font-weight: 500; box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-            z-index: 10000; opacity: 0; visibility: hidden; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+        /* --- STYLING TOAST PROFESIONAL ALA GOOGLE WEATHER --- */
+        .deevv-global-toast {
+            position: fixed; left: 50%; bottom: 32px;
+            transform: translate(-50%, 10px);
+            opacity: 0; pointer-events: none;
+            background: #1e2124; color: #ffffff;
+            padding: 12px 20px; border-radius: 16px;
+            font-size: 14px; font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            transition: opacity .2s ease, transform .2s ease;
+            z-index: 40000; text-align: center;
         }
-        .custom-toast-notification.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+        .deevv-global-toast.show {
+            opacity: 1; transform: translate(-50%, 0);
+        }
+
         @keyframes fb-spin { to { transform: rotate(360deg); } }
     `;
     f.head.appendChild(p);
@@ -144,28 +202,21 @@
         }
     };
 
-    function r(){try{var a=typeof getData=="function"?getData():{};return a.lang=="en"?"en":"id"}catch(b){return"id"}}
+    function r(){
+        try{
+            var a=typeof getData=="function"?getData():{};
+            return a.lang=="en"?"en":"id";
+        }catch(b){return"id";}
+    }
 
     var s=f.createElement("div");s.className="sidebar-backdrop";s.id="sidebar_backdrop";
     var t=f.createElement("div");t.className="popup-menu";t.id="popup_menu";
 
-    // Buat elemen Toast Sederhana
-    var toastEl=f.createElement("div");
-    toastEl.className="custom-toast-notification";
-    f.body.appendChild(toastEl);
-
-    function showSimpleToast(msg){
-        if(typeof showToast=="function"){
-            showToast(msg);
-        }else{
-            toastEl.textContent=msg;
-            toastEl.classList.add("show");
-            setTimeout(function(){ toastEl.classList.remove("show"); }, 3000);
-        }
-    }
-
     function u(){
-        var a=q[r()],b=typeof getData=="function"?getData().theme||"system":"system",c={en:{light:"Light",dark:"Dark",system:"System"},id:{light:"Terang",dark:"Gelap",system:"Sistem"}},d=c[r()][b]||c[r()].system;
+        var a=q[r()],
+            b=typeof getData=="function"?getData().theme||"system":"system",
+            c={en:{light:"Light",dark:"Dark",system:"System"},id:{light:"Terang",dark:"Gelap",system:"Sistem"}},
+            d=c[r()][b]||c[r()].system;
         t.innerHTML=`
             <div class="popup-section-title">${a.catSearch}</div>
             <div class="popup-group">
@@ -258,7 +309,11 @@
             d&&c&&(d.addEventListener("click",function(h){h.stopPropagation();c.classList.toggle("open")}),t.querySelectorAll(".theme-option-btn").forEach(function(h){h.addEventListener("click",function(k){k.stopPropagation();var l=h.getAttribute("data-theme");typeof e.setTheme=="function"&&e.setTheme(l);c.classList.remove("open")})}));
         }
     }
-    f.readyState==="loading"?f.addEventListener("DOMContentLoaded",x):x();
+    if(f.readyState==="loading"){
+        f.addEventListener("DOMContentLoaded",x);
+    } else {
+        x();
+    }
 
     function y(a){
         var b=v.querySelector("#"+a);
@@ -271,22 +326,32 @@
     }
 
     function z(){
-        var a=v.querySelector(".fb-close"),b=v.querySelector(".fb-btn-cancel"),c=v.querySelector(".fb-btn-submit"),d=v.querySelector(".fb-textarea");
+        var a=v.querySelector(".fb-close"),
+            b=v.querySelector(".fb-btn-cancel"),
+            c=v.querySelector(".fb-btn-submit"),
+            d=v.querySelector(".fb-textarea");
+        
         y("fb-topic-chips");
         y("fb-rating-chips");
+        
         var h=function(){v.classList.remove("show")};
         a.addEventListener("click",h);
         b.addEventListener("click",h);
         v.addEventListener("click",function(k){if(k.target===v)h();});
+        
         c.addEventListener("click",function(){
             var k=v.querySelector("#fb-topic-chips .fb-chip.active")?.dataset.topic||"",
                 l=v.querySelector("#fb-rating-chips .fb-chip.active")?.dataset.rating||"",
                 m=d.value.trim();
+            
             c.disabled=!0;
+
+            // Memperbaiki pengiriman Google Form menggunakan URLSearchParams dengan entry ID yang sesuai
             var n=new URLSearchParams();
-            n.append("entry.85101616",k);
-            n.append("entry.367332078",l);
-            n.append("entry.370803403",m);
+            n.append("entry.85101616", k);
+            n.append("entry.367332078", l);
+            n.append("entry.370803403", m);
+
             fetch("https://docs.google.com/forms/u/0/d/e/1FAIpQLSc1uScj1D4ELT_3ptqSG87GXaThMS9p0f-v8_AYW1KtmmvYPQ/formResponse",{
                 method:"POST",
                 mode:"no-cors",
@@ -294,12 +359,12 @@
                 body:n.toString()
             }).then(function(){
                 var az=q[r()].fbSuccess;
-                showSimpleToast(az);
+                e.showToast(az);
                 c.disabled=!1;
                 h();
             }).catch(function(){
                 var az=q[r()].fbSuccess;
-                showSimpleToast(az);
+                e.showToast(az);
                 c.disabled=!1;
                 h();
             });
