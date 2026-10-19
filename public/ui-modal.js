@@ -346,30 +346,48 @@
             
             c.disabled=!0;
 
-            // Memperbaiki parameter entry Google Form agar data terekam/masuk dengan benar
-            var n=new URLSearchParams();
-            n.append("entry.85101616", k);
-            n.append("entry.367332078", l);
-            n.append("entry.370803403", m);
-            n.append("fvv", "1");
-            n.append("fbzx", "-8826898762026546185");
+            // Membuat Hidden Iframe untuk mengirim data form secara background tanpa redirect & bypass CORS
+            var iframeName = "hidden_iframe_" + Date.now();
+            var iframe = f.createElement("iframe");
+            iframe.name = iframeName;
+            iframe.style.display = "none";
+            f.body.appendChild(iframe);
 
-            fetch("https://docs.google.com/forms/u/0/d/e/1FAIpQLSc1uScj1D4ELT_3ptqSG87GXaThMS9p0f-v8_AYW1KtmmvYPQ/formResponse",{
-                method:"POST",
-                mode:"no-cors",
-                headers:{"Content-Type":"application/x-www-form-urlencoded"},
-                body:n.toString()
-            }).then(function(){
-                var az=q[r()].fbSuccess;
+            var form = f.createElement("form");
+            form.action = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSc1uScj1D4ELT_3ptqSG87GXaThMS9p0f-v8_AYW1KtmmvYPQ/formResponse";
+            form.method = "POST";
+            form.target = iframeName;
+            form.style.display = "none";
+
+            var fields = {
+                "entry.85101616": k,
+                "entry.367332078": l,
+                "entry.370803403": m
+            };
+
+            for (var key in fields) {
+                var input = f.createElement("input");
+                input.type = "hidden";
+                input.name = key;
+                input.value = fields[key];
+                form.appendChild(input);
+            }
+
+            f.body.appendChild(form);
+            form.submit();
+
+            // Beri jeda singkat untuk memastikan form terkirim ke iframe, lalu bersihkan dan tampilkan toast
+            setTimeout(function(){
+                try {
+                    f.body.removeChild(form);
+                    f.body.removeChild(iframe);
+                } catch(_){}
+                
+                var az = q[r()].fbSuccess;
                 e.showToast(az);
-                c.disabled=!1;
+                c.disabled = !1;
                 h();
-            }).catch(function(){
-                var az=q[r()].fbSuccess;
-                e.showToast(az);
-                c.disabled=!1;
-                h();
-            });
+            }, 800);
         });
     }
     z();
