@@ -40,18 +40,20 @@ header:has(.popup-menu.active) .burger-btn span:nth-child(3){transform:translate
 @keyframes appear{from{opacity:.4;transform:translateY(2px)}to{opacity:1;transform:none}}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px}
 .icon-btn{width:36px;height:36px;border:0;border-radius:10px;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer;flex-shrink:0;transition:background .15s,color .15s}
-.icon-btn:hover{background:var(--hover);color:var(--text)}.icon-btn svg{width:20px;height:20px}.icon-btn.on{color:#f59e0b}.icon-btn.on svg{fill:currentColor}
+.icon-btn:hover{background:var(--hover);color:var(--text)}.icon-btn svg{width:20px;height:20px}.icon-btn.on{color:var(--accent)}.icon-btn.on svg{fill:currentColor}
 .place-name{font-size:16px;font-weight:650;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .place-time{font-size:12px;opacity:.85;white-space:nowrap}
-.hero{position:relative;border-radius:28px;padding:18px 20px 18px;color:var(--ht,#14202e);background:var(--ov,linear-gradient(transparent,transparent)),linear-gradient(165deg,var(--g1),var(--g2));display:flex;flex-direction:column;overflow:hidden}
-.hero[data-time=morning]{--g1:#ffd7a6;--g2:#9fcfff}.hero[data-time=day]{--g1:#59adff;--g2:#cfe8ff}
-.hero[data-time=dusk]{--g1:#ff9a62;--g2:#6b4fb8;--ht:#fff}.hero[data-time=night]{--g1:#1c2a5c;--g2:#0b1230;--ht:#eef2ff}
-.hero[data-tone=cloud]{--ov:linear-gradient(rgba(110,125,145,.40),rgba(110,125,145,.40))}
-.hero[data-tone=snow]{--ov:linear-gradient(rgba(225,238,250,.45),rgba(225,238,250,.45))}
-.hero[data-tone=rain]{--ov:linear-gradient(rgba(55,70,98,.55),rgba(55,70,98,.55));--ht:#fff}
-.hero[data-tone=storm]{--ov:linear-gradient(rgba(38,32,68,.64),rgba(38,32,68,.64));--ht:#fff}
+.hero{position:relative;border-radius:28px;padding:18px 20px 18px;color:var(--ht,#14202e);background:var(--ov,linear-gradient(transparent,transparent)),linear-gradient(165deg,var(--g1),var(--g2));border:1px solid rgba(255,255,255,.55);box-shadow:0 8px 28px rgba(26,115,232,.10),inset 0 1px 0 rgba(255,255,255,.6);-webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%);display:flex;flex-direction:column;overflow:hidden}
+.hero[data-time=morning]{--g1:rgba(255,215,166,.62);--g2:rgba(159,207,255,.50)}.hero[data-time=day]{--g1:rgba(89,173,255,.42);--g2:rgba(207,232,255,.55)}
+.hero[data-time=dusk]{--g1:rgba(255,154,98,.50);--g2:rgba(170,140,235,.42)}.hero[data-time=night]{--g1:rgba(110,130,235,.38);--g2:rgba(150,170,255,.30)}
+.hero[data-tone=cloud]{--ov:linear-gradient(rgba(150,165,188,var(--ca,.2)),rgba(150,165,188,var(--ca,.2)))}
+.hero[data-tone=snow]{--ov:linear-gradient(rgba(240,248,255,.45),rgba(240,248,255,.45))}
+.hero[data-tone=rain]{--ov:linear-gradient(rgba(130,155,195,.38),rgba(130,155,195,.38))}
+.hero[data-tone=storm]{--ov:linear-gradient(rgba(125,115,175,.42),rgba(125,115,175,.42))}
+:root.dark .hero,body.dark .hero{--ht:#f1f5ff;border-color:rgba(255,255,255,.16);box-shadow:0 8px 28px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.12)}
+:root.dark .hero[data-time=night],body.dark .hero[data-time=night]{--g1:rgba(110,130,235,.45);--g2:rgba(60,75,170,.35)}
 .hero-top{display:flex;align-items:center;gap:8px;margin-bottom:22px}.greet{display:flex;flex-direction:column;gap:6px;margin-bottom:28px}.greet b{font-size:24px;font-weight:650;letter-spacing:-.4px}.greet span{font-size:13.5px;line-height:1.45;opacity:.88;max-width:30ch}.hero-top>svg{width:18px;height:18px;flex-shrink:0}
-.hero .icon-btn{color:inherit}.hero .icon-btn:hover{background:rgba(255,255,255,.22);color:inherit}.hero .icon-btn.on{color:#ffc933}
+.hero .icon-btn{color:inherit}.hero .icon-btn:hover{background:rgba(255,255,255,.22);color:inherit}.hero .icon-btn.on{color:inherit;background:rgba(255,255,255,.38)}
 .hero-main{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .temp{font-size:76px;font-weight:300;letter-spacing:-4px;line-height:1}.temp sup{font-size:28px;font-weight:400;letter-spacing:0;vertical-align:top;position:relative;top:8px;opacity:.7}
 .hero-icon svg{width:84px;height:84px;stroke-width:1.3}
@@ -66,8 +68,8 @@ header:has(.popup-menu.active) .burger-btn span:nth-child(3){transform:translate
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:16px 18px 6px}
 .wcard{display:none}.arcw{min-width:0}.arc-cap{font-size:14px;font-weight:600;margin-bottom:4px}.arc{display:block;width:100%;max-width:340px;margin:0 auto;height:auto;stroke-width:1.5}.arc-p{stroke:var(--accent);stroke-width:2.5;fill:none}.arc-l{stroke:var(--accent);stroke-dasharray:3 5;opacity:.65}.arc-b{stroke:var(--line)}.arc-d{font-size:18px;dominant-baseline:central;text-anchor:middle}.arc-d.off{opacity:.5}
 .arc-t{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);max-width:340px;margin:2px auto 10px}.arc-t span{display:flex;align-items:center;gap:6px;color:var(--text);font-weight:600;font-size:14px}.arc-t svg{width:16px;height:16px;color:var(--accent)}.arc-t em{font-style:normal}
-.drow{display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--line)}.drow svg{width:18px;height:18px;color:var(--accent);flex-shrink:0}.drow span{flex:1;color:var(--muted)}.drow b{font-weight:600;font-size:15px;display:flex;align-items:center}.drow small{font-weight:400;color:var(--muted);margin-left:3px}
-.uvbar{width:54px;height:5px;border-radius:3px;margin-left:10px;position:relative;background:linear-gradient(90deg,#4caf50,#ffd600,#ff9800,#e53935,#8e24aa)}.uvbar u{position:absolute;top:-3px;width:11px;height:11px;border-radius:50%;background:var(--surface);border:2px solid var(--text);transform:translateX(-50%)}
+.drow{display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--line)}.drow svg{width:18px;height:18px;color:var(--accent);flex-shrink:0}.drow span{flex:1;color:var(--muted);white-space:nowrap}.drow b{font-weight:600;font-size:15px;display:flex;align-items:center;min-width:0;white-space:nowrap}.drow-sub{font-size:12px;color:var(--muted);padding:0 0 12px 30px;margin-top:-4px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.drow b small{min-width:0;overflow:hidden;text-overflow:ellipsis}.drow b .aqibar{width:36px;margin-left:8px;flex-shrink:0}.drow small{font-weight:400;color:var(--muted);margin-left:3px}
+.uvbar{width:54px;height:5px;border-radius:3px;margin-left:10px;position:relative;background:linear-gradient(90deg,#4caf50,#ffd600,#ff9800,#e53935,#8e24aa)}.uvbar.aqibar{background:linear-gradient(90deg,#4caf50 6%,#2196f3 19%,#ffc107 38%,#e53935 63%,#212121 88%)}.uvbar u{position:absolute;top:-3px;width:11px;height:11px;border-radius:50%;background:var(--surface);border:2px solid var(--text);transform:translateX(-50%)}
 .day{display:grid;grid-template-columns:64px 28px 1fr auto;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}.day:last-child{border:0}
 .day svg{width:24px;height:24px}.day-n{font-weight:600}.day-c{font-size:12px;color:var(--muted);line-height:1.35}.day-c em{font-style:normal;color:var(--accent)}.day-t{font-size:15px;font-weight:600;white-space:nowrap}.day-t span{color:var(--muted);font-weight:400}
 .day-bar{display:none;height:5px;border-radius:3px;background:var(--hover);position:relative}.day-bar i{position:absolute;top:0;bottom:0;border-radius:3px;background:linear-gradient(90deg,#4db6ff,#ffb347)}
@@ -75,9 +77,9 @@ header:has(.popup-menu.active) .burger-btn span:nth-child(3){transform:translate
 .chips{display:none;gap:8px;overflow-x:auto;scrollbar-width:none;margin-top:10px}.chips::-webkit-scrollbar{display:none}.chips:empty{display:none}
 .chip{display:flex;align-items:center;gap:6px;flex-shrink:0;padding:6px 6px 6px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap}.chip:hover{background:var(--hover)}.chip.on{background:var(--accent-soft);color:var(--accent);border-color:transparent;font-weight:600}
 .chip .pn{width:14px;height:14px;color:var(--accent)}.chip button{border:0;background:transparent;width:20px;height:20px;display:grid;place-items:center;border-radius:50%;color:var(--muted);cursor:pointer}.chip button:hover{background:var(--press)}.chip button svg{width:12px;height:12px}
-.search-box{display:flex;align-items:center;gap:8px;height:48px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:0 6px 0 14px}.search-box:focus-within{border-color:var(--accent)}
+.search-box{display:flex;align-items:center;gap:8px;height:48px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:0 6px 0 18px}.search-box:focus-within{border-color:var(--accent)}
 .search-box>svg{width:18px;height:18px;color:var(--muted);flex-shrink:0}.search-box input{flex:1;min-width:0;border:0;background:transparent;color:var(--text);outline:0;height:100%}.search-box .icon-btn{color:var(--accent)}
-.drop{display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:0 12px 32px rgba(0,0,0,.14);padding:6px;max-height:340px;overflow-y:auto}.drop.show{display:block}
+.drop{display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:0 12px 32px rgba(0,0,0,.14);padding:6px;max-height:340px;overflow-y:auto}.drop.show{display:block}
 .drop-t{padding:10px 12px 4px;font-size:12px;color:var(--muted)}.row .pn{width:18px;height:18px;color:var(--accent);flex-shrink:0}
 [data-page=places]{max-width:640px;width:100%;margin:0 auto}
 .row{display:flex;align-items:center;gap:8px;padding:11px 4px 11px 12px;border-radius:14px;cursor:pointer}.row:hover{background:var(--hover)}
@@ -133,8 +135,8 @@ header:has(.popup-menu.active) .burger-btn span:nth-child(3){transform:translate
 const cfg = typeof getData === 'function' ? getData() : {};
 const ID = cfg.lang !== 'en', LOC = ID ? 'id-ID' : 'en-US';
 const T = {
-  en:{navToday:'Today',g_morning:'Good morning',g_day:'Good afternoon',g_dusk:'Good evening',g_night:'Good night',tip_storm:'Thunderstorms possible. Better to stay indoors.',tip_rain:'Bring an umbrella or a raincoat before heading out.',tip_snow:'Dress warm before you go out.',tip_wet:'High chance of rain today, keep an umbrella handy.',tip_hot:'It feels hot out there. Drink plenty of water.',tip_uv:'UV is high. Wear sunscreen outdoors.',tip_morning:'Hope you have a great day ahead.',tip_day:'Nice conditions to get things done.',tip_dusk:'A good time to slow down and unwind.',tip_night:'Rest well tonight.',next7:'Next 7 days',sunpath:'Sun path',moonpath:'Moon path',night_label:'Night',p_morning:'Morning',p_day:'Afternoon',p_dusk:'Evening',p_night:'Night',h:'h',m:'m',navWeek:'7 days',navPlaces:'Places',searchPh:'Search city...',myLoc:'My location',savedPlaces:'Saved places',noSaved:'No saved places yet. Tap the bookmark on the Today page to add one.',noResult:'No places found.',now:'Now',today:'Today',hourly:'Next 24 hours',details:'Details',feels:'Feels like',humidity:'Humidity',wind:'Wind',pressure:'Pressure',uv:'UV index',rain:'Chance of rain',sunrise:'Sunrise',sunset:'Sunset',hi:'H',lo:'L',err:'Could not load weather.',retry:'Try again',save:'Save place',unsave:'Remove place',saved:'Place saved',removed:'Place removed',locating:'Finding your location...',geoFail:'Location unavailable. Check permission.',here:'My location',w:{0:'Clear sky',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Light showers',81:'Showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm, hail',99:'Severe thunderstorm'}},
-  id:{navToday:'Hari ini',g_morning:'Selamat pagi',g_day:'Selamat siang',g_dusk:'Selamat sore',g_night:'Selamat malam',tip_storm:'Ada potensi petir. Sebaiknya tetap di dalam ruangan.',tip_rain:'Bawa payung atau jas hujan sebelum keluar.',tip_snow:'Pakai pakaian hangat sebelum keluar.',tip_wet:'Peluang hujan tinggi hari ini, siapkan payung.',tip_hot:'Cuaca terasa panas, perbanyak minum air.',tip_uv:'Indeks UV tinggi, pakai tabir surya saat di luar.',tip_morning:'Semoga harimu menyenangkan.',tip_day:'Cuaca bersahabat untuk beraktivitas.',tip_dusk:'Waktu yang pas untuk bersantai.',tip_night:'Selamat beristirahat.',next7:'7 hari ke depan',sunpath:'Perjalanan matahari',moonpath:'Perjalanan bulan',night_label:'Malam',p_morning:'Pagi',p_day:'Siang',p_dusk:'Sore',p_night:'Malam',h:'j',m:'m',navWeek:'7 hari',navPlaces:'Lokasi',searchPh:'Cari kota...',myLoc:'Lokasi saya',savedPlaces:'Lokasi tersimpan',noSaved:'Belum ada lokasi tersimpan. Ketuk ikon bookmark di halaman Hari ini untuk menambah.',noResult:'Lokasi tidak ditemukan.',now:'Sekarang',today:'Hari ini',hourly:'24 jam ke depan',details:'Detail',feels:'Terasa seperti',humidity:'Kelembapan',wind:'Angin',pressure:'Tekanan',uv:'Indeks UV',rain:'Peluang hujan',sunrise:'Matahari terbit',sunset:'Matahari terbenam',hi:'T',lo:'R',err:'Gagal memuat cuaca.',retry:'Coba lagi',save:'Simpan lokasi',unsave:'Hapus lokasi',saved:'Lokasi disimpan',removed:'Lokasi dihapus',locating:'Mencari lokasimu...',geoFail:'Lokasi tidak tersedia. Periksa izin.',here:'Lokasi saya',w:{0:'Cerah',1:'Cerah berawan tipis',2:'Berawan sebagian',3:'Mendung',45:'Berkabut',51:'Gerimis ringan',53:'Gerimis',55:'Gerimis lebat',61:'Hujan ringan',63:'Hujan',65:'Hujan lebat',71:'Salju ringan',73:'Salju',75:'Salju lebat',80:'Hujan sesaat ringan',81:'Hujan sesaat',82:'Hujan sesaat lebat',95:'Badai petir',96:'Badai petir, es',99:'Badai petir hebat'}}
+  en:{navToday:'Today',g_morning:'Good morning',g_day:'Good afternoon',g_dusk:'Good evening',g_night:'Good night',tip_storm:'Thunderstorms possible. Better to stay indoors.',tip_rain:'Bring an umbrella or a raincoat before heading out.',tip_snow:'Dress warm before you go out.',tip_wet:'High chance of rain today, keep an umbrella handy.',tip_hot:'It feels hot out there. Drink plenty of water.',tip_uv:'UV is high. Wear sunscreen outdoors.',tip_morning:'Hope you have a great day ahead.',tip_day:'Nice conditions to get things done.',tip_dusk:'A good time to slow down and unwind.',tip_night:'Rest well tonight.',next7:'Next 7 days',sunpath:'Sun path',moonpath:'Moon path',night_label:'Night',p_morning:'Morning',p_day:'Afternoon',p_dusk:'Evening',p_night:'Night',h:'h',m:'m',navWeek:'7 days',navPlaces:'Places',searchPh:'Search city...',myLoc:'My location',savedPlaces:'Saved places',noSaved:'No saved places yet. Tap the bookmark on the Today page to add one.',noResult:'No places found.',now:'Now',today:'Today',hourly:'Next 24 hours',details:'Details',feels:'Feels like',humidity:'Humidity',wind:'Wind',pressure:'Pressure',uv:'UV index',cloud:'Cloud cover',aqi:'Air quality',aqnote:'24 h avg',aq:['Good','Moderate','Unhealthy','Very unhealthy','Hazardous'],rain:'Chance of rain',sunrise:'Sunrise',sunset:'Sunset',hi:'H',lo:'L',err:'Could not load weather.',retry:'Try again',save:'Save place',unsave:'Remove place',saved:'Place saved',removed:'Place removed',locating:'Finding your location...',geoFail:'Location unavailable. Check permission.',here:'My location',w:{0:'Clear sky',1:'Mostly clear',2:'Partly cloudy',4:'Mostly cloudy',3:'Overcast',45:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Light showers',81:'Showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm, hail',99:'Severe thunderstorm'}},
+  id:{navToday:'Hari ini',g_morning:'Selamat pagi',g_day:'Selamat siang',g_dusk:'Selamat sore',g_night:'Selamat malam',tip_storm:'Ada potensi petir. Sebaiknya tetap di dalam ruangan.',tip_rain:'Bawa payung atau jas hujan sebelum keluar.',tip_snow:'Pakai pakaian hangat sebelum keluar.',tip_wet:'Peluang hujan tinggi hari ini, siapkan payung.',tip_hot:'Cuaca terasa panas, perbanyak minum air.',tip_uv:'Indeks UV tinggi, pakai tabir surya saat di luar.',tip_morning:'Semoga harimu menyenangkan.',tip_day:'Cuaca bersahabat untuk beraktivitas.',tip_dusk:'Waktu yang pas untuk bersantai.',tip_night:'Selamat beristirahat.',next7:'7 hari ke depan',sunpath:'Perjalanan matahari',moonpath:'Perjalanan bulan',night_label:'Malam',p_morning:'Pagi',p_day:'Siang',p_dusk:'Sore',p_night:'Malam',h:'j',m:'m',navWeek:'7 hari',navPlaces:'Lokasi',searchPh:'Cari kota...',myLoc:'Lokasi saya',savedPlaces:'Lokasi tersimpan',noSaved:'Belum ada lokasi tersimpan. Ketuk ikon bookmark di halaman Hari ini untuk menambah.',noResult:'Lokasi tidak ditemukan.',now:'Sekarang',today:'Hari ini',hourly:'24 jam ke depan',details:'Detail',feels:'Terasa seperti',humidity:'Kelembapan',wind:'Angin',pressure:'Tekanan',uv:'Indeks UV',cloud:'Awan',aqi:'Kualitas udara',aqnote:'rerata 24 j',aq:['Baik','Sedang','Tidak sehat','Sangat tidak sehat','Berbahaya'],rain:'Peluang hujan',sunrise:'Matahari terbit',sunset:'Matahari terbenam',hi:'T',lo:'R',err:'Gagal memuat cuaca.',retry:'Coba lagi',save:'Simpan lokasi',unsave:'Hapus lokasi',saved:'Lokasi disimpan',removed:'Lokasi dihapus',locating:'Mencari lokasimu...',geoFail:'Lokasi tidak tersedia. Periksa izin.',here:'Lokasi saya',w:{0:'Cerah',1:'Cerah berawan tipis',2:'Berawan sebagian',4:'Berawan',3:'Mendung',45:'Berkabut',51:'Gerimis ringan',53:'Gerimis',55:'Gerimis lebat',61:'Hujan ringan',63:'Hujan',65:'Hujan lebat',71:'Salju ringan',73:'Salju',75:'Salju lebat',80:'Hujan sesaat ringan',81:'Hujan sesaat',82:'Hujan sesaat lebat',95:'Badai petir',96:'Badai petir, es',99:'Badai petir hebat'}}
 };
 const L = ID ? T.id : T.en, t = k => L[k] ?? T.en[k];
 
@@ -161,13 +163,18 @@ const P = {
  gauge:'<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
  rise:'<path d="M12 2v8M4.93 10.93l1.41 1.41M2 18h2M20 18h2m-2.93-7.07-1.41 1.41M22 22H2M8 6l4-4 4 4M16 18a4 4 0 0 0-8 0"/>',
  set:'<path d="M12 10V2M4.93 10.93l1.41 1.41M2 18h2M20 18h2m-2.93-7.07-1.41 1.41M22 22H2M16 5l-4 4-4-4M16 18a4 4 0 0 0-8 0"/>',
+ air:'<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>',
  pin:'<path d="M20 10c0 5-5.5 10.2-7.4 11.8a1 1 0 0 1-1.2 0C9.5 20.2 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
  mark:'<path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>',
  x:'<path d="M18 6 6 18M6 6l12 12"/>',
  locate:'<path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/>'
 };
 const svg = (k, c='') => `<svg viewBox="0 0 24 24" class="${c}" aria-hidden="true">${P[k]}</svg>`;
+// Koreksi status langit (kode 0-3) memakai persentase tutupan awan nyata, bukan kode WMO saja.
+// <12% cerah | <35% cerah berawan tipis | <65% berawan sebagian | <88% berawan | >=88% mendung
+const sky = (code, cover) => (code > 3 || cover == null) ? code : cover < 12 ? 0 : cover < 35 ? 1 : cover < 65 ? 2 : cover < 88 ? 4 : 3;
 function wx(code, day) {
+  if (code === 4) return ['cloud','cloud'];
   if (code === 0 || code === 1) return day ? ['sun','clear'] : ['moon','night'];
   if (code === 2) return [day ? 'csun' : 'cmoon', day ? 'cloud' : 'night'];
   if (code === 3) return ['cloud','cloud'];
@@ -180,6 +187,21 @@ function wx(code, day) {
 const wtext = c => L.w[c] || L.w[{48:45,56:51,57:53,66:61,67:63,77:71,85:80,86:82}[c]] || L.w[c >= 95 ? 95 : 3];
 
 const KEY = 'deevv-weather-v1', $ = id => document.getElementById(id);
+// ISPU resmi (Permen LHK No. P.14/MENLHK/SETJEN/KUM.1/7/2020): I = (Ia-Ib)/(Xa-Xb) * (Xx-Xb) + Ib
+// Tabel batas: [Xb, Xa, Ib, Ia] konsentrasi rata-rata 24 jam (ug/m3) -> indeks
+const ISPU_PM25 = [[0,15.5,0,50],[15.5,55.4,50,100],[55.4,150.4,100,200],[150.4,250.4,200,300],[250.4,500,300,500]];
+const ISPU_PM10 = [[0,50,0,50],[50,150,50,100],[150,350,100,200],[350,420,200,300],[420,500,300,500]];
+function ispuCalc(x, tbl) {
+  if (x == null || isNaN(x)) return null;
+  if (x >= tbl[tbl.length - 1][1]) return tbl[tbl.length - 1][3];
+  const b = tbl.find(r => x <= r[1]);
+  return Math.round((b[3] - b[2]) / (b[1] - b[0]) * (x - b[0]) + b[2]);
+}
+const avg24 = (arr, idx) => {
+  const v = arr.slice(Math.max(0, idx - 23), idx + 1).filter(x => x != null && !isNaN(x));
+  return v.length >= 12 ? v.reduce((a, b) => a + b, 0) / v.length : null;
+};
+let aqi = null;
 let S = { places: [], cur: { n: 'Jakarta', c: 'Indonesia', lat: -6.2088, lon: 106.8456 }, unit: 'c' }, data = null;
 try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (_) {}
 const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) {} };
@@ -204,9 +226,23 @@ async function load() {
   $('todayBody').innerHTML = '<div class="skel"></div><div class="skel" style="height:110px"></div>';
   $('weekPage').innerHTML = '';
   const u = S.unit === 'f' ? '&temperature_unit=fahrenheit' : '';
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${S.cur.lat}&longitude=${S.cur.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,pressure_msl,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code,is_day,uv_index&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_probability_max&timezone=auto&forecast_days=7${u}`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${S.cur.lat}&longitude=${S.cur.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,pressure_msl,wind_speed_10m,cloud_cover&hourly=temperature_2m,precipitation_probability,weather_code,is_day,uv_index,cloud_cover&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_probability_max&timezone=auto&forecast_days=7${u}`;
   try {
-    const r = await fetch(url); if (!r.ok) throw 0;
+    const aqUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${S.cur.lat}&longitude=${S.cur.lon}&current=pm2_5&hourly=pm2_5,pm10&past_days=1&forecast_days=1&timezone=auto`;
+    const [r, ar] = await Promise.all([fetch(url), fetch(aqUrl).catch(() => null)]); if (!r.ok) throw 0;
+    aqi = null;
+    try {
+      if (ar && ar.ok) {
+        const j = await ar.json(), hh = j.hourly, ct = (j.current && j.current.time) || '';
+        const idx = hh.time.findIndex(x => x.slice(0, 13) === ct.slice(0, 13));
+        if (idx >= 0) {
+          const p25 = avg24(hh.pm2_5, idx), p10 = avg24(hh.pm10, idx);
+          const i25 = ispuCalc(p25, ISPU_PM25), i10 = ispuCalc(p10, ISPU_PM10);
+          const best = Math.max(i25 ?? -1, i10 ?? -1);
+          if (best >= 0) aqi = { ispu: best, pm25: p25, pm10: p10 };
+        }
+      }
+    } catch (_) {}
     data = await r.json(); render();
   } catch (_) {
     $('todayBody').innerHTML = `<div class="msg">${t('err')}<br><button id="retry" type="button">${t('retry')}</button></div>`;
@@ -236,7 +272,7 @@ function sunArc(c, d) {
   if (!isNightPath) {
     const len = ss - sr;
     const p = Math.min(1, Math.max(0, (n - sr) / len)), th = Math.PI * (1 - p), off = n < sr || n > ss;
-    return `<div class="arc-cap">${t('sunpath')}</div><svg viewBox="0 0 300 112" class="arc" aria-hidden="true"><path d="M10 96H290" class="arc-b"/><path d="M24 96A126 84 0 0 1 276 96" class="arc-l" fill="none"/>${off ? '' : `<path d="M24 96A126 84 0 0 1 276 96" class="arc-p" pathLength="100" stroke-dasharray="${(p * 100).toFixed(1)} 100"/>`}<text x="${(150 + 126 * Math.cos(th)).toFixed(1)}" y="${(96 - 84 * Math.sin(th)).toFixed(1)}" class="arc-d${off ? ' off' : ''}">☀️</text></svg>
+    return `<div class="arc-cap">${t('sunpath')}</div><svg viewBox="0 0 300 122" class="arc" aria-hidden="true"><path d="M10 112H290" class="arc-b"/><path d="M45 112A105 105 0 0 1 255 112" class="arc-l" fill="none"/>${off ? '' : `<path d="M45 112A105 105 0 0 1 255 112" class="arc-p" pathLength="100" stroke-dasharray="${(p * 100).toFixed(1)} 100"/>`}<text x="${(150 + 105 * Math.cos(th)).toFixed(1)}" y="${(112 - 105 * Math.sin(th)).toFixed(1)}" class="arc-d${off ? ' off' : ''}">☀️</text></svg>
     <div class="arc-t"><span>${svg('rise')}${fmtTime(d.sunrise[0])}</span><em>${Math.floor(len / 60)} ${t('h')} ${len % 60} ${t('m')}</em><span>${svg('set')}${fmtTime(d.sunset[0])}</span></div>`;
   } else {
     const nextSr = sr + 1440; 
@@ -244,11 +280,11 @@ function sunArc(c, d) {
     const p = Math.min(1, Math.max(0, (n - ss) / nightLen)), th = Math.PI * (1 - p);
     
     return `<div class="arc-cap">${t('moonpath')}</div>
-    <svg viewBox="0 0 300 112" class="arc" aria-hidden="true">
-      <path d="M10 96H290" class="arc-b"/>
-      <path d="M24 96A126 84 0 0 1 276 96" class="arc-l" stroke="#8ab4f8" fill="none"/>
-      <path d="M24 96A126 84 0 0 1 276 96" stroke="#8ab4f8" stroke-width="2.5" fill="none" pathLength="100" stroke-dasharray="${(p * 100).toFixed(1)} 100"/>
-      <text x="${(150 + 126 * Math.cos(th)).toFixed(1)}" y="${(96 - 84 * Math.sin(th)).toFixed(1)}" class="arc-d">🌕</text>
+    <svg viewBox="0 0 300 122" class="arc" aria-hidden="true">
+      <path d="M10 112H290" class="arc-b"/>
+      <path d="M45 112A105 105 0 0 1 255 112" class="arc-l" stroke="#8ab4f8" fill="none"/>
+      <path d="M45 112A105 105 0 0 1 255 112" stroke="#8ab4f8" stroke-width="2.5" fill="none" pathLength="100" stroke-dasharray="${(p * 100).toFixed(1)} 100"/>
+      <text x="${(150 + 105 * Math.cos(th)).toFixed(1)}" y="${(112 - 105 * Math.sin(th)).toFixed(1)}" class="arc-d">🌕</text>
     </svg>
     <div class="arc-t"><span>${svg('set')}${fmtTime(d.sunset[0])}</span><em>${t('night_label')}</em><span>${svg('rise')}${fmtTime(d.sunrise[0])}</span></div>`;
   }
@@ -256,14 +292,16 @@ function sunArc(c, d) {
 
 function render() {
   const c = data.current, d = data.daily, h = data.hourly, part = dayPart(c, d);
-  const [ic, tone] = wx(c.weather_code, !!c.is_day), us = S.unit === 'f' ? '°F' : '°C';
+  const curCode = sky(c.weather_code, c.cloud_cover), [ic, tone] = wx(curCode, !!c.is_day), us = S.unit === 'f' ? '°F' : '°C';
   const start = Math.max(0, h.time.findIndex(x => x.slice(0, 13) === c.time.slice(0, 13)));
   
   const currentUv = (c.is_day && h.uv_index && h.uv_index[start] !== undefined) ? Math.round(h.uv_index[start]) : 0;
   const currentRainProb = (h.precipitation_probability && h.precipitation_probability[start] !== undefined) ? h.precipitation_probability[start] : (d.precipitation_probability_max[0] ?? 0);
 
+  const cloudCover = Math.round(c.cloud_cover ?? 0);
+  const aqiLevel = aqi == null ? 0 : aqi.ispu <= 50 ? 0 : aqi.ispu <= 100 ? 1 : aqi.ispu <= 200 ? 2 : aqi.ispu <= 300 ? 3 : 4;
   const hours = h.time.slice(start, start + 24).map((tm, i) => {
-    const k = start + i, [hi] = wx(h.weather_code[k], h.is_day[k]), pp = h.precipitation_probability[k];
+    const k = start + i, [hi] = wx(sky(h.weather_code[k], h.cloud_cover ? h.cloud_cover[k] : null), h.is_day[k]), pp = h.precipitation_probability[k];
     return `<div class="hour${i === 0 ? ' now' : ''}"><span>${i === 0 ? t('now') : hourLabel(tm)}</span>${svg(hi)}<b>${deg(h.temperature_2m[k])}°</b><i>${pp >= 20 ? pp + '%' : ''}</i></div>`;
   }).join('');
   
@@ -272,12 +310,12 @@ function render() {
   const tipKey = tone === 'storm' ? 'tip_storm' : tone === 'rain' ? 'tip_rain' : tone === 'snow' ? 'tip_snow' : ppMax >= 60 ? 'tip_wet' : c.apparent_temperature >= hotLine ? 'tip_hot' : (currentUv >= 8 && part !== 'night') ? 'tip_uv' : 'tip_' + part;
   
   $('todayBody').innerHTML = `
-   <div class="hero" data-time="${part}" data-tone="${tone}">
+   <div class="hero" data-time="${part}" data-tone="${tone}" style="--ca:${(0.06 + cloudCover / 100 * 0.24).toFixed(2)}">
      <div class="hero-top">${svg('pin')}<div class="place-name">${esc(S.cur.n)}</div><span class="place-time">${t('p_' + part)} · ${fmtTime(c.time)}</span>
        <button class="icon-btn${isSaved(S.cur) ? ' on' : ''}" id="saveBtn" type="button" aria-label="${isSaved(S.cur) ? t('unsave') : t('save')}">${svg('mark')}</button></div>
      <div class="greet"><b>${t('g_' + part)}</b><span>${t(tipKey)}</span></div>
      <div class="hero-main"><div class="temp">${deg(c.temperature_2m)}<sup>${us}</sup></div><div class="hero-icon">${svg(ic)}</div></div>
-     <div class="cond">${wtext(c.weather_code)}</div>
+     <div class="cond">${wtext(curCode)}</div>
      <div class="sub">${t('feels')} ${deg(c.apparent_temperature)}° &nbsp;${t('hi')} ${deg(d.temperature_2m_max[0])}° &nbsp;${t('lo')} ${deg(d.temperature_2m_min[0])}°</div>
      <div class="unit-toggle"><button type="button" data-u="c" class="${S.unit === 'c' ? 'on' : ''}">°C</button><button type="button" data-u="f" class="${S.unit === 'f' ? 'on' : ''}">°F</button></div>
    </div>
@@ -288,6 +326,8 @@ function render() {
      ${row('sun', t('uv'), currentUv + `<i class="uvbar"><u style="left:${Math.min(currentUv / 11, 1) * 100}%"></u></i>`)}
      ${row('rain', t('rain'), currentRainProb + '<small>%</small>')}
      ${row('gauge', t('pressure'), deg(c.pressure_msl) + '<small>hPa</small>')}
+     ${row('cloud', t('cloud'), cloudCover + '<small>%</small>')}
+     ${row('air', t('aqi'), aqi == null ? '–' : aqi.ispu + `<small>${t('aq')[aqiLevel]}</small><i class="uvbar aqibar"><u style="left:${Math.min(aqi.ispu / 400, 1) * 100}%"></u></i>`)}${aqi && aqi.pm25 != null ? `<div class="drow-sub">ISPU · PM2.5 ${aqi.pm25.toLocaleString(LOC, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} µg/m³ · ${t('aqnote')}</div>` : ''}
    </div></div>`;
   $('saveBtn').onclick = toggleSave;
   document.querySelectorAll('.unit-toggle button').forEach(b => b.onclick = () => { if (S.unit !== b.dataset.u) { S.unit = b.dataset.u; persist(); load(); } });
