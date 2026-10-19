@@ -199,6 +199,9 @@
             cursor: pointer; text-align: left; transition: background 0.2s ease;
         }
         .popup-menu a:hover, .popup-menu button:hover { background: rgba(0, 0, 0, 0.04); }
+        body.dark .popup-menu {
+          --text-main: #e8eaed;
+        }
         body.dark .popup-menu a:hover, body.dark .popup-menu button:hover { background: rgba(255, 255, 255, 0.06); }
         .theme-status-text {
             font-size: 11.5px; font-weight: 500; color: var(--text-muted, #5f6368);
