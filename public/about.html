@@ -251,8 +251,8 @@
     <!-- Hero -->
     <section class="card hero" aria-labelledby="heroTitle">
       <div>
-        <h2 class="hero-title" id="heroTitle" data-i18n="heroTitle">Cari apa saja, tanpa diikuti.</h2>
-        <p class="hero-sub" data-i18n="heroSub">Deevv adalah kumpulan alat yang bersih dan cepat: mesin pencari, AI, peta, cuaca, dan penerjemah. Tanpa pelacak iklan.</p>
+        <h2 class="hero-title" id="heroTitle" data-i18n="heroTitle">Cari apa saja, tanpa iklan yang membuntuti.</h2>
+        <p class="hero-sub" data-i18n="heroSub">Deevv adalah kumpulan alat yang bersih dan cepat: mesin pencari, AI, peta, cuaca, dan penerjemah. Tanpa pelacak iklan dan analitik pihak ketiga.</p>
         <div class="hero-actions">
           <a class="btn-primary" href="index.html"><span data-i18n="ctaTry">Coba Deevv Search</span></a>
           <a class="btn-ghost" href="#how" id="toHow"><span data-i18n="ctaHow">Lihat cara kerjanya</span></a>
@@ -382,7 +382,7 @@
         </div>
         <div class="action-info">
           <span class="action-title" data-i18n="actionTitle">Siap untuk penelusuran privat?</span>
-          <span class="action-desc" data-i18n="actionDesc">Nikmati pengalaman pencarian bersih tanpa iklan dan pelacak.</span>
+          <span class="action-desc" data-i18n="actionDesc">Nikmati pencarian yang bersih, tanpa iklan dan pelacak iklan.</span>
         </div>
       </div>
       <div class="action-btns">
@@ -424,8 +424,8 @@
     const LANG_DICT = {
       en: {
         aboutTitle: "About Deevv", back: "Back",
-        heroTitle: "Search anything. Nobody follows.",
-        heroSub: "Deevv is a set of clean, fast tools: search, AI, maps, weather and translation. No ad trackers.",
+        heroTitle: "Search anything, without ad trackers.",
+        heroSub: "Deevv is a set of clean, fast tools: search, AI, maps, weather and translation. No ad trackers or third-party analytics.",
         ctaTry: "Try Deevv Search", ctaHow: "See how it works",
         orbitHint: "Pick an icon in the illustration to see the other services.", open: "Open",
         orbitLabel: "Deevv services",
@@ -445,16 +445,17 @@
         pvTitle: "What happens to your search", pvSub: "Compare how two kinds of services handle a search.",
         pvOther: "Tracked service", pvDeevv: "Deevv Search",
         capOther: "On many services your search can be passed on to ad trackers and analytics to build a profile of you.",
-        capDeevv: "Your search is used to return results and nothing else. No ad trackers, no third-party analytics, no user profiling.",
+        capDeevv: "Your search is used to return results. Deevv uses no ad trackers, no third-party analytics and no user profiling.",
         faqTitle: "Common questions", faqPh: "Search questions",
         faqEmpty: "Nothing matches. Try another word, or send your question with the Feedback button below.",
-        q1: "Does Deevv Search track me?", a1: "No. It uses no cross-site ad trackers and no invasive third-party analytics. Your theme and language are stored only as cookies in your browser.",
-        q2: "Where are my settings stored?", a2: "In your browser's cookies. You can clear or reset them at any time from Preferences.",
+        q1: "Does Deevv Search track me?", a1: "Deevv uses no cross-site ad trackers and no third-party analytics. Still, no online service is completely trace-free: servers receive requests (such as your IP address) to load pages, and some features use third-party services, see the next question. Your theme and language are stored in your browser.",
+        q2: "Where are my settings stored?", a2: "In your browser (cookies and local storage). You can clear or reset them at any time from Preferences.",
         q3: "What can I do with Deevv?", a3: "Search the web, images, news and videos, chat with Deevv AI, look up places on a map, check the weather and translate text.",
         q4: "Is there a dark mode?", a4: "Yes. In Preferences, choose Light, Dark or System.",
         q5: "Which languages does the interface support?", a5: "Bahasa Indonesia and English.",
         q6: "How do I send feedback?", a6: "Use the Feedback button at the bottom of any page.",
-        actionTitle: "Ready for private browsing?", actionDesc: "Enjoy a clean search experience free of ads and trackers.",
+        q7: "Do any features use third-party services?", a7: "Yes. The weather page sends the city you search for, or your coordinates if you tap the location button, to Open-Meteo (forecast, air quality, place search) and BigDataCloud (place name lookup). Pages also load fonts from Google Fonts, so Google can see your IP address and browser details. Review those services' own privacy policies for how they handle data.",
+        actionTitle: "Ready for private browsing?", actionDesc: "Enjoy a clean search experience without ads or ad trackers.",
         actionBtn: "Get started", share: "Share", shared: "Link copied",
         footerHome: "Home", footerSettings: "Preferences", footerPrivacy: "Privacy",
         footerTagline: "A clean and fast search experience.", feedback: "Feedback",
@@ -462,8 +463,8 @@
       },
       id: {
         aboutTitle: "Tentang Deevv", back: "Kembali",
-        heroTitle: "Cari apa saja, tanpa diikuti.",
-        heroSub: "Deevv adalah kumpulan alat yang bersih dan cepat: mesin pencari, AI, peta, cuaca, dan penerjemah. Tanpa pelacak iklan.",
+        heroTitle: "Cari apa saja, tanpa iklan yang membuntuti.",
+        heroSub: "Deevv adalah kumpulan alat yang bersih dan cepat: mesin pencari, AI, peta, cuaca, dan penerjemah. Tanpa pelacak iklan dan analitik pihak ketiga.",
         ctaTry: "Coba Deevv Search", ctaHow: "Lihat cara kerjanya",
         orbitHint: "Pilih ikon di ilustrasi untuk melihat layanan lainnya.", open: "Buka",
         orbitLabel: "Layanan Deevv",
@@ -479,20 +480,21 @@
         s1t: "Menjelajah web", s1d: "Crawler membuka halaman web dan membaca isinya.",
         s2t: "Menyusun indeks", s2d: "Isi halaman dipecah menjadi kata kunci supaya bisa ditemukan dalam sekejap.",
         s3t: "Mengurutkan", s3d: "Setiap hasil dinilai dari kecocokan dengan kata yang kamu ketik, banyaknya halaman yang menautkannya, dan seberapa baru isinya.",
-        s4t: "Menampilkan hasil", s4d: "Hasil terbaik muncul di layarmu, tanpa catatan siapa yang mencarinya.",
+        s4t: "Menampilkan hasil", s4d: "Hasil terbaik muncul di layarmu, tanpa profil iklan tentang kamu.",
         pvTitle: "Apa yang terjadi pada pencarianmu", pvSub: "Bandingkan dua cara layanan menangani sebuah pencarian.",
         pvOther: "Layanan berpelacak", pvDeevv: "Deevv Search",
         capOther: "Di banyak layanan, pencarianmu bisa diteruskan ke pelacak iklan dan analitik untuk membangun profil tentang kamu.",
-        capDeevv: "Pencarianmu dipakai untuk menampilkan hasil dan tidak lebih. Tanpa pelacak iklan, tanpa analitik pihak ketiga, tanpa profil pengguna.",
+        capDeevv: "Pencarianmu dipakai untuk menampilkan hasil. Deevv tidak memakai pelacak iklan, analitik pihak ketiga, atau pembuatan profil pengguna.",
         faqTitle: "Pertanyaan umum", faqPh: "Cari pertanyaan",
         faqEmpty: "Tidak ada yang cocok. Coba kata lain, atau kirim pertanyaanmu lewat tombol Masukan di bawah.",
-        q1: "Apakah Deevv Search melacak saya?", a1: "Tidak. Deevv tidak memakai pelacak iklan lintas situs maupun analitik pihak ketiga yang invasif. Tema dan bahasa hanya disimpan sebagai cookie di browsermu.",
-        q2: "Di mana pengaturan saya disimpan?", a2: "Di cookie browsermu. Kamu bisa membersihkan atau me-reset-nya kapan saja lewat Preferensi.",
+        q1: "Apakah Deevv Search melacak saya?", a1: "Deevv tidak memakai pelacak iklan lintas situs maupun analitik pihak ketiga. Meski begitu, tidak ada layanan online yang sepenuhnya tanpa jejak: server tetap menerima permintaan (misalnya alamat IP) agar halaman bisa dimuat, dan beberapa fitur memakai layanan pihak ketiga, lihat pertanyaan berikutnya. Tema dan bahasa disimpan di browsermu.",
+        q2: "Di mana pengaturan saya disimpan?", a2: "Di browsermu (cookie dan penyimpanan lokal). Kamu bisa membersihkan atau me-reset-nya kapan saja lewat Preferensi.",
         q3: "Apa saja yang bisa saya lakukan di Deevv?", a3: "Mencari web, gambar, berita, dan video, mengobrol dengan Deevv AI, mencari tempat di peta, melihat cuaca, dan menerjemahkan teks.",
         q4: "Apakah ada mode gelap?", a4: "Ada. Di Preferensi, pilih Terang, Gelap, atau Sistem.",
         q5: "Bahasa apa saja yang didukung?", a5: "Bahasa Indonesia dan English.",
         q6: "Bagaimana cara mengirim masukan?", a6: "Pakai tombol Masukan di bagian bawah setiap halaman.",
-        actionTitle: "Siap untuk penelusuran privat?", actionDesc: "Nikmati pengalaman pencarian bersih tanpa iklan dan pelacak.",
+        q7: "Apakah ada fitur yang memakai layanan pihak ketiga?", a7: "Ada. Halaman cuaca mengirim kota yang kamu cari, atau koordinatmu jika kamu menekan tombol lokasi, ke Open-Meteo (prakiraan, kualitas udara, pencarian tempat) dan BigDataCloud (mencari nama tempat). Halaman juga memuat font dari Google Fonts, sehingga Google dapat melihat alamat IP dan detail browsermu. Baca kebijakan privasi layanan tersebut untuk tahu cara mereka mengelola data.",
+        actionTitle: "Siap untuk penelusuran privat?", actionDesc: "Nikmati pencarian yang bersih, tanpa iklan dan pelacak iklan.",
         actionBtn: "Mari mulai", share: "Bagikan", shared: "Tautan disalin",
         footerHome: "Beranda", footerSettings: "Preferensi", footerPrivacy: "Privasi",
         footerTagline: "Pengalaman pencarian yang bersih dan cepat.", feedback: "Masukan",
@@ -609,7 +611,7 @@
     function renderFaq() {
       const q = $('faqSearch').value.trim().toLowerCase();
       let html = '', n = 0;
-      for (let i = 1; i <= 6; i++) {
+      for (let i = 1; i <= 7; i++) {
         const qs = t('q' + i), as = t('a' + i);
         if (q && !(qs + ' ' + as).toLowerCase().includes(q)) continue;
         n++;
