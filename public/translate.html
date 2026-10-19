@@ -568,8 +568,6 @@ main {
   </div>
 </div>
 
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-
 <!-- Custom Confirm Modal -->
 <div class="modal-overlay" id="customModal">
   <div class="modal-box">
@@ -740,7 +738,7 @@ main {
   const LANG_NAMES = Object.fromEntries(LANG_CODES.map(code => [code, buildLangName(code)]));
   const ttsLang = code => ({'iw':'he','tl':'fil-PH','no':'nb-NO'}[code] || code);
   const EMPTY_TEXT = '';
-  let typingTimer = null, toastTimer = null, requestId = 0;
+  let typingTimer = null, requestId = 0;
   let state = {history:[], saved:[], theme:'light', sourceLang:null, targetLang:null};
   let modalCallback = null;
   let activeLangType = null;
@@ -797,10 +795,6 @@ main {
   function persist() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
     catch (_) { showToast(getText('toastStorageFull')); }
-  }
-  function showToast(message) {
-    const toast = $('toast'); toast.textContent = message; toast.classList.add('show');
-    clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove('show'), 2300);
   }
 
   function showConfirm(title, desc, onConfirm) {
