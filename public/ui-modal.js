@@ -113,14 +113,60 @@
             width: 34px; height: 34px; border: 3px solid var(--border-color, rgba(0,0,0,0.15));
             border-top-color: var(--primary, #1a73e8); border-radius: 50%; animation: fb-spin 0.7s linear infinite;
         }
+        /* --- CUSTOM TOAST NOTIFICATION --- */
+        .custom-toast-notification {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: var(--surface, #323232); color: var(--text-inverse, #fff); padding: 12px 24px;
+            border-radius: 12px; font-size: 13.5px; font-weight: 500; box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            z-index: 10000; opacity: 0; visibility: hidden; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .custom-toast-notification.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
         @keyframes fb-spin { to { transform: rotate(360deg); } }
     `;
     f.head.appendChild(p);
-    var q={en:{catSearch:"Search",catApps:"Apps",catLearnMore:"Learn more",homepage:"Homepage",settings:"Preferences",displayTheme:"Display theme",light:"Light",dark:"Dark",system:"System",weather:"Weather",translate:"Translate",maps:"Maps",about:"About",privacy:"Privacy",feedback:"Feedback",fbTitle:"Send Feedback",fbDesc:"Help us improve Deevv Search by selecting a category and sharing your thoughts.",fbTopicLabel:"What can be improved?",fbTopics:["Ui","Fitur","Kecepatan","Lainnya"],fbRatingLabel:"Overall experience",fbRatings:["Sangat puas","Cukup puas","Perlu peningkatan"],fbPlaceholder:"Write your feedback details here...",fbCancel:"Cancel",fbSubmit:"Send",fbSuccess:"Successfully sent. Thank you!"},id:{catSearch:"Pencarian",catApps:"Aplikasi",catLearnMore:"Lebih banyak",homepage:"Beranda",settings:"Preferensi",displayTheme:"Tema tampilan",light:"Terang",dark:"Gelap",system:"Sistem",weather:"Cuaca",translate:"Terjemahan",maps:"Peta",about:"Tentang",privacy:"Privasi",feedback:"Masukan",fbTitle:"Kirim Masukan",fbDesc:"Bantu kami meningkatkan Deevv Search dengan memilih kategori dan memberikan ulasan.",fbTopicLabel:"Apa yang bisa ditingkatkan?",fbTopics:["Ui","Fitur","Kecepatan","Lainnya"],fbRatingLabel:"Bagaimana pengalaman Anda secara keseluruhan?",fbRatings:["Sangat puas","Cukup puas","Perlu peningkatan"],fbPlaceholder:"Tulis detail masukan Anda di sini...",fbCancel:"Batal",fbSubmit:"Kirim",fbSuccess:"Masukan berhasil dikirim. Terima kasih!"}};
+
+    var q={
+        en:{
+            catSearch:"Search",catApps:"Apps",catLearnMore:"Learn more",homepage:"Homepage",settings:"Preferences",displayTheme:"Display theme",light:"Light",dark:"Dark",system:"System",weather:"Weather",translate:"Translate",maps:"Maps",about:"About",privacy:"Privacy",feedback:"Feedback",
+            fbTitle:"Send Feedback",fbDesc:"Help us improve Deevv Search by selecting a category and sharing your thoughts.",
+            fbTopicLabel:"What can be improved?",fbTopics:["UI", "Search Features", "Speed", "Other"],
+            fbRatingLabel:"Overall experience",fbRatings:["Very Satisfied", "Fairly Good", "Needs Improvement"],
+            fbPlaceholder:"Write your feedback details here...",fbCancel:"Cancel",fbSubmit:"Send",
+            fbSuccess:"Feedback sent successfully. Thank you!"
+        },
+        id:{
+            catSearch:"Pencarian",catApps:"Aplikasi",catLearnMore:"Lebih banyak",homepage:"Beranda",settings:"Preferensi",displayTheme:"Tema tampilan",light:"Terang",dark:"Gelap",system:"Sistem",weather:"Cuaca",translate:"Terjemahan",maps:"Peta",about:"Tentang",privacy:"Privasi",feedback:"Masukan",
+            fbTitle:"Kirim Masukan",fbDesc:"Bantu kami meningkatkan Deevv Search dengan memilih kategori dan memberikan ulasan.",
+            fbTopicLabel:"Apa yang bisa ditingkatkan?",fbTopics:["UI", "Fitur Pencarian", "Kecepatan", "Lainnya"],
+            fbRatingLabel:"Bagaimana pengalaman Anda secara keseluruhan?",fbRatings:["Sangat Puas", "Cukup Baik", "Perlu Perbaikan"],
+            fbPlaceholder:"Tulis detail masukan Anda di sini...",fbCancel:"Batal",fbSubmit:"Kirim",
+            fbSuccess:"Masukan berhasil dikirim. Terima kasih!"
+        }
+    };
+
     function r(){try{var a=typeof getData=="function"?getData():{};return a.lang=="en"?"en":"id"}catch(b){return"id"}}
+
     var s=f.createElement("div");s.className="sidebar-backdrop";s.id="sidebar_backdrop";
     var t=f.createElement("div");t.className="popup-menu";t.id="popup_menu";
-    function u(){var a=q[r()],b=typeof getData=="function"?getData().theme||"system":"system",c={en:{light:"Light",dark:"Dark",system:"System"},id:{light:"Terang",dark:"Gelap",system:"Sistem"}},d=c[r()][b]||c[r()].system;t.innerHTML=`
+
+    // Buat elemen Toast Sederhana
+    var toastEl=f.createElement("div");
+    toastEl.className="custom-toast-notification";
+    f.body.appendChild(toastEl);
+
+    function showSimpleToast(msg){
+        if(typeof showToast=="function"){
+            showToast(msg);
+        }else{
+            toastEl.textContent=msg;
+            toastEl.classList.add("show");
+            setTimeout(function(){ toastEl.classList.remove("show"); }, 3000);
+        }
+    }
+
+    function u(){
+        var a=q[r()],b=typeof getData=="function"?getData().theme||"system":"system",c={en:{light:"Light",dark:"Dark",system:"System"},id:{light:"Terang",dark:"Gelap",system:"Sistem"}},d=c[r()][b]||c[r()].system;
+        t.innerHTML=`
             <div class="popup-section-title">${a.catSearch}</div>
             <div class="popup-group">
                 <a href="/"><span>${a.homepage}</span></a>
@@ -156,10 +202,14 @@
                 <a href="privacy.html"><span>${a.privacy}</span></a>
                 <button type="button" onclick="openFeedbackModal()"><span>${a.feedback}</span></button>
             </div>
-        <div class="sidebar-footer">&copy; 2026 Deevv Search.</div>`}
+        <div class="sidebar-footer">&copy; 2026 Deevv Search.</div>`;
+    }
     u();
+
     var v=f.createElement("div");v.className="fb-overlay";
-    function w(){var a=q[r()];v.innerHTML=`
+    function w(){
+        var a=q[r()];
+        v.innerHTML=`
             <div class="fb-card" role="dialog" aria-modal="true">
                 <div class="fb-loading-wrap" id="fb-loading"><div class="fb-spinner"></div></div>
                 <div class="fb-header">
@@ -190,12 +240,84 @@
                     <button type="button" class="fb-btn fb-btn-submit">${a.fbSubmit}</button>
                 </div>
             </div>
-        `}
+        `;
+    }
     w();
-    function x(){if(!e.__uiModalReady){e.__uiModalReady=!0;var a=f.querySelector("header");a?(a.appendChild(t),a.appendChild(s)):(f.body.appendChild(t),f.body.appendChild(s));f.body.appendChild(v);var b=f.getElementById("menu_btn");b&&b.addEventListener("click",function(d){d.stopPropagation();t.classList.toggle("active")});s.addEventListener("click",function(){t.classList.remove("active");f.getElementById("theme_dropdown_container")?.classList.remove("open")});f.addEventListener("click",function(d){if(!t.contains(d.target)&&!b?.contains(d.target)){t.classList.remove("active");f.getElementById("theme_dropdown_container")?.classList.remove("open")}});var c=f.getElementById("theme_dropdown_container"),d=f.getElementById("theme_dropdown_toggle");d&&c&&(d.addEventListener("click",function(h){h.stopPropagation();c.classList.toggle("open")}),t.querySelectorAll(".theme-option-btn").forEach(function(h){h.addEventListener("click",function(k){k.stopPropagation();var l=h.getAttribute("data-theme");typeof e.setTheme=="function"&&e.setTheme(l);c.classList.remove("open")})}))}}
+
+    function x(){
+        if(!e.__uiModalReady){
+            e.__uiModalReady=!0;
+            var a=f.querySelector("header");
+            a?(a.appendChild(t),a.appendChild(s)):(f.body.appendChild(t),f.body.appendChild(s));
+            f.body.appendChild(v);
+            var b=f.getElementById("menu_btn");
+            b&&b.addEventListener("click",function(d){d.stopPropagation();t.classList.toggle("active")});
+            s.addEventListener("click",function(){t.classList.remove("active");f.getElementById("theme_dropdown_container")?.classList.remove("open")});
+            f.addEventListener("click",function(d){if(!t.contains(d.target)&&!b?.contains(d.target)){t.classList.remove("active");f.getElementById("theme_dropdown_container")?.classList.remove("open")}});
+            var c=f.getElementById("theme_dropdown_container"),d=f.getElementById("theme_dropdown_toggle");
+            d&&c&&(d.addEventListener("click",function(h){h.stopPropagation();c.classList.toggle("open")}),t.querySelectorAll(".theme-option-btn").forEach(function(h){h.addEventListener("click",function(k){k.stopPropagation();var l=h.getAttribute("data-theme");typeof e.setTheme=="function"&&e.setTheme(l);c.classList.remove("open")})}));
+        }
+    }
     f.readyState==="loading"?f.addEventListener("DOMContentLoaded",x):x();
-    function y(a){var b=v.querySelector("#"+a);b&&b.querySelectorAll(".fb-chip").forEach(function(c){c.addEventListener("click",function(){b.querySelectorAll(".fb-chip").forEach(function(d){d.classList.remove("active")});c.classList.add("active")})})}
-    function z(){var a=v.querySelector(".fb-close"),b=v.querySelector(".fb-btn-cancel"),c=v.querySelector(".fb-btn-submit"),d=v.querySelector(".fb-textarea");y("fb-topic-chips");y("fb-rating-chips");var h=function(){v.classList.remove("show")};a.addEventListener("click",h);b.addEventListener("click",h);v.addEventListener("click",function(k){k.includes===v&&h()});c.addEventListener("click",function(){var k=v.querySelector("#fb-topic-chips .fb-chip.active")?.dataset.topic||"",l=v.querySelector("#fb-rating-chips .fb-chip.active")?.dataset.rating||"",m=d.value.trim();c.disabled=!0;var n=new URLSearchParams();n.append("entry.85101616",k);n.append("entry.367332078",l);n.append("entry.370803403",m);fetch("https://docs.google.com/forms/u/0/d/e/1FAIpQLSc1uScj1D4ELT_3ptqSG87GXaThMS9p0f-v8_AYW1KtmmvYPQ/formResponse",{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:n.toString()}).then(function(){var az=q[r()].fbSuccess;typeof showToast=="function"&&showToast(az);c.disabled=!1;h()}).catch(function(){var az=q[r()].fbSuccess;typeof showToast=="function"&&showToast(az);c.disabled=!1;h()})})}
+
+    function y(a){
+        var b=v.querySelector("#"+a);
+        b&&b.querySelectorAll(".fb-chip").forEach(function(c){
+            c.addEventListener("click",function(){
+                b.querySelectorAll(".fb-chip").forEach(function(d){d.classList.remove("active")});
+                c.classList.add("active");
+            });
+        });
+    }
+
+    function z(){
+        var a=v.querySelector(".fb-close"),b=v.querySelector(".fb-btn-cancel"),c=v.querySelector(".fb-btn-submit"),d=v.querySelector(".fb-textarea");
+        y("fb-topic-chips");
+        y("fb-rating-chips");
+        var h=function(){v.classList.remove("show")};
+        a.addEventListener("click",h);
+        b.addEventListener("click",h);
+        v.addEventListener("click",function(k){if(k.target===v)h();});
+        c.addEventListener("click",function(){
+            var k=v.querySelector("#fb-topic-chips .fb-chip.active")?.dataset.topic||"",
+                l=v.querySelector("#fb-rating-chips .fb-chip.active")?.dataset.rating||"",
+                m=d.value.trim();
+            c.disabled=!0;
+            var n=new URLSearchParams();
+            n.append("entry.85101616",k);
+            n.append("entry.367332078",l);
+            n.append("entry.370803403",m);
+            fetch("https://docs.google.com/forms/u/0/d/e/1FAIpQLSc1uScj1D4ELT_3ptqSG87GXaThMS9p0f-v8_AYW1KtmmvYPQ/formResponse",{
+                method:"POST",
+                mode:"no-cors",
+                headers:{"Content-Type":"application/x-www-form-urlencoded"},
+                body:n.toString()
+            }).then(function(){
+                var az=q[r()].fbSuccess;
+                showSimpleToast(az);
+                c.disabled=!1;
+                h();
+            }).catch(function(){
+                var az=q[r()].fbSuccess;
+                showSimpleToast(az);
+                c.disabled=!1;
+                h();
+            });
+        });
+    }
     z();
-    var A=!1;e.openFeedbackModal=function(){t.classList.remove("active");w();z();var a=v.querySelector(".fb-textarea"),b=v.querySelector("#fb-loading");a.value="";v.classList.add("show");if(!A){b.classList.add("show");setTimeout(function(){b.classList.remove("show");A=!0},650)}};
+
+    var A=!1;
+    e.openFeedbackModal=function(){
+        t.classList.remove("active");
+        w();
+        z();
+        var a=v.querySelector(".fb-textarea"),b=v.querySelector("#fb-loading");
+        a.value="";
+        v.classList.add("show");
+        if(!A){
+            b.classList.add("show");
+            setTimeout(function(){b.classList.remove("show");A=!0},650);
+        }
+    };
 })();
