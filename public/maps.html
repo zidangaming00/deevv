@@ -255,7 +255,7 @@ if(typeof updateSetting!=='function'){window.updateSetting=function(k,v){var d=g
 <script src="https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
 <script>
 'use strict';
-const DEFAULT=[-6.30,106.82],JABODETABEK_BOUNDS=[[-6.95,106.45],[-5.85,107.35]],RADIUS=3000;
+const DEFAULT=[-6.30,106.82],JABODETABEK_BOUNDS=[[-6.95,106.45],[-5.85,107.35]],INDONESIA_BOUNDS=[[-11.5,94.5],[6.5,141.5]],RADIUS=3000;
 const PLACES_API='/api/maps',PHOTON='https://photon.komoot.io',ID_BBOX='94.5,-11.5,141.5,6.5';
 const OVERPASS=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter','https://overpass.private.coffee/api/interpreter'];
 const SAVED_KEY='deevv_maps_saved_places',RECENT_KEY='deevv_maps_recent';
@@ -347,10 +347,8 @@ let view={kind:'welcome'},lastList=null,exploreSnap=null;
 const cache=new Map();
 async function cached(key,ttl,fn){const c=cache.get(key);if(c&&Date.now()-c.t<ttl)return c.v;const v=await fn();cache.set(key,{t:Date.now(),v});return v}
 
-function validateCoord(lat,lon){
-  const la=Number(lat),lo=Number(lon);
-  return Number.isFinite(la)&&Number.isFinite(lo)&&la>=-90&&la<=90&&lo>=-180&&lo<=180;
-}
+function isInIndonesia(lat,lon){const la=Number(lat),lo=Number(lon);return Number.isFinite(la)&&Number.isFinite(lo)&&la>=-11.5&&la<=6.5&&lo>=94.5&&lo<=141.5;}
+function validateCoord(lat,lon){return isInIndonesia(lat,lon);}
 
 function fromPhoton(f){
   const p=f.properties||{},[lon,lat]=f.geometry?.coordinates||[];
@@ -362,7 +360,7 @@ function fromPhoton(f){
 }
 async function photon(q,limit,signal){
   const[lat,lon]=origin();
-  const d=await fetchJSON(`${PHOTON}/api/?q=${encodeURIComponent(q)}&limit=${limit}&lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}&location_bias_scale=0.35&bbox=${ID_BBOX}`,{signal},12000);
+  const d=await fetchJSON(`${PHOTON}/api/?q=${encodeURIComponent(q)}&limit=${limit}&lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}&location_bias_scale=0.35&bbox=${ID_BBOX}&bounded=1`,{signal},12000);
   return(d.features||[]).map(fromPhoton).filter(Boolean);
 }
 function fromNominatim(it){
@@ -567,7 +565,7 @@ function showLocationFallback(){
   const d=$('sheet-detail');
   if(d&&$('w-loc')&&!d.querySelector('.location-fallback')){d.querySelector('.w-loc')?.insertAdjacentHTML('afterend',locationFallbackHTML());bindFallback()}
 }
-$('menu_btn').addEventListener('click',()=>{toast('Menu')});
+// Menu ditangani oleh ui-modal.js; jangan menimpa handler sidebar dengan toast.
 $('btn-me').onclick=()=>{
   if(located){following=false;map.flyTo(userCoords,Math.max(map.getZoom(),16),{duration:.8})}
   else{firstFix=true;startWatch(true,true)}
@@ -704,7 +702,7 @@ async function runSearch(q){
   $('sheet-detail').innerHTML='<div class="hint">Mencari…</div>';setSheet(300);
   try{
     const[lat,lon]=origin(),places=(await searchPlaces(q,10,searchAbort.signal)).map(p=>({...p,d:map.distance([lat,lon],[p.lat,p.lon])}));
-    if(!places.length){$('sheet-detail').innerHTML='<div class="hint">Lokasi tidak ditemukan. Coba kata kunci lain.</div>';return}
+    if(!places.length){$('sheet-detail').innerHTML='<div class="hint">Tempat tidak ditemukan di Indonesia. Deevv Maps saat ini hanya menyediakan pencarian dan peta untuk wilayah Indonesia.</div>';return}
     showList(places,q);
   }catch(err){
     if(err.name!=='AbortError')$('sheet-detail').innerHTML='<div class="hint" style="color:#d93025">Gagal terhubung ke layanan pencarian.</div>';
@@ -1144,7 +1142,7 @@ window.addEventListener('beforeunload',()=>{
   cancelAnimationFrame(northAnim);
 });
 
-map.fitBounds(JABODETABEK_BOUNDS,{padding:[20,20],animate:false});
+map.setMaxBounds(INDONESIA_BOUNDS);map.options.maxBoundsViscosity=1;map.fitBounds(JABODETABEK_BOUNDS,{padding:[20,20],animate:false});map.on('drag',()=>map.panInsideBounds(INDONESIA_BOUNDS,{animate:false}));
 resetToWelcome();updateClear();startWatch(false,true);
 document.fonts?.ready.then(()=>setSheet(sheet.offsetHeight));
 
@@ -1157,5 +1155,6 @@ if(pParam&&/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(pParam)){
   }
 }else if(qParam){searchInput.value=qParam;updateClear();setTimeout(()=>runSearch(qParam.trim()),600)}
 </script>
+<script src="/ui-modal.js"></script>
 </body>
 </html>
