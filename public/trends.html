@@ -172,14 +172,17 @@ function parse(xml) {
     };
   }).filter(x => x.q);
 }
+// Ganti fungsi parse(xml) yang lama di trends.html dengan ini:
 async function fetchTrends(geo, force) {
   const key = 'dt:' + geo;
   if (!force) try { const c = JSON.parse(sessionStorage.getItem(key) || 'null'); if (c && Date.now() - c.t < TTL) return c; } catch (_) {}
   const r = await fetch(`${API}?type=trends&geo=${geo}`); if (!r.ok) throw 0;
-  const c = { t: Date.now(), v: parse(await r.text()) };
+  const data = await r.json();
+  const c = { t: Date.now(), v: data };
   try { sessionStorage.setItem(key, JSON.stringify(c)); } catch (_) {}
   return c;
 }
+
 
 // ---------- Tampilan ----------
 const decode = v => { const x = document.createElement('textarea'); x.innerHTML = v; return x.value; };
