@@ -144,7 +144,7 @@ body{padding:28px 0 30px}.app{padding:0 40px}.bottom-nav{display:none}.desktop-n
 const cfg = typeof getData === 'function' ? getData() : {};
 const ID = cfg.lang !== 'en', LOC = ID ? 'id-ID' : 'en-US';
 
-// Sumber data: RSS Google News lewat fungsi serverless functions/api/feed.js (browser tidak bisa memanggilnya langsung karena CORS).
+// Sumber data: Google News (cadangan: Bing News) lewat fungsi serverless functions/api/feed.js, karena feed-nya tanpa CORS.
 // Satu permintaan mengambil sekitar 100 berita, lalu ditampilkan bertahap. Hasil di-cache 5 menit.
 const API = '/api/feed', PAGE = 20, TTL = 5 * 60e3;
 
@@ -209,20 +209,17 @@ document.querySelectorAll('.bottom-nav-item,.desktop-nav-btn').forEach(b => b.ad
 const txt = v => { try { return new DOMParser().parseFromString(String(v || ''), 'text/html').body.textContent.trim(); } catch (_) { return String(v || '').trim(); } };
 const safeUrl = v => { if (!v || typeof v !== 'string') return ''; try { const u = new URL(v, location.href); return /^https?:$/.test(u.protocol) ? u.href : ''; } catch (_) { return ''; } };
 const host = u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (_) { return ''; } };
-function norm(xml) {
-  const d = new DOMParser().parseFromString(xml, 'text/xml');
-  if (d.querySelector('parsererror')) throw 0;
+function norm(j) {
   const out = [], seen = new Set();
-  d.querySelectorAll('item').forEach(it => {
-    const g = n => { const e = it.querySelector(n); return e ? e.textContent : ''; };
-    const src = txt(g('source'));
-    let ti = txt(g('title'));
+  for (const x of (j && j.items) || []) {
+    const u = safeUrl(x.u), src = txt(x.s);
+    let ti = txt(x.t);
     if (src && ti.endsWith(' - ' + src)) ti = ti.slice(0, -(src.length + 3));
-    const u = safeUrl(g('link')), k = ti.toLowerCase(), pd = new Date(g('pubDate'));
-    if (!u || ti.length < 12 || seen.has(k)) return;
+    const k = ti.toLowerCase();
+    if (!u || ti.length < 12 || seen.has(k)) continue;
     seen.add(k);
-    out.push({ ti, u, s: src || host(u), d: '', i: '', p: isNaN(pd) ? '' : pd.toISOString() });
-  });
+    out.push({ ti, u, s: src || host(u), d: '', i: safeUrl(x.i).replace(/^http:/, 'https:'), p: x.p || '' });
+  }
   return out;
 }
 async function fetchNews(topic, query) {
@@ -230,8 +227,12 @@ async function fetchNews(topic, query) {
   try { const c = JSON.parse(sessionStorage.getItem(key) || 'null'); if (c && Date.now() - c.t < TTL) return c.v; } catch (_) {}
   const p = new URLSearchParams({ type: 'news', lang: ID ? 'id' : 'en' });
   if (query) p.set('q', query); else p.set('topic', topic);
-  const r = await fetch(`${API}?${p}`); if (!r.ok) throw 0;
-  const v = norm(await r.text());
+  const r = await fetch(`${API}?${p}`);
+  if (!r.ok) {
+    let d = ''; try { d = ((await r.json()).tried || []).map(x => `${x.s} ${x.status}`).join(' · '); } catch (_) {}
+    const e = new Error(d); e.detail = d; throw e;
+  }
+  const v = norm(await r.json());
   try { sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), v })); } catch (_) {}
   return v;
 }
@@ -243,9 +244,9 @@ async function load(more = false) {
     const got = await fetchNews(TOPICS.find(o => o.k === S.topic).g, S.q);
     if (id !== reqId) return;
     items = got; renderFeed();
-  } catch (_) {
+  } catch (e) {
     if (id !== reqId) return;
-    $('feed').innerHTML = `<div class="msg">${t('err')}<br><button id="retry" type="button">${t('retry')}</button></div>`;
+    $('feed').innerHTML = `<div class="msg">${t('err')}${e && e.detail ? `<br><small>${esc(e.detail)}</small>` : ''}<br><button id="retry" type="button">${t('retry')}</button></div>`;
     $('retry').onclick = () => load();
   }
 }
