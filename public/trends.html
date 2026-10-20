@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Deevv Trends</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@100..1000&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#1a73e8;--bg:#f8f9fa;--surface:#ffffff;--text-main:#1f1f1f;--text-muted:#5f6368;--border-color:rgba(0,0,0,0.08);--hover:rgba(0,0,0,0.04);--line:rgba(0,0,0,0.08);--accent:#1b6ef3;--accent-soft:#eef4ff;--text:#1a1d20;--muted:#4f5862;--pill-active:rgba(26,115,232,0.12);--press:rgba(128,128,128,0.1)}
+body.dark,:root.dark{--primary:#8ab4f8;--bg:#121418;--surface:#1b1e24;--text-main:#e8eaed;--text-muted:#9aa0a6;--border-color:rgba(255,255,255,0.12);--hover:rgba(255,255,255,0.06);--line:#2b2f38;--accent:#7baaf7;--accent-soft:rgba(138,180,248,0.12);--text:#f1f3f7;--muted:#b0b8c1;--pill-active:rgba(138,180,248,0.18);--press:rgba(128,128,128,0.14)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--text);font-family:'Google Sans Flex',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:20px 0 calc(84px + env(safe-area-inset-bottom,0px));transition:background .2s,color .2s;font-size:14px;display:flex;flex-direction:column}
+button,input{font:inherit}button{color:inherit}
+a{color:inherit;text-decoration:none}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+svg{display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.app{width:min(100%,980px);margin:0 auto;padding:0 16px;display:flex;flex-direction:column;flex:1}
+.topbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:44px;margin-bottom:20px}
+.topbar-left{display:flex;align-items:center}.topbar-right{display:flex;align-items:center;justify-content:flex-end;gap:6px}
+.brand-name{font-size:20px;font-weight:700;letter-spacing:-.5px;text-align:center}.brand-name span{color:var(--accent)}
+.burger-btn{width:38px;height:38px;border:none;background:rgba(26,115,232,.1);border-radius:10px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;transition:background .2s}
+body.dark .burger-btn{background:rgba(138,180,248,.12)}.burger-btn:hover{background:rgba(26,115,232,.18)}
+.burger-btn span{display:block;height:2px;width:16px;background:var(--primary);border-radius:2px;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .2s}
+.burger-btn span:nth-child(2){width:10px;align-self:flex-start;margin-left:11px}
+header:has(.popup-menu.active) .burger-btn span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+header:has(.popup-menu.active) .burger-btn span:nth-child(2){opacity:0;transform:translateX(-6px)}
+header:has(.popup-menu.active) .burger-btn span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.desktop-nav{display:none;gap:6px}
+.desktop-nav-btn{border:none;background:transparent;padding:8px 14px;border-radius:10px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:background .15s,color .15s}
+.desktop-nav-btn:hover{background:var(--hover);color:var(--text)}.desktop-nav-btn.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(66px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:var(--surface);border-top:1px solid var(--line);display:flex;z-index:200}
+.bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:transparent;border:none;cursor:pointer}
+.bottom-nav-pill{width:56px;height:30px;border-radius:15px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:background .2s,color .2s}
+.bottom-nav-pill svg{width:22px;height:22px}
+.bottom-nav-item.active .bottom-nav-pill{background:var(--pill-active);color:var(--accent)}.bottom-nav-item.active svg{stroke-width:2.2}
+.bottom-nav-label{font-size:11px;line-height:1;font-weight:500;color:var(--muted)}.bottom-nav-item.active .bottom-nav-label{color:var(--accent);font-weight:650}
+.page{display:none;flex-direction:column;gap:14px;animation:appear .18s ease}.page.active{display:flex}
+@keyframes appear{from{opacity:.4;transform:translateY(2px)}to{opacity:1;transform:none}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px}
+.sec-title{font-size:15px;font-weight:650;margin-bottom:10px}
+.icon-btn{width:36px;height:36px;border:0;border-radius:10px;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer;flex-shrink:0;transition:background .15s,color .15s}
+.icon-btn:hover{background:var(--hover);color:var(--text)}.icon-btn svg{width:20px;height:20px}.icon-btn.on{color:var(--accent)}.icon-btn.on svg{fill:currentColor}
+.page{max-width:760px;width:100%;margin:0 auto}
+.head{display:flex;flex-direction:column;gap:4px;padding:2px 4px}.head b{font-size:24px;font-weight:650;letter-spacing:-.4px}.head span{font-size:13.5px;color:var(--muted)}
+.bar-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:8px 14px 8px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:13px;font-weight:600;cursor:pointer}.pill:hover{background:var(--hover)}.pill svg{width:16px;height:16px;color:var(--accent)}
+.list{padding:2px 0;overflow:hidden}
+.trow{display:block;width:100%;text-align:left;background:transparent;border:0;border-top:1px solid var(--line);padding:15px 18px;cursor:pointer}.trow:first-child{border-top:0}.trow:hover{background:var(--hover)}
+.tl{display:flex;align-items:center;gap:12px}.tt{flex:1;min-width:0}
+.tt b{display:block;font-size:16.5px;font-weight:500;line-height:1.3}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:5px;font-size:13px;color:var(--muted)}
+.up{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:600}.up svg{width:14px;height:14px}
+.th{width:46px;height:46px;border-radius:12px;overflow:hidden;background:var(--hover);flex-shrink:0}.th img{width:100%;height:100%;object-fit:cover;display:block}
+.chev{width:18px;height:18px;color:var(--muted);flex-shrink:0;transition:transform .2s}.trow.open .chev{transform:rotate(180deg)}
+.more{display:none;margin-top:12px;padding-top:4px;border-top:1px dashed var(--line)}.trow.open .more{display:block}
+.nw{display:block;padding:9px 0;color:inherit}.nw b{display:block;font-size:14px;font-weight:550;line-height:1.35}.nw span{font-size:12px;color:var(--accent);font-weight:600}
+.go{display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:8px 14px;border-radius:12px;background:var(--accent);color:#fff;font-weight:600;font-size:13px}.go svg{width:15px;height:15px}
+.cr{display:flex;align-items:center;gap:10px;padding:13px 18px;border-top:1px solid var(--line);cursor:pointer;background:transparent;border-left:0;border-right:0;border-bottom:0;width:100%;text-align:left}.cr:first-child{border-top:0}.cr:hover{background:var(--hover)}
+.cr b{flex:1;font-weight:600}.cr small{color:var(--muted);font-size:12px}.cr svg{width:18px;height:18px;color:var(--accent)}
+.note{font-size:12px;color:var(--muted);padding:0 4px;line-height:1.5}
+.empty,.msg{text-align:center;color:var(--muted);padding:28px 12px;line-height:1.6}.msg button{margin-top:10px;border:0;background:var(--accent);color:#fff;padding:9px 18px;border-radius:12px;font-weight:600;cursor:pointer}
+.skel{height:62px;margin:10px 16px;border-radius:14px;background:linear-gradient(90deg,var(--hover),transparent,var(--hover));background-size:200% 100%;animation:sh 1.2s infinite}@keyframes sh{to{background-position:-200% 0}}
+@media(prefers-reduced-motion:reduce){.page{animation:none}.chev{transition:none}}
+@media(min-width:768px){body{padding:28px 0 30px}.app{padding:0 40px}.bottom-nav{display:none}.desktop-nav{display:flex}}
+</style>
+<script>(()=>{try{const e=document.cookie.match(/(?:^|;)\s*settings=([^;]*)/);if(e){const t=JSON.parse(decodeURIComponent(e[1]));("dark"===t.theme||"system"===t.theme&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.documentElement.classList.add("dark"),document.documentElement.lang=t.lang&&"en"!==t.lang?"id":"en"}}catch(e){}})();</script>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="burger-btn" id="menu_btn" type="button" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+  <div class="brand"><div class="brand-name">Deevv <span>Trends</span></div></div>
+  <div class="topbar-right">
+    <nav class="desktop-nav">
+      <button class="desktop-nav-btn active" data-target="trends" type="button" data-i18n="navTrends"></button>
+      <button class="desktop-nav-btn" data-target="countries" type="button" data-i18n="navCountries"></button>
+    </nav>
+  </div>
+</header>
+<main>
+  <section class="page active" data-page="trends">
+    <div class="head"><b data-i18n="title"></b><span id="sub"></span></div>
+    <div class="bar-row"><button class="pill" id="geoBtn" type="button"></button><button class="icon-btn" id="refresh" type="button" data-i18n-label="refresh"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg></button></div>
+    <div class="card list" id="list"></div>
+    <div class="note" data-i18n="note"></div>
+  </section>
+  <section class="page" data-page="countries"><div class="card list" id="countries"></div></section>
+</main>
+</div>
+<nav class="bottom-nav">
+  <button class="bottom-nav-item active" data-target="trends" type="button"><div class="bottom-nav-pill"><svg viewBox="0 0 24 24"><path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/></svg></div><span class="bottom-nav-label" data-i18n="navTrends"></span></button>
+  <button class="bottom-nav-item" data-target="countries" type="button"><div class="bottom-nav-pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/></svg></div><span class="bottom-nav-label" data-i18n="navCountries"></span></button>
+</nav>
+
+<script src="cookie.js"></script>
+<script src="ui-modal.js"></script>
+<script>
+(() => {
+'use strict';
+const cfg = typeof getData === 'function' ? getData() : {};
+const ID = cfg.lang !== 'en', LOC = ID ? 'id-ID' : 'en-US';
+
+// Sumber data: RSS "Trending now" Google Trends lewat fungsi serverless functions/api/feed.js (feed ini tanpa CORS).
+// Isinya berubah terus; hasil di-cache 5 menit dan halaman memuat ulang sendiri tiap 5 menit.
+// Ketuk "Cari di Deevv" membuka pencarian Deevv; sesuaikan SEARCH_URL bila rutenya berbeda.
+const API = '/api/feed', SEARCH_URL = '/search?q=', TTL = 5 * 60e3;
+const GEOS = ['ID','MY','SG','PH','TH','VN','IN','JP','KR','AU','NZ','US','CA','MX','BR','AR','GB','DE','FR','IT','ES','NL','PL','TR','RU','SA','AE','EG','ZA','NG'];
+
+const T = {
+  en:{navTrends:'Trending',navCountries:'Countries',title:'Trending now',refresh:'Refresh',note:'Searches that are rising on Google right now. Volumes are Google\u2019s approximate floor.',updated:'updated',searches:'searches',started:'Started',now:'just now',related:'Related news',searchOn:'Search on Deevv',err:'Could not load trends.',retry:'Try again',empty:'No trends right now.',pick:'Choose country'},
+  id:{navTrends:'Tren',navCountries:'Negara',title:'Sedang trending',refresh:'Muat ulang',note:'Penelusuran yang sedang naik di Google saat ini. Jumlah penelusuran adalah perkiraan batas bawah dari Google.',updated:'diperbarui',searches:'penelusuran',started:'Mulai',now:'baru saja',related:'Berita terkait',searchOn:'Cari di Deevv',err:'Gagal memuat tren.',retry:'Coba lagi',empty:'Belum ada tren saat ini.',pick:'Pilih negara'}
+};
+const L = ID ? T.id : T.en, t = k => L[k] ?? T.en[k];
+const P = {
+  pin:'<path d="M20 10c0 5-5.5 10.2-7.4 11.8a1 1 0 0 1-1.2 0C9.5 20.2 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
+  up:'<path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/>',
+  chev:'<path d="m6 9 6 6 6-6"/>',
+  search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>'
+};
+const svg = (k, c = '') => `<svg viewBox="0 0 24 24" class="${c}" aria-hidden="true">${P[k]}</svg>`;
+
+const KEY = 'deevv-trends-v1', $ = id => document.getElementById(id);
+let S = { geo: ID ? 'ID' : 'US' };
+try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (_) {}
+const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) {} };
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safeUrl = v => { try { const u = new URL(v); return /^https?:$/.test(u.protocol) ? u.href : ''; } catch (_) { return ''; } };
+const regions = new Intl.DisplayNames([LOC], { type: 'region' });
+const cname = c => { try { return regions.of(c) || c; } catch (_) { return c; } };
+const num = new Intl.NumberFormat(LOC, { notation: 'compact', maximumFractionDigits: 1 });
+const rtf = new Intl.RelativeTimeFormat(LOC, { numeric: 'auto' });
+const clock = ts => new Date(ts).toLocaleTimeString(LOC, { hour: '2-digit', minute: '2-digit' });
+
+function i18n() {
+  document.querySelectorAll('[data-i18n]').forEach(e => e.textContent = t(e.dataset.i18n));
+  document.querySelectorAll('[data-i18n-label]').forEach(e => e.setAttribute('aria-label', t(e.dataset.i18nLabel)));
+  document.documentElement.lang = ID ? 'id' : 'en';
+}
+function tab(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.dataset.page === name));
+  document.querySelectorAll('.bottom-nav-item,.desktop-nav-btn').forEach(b => b.classList.toggle('active', b.dataset.target === name));
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll('.bottom-nav-item,.desktop-nav-btn').forEach(b => b.addEventListener('click', () => tab(b.dataset.target)));
+
+// ---------- Data ----------
+function ago(d) {
+  const s = (Date.now() - d.getTime()) / 1000;
+  if (s < 60) return t('now');
+  if (s < 3600) return rtf.format(-Math.floor(s / 60), 'minute');
+  if (s < 86400) return rtf.format(-Math.floor(s / 3600), 'hour');
+  return rtf.format(-Math.floor(s / 86400), 'day');
+}
+function parse(xml) {
+  const d = new DOMParser().parseFromString(xml, 'text/xml');
+  if (d.querySelector('parsererror')) throw 0;
+  const tag = (el, n) => { const e = el.getElementsByTagName(n)[0]; return e ? e.textContent.trim() : ''; };
+  return [...d.getElementsByTagName('item')].map(it => {
+    const pd = new Date(tag(it, 'pubDate'));
+    return {
+      q: tag(it, 'title'),
+      v: parseInt(tag(it, 'ht:approx_traffic').replace(/\D/g, ''), 10) || 0,
+      p: isNaN(pd) ? '' : pd.toISOString(),
+      i: safeUrl(tag(it, 'ht:picture')),
+      n: [...it.getElementsByTagName('ht:news_item')].slice(0, 3).map(n => ({ t: tag(n, 'ht:news_item_title'), u: safeUrl(tag(n, 'ht:news_item_url')), s: tag(n, 'ht:news_item_source') })).filter(n => n.t && n.u)
+    };
+  }).filter(x => x.q);
+}
+async function fetchTrends(geo, force) {
+  const key = 'dt:' + geo;
+  if (!force) try { const c = JSON.parse(sessionStorage.getItem(key) || 'null'); if (c && Date.now() - c.t < TTL) return c; } catch (_) {}
+  const r = await fetch(`${API}?type=trends&geo=${geo}`); if (!r.ok) throw 0;
+  const c = { t: Date.now(), v: parse(await r.text()) };
+  try { sessionStorage.setItem(key, JSON.stringify(c)); } catch (_) {}
+  return c;
+}
+
+// ---------- Tampilan ----------
+const decode = v => { const x = document.createElement('textarea'); x.innerHTML = v; return x.value; };
+function rowHTML(x, i) {
+  const news = x.n.length ? `<div class="sec-t" style="font-size:12px;color:var(--muted);margin:10px 0 2px">${t('related')}</div>` + x.n.map(n => `<a class="nw" href="${esc(n.u)}" target="_blank" rel="noopener noreferrer"><b>${esc(decode(n.t))}</b><span>${esc(n.s)}</span></a>`).join('') : '';
+  return `<div class="trow" data-i="${i}" role="button" tabindex="0" aria-expanded="false">
+    <div class="tl">${x.i ? `<div class="th"><img src="${esc(x.i)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"></div>` : ''}
+      <div class="tt"><b>${esc(x.q)}</b><div class="meta">${x.v ? `<span>${num.format(x.v)}+ ${t('searches')}</span>` : ''}${x.p ? `<span class="up">${svg('up')}${t('started')} ${esc(ago(new Date(x.p)))}</span>` : ''}</div></div>
+      ${svg('chev', 'chev')}</div>
+    <div class="more">${news}<a class="go" href="${SEARCH_URL}${encodeURIComponent(x.q)}">${svg('search')}${t('searchOn')}</a></div></div>`;
+}
+let current = [];
+async function load(force) {
+  const geo = S.geo, el = $('list');
+  $('geoBtn').innerHTML = `${svg('pin')}<span>${esc(cname(geo))}</span>${svg('chev')}`;
+  if (!force || !current.length) el.innerHTML = '<div class="skel"></div>'.repeat(6);
+  try {
+    const c = await fetchTrends(geo, force);
+    if (geo !== S.geo) return;
+    current = c.v;
+    $('sub').textContent = `${cname(geo)} · ${t('updated')} ${clock(c.t)}`;
+    el.innerHTML = current.length ? current.map(rowHTML).join('') : `<div class="empty">${t('empty')}</div>`;
+  } catch (_) {
+    if (geo !== S.geo) return;
+    el.innerHTML = `<div class="msg">${t('err')}<br><button id="retry" type="button">${t('retry')}</button></div>`;
+    $('retry').onclick = () => load(true);
+  }
+}
+function renderCountries() {
+  $('countries').innerHTML = GEOS.map(c => `<button class="cr" type="button" data-geo="${c}"><b>${esc(cname(c))}</b><small>${c}</small>${c === S.geo ? svg('check') : ''}</button>`).join('');
+}
+function toggleRow(r) { const o = r.classList.toggle('open'); r.setAttribute('aria-expanded', o); }
+document.addEventListener('click', e => {
+  const c = e.target.closest('[data-geo]');
+  if (c) { S.geo = c.dataset.geo; persist(); renderCountries(); tab('trends'); load(); return; }
+  if (e.target.closest('#geoBtn')) { tab('countries'); return; }
+  if (e.target.closest('#refresh')) { load(true); return; }
+  if (e.target.closest('a')) return;
+  const r = e.target.closest('.trow'); if (r) toggleRow(r);
+});
+document.addEventListener('keydown', e => { const r = e.target.closest && e.target.closest('.trow'); if (r && (e.key === 'Enter' || e.key === ' ') && e.target === r) { e.preventDefault(); toggleRow(r); } });
+setInterval(() => { if (!document.hidden && document.querySelector('.page.active').dataset.page === 'trends') load(true); }, TTL);
+
+i18n(); renderCountries(); load();
+})();
+</script>
+</body>
+</html>
