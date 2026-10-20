@@ -144,7 +144,7 @@ body{padding:28px 0 30px}.app{padding:0 40px}.bottom-nav{display:none}.desktop-n
 const cfg = typeof getData === 'function' ? getData() : {};
 const ID = cfg.lang !== 'en', LOC = ID ? 'id-ID' : 'en-US';
 
-const PAGE = 20, TTL = 5 * 60e3;
+const API = '/api/feed', PAGE = 20, TTL = 5 * 60e3;
 
 const TOPICS = [
   { k: 'top', i: 'news', g: 'TOP' },
@@ -203,84 +203,33 @@ function tab(name) {
 }
 document.querySelectorAll('.bottom-nav-item,.desktop-nav-btn').forEach(b => b.addEventListener('click', () => tab(b.dataset.target)));
 
-// ---------- Data via RSS2JSON (Tanpa API Key, Tanpa Backend) ----------
-const txt = v => { try { return new DOMParser().parseFromString(String(v || ''), 'text/html').body.textContent.trim(); } catch (_) { return String(v || '').trim(); } };
+// ---------- Data Fetching (GDELT via Pages Function) ----------
 const safeUrl = v => { if (!v || typeof v !== 'string') return ''; try { const u = new URL(v, location.href); return /^https?:$/.test(u.protocol) ? u.href : ''; } catch (_) { return ''; } };
-const host = u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (_) { return ''; } };
 
-async function fetchNews(topicGroup, query) {
+async function fetchNews(topic, query) {
   const langCode = ID ? 'id' : 'en';
-  const countryCode = ID ? 'ID' : 'US';
-  const key = 'dn:' + langCode + ':' + (query ? 'q:' + query : topicGroup);
+  const key = 'dn:' + langCode + ':' + (query ? 'q:' + query : topic);
+  try { const c = JSON.parse(sessionStorage.getItem(key) || 'null'); if (c && Date.now() - c.t < TTL) return c.v; } catch (_) {}
   
-  try { 
-    const c = JSON.parse(sessionStorage.getItem(key) || 'null'); 
-    if (c && Date.now() - c.t < TTL) return c.v; 
-  } catch (_) {}
-
-  // Google News RSS URL
-  let rssUrl = '';
-  if (query) {
-    rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=${langCode}-${countryCode}&gl=${countryCode}&ceid=${countryCode}:${langCode}`;
-  } else {
-    const topicParam = topicGroup === 'TOP' ? '' : `/headlines/section/topic/${topicGroup}`;
-    rssUrl = `https://news.google.com/rss${topicParam}?hl=${langCode}-${countryCode}&gl=${countryCode}&ceid=${countryCode}:${langCode}`;
-  }
-
-  // Menggunakan layanan rss2json agar bersih, valid JSON, dan bypass CORS tanpa backend
-  const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
-
-  const r = await fetch(apiUrl);
+  const p = new URLSearchParams({ type: 'news', lang: langCode });
+  if (query) p.set('q', query); else p.set('topic', TOPICS.find(o => o.k === topic)?.g || 'TOP');
+  
+  const r = await fetch(`${API}?${p}`); 
   if (!r.ok) throw new Error('Network error');
+  
   const data = await r.json();
-  
-  if (data.status !== 'ok' || !data.items) {
-    throw new Error('No data');
-  }
+  if (!data.items) throw new Error('No items');
 
-  const out = [];
-  const seen = new Set();
+  const out = data.items.map(it => ({
+    ti: it.t || '',
+    u: safeUrl(it.u),
+    s: it.s || 'News',
+    d: '',
+    i: safeUrl(it.i),
+    p: it.p || ''
+  })).filter(x => x.u && x.ti.length > 5);
 
-  data.items.forEach(it => {
-    let ti = txt(it.title);
-    const authorOrSource = txt(it.author || '');
-    // Coba ekstrak sumber dari judul jika ada format "Judul - Sumber"
-    let src = '';
-    const lastDash = ti.lastIndexOf(' - ');
-    if (lastDash > 0) {
-      src = ti.slice(lastDash + 3);
-      ti = ti.slice(0, lastDash);
-    }
-    if (!src) src = authorOrSource || host(it.link);
-
-    const u = safeUrl(it.link);
-    const k = ti.toLowerCase();
-    const pd = new Date(it.pubDate);
-
-    // Ekstraksi gambar dari thumbnail atau konten deskripsi
-    let imgUrl = safeUrl(it.thumbnail || it.enclosure?.link || '');
-    if (!imgUrl && it.description) {
-      const match = it.description.match(/src=["'](.*?)["']/);
-      if (match && match[1]) imgUrl = safeUrl(match[1]);
-    }
-
-    if (!u || ti.length < 5 || seen.has(k)) return;
-    seen.add(k);
-
-    out.push({
-      ti,
-      u,
-      s: src,
-      d: txt(it.description || '').slice(0, 150),
-      i: imgUrl,
-      p: isNaN(pd) ? '' : pd.toISOString()
-    });
-  });
-
-  try { 
-    sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), v: out })); 
-  } catch (_) {}
-  
+  try { sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), v: out })); } catch (_) {}
   return out;
 }
 
@@ -289,8 +238,7 @@ async function load(more = false) {
   const id = ++reqId;
   items = []; shown = PAGE; $('feed').innerHTML = '<div class="skel big"></div>' + '<div class="skel"></div>'.repeat(4);
   try {
-    const currentTopicObj = TOPICS.find(o => o.k === S.topic) || TOPICS[0];
-    const got = await fetchNews(currentTopicObj.g, S.q);
+    const got = await fetchNews(S.topic, S.q);
     if (id !== reqId) return;
     items = got; renderFeed();
   } catch (_) {
