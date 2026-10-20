@@ -1,48 +1,33 @@
 // functions/api/feed.js
-// Proxy ringan di server untuk feed publik yang tidak mengirim header CORS (jadi tidak bisa dipanggil langsung dari browser).
-// URL tujuan dibangun di sini dari parameter yang sudah divalidasi, jadi ini bukan open proxy. Hasil sukses di-cache 5 menit di edge.
-//
-//   /api/feed?type=trends&geo=ID                      -> RSS Google Trends (XML apa adanya)
-//   /api/feed?type=news&lang=id&topic=TOP|NATION|WORLD|BUSINESS|TECHNOLOGY|SPORTS|ENTERTAINMENT|SCIENCE|HEALTH
-//   /api/feed?type=news&lang=id&q=kata+kunci          -> JSON { src, items:[{ t, u, s, p, i }] }
-//
-// Berita: Google News dulu; kalau gagal (diblokir/dibatasi) otomatis jatuh ke Bing News.
-// Kalau semuanya gagal, balasannya 502 berisi JSON { err, tried:[{ s, status }] } supaya penyebabnya kelihatan.
-
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
 const TOPICS = new Set(['NATION', 'WORLD', 'BUSINESS', 'TECHNOLOGY', 'SPORTS', 'ENTERTAINMENT', 'SCIENCE', 'HEALTH']);
 const TTL = 300, MAX = 100;
-const BING_Q = {
-  id: { TOP: 'berita terbaru hari ini', NATION: 'berita Indonesia', WORLD: 'berita dunia', BUSINESS: 'berita ekonomi bisnis', TECHNOLOGY: 'berita teknologi', SPORTS: 'berita olahraga', ENTERTAINMENT: 'berita hiburan', SCIENCE: 'berita sains', HEALTH: 'berita kesehatan' },
-  en: { TOP: 'latest news today', NATION: 'US news', WORLD: 'world news', BUSINESS: 'business news', TECHNOLOGY: 'technology news', SPORTS: 'sports news', ENTERTAINMENT: 'entertainment news', SCIENCE: 'science news', HEALTH: 'health news' }
+
+// Pemetaan topik untuk pencarian GDELT jika tidak ada keyword (q)
+const GDELT_TOPIC_MAP = {
+  TOP: 'news',
+  NATION: 'Indonesia news',
+  WORLD: 'world news',
+  BUSINESS: 'business economics',
+  TECHNOLOGY: 'technology tech',
+  SPORTS: 'sports match',
+  ENTERTAINMENT: 'entertainment celebrity',
+  SCIENCE: 'science research',
+  HEALTH: 'health medical'
 };
 
 const json = (o, status = 200, headers = {}) => new Response(JSON.stringify(o), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', ...headers } });
 const bad = m => new Response(m, { status: 400 });
 
-// Parser RSS sederhana (Workers tidak punya DOMParser). Entitas HTML dibiarkan, klien yang mendekodenya.
-const unwrap = v => v.replace(/^\s*<!\[CDATA\[([\s\S]*?)\]\]>\s*$/, '$1').trim();
-const tag = (s, n) => { const m = s.match(new RegExp(`<${n}(?:\\s[^>]*)?>([\\s\\S]*?)</${n}>`, 'i')); return m ? unwrap(m[1]) : ''; };
-const itemsOf = xml => xml.match(/<item[\s>][\s\S]*?<\/item>/gi) || [];
-const iso = v => { const d = new Date(v); return isNaN(d) ? '' : d.toISOString(); };
-
-const parseGoogle = xml => itemsOf(xml).map(it => ({ t: tag(it, 'title'), u: tag(it, 'link'), s: tag(it, 'source'), p: iso(tag(it, 'pubDate')), i: '' }));
-const parseBing = xml => itemsOf(xml).map(it => {
-  const link = tag(it, 'link'); let u = link;
-  try { u = new URL(link.replace(/&amp;/g, '&')).searchParams.get('url') || link; } catch (_) {}
-  return { t: tag(it, 'title'), u, s: tag(it, 'News:Source'), p: iso(tag(it, 'pubDate')), i: tag(it, 'News:Image') };
-});
-
 async function grab(url, name, tried) {
   try {
-    const r = await fetch(url, { headers: { 'User-Agent': UA, 'Accept': 'application/rss+xml, application/xml, text/xml, */*', 'Accept-Language': 'id,en;q=0.8' }, redirect: 'follow' });
+    const r = await fetch(url, { headers: { 'User-Agent': UA, 'Accept': 'application/json' }, redirect: 'follow' });
     tried.push({ s: name, status: r.status });
-    if (!r.ok) return '';
-    const x = await r.text();
-    return x.includes('<item') ? x : '';
+    if (!r.ok) return null;
+    return await r.json();
   } catch (_) {
     tried.push({ s: name, status: 'error' });
-    return '';
+    return null;
   }
 }
 
@@ -55,34 +40,48 @@ export async function onRequestGet({ request, waitUntil }) {
   const tried = [];
   let res;
 
+  // 1. Fungsi Trends tetap dipertahankan aman tanpa terpengaruh
   if (type === 'trends') {
     const geo = (u.searchParams.get('geo') || 'ID').toUpperCase();
     if (!/^[A-Z]{2}$/.test(geo)) return bad('geo');
-    const xml = await grab(`https://trends.google.com/trending/rss?geo=${geo}`, 'trends', tried);
-    if (!xml) return json({ err: 'upstream', tried }, 502);
+    
+    // Menggunakan fungsi grab lama untuk Google Trends
+    const r = await fetch(`https://trends.google.com/trending/rss?geo=${geo}`, { headers: { 'User-Agent': UA } });
+    tried.push({ s: 'trends', status: r.status });
+    if (!r.ok) return json({ err: 'upstream', tried }, 502);
+    const xml = await r.text();
+
     res = new Response(xml, { headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': `public, max-age=${TTL}` } });
+  
+  // 2. Fungsi News dialihkan menggunakan GDELT agar search tetap lancar & anti blokir
   } else if (type === 'news') {
     const lang = u.searchParams.get('lang') === 'en' ? 'en' : 'id';
     const q = (u.searchParams.get('q') || '').trim().slice(0, 100);
     const topic = (u.searchParams.get('topic') || 'TOP').toUpperCase();
     if (!q && topic !== 'TOP' && !TOPICS.has(topic)) return bad('topic');
 
-    const loc = lang === 'en' ? 'hl=en-US&gl=US&ceid=US:en' : 'hl=id&gl=ID&ceid=ID:id';
-    const g = q ? `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&${loc}`
-      : topic === 'TOP' ? `https://news.google.com/rss?${loc}`
-      : `https://news.google.com/rss/headlines/section/topic/${topic}?${loc}`;
-    const bq = q || BING_Q[lang][topic];
-    const b = `https://www.bing.com/news/search?q=${encodeURIComponent(bq)}&format=rss&cc=${lang === 'en' ? 'US' : 'ID'}&setlang=${lang}`;
+    // Tentukan query pencarian untuk GDELT
+    const searchQuery = q ? q : GDELT_TOPIC_MAP[topic] || 'news';
+    
+    // GDELT Doc API Endpoint (Format JSON, mode article list)
+    const gdeltUrl = `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(searchQuery)}&mode=artlist&maxrecords=${MAX}&format=json`;
 
-    let list = [], src = '';
-    const gx = await grab(g, 'google', tried);
-    if (gx) { list = parseGoogle(gx); src = 'google'; }
-    if (!list.length) {
-      const bx = await grab(b, 'bing', tried);
-      if (bx) { list = parseBing(bx); src = 'bing'; }
+    const data = await grab(gdeltUrl, 'gdelt', tried);
+    
+    if (!data || !data.articles) {
+      return json({ err: 'upstream', tried }, 502);
     }
-    if (!list.length) return json({ err: 'upstream', tried }, 502);
-    res = json({ src, items: list.slice(0, MAX) }, 200, { 'Cache-Control': `public, max-age=${TTL}` });
+
+    // Normalisasi format GDELT agar sesuai dengan struktur frontend Deeve News (t, u, s, p, i)
+    const list = data.articles.map(art => ({
+      t: art.title || '',
+      u: art.url || '',
+      s: art.domain || 'GDELT News',
+      p: art.seendate ? new Date(art.seendate.replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/, '$1-$2-$3T$4:$5:$6Z')).toISOString() : '',
+      i: art.socialimage || '' // GDELT menyediakan gambar/thumbnail asli!
+    }));
+
+    res = json({ src: 'gdelt', items: list.slice(0, MAX) }, 200, { 'Cache-Control': `public, max-age=${TTL}` });
   } else {
     return bad('type');
   }
