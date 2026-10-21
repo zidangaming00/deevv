@@ -373,6 +373,10 @@ button:focus-visible,.s-item:focus-visible,.result-item:focus-visible{outline:2p
 .aq-w{width:56px;height:40px;display:flex;align-items:center;justify-content:center}
 .aq-m{display:flex;align-items:center;justify-content:center;min-width:38px;height:28px;padding:0 9px;border-radius:14px;color:#fff;font-size:13px;font-weight:700;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)}
 @media (max-width:767px){.aq-m{min-width:46px;height:34px;padding:0 11px;border-radius:17px;font-size:16px;border-width:2.5px}}
+.fab.av-btn{display:none;width:40px;height:40px;background:var(--accent);color:#fff;border-color:transparent}
+body.navigating .fab.av-btn{display:flex}.fab.av-btn svg{width:20px;height:20px}
+.av{width:44px;height:44px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));transition:transform .15s linear}
+.ap-act{display:flex;justify-content:flex-end;padding:20px 14px 0}
 </style>
 </head>
 <body>
@@ -403,6 +407,7 @@ button:focus-visible,.s-item:focus-visible,.result-item:focus-visible{outline:2p
 <div class="fab-group" id="fab-group">
   <button class="fab" title="Ubah layer peta" id="btn-layer" type="button"><svg viewBox="0 0 24 24"><path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.38 5.74zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z"/></svg></button>
   <button class="fab" title="Kembali menghadap utara" id="btn-north" type="button"><svg id="compass-icon" viewBox="0 0 24 24" style="transition:transform .1s linear"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><polygon points="12,4 15,12 12,10" fill="#ea4335"/><polygon points="12,4 9,12 12,10" fill="#cc2515"/><polygon points="12,20 15,12 12,14" fill="#9aa0a6"/><polygon points="12,20 9,12 12,14" fill="#5f6368"/></svg></button>
+  <button class="fab av-btn" title="Ganti avatar" id="btn-avatar" type="button"></button>
   <button class="fab" title="Lokasi saya" id="btn-me" type="button" style="color:#1a73e8"><svg viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg></button>
   <button class="fab directions" title="Rute ke tempat terpilih" id="btn-route" type="button"><svg viewBox="0 0 24 24"><path d="M22.43 10.59l-9.01-9.01c-.75-.75-2.07-1.32-2.83 0l-9 9c-.78.78-.78 2.04 0 2.82l9 9c.39.39.9.58 1.41.58.51 0 1.02-.19 1.41-.58l8.99-8.99c.79-.76.79-2.03.03-2.82zM13 14.5V12h-4v3H7v-5c0-.55.45-1 1-1h5V6.5l3.5 3.5-3.5 3.5z"/></svg></button>
   <button class="fab" title="Cari sepanjang rute" id="btn-route-search" type="button"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
@@ -432,6 +437,9 @@ button:focus-visible,.s-item:focus-visible,.result-item:focus-visible{outline:2p
 <script>
 if(typeof getData!=='function'){window.getData=function(){try{var m=document.cookie.match(/(?:^|; )settings=([^;]*)/);if(!m)return{};try{return JSON.parse(decodeURIComponent(m[1]))}catch(e){return JSON.parse(m[1])}}catch(e){return{}}}}
 if(typeof updateSetting!=='function'){window.updateSetting=function(k,v){var d=getData();d[k]=v;document.cookie='settings='+encodeURIComponent(JSON.stringify(d))+'; path=/; max-age=31536000; SameSite=Lax'}}
+</script>
+<script>
+(function(){try{var x=new XMLHttpRequest();x.open('GET','/cookie.js',false);x.send();if(x.status===200&&x.responseText){var r=new Function(x.responseText+'\n;return{g:typeof getData==="function"?getData:null,u:typeof updateSetting==="function"?updateSetting:null}')();if(r.g)window.getData=r.g;if(r.u)window.updateSetting=r.u}}catch(e){}})();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
@@ -471,7 +479,8 @@ const TRD={
 'Navigasi dimulai':'Navigation started','Akhiri navigasi':'End navigation','Suara':'Voice','Pusatkan':'Recenter','Menghitung ulang rute…':'Recalculating route…','Kamu telah tiba di tujuan':'You have arrived at your destination',
 'Tampilan 3D · ketuk untuk buka':'3D view · tap to open','Jenis peta':'Map type','Detail peta':'Map details','Default':'Default','Satelit':'Satellite','Medan':'Terrain','Transportasi umum':'Public transit','Lalu Lintas':'Traffic','Bersepeda':'Cycling','Kebakaran hutan':'Wildfires','Kualitas Udara':'Air quality',
 'Titik api hanya muncul jika ada kebakaran di area ini. Perkecil peta untuk melihat lebih luas':'Fire hotspots only appear if there are fires in this area. Zoom out to see a wider area.','Menampilkan titik api 2 hari terakhir':'Showing fire hotspots from the last 24 hours',
-'Tutup riwayat':'Close history','Alat':'Tools','Tempat tersimpan':'Saved places','Kenangan & tempat lainnya':'Memories & other places','Lokasi diperlukan':'Location needed'
+'Tutup riwayat':'Close history','Alat':'Tools','Tempat tersimpan':'Saved places','Kenangan & tempat lainnya':'Memories & other places','Lokasi diperlukan':'Location needed',
+'Alamat belum tersedia':'Address unavailable','Jarak:':'Distance:','· Luas:':'· Area:','Luas':'Area','Lokasi tersimpan':'Saved location','Perhentian ditambahkan:':'Stop added:','tempat di sepanjang rute · maks.':'places along the route · max.','Koneksi tersambung kembali':'Connection restored','Tidak ada koneksi internet':'No internet connection','Ganti avatar':'Change avatar','Peta © Mapbox · Data tempat © OpenStreetMap contributors · Photon · Foto dari Wikipedia/Wikimedia Commons':'Map © Mapbox · Place data © OpenStreetMap contributors · Photon · Photos from Wikipedia/Wikimedia Commons'
 };
 const TRREG=[
 [/^Hasil: "(.*)"$/,(m,q)=>`Results: "${q}"`],
@@ -856,6 +865,7 @@ function frame(now){
   const k=Math.min(1,(now-t0)/dur);
   disp=[from[0]+(target[0]-from[0])*k,from[1]+(target[1]-from[1])*k];
   userMarker.setLatLng(disp);accCircle.setLatLng(disp);
+  if(nav){const e=userMarker.getElement&&userMarker.getElement(),v=e&&e.firstChild;if(v&&v.classList&&v.classList.contains('av'))v.style.transform=`rotate(${(tgtB-map.getBearing())||0}deg)`}
   if(nav&&following&&!gesturing){
     const d=((tgtB-dispB+540)%360)-180;dispB=(dispB+d*.12+360)%360;
     map.setBearing(dispB);map.panTo(disp,{animate:false});
@@ -1582,7 +1592,7 @@ async function previewRoute(p){
 }
 
 function startNav(r){
-  nav=r;following=true;document.body.classList.add('navigating');navigator.wakeLock?.request('screen').then(l=>{wl=l}).catch(()=>{});speak('Navigasi dimulai');
+  nav=r;following=true;document.body.classList.add('navigating');applyAvatar();navigator.wakeLock?.request('screen').then(l=>{wl=l}).catch(()=>{});speak('Navigasi dimulai');
   routeLayer.clearLayers();
   r.line=L.polyline(r.coords,{color:'#1a73e8',weight:7,opacity:.95,noClip:true,lineCap:'round',lineJoin:'round'}).addTo(routeLayer);
 
@@ -1659,7 +1669,7 @@ async function reroute(){
 }
 function arrive(){const d=nav?.dest;endNav(false);showToast('Kamu telah tiba di tujuan');if(d)showDetail(d,false)}
 function endNav(quiet){
-  try{wl?.release()}catch(_){}wl=null;window.speechSynthesis?.cancel();nav=null;following=false;document.body.classList.remove('navigating');startWatch(false);alignNorth();
+  try{wl?.release()}catch(_){}wl=null;window.speechSynthesis?.cancel();nav=null;following=false;document.body.classList.remove('navigating');applyAvatar();startWatch(false);alignNorth();
   if(!quiet){routeLayer.clearLayers();if(currentPlace)showDetail(currentPlace,false)}
 }
 map.on('dragstart',()=>{if(nav&&following){following=false;document.body.classList.add('nav-free')}});$('btn-route').onclick=()=>previewRoute(currentPlace);
@@ -1779,6 +1789,36 @@ const DET=[
   sv('#c8e6c9','<circle cx="28" cy="28" r="17" fill="#558b2f"/><path d="M18 23q3.3-3 6.7 0t6.6 0 6.7 0M18 29q3.3-3 6.7 0t6.6 0 6.7 0M18 35q3.3-3 6.7 0t6.6 0 6.7 0" stroke="#fff" stroke-width="2.2"/>')]
 ];
 DET.forEach(d=>{const l=d[1];if(!(l instanceof L.TileLayer))return;let e=0,w=false;l.on('tileerror',()=>{if(++e>=8&&!w){w=true;showToast(d[0]+tx(' sedang tidak merespons',' is not responding'))}});l.on('add',()=>{e=0;w=false})});
+const AVS={
+ arrow:'<path d="M20 3L33 35L20 28L7 35Z" fill="#1558D6" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>',
+ car:'<rect x="9" y="9" width="3" height="8" rx="1.5" fill="#1b1b1b"/><rect x="28" y="9" width="3" height="8" rx="1.5" fill="#1b1b1b"/><rect x="9" y="24" width="3" height="8" rx="1.5" fill="#1b1b1b"/><rect x="28" y="24" width="3" height="8" rx="1.5" fill="#1b1b1b"/><rect x="11" y="3" width="18" height="34" rx="8" fill="#1558D6" stroke="#fff" stroke-width="2"/><rect x="14" y="10" width="12" height="7" rx="2" fill="#cfe0ff"/><rect x="14" y="25" width="12" height="5" rx="2" fill="#cfe0ff"/>',
+ motor:'<rect x="17.5" y="2" width="5" height="36" rx="2.5" fill="#1558D6" stroke="#fff" stroke-width="2"/><rect x="9" y="9" width="22" height="3.2" rx="1.6" fill="#1b1b1b"/><circle cx="20" cy="21" r="5.2" fill="#fff" stroke="#1558D6" stroke-width="2"/>',
+ cycle:'<rect x="19" y="3" width="2.4" height="34" rx="1.2" fill="#1b1b1b"/><rect x="11" y="9" width="18" height="2.6" rx="1.3" fill="#1558D6" stroke="#fff" stroke-width=".8"/><ellipse cx="20" cy="21" rx="5.5" ry="6.5" fill="#1558D6" stroke="#fff" stroke-width="2"/>'
+};
+const AVL={arrow:['Panah','Arrow'],car:['Mobil','Car'],motor:['Motor','Motorbike'],cycle:['Sepeda','Bicycle']};
+const avSvg=k=>`<svg viewBox="0 0 40 40" width="100%" height="100%">${AVS[k]}</svg>`;
+let avKey=store.get('deevv_maps_avatar','arrow');if(!AVS[avKey])avKey='arrow';
+function applyAvatar(){
+  if(!userMarker)return;
+  userMarker.setIcon(nav?L.divIcon({className:'',html:`<div class="av">${avSvg(avKey)}</div>`,iconSize:[44,44],iconAnchor:[22,22]}):L.divIcon({className:'',html:'<div class="user-dot"></div>',iconSize:[20,20],iconAnchor:[10,10]}));
+}
+const ap=document.createElement('div');ap.className='layer-pop';
+const apBack=document.createElement('div');apBack.className='lp-back';
+ap.innerHTML=`<div class="lp-head"><span>${tx('Pilih avatar mengemudi','Choose driving avatar')}</span><button class="lp-x" type="button" aria-label="${tx('Tutup','Close')}">${ic('close')}</button></div>
+<div class="lp-grid d">${Object.keys(AVS).map(k=>`<button type="button" class="lp-o${k===avKey?' on':''}" data-a="${k}"><span class="lp-th" style="background:var(--hover);padding:6px">${avSvg(k)}</span><span class="lp-l">${tx(AVL[k][0],AVL[k][1])}</span></button>`).join('')}</div>
+<div class="ap-act"><button class="btn primary" type="button" data-done>${tx('Selesai','Done')}</button></div>`;
+document.body.append(apBack,ap);
+const showAP=on=>{ap.classList.toggle('show',on);apBack.classList.toggle('show',on)};
+$('btn-avatar').innerHTML=ic('car');
+$('btn-avatar').onclick=e=>{e.stopPropagation();showAP(true)};
+apBack.onclick=()=>showAP(false);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&ap.classList.contains('show'))showAP(false)});
+ap.onclick=e=>{
+  if(e.target.closest('.lp-x')||e.target.closest('[data-done]')){showAP(false);return}
+  const b=e.target.closest('[data-a]');if(!b)return;
+  avKey=b.dataset.a;store.set('deevv_maps_avatar',avKey);
+  ap.querySelectorAll('[data-a]').forEach(x=>x.classList.toggle('on',x===b));applyAvatar();
+};
 lp.innerHTML=`<div class="lp-head"><span>Jenis peta</span><button class="lp-x" type="button" aria-label="Tutup">${ic('close')}</button></div>
 <div class="lp-grid">${BASE_META.map(([k,l,y,d])=>`<button type="button" class="lp-o${k===activeBase?' on':''}" data-b="${k}"><span class="lp-th${d?' tiles-road':''}" data-l="${y}"></span><span class="lp-l">${l}</span></button>`).join('')}</div>
 <div class="lp-div"></div><div class="lp-head" style="margin-bottom:20px"><span>Detail peta</span></div>
