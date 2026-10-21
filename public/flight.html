@@ -59,7 +59,7 @@ header:has(.popup-menu.active) .burger-btn span:nth-child(3){transform:translate
 .set{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line)}.set>div{min-width:0}.set>div b{font-weight:600}.set>div span{display:block;font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px}
 .sel{height:38px;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:12px;padding:0 10px;max-width:50%}
 .sw{width:44px;height:26px;border-radius:13px;background:var(--line);border:0;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}.sw::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}.sw.on{background:var(--accent)}.sw.on::after{transform:translateX(18px)}
-[data-page=places],[data-page=radar]{max-width:640px;width:100%;margin:0 auto}
+[data-page=places],[data-page=radar],[data-page=book]{max-width:640px;width:100%;margin:0 auto}
 .hero{border-radius:28px;padding:18px 16px 14px;background:radial-gradient(130% 90% at 50% 0%,color-mix(in srgb,var(--accent) 24%,transparent),transparent 72%),var(--surface)}
 .hh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.hh b{font-size:17px;font-weight:650;display:block}.hh span{font-size:12.5px;color:var(--muted)}
 .hn{text-align:center;margin:12px 0}.hn h2{font-size:56px;font-weight:300;letter-spacing:-2px;line-height:1;font-variant-numeric:tabular-nums}.hn span{font-size:13px;color:var(--muted)}
@@ -84,6 +84,17 @@ header:has(.popup-menu.active) .burger-btn span:nth-child(3){transform:translate
 .sweep{transform-origin:150px 150px;animation:spin 7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.sweep{animation:none}}
 .rdr .pl.s-climb{fill:#1fa971}.rdr .pl.s-desc{fill:#f2843f}.rdr .pl.s-gnd{fill:#8a93a0}.rdr .pl.s-cruise{fill:var(--accent)}.me{fill:var(--text)}.pick{fill:none;stroke:var(--accent);stroke-width:1.5}.dot{cursor:pointer}
+.seg{display:flex;background:var(--hover);border-radius:14px;padding:3px;gap:3px}.seg button{flex:1;border:0;background:transparent;height:36px;border-radius:11px;font-weight:500;color:var(--muted);cursor:pointer}.seg button.on{background:var(--surface);color:var(--accent);font-weight:650;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.bk{display:flex;flex-direction:column;gap:14px}.bk label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
+.fi{width:100%;height:48px;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:14px;padding:0 14px;outline:0;min-width:0}.fi:focus{border-color:var(--accent)}.dark .fi{color-scheme:dark}
+.bk-route{display:grid;gap:10px;position:relative}.bk-route .fi{padding-right:58px}.bk .sb:focus-within{z-index:5}
+.swap{position:absolute;right:8px;top:50%;transform:translateY(-50%);z-index:6;background:var(--surface);border:1px solid var(--line);border-radius:50%}
+.bk-dates{display:grid;grid-template-columns:1fr 1fr;gap:10px}.bk-dates .one{grid-column:1/-1}
+.bk-pax{display:flex;align-items:center;justify-content:space-between}.step{display:flex;align-items:center;gap:6px}.step b{min-width:28px;text-align:center;font-size:16px}.step .icon-btn{border:1px solid var(--line)}
+.eg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.eg div{padding:10px 8px;border-radius:16px;background:var(--hover);text-align:center}.eg span{display:block;font-size:11.5px;color:var(--muted)}.eg b{display:block;font-size:14.5px;font-weight:650;margin-top:2px;font-variant-numeric:tabular-nums}
+.tot{margin-top:10px;padding:10px 12px;border-radius:16px;background:var(--accent-soft);color:var(--accent);font-size:13.5px;font-weight:650;text-align:center}
+.svcs{display:flex;flex-direction:column;gap:8px}.svc{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:18px;text-decoration:none;color:inherit;transition:background .15s}.svc:hover{background:var(--hover)}
+.svc-ic{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;font-weight:700;font-size:16px;color:var(--accent);background:var(--accent-soft);flex-shrink:0}.svc-t{flex:1;min-width:0}.svc-t b{display:block;font-weight:650}.svc-t span{display:block;font-size:12.5px;color:var(--muted);line-height:1.35}.svc>svg{width:18px;height:18px;color:var(--muted);flex-shrink:0}
 @media(min-width:768px){#nearPage.active{display:grid;grid-template-columns:minmax(300px,380px) minmax(0,1fr);grid-template-areas:"s s" "r l";gap:16px;align-items:start}
 .search-wrap{grid-area:s}.hero{grid-area:r;position:sticky;top:16px}.listcol{grid-area:l}}
 @media(min-width:768px){body{padding:28px 0 30px}.app{padding:0 40px}.bottom-nav{display:none}.desktop-nav{display:flex}}
@@ -102,6 +113,7 @@ header:has(.popup-menu.active) .burger-btn span:nth-child(3){transform:translate
     <nav class="desktop-nav">
       <button class="desktop-nav-btn active" data-target="near" type="button" data-i18n="navNear"></button>
       <button class="desktop-nav-btn" data-target="radar" type="button" data-i18n="navRadar"></button>
+      <button class="desktop-nav-btn" data-target="book" type="button" data-i18n="navBook"></button>
       <button class="desktop-nav-btn" data-target="places" type="button" data-i18n="navPlaces"></button>
     </nav>
   </div>
@@ -112,6 +124,7 @@ header:has(.popup-menu.active) .burger-btn span:nth-child(3){transform:translate
     <div id="nearBody" style="display:contents"></div>
   </section>
   <section class="page" data-page="radar" id="radarPage"></section>
+  <section class="page" data-page="book" id="bookPage"></section>
   <section class="page" data-page="places">
     <div class="card"><div class="sec-title" data-i18n="savedPlaces"></div><div id="savedList"></div></div>
     <div class="card" id="setCard"></div>
@@ -121,6 +134,7 @@ header:has(.popup-menu.active) .burger-btn span:nth-child(3){transform:translate
 <nav class="bottom-nav">
   <button class="bottom-nav-item active" data-target="near" type="button"><div class="bottom-nav-pill"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div><span class="bottom-nav-label" data-i18n="navNear"></span></button>
   <button class="bottom-nav-item" data-target="radar" type="button"><div class="bottom-nav-pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="5"/><path d="M12 12 18 6"/></svg></div><span class="bottom-nav-label" data-i18n="navRadar"></span></button>
+  <button class="bottom-nav-item" data-target="book" type="button"><div class="bottom-nav-pill"><svg viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg></div><span class="bottom-nav-label" data-i18n="navBook"></span></button>
   <button class="bottom-nav-item" data-target="places" type="button"><div class="bottom-nav-pill"><svg viewBox="0 0 24 24"><path d="M20 10c0 5-5.5 10.2-7.4 11.8a1 1 0 0 1-1.2 0C9.5 20.2 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></div><span class="bottom-nav-label" data-i18n="navPlaces"></span></button>
 </nav>
 
@@ -132,14 +146,15 @@ header:has(.popup-menu.active) .burger-btn span:nth-child(3){transform:translate
 const cfg = typeof getData === 'function' ? getData() : {};
 const ID = cfg.lang !== 'en', LOC = ID ? 'id-ID' : 'en-US';
 const T = {
-  en:{navNear:'Nearby',navRadar:'Radar',navPlaces:'Places',savedPlaces:'Saved places',noSaved:'No saved places yet. Tap the bookmark next to the search bar to add one.',noResult:'No places found.',myLoc:'My location',err:'Could not load flights.',errLimit:'Free data limit reached. Try again in a few minutes.',retry:'Try again',save:'Save place',unsave:'Remove place',saved:'Place saved',removed:'Place removed',locating:'Finding your location...',geoFail:'Location unavailable. Check permission.',here:'My location',delAsk:'Remove this place from saved?',settings:'Settings',sRadius:'Search radius',sRadiusD:'Larger areas show more aircraft but can be slower.',sUnits:'Units',sUnitsD:'Aviation uses feet, knots and nautical miles.',uAv:'Aviation',uMet:'Metric',sAuto:'Auto refresh',sAutoD:'Updates every 30 seconds while this page is open.',inRange:'aircraft nearby',all:'All',climb:'Climbing',desc:'Descending',cruise:'Level',gnd:'On ground',closest:'Closest',empty:'No aircraft in range. Try a larger radius in Places.',tap:'Tap an aircraft to see details.',alt:'Altitude',spd:'Speed',hdg:'Heading',vrt:'Vertical rate',sq:'Squawk',icao:'ICAO24',typ:'Aircraft',seen:'Last signal',upd1:'Updated ',upd2:' ago',s:'s',m:'m',now:'Updated just now',src:'Live data from adsb.lol, with airplanes.live and OpenSky as backups. Coverage depends on volunteer receivers.',ground:'Ground',dirs:['N','NE','E','SE','S','SW','W','NW'],more:'Showing the closest 60.'},
-  id:{navNear:'Sekitar',navRadar:'Radar',navPlaces:'Lokasi',savedPlaces:'Lokasi tersimpan',noSaved:'Belum ada lokasi tersimpan. Ketuk ikon bookmark di samping kolom pencarian untuk menambah.',noResult:'Lokasi tidak ditemukan.',myLoc:'Lokasi saya',err:'Gagal memuat data penerbangan.',errLimit:'Batas data gratis tercapai. Coba lagi beberapa menit lagi.',retry:'Coba lagi',save:'Simpan lokasi',unsave:'Hapus lokasi',saved:'Lokasi disimpan',removed:'Lokasi dihapus',locating:'Mencari lokasimu...',geoFail:'Lokasi tidak tersedia. Periksa izin.',here:'Lokasi saya',delAsk:'Hapus lokasi ini dari daftar tersimpan?',settings:'Pengaturan',sRadius:'Radius pencarian',sRadiusD:'Area lebih luas menampilkan lebih banyak pesawat tetapi bisa lebih lambat.',sUnits:'Satuan',sUnitsD:'Penerbangan memakai kaki, knot, dan mil laut.',uAv:'Penerbangan',uMet:'Metrik',sAuto:'Perbarui otomatis',sAutoD:'Diperbarui tiap 30 detik selama halaman ini terbuka.',inRange:'pesawat di sekitar',all:'Semua',climb:'Naik',desc:'Turun',cruise:'Datar',gnd:'Di darat',closest:'Terdekat',empty:'Tidak ada pesawat di jangkauan. Coba radius lebih besar di Lokasi.',tap:'Ketuk pesawat untuk melihat detail.',alt:'Ketinggian',spd:'Kecepatan',hdg:'Arah',vrt:'Laju vertikal',sq:'Squawk',icao:'ICAO24',typ:'Pesawat',seen:'Sinyal terakhir',upd1:'Diperbarui ',upd2:' lalu',s:'dtk',m:'mnt',now:'Baru diperbarui',src:'Data langsung dari adsb.lol, dengan airplanes.live dan OpenSky sebagai cadangan. Cakupan bergantung pada penerima sukarelawan.',ground:'Darat',dirs:['U','TL','T','TG','S','BD','B','BL'],more:'Menampilkan 60 terdekat.'}
+  en:{navNear:'Nearby',navBook:'Book',hr:'h',rt:'Round trip',ow:'One way',from:'From',to:'To',depart:'Departure',ret:'Return',pax:'Passengers',apHint:'City or airport',est:'Price estimate',dist:'Distance',dur:'Flight time',per:'Per person',tot:'Total for',estNote:'Rough estimate from distance only, not a real fare. Real prices and availability appear on the services below and change daily.',book:'Book with',bookNote:'Opens the service in a new tab with your route and dates filled in. If a service changes its link format, you may land on its flight search page instead.',needInfo:'Pick origin, destination and dates to see an estimate and booking options.',same:'Origin and destination must be different.',noAp:'No airport found.',dGoogle:'Compare all airlines, with a price calendar',dSky:'Compares many agents at once',dTvl:'Popular in Indonesia, local payment methods',dTkt:'Local payment methods and frequent promos',dTrip:'Often strong on international routes',dKayak:'Compares sites, with a price forecast',dMomo:'Searches many sites for cheaper options',navRadar:'Radar',navPlaces:'Places',savedPlaces:'Saved places',noSaved:'No saved places yet. Tap the bookmark next to the search bar to add one.',noResult:'No places found.',myLoc:'My location',err:'Could not load flights.',errLimit:'Free data limit reached. Try again in a few minutes.',retry:'Try again',save:'Save place',unsave:'Remove place',saved:'Place saved',removed:'Place removed',locating:'Finding your location...',geoFail:'Location unavailable. Check permission.',here:'My location',delAsk:'Remove this place from saved?',settings:'Settings',sRadius:'Search radius',sRadiusD:'Larger areas show more aircraft but can be slower.',sUnits:'Units',sUnitsD:'Aviation uses feet, knots and nautical miles.',uAv:'Aviation',uMet:'Metric',sAuto:'Auto refresh',sAutoD:'Updates every 30 seconds while this page is open.',inRange:'aircraft nearby',all:'All',climb:'Climbing',desc:'Descending',cruise:'Level',gnd:'On ground',closest:'Closest',empty:'No aircraft in range. Try a larger radius in Places.',tap:'Tap an aircraft to see details.',alt:'Altitude',spd:'Speed',hdg:'Heading',vrt:'Vertical rate',sq:'Squawk',icao:'ICAO24',typ:'Aircraft',seen:'Last signal',upd1:'Updated ',upd2:' ago',s:'s',m:'m',now:'Updated just now',src:'Live data from adsb.lol, with airplanes.live and OpenSky as backups. Coverage depends on volunteer receivers.',ground:'Ground',dirs:['N','NE','E','SE','S','SW','W','NW'],more:'Showing the closest 60.'},
+  id:{navNear:'Sekitar',navBook:'Tiket',hr:'j',rt:'Pulang pergi',ow:'Sekali jalan',from:'Dari',to:'Ke',depart:'Berangkat',ret:'Pulang',pax:'Penumpang',apHint:'Kota atau bandara',est:'Estimasi harga',dist:'Jarak',dur:'Durasi',per:'Per orang',tot:'Total untuk',estNote:'Perkiraan kasar dari jarak saja, bukan harga asli. Harga dan ketersediaan sebenarnya ada di layanan di bawah dan berubah setiap hari.',book:'Pesan lewat',bookNote:'Membuka layanan di tab baru dengan rute dan tanggal terisi. Kalau layanan mengubah format tautannya, kamu bisa mendarat di halaman pencarian tiketnya saja.',needInfo:'Pilih asal, tujuan, dan tanggal untuk melihat estimasi dan opsi pemesanan.',same:'Asal dan tujuan harus berbeda.',noAp:'Bandara tidak ditemukan.',dGoogle:'Bandingkan semua maskapai, ada kalender harga',dSky:'Membandingkan banyak agen sekaligus',dTvl:'Populer di Indonesia, metode bayar lokal',dTkt:'Metode bayar lokal dan sering ada promo',dTrip:'Sering kuat untuk rute internasional',dKayak:'Membandingkan situs, ada prediksi harga',dMomo:'Mencari opsi lebih murah dari banyak situs',navRadar:'Radar',navPlaces:'Lokasi',savedPlaces:'Lokasi tersimpan',noSaved:'Belum ada lokasi tersimpan. Ketuk ikon bookmark di samping kolom pencarian untuk menambah.',noResult:'Lokasi tidak ditemukan.',myLoc:'Lokasi saya',err:'Gagal memuat data penerbangan.',errLimit:'Batas data gratis tercapai. Coba lagi beberapa menit lagi.',retry:'Coba lagi',save:'Simpan lokasi',unsave:'Hapus lokasi',saved:'Lokasi disimpan',removed:'Lokasi dihapus',locating:'Mencari lokasimu...',geoFail:'Lokasi tidak tersedia. Periksa izin.',here:'Lokasi saya',delAsk:'Hapus lokasi ini dari daftar tersimpan?',settings:'Pengaturan',sRadius:'Radius pencarian',sRadiusD:'Area lebih luas menampilkan lebih banyak pesawat tetapi bisa lebih lambat.',sUnits:'Satuan',sUnitsD:'Penerbangan memakai kaki, knot, dan mil laut.',uAv:'Penerbangan',uMet:'Metrik',sAuto:'Perbarui otomatis',sAutoD:'Diperbarui tiap 30 detik selama halaman ini terbuka.',inRange:'pesawat di sekitar',all:'Semua',climb:'Naik',desc:'Turun',cruise:'Datar',gnd:'Di darat',closest:'Terdekat',empty:'Tidak ada pesawat di jangkauan. Coba radius lebih besar di Lokasi.',tap:'Ketuk pesawat untuk melihat detail.',alt:'Ketinggian',spd:'Kecepatan',hdg:'Arah',vrt:'Laju vertikal',sq:'Squawk',icao:'ICAO24',typ:'Pesawat',seen:'Sinyal terakhir',upd1:'Diperbarui ',upd2:' lalu',s:'dtk',m:'mnt',now:'Baru diperbarui',src:'Data langsung dari adsb.lol, dengan airplanes.live dan OpenSky sebagai cadangan. Cakupan bergantung pada penerima sukarelawan.',ground:'Darat',dirs:['U','TL','T','TG','S','BD','B','BL'],more:'Menampilkan 60 terdekat.'}
 };
 const L = ID ? T.id : T.en, t = k => L[k] ?? T.en[k];
 const AL = Object.fromEntries('GIA:Garuda Indonesia,LNI:Lion Air,BTK:Batik Air,AWQ:Indonesia AirAsia,CTV:Citilink,SJY:Sriwijaya Air,SIA:Singapore Airlines,SQC:Singapore Airlines Cargo,TGW:Scoot,MAS:Malaysia Airlines,AXM:AirAsia,XAX:AirAsia X,THA:Thai Airways,AIQ:Thai AirAsia,VJC:VietJet,HVN:Vietnam Airlines,PAL:Philippine Airlines,CEB:Cebu Pacific,CPA:Cathay Pacific,UAE:Emirates,QTR:Qatar Airways,ETD:Etihad,SVA:Saudia,THY:Turkish Airlines,KLM:KLM,DLH:Lufthansa,BAW:British Airways,AFR:Air France,UAL:United,DAL:Delta,AAL:American,SWA:Southwest,ACA:Air Canada,JBU:JetBlue,RYR:Ryanair,EZY:easyJet,WZZ:Wizz Air,ANA:ANA,JAL:Japan Airlines,KAL:Korean Air,AAR:Asiana,CCA:Air China,CES:China Eastern,CSN:China Southern,EVA:EVA Air,CAL:China Airlines,QFA:Qantas,JST:Jetstar,VOZ:Virgin Australia,ANZ:Air New Zealand,AIC:Air India,IGO:IndiGo,FDX:FedEx,UPS:UPS,DHK:DHL Air,GTI:Atlas Air'.split(',').map(x => x.split(':')));
 const P = {
  pin:'<path d="M20 10c0 5-5.5 10.2-7.4 11.8a1 1 0 0 1-1.2 0C9.5 20.2 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
  x:'<path d="M18 6 6 18M6 6l12 12"/>', locate:'<path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/>',
+ ext:'<path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>', swap:'<path d="M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4"/>', minus:'<path d="M5 12h14"/>', plus:'<path d="M12 5v14M5 12h14"/>',
  refresh:'<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>'
 };
 const svg = (k, c='') => `<svg viewBox="0 0 24 24" class="${c}" aria-hidden="true">${P[k]}</svg>`;
@@ -149,6 +164,7 @@ const plane = (r = 0) => `<svg viewBox="0 0 24 24" style="--r:${r}deg" aria-hidd
 const KEY = 'deevv-flight-v1', $ = id => document.getElementById(id);
 let S = { places:[], cur:{ n:'Jakarta', c:'Indonesia', cc:'ID', lat:-6.2088, lon:106.8456 }, radius:100, units:'av', auto:true };
 try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (_) {}
+S.trip = Object.assign({ rt:true, from:'CGK', to:'DPS', dep:'', ret:'', pax:1 }, S.trip || {});
 let A = null, err = null, errInfo = '', srcN = '', sel = null, flt = 'all', upd = 0, busy = false, pauseUntil = 0;
 const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) {} };
 const esc = v => String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -195,8 +211,8 @@ const norm = o => { const ft = typeof o.alt_baro === 'number' ? o.alt_baro : typ
   return { id:o.hex, cs:(o.flight || '').trim(), cty:'', reg:o.r || '', ty:o.t || '', lat:o.lat, lon:o.lon, g:o.alt_baro === 'ground', alt:ft == null ? null : ft * .3048, v:o.gs != null ? o.gs / 1.944 : null, trk:o.track ?? 0, vr:typeof vr === 'number' ? vr / 196.85 : null, sq:o.squawk, t:Date.now() / 1000 - (o.seen_pos ?? o.seen ?? 0) }; };
 const pt = host => (la, lo, r) => `https://${host}/v2/point/${la}/${lo}/${Math.min(250, Math.ceil(r / 1.852))}`;
 const SRC = [
-  { n:'adsb.lol', u:pt('api.adsb.lol'), p:j => (j.ac || []).map(norm) },
   { n:'airplanes.live', u:pt('api.airplanes.live'), p:j => (j.ac || j.aircraft || []).map(norm) },
+  { n:'adsb.lol', u:pt('api.adsb.lol'), p:j => (j.ac || []).map(norm) },
   { n:'OpenSky', u:(la, lo, r) => { const dla = r / 111, dlo = r / (111 * Math.max(.2, Math.cos(rad(la)))); return `https://opensky-network.org/api/states/all?lamin=${Math.max(-90, la - dla).toFixed(3)}&lomin=${Math.max(-180, lo - dlo).toFixed(3)}&lamax=${Math.min(90, la + dla).toFixed(3)}&lomax=${Math.min(180, lo + dlo).toFixed(3)}`; },
     p:j => (j.states || []).map(s => ({ id:s[0], cs:(s[1] || '').trim(), cty:s[2], reg:'', ty:'', t:s[4], lon:s[5], lat:s[6], alt:s[7] ?? s[13], g:!!s[8], v:s[9], trk:s[10] || 0, vr:s[11], sq:s[14] })) }
 ];
@@ -266,6 +282,65 @@ $('nearBody').addEventListener('click', e => {
   const r = e.target.closest('.fl'); if (r) { sel = sel === r.dataset.id ? null : r.dataset.id; renderNear(); }
 });
 $('radarPage').addEventListener('click', e => { const d = e.target.closest('.dot'); if (d) { sel = sel === d.dataset.id ? null : d.dataset.id; renderRadar(); renderNear(); } });
+
+// ---- Tiket: rute, estimasi, tautan pemesanan ----
+const AP = Object.fromEntries('CGK|Jakarta|Soekarno-Hatta|ID|-6.1256|106.6559;HLP|Jakarta|Halim Perdanakusuma|ID|-6.2666|106.8910;DPS|Bali|Ngurah Rai|ID|-8.7482|115.1670;SUB|Surabaya|Juanda|ID|-7.3798|112.7868;YIA|Yogyakarta|Yogyakarta Intl|ID|-7.9007|110.0573;SRG|Semarang|Ahmad Yani|ID|-6.9714|110.3742;SOC|Solo|Adi Soemarmo|ID|-7.5161|110.7569;BDO|Bandung|Husein Sastranegara|ID|-6.9006|107.5763;KJT|Majalengka|Kertajati|ID|-6.6487|108.1667;MLG|Malang|Abdul Rachman Saleh|ID|-7.9266|112.7147;BWX|Banyuwangi|Blimbingsari|ID|-8.3102|114.3400;BPN|Balikpapan|Sultan Aji Muhammad Sulaiman|ID|-1.2683|116.8945;BDJ|Banjarmasin|Syamsudin Noor|ID|-3.4424|114.7625;PNK|Pontianak|Supadio|ID|-0.1507|109.4040;UPG|Makassar|Sultan Hasanuddin|ID|-5.0616|119.5540;MDC|Manado|Sam Ratulangi|ID|1.5493|124.9259;PLW|Palu|Mutiara SIS Al-Jufri|ID|-0.9185|119.9100;KDI|Kendari|Haluoleo|ID|-4.0816|122.4170;KNO|Medan|Kualanamu|ID|3.6422|98.8853;BTJ|Banda Aceh|Sultan Iskandar Muda|ID|5.5235|95.4204;PDG|Padang|Minangkabau|ID|-0.7869|100.2816;PKU|Pekanbaru|Sultan Syarif Kasim II|ID|0.4608|101.4447;BTH|Batam|Hang Nadim|ID|1.1210|104.1189;JBI|Jambi|Sultan Thaha|ID|-1.6380|103.6440;PLM|Palembang|Sultan Mahmud Badaruddin II|ID|-2.8983|104.7000;BKS|Bengkulu|Fatmawati Soekarno|ID|-3.8637|102.3390;TKG|Bandar Lampung|Radin Inten II|ID|-5.2423|105.1789;LOP|Lombok|Zainuddin Abdul Madjid|ID|-8.7573|116.2767;LBJ|Labuan Bajo|Komodo|ID|-8.4867|119.8890;KOE|Kupang|El Tari|ID|-10.1716|123.6710;AMQ|Ambon|Pattimura|ID|-3.7103|128.0894;TTE|Ternate|Sultan Babullah|ID|0.8315|127.3810;SOQ|Sorong|Domine Eduard Osok|ID|-0.8940|131.2870;DJJ|Jayapura|Sentani|ID|-2.5769|140.5164;TIM|Timika|Mozes Kilangin|ID|-4.5283|136.8870;BIK|Biak|Frans Kaisiepo|ID|-1.1900|136.1080;SIN|Singapore|Changi|SG|1.3644|103.9915;KUL|Kuala Lumpur|KLIA|MY|2.7456|101.7099;PEN|Penang|Penang Intl|MY|5.2971|100.2770;BKI|Kota Kinabalu|Kota Kinabalu Intl|MY|5.9372|116.0510;KCH|Kuching|Kuching Intl|MY|1.4847|110.3469;BWN|Bandar Seri Begawan|Brunei Intl|BN|4.9442|114.9283;BKK|Bangkok|Suvarnabhumi|TH|13.6900|100.7501;DMK|Bangkok|Don Mueang|TH|13.9126|100.6067;HKT|Phuket|Phuket Intl|TH|8.1132|98.3169;CNX|Chiang Mai|Chiang Mai Intl|TH|18.7668|98.9626;MNL|Manila|Ninoy Aquino|PH|14.5086|121.0198;SGN|Ho Chi Minh City|Tan Son Nhat|VN|10.8188|106.6520;HAN|Hanoi|Noi Bai|VN|21.2212|105.8072;DAD|Da Nang|Da Nang Intl|VN|16.0439|108.1990;PNH|Phnom Penh|Phnom Penh Intl|KH|11.5466|104.8441;HKG|Hong Kong|Hong Kong Intl|HK|22.3080|113.9185;TPE|Taipei|Taoyuan|TW|25.0777|121.2328;ICN|Seoul|Incheon|KR|37.4602|126.4407;NRT|Tokyo|Narita|JP|35.7720|140.3929;HND|Tokyo|Haneda|JP|35.5494|139.7798;KIX|Osaka|Kansai|JP|34.4320|135.2304;FUK|Fukuoka|Fukuoka|JP|33.5859|130.4510;PVG|Shanghai|Pudong|CN|31.1443|121.8083;PEK|Beijing|Capital|CN|40.0799|116.6031;CAN|Guangzhou|Baiyun|CN|23.3924|113.2988;DEL|Delhi|Indira Gandhi|IN|28.5562|77.1000;BOM|Mumbai|Chhatrapati Shivaji|IN|19.0896|72.8656;CMB|Colombo|Bandaranaike|LK|7.1808|79.8841;KTM|Kathmandu|Tribhuvan|NP|27.6966|85.3591;DAC|Dhaka|Hazrat Shahjalal|BD|23.8433|90.3978;MEL|Melbourne|Tullamarine|AU|-37.6690|144.8410;SYD|Sydney|Kingsford Smith|AU|-33.9399|151.1753;PER|Perth|Perth Airport|AU|-31.9385|115.9672;BNE|Brisbane|Brisbane Airport|AU|-27.3942|153.1218;AKL|Auckland|Auckland Airport|NZ|-37.0082|174.7850;DXB|Dubai|Dubai Intl|AE|25.2532|55.3657;AUH|Abu Dhabi|Zayed Intl|AE|24.4330|54.6511;DOH|Doha|Hamad Intl|QA|25.2731|51.6081;JED|Jeddah|King Abdulaziz|SA|21.6796|39.1565;MED|Madinah|Prince Mohammad bin Abdulaziz|SA|24.5534|39.7051;IST|Istanbul|Istanbul Airport|TR|41.2753|28.7519;CAI|Cairo|Cairo Intl|EG|30.1219|31.4056;LHR|London|Heathrow|GB|51.4700|-0.4543;CDG|Paris|Charles de Gaulle|FR|49.0097|2.5479;AMS|Amsterdam|Schiphol|NL|52.3105|4.7683;FRA|Frankfurt|Frankfurt Airport|DE|50.0379|8.5622;MAD|Madrid|Barajas|ES|40.4983|-3.5676;FCO|Rome|Fiumicino|IT|41.8003|12.2389;ZRH|Zurich|Zurich Airport|CH|47.4647|8.5492;LAX|Los Angeles|Los Angeles Intl|US|33.9416|-118.4085;SFO|San Francisco|San Francisco Intl|US|37.6213|-122.3790;JFK|New York|John F. Kennedy|US|40.6413|-73.7781;YYZ|Toronto|Pearson|CA|43.6777|-79.6248'.split(';').map(x => { const [i, c, n, cc, la, lo] = x.split('|'); return [i, { i, c, n, cc, la:+la, lo:+lo }]; }));
+const POP = ['CGK', 'DPS', 'SUB', 'YIA', 'KNO', 'UPG', 'SIN', 'KUL'], apLabel = c => AP[c] ? `${AP[c].c} (${c})` : '';
+const todayStr = () => { const d = new Date(); return new Date(d - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); };
+const addDays = (v, n) => { const [y, m, d] = v.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10); };
+function fixDates() { const tr = S.trip, td = todayStr(); if (!tr.dep || tr.dep < td) tr.dep = addDays(td, 14); if (!tr.ret || tr.ret < tr.dep) tr.ret = addDays(tr.dep, 3); }
+const hav = (a, b) => { const q = Math.sin(rad(b.la - a.la) / 2) ** 2 + Math.cos(rad(a.la)) * Math.cos(rad(b.la)) * Math.sin(rad(b.lo - a.lo) / 2) ** 2; return 2 * 6371 * Math.asin(Math.sqrt(q)); };
+const money = x => ID ? (x >= 1e6 ? 'Rp ' + (x / 1e6).toFixed(1).replace('.', ',') + ' jt' : 'Rp ' + nf(x / 1e3) + ' rb') : '$' + nf(Math.round(x / 16000 / 5) * 5);
+function estimate(km, dom) {
+  const [lo, hi, mn] = dom ? [800, 1700, 550000] : km < 2500 ? [900, 2000, 900000] : km < 6000 ? [800, 1700, 2000000] : [650, 1500, 4500000], k = S.trip.rt ? 1.9 : 1;
+  return [Math.max(mn, km * lo) * k, Math.max(mn * 1.8, km * hi) * k];
+}
+function bookLinks() {
+  const { rt, from:F, to:T, dep, ret, pax } = S.trip, f = F.toLowerCase(), tt = T.toLowerCase(), ys = v => v.replace(/-/g, '').slice(2), dm = v => v.split('-').reverse().join('-');
+  return [
+    ['Google Flights', t('dGoogle'), `https://www.google.com/travel/flights?hl=${ID ? 'id' : 'en'}&q=${encodeURIComponent(`Flights from ${F} to ${T} on ${dep}` + (rt ? ` through ${ret}` : ' one way'))}`],
+    ['Skyscanner', t('dSky'), `https://www.skyscanner.${ID ? 'co.id' : 'com'}/transport/flights/${f}/${tt}/${ys(dep)}/${rt ? ys(ret) + '/' : ''}?adultsv2=${pax}&rtn=${rt ? 1 : 0}`],
+    ['Traveloka', t('dTvl'), `https://www.traveloka.com/${ID ? 'id-id' : 'en-id'}/flight/${rt ? 'fulltwosearch' : 'fullsearch'}?ap=${F}.${T}&dt=${dm(dep)}.${rt ? dm(ret) : 'NA'}&ps=${pax}.0.0&sc=ECONOMY`],
+    ['tiket.com', t('dTkt'), `https://www.tiket.com/pesawat/search?d=${F}&dType=AIRPORT&a=${T}&aType=AIRPORT&date=${dep}${rt ? '&ret_date=' + ret : ''}&adult=${pax}&child=0&infant=0&cabinClass=economy`],
+    ['Trip.com', t('dTrip'), `https://www.trip.com/flights/showfarefirst?dcity=${f}&acity=${tt}&ddate=${dep}${rt ? '&rdate=' + ret : ''}&triptype=${rt ? 'rt' : 'ow'}&class=y&quantity=${pax}`],
+    ['KAYAK', t('dKayak'), `https://www.kayak.com/flights/${F}-${T}/${dep}${rt ? '/' + ret : ''}/${pax}adults`],
+    ['Momondo', t('dMomo'), `https://www.momondo.com/flight-search/${F}-${T}/${dep}${rt ? '/' + ret : ''}/${pax}adults`]
+  ];
+}
+function updateBook() {
+  const tr = S.trip, F = AP[tr.from], T = AP[tr.to], out = $('bookOut');
+  if (!F || !T || tr.from === tr.to) { out.innerHTML = `<div class="card msg">${F && T ? t('same') : t('needInfo')}</div>`; return; }
+  const km = hav(F, T), [lo, hi] = estimate(km, F.cc === 'ID' && T.cc === 'ID'), h = km / 800 + .5, hh = Math.floor(h), mm = Math.round((h - hh) * 60 / 5) * 5 % 60;
+  out.innerHTML = `<div class="card"><div class="sec-title">${t('est')}</div>
+    <div class="eg"><div><span>${t('dist')}</span><b>${nf(km)} km</b></div><div><span>${t('dur')}</span><b>~${hh}${t('hr')} ${mm}${t('m')}</b></div><div><span>${t('per')}</span><b>${money(lo)} – ${money(hi)}</b></div></div>
+    ${tr.pax > 1 ? `<div class="tot">${t('tot')} ${tr.pax}: ${money(lo * tr.pax)} – ${money(hi * tr.pax)}</div>` : ''}<div class="foot" style="margin-top:8px">${t('estNote')}</div></div>
+   <div class="card"><div class="sec-title">${t('book')}</div><div class="svcs">${bookLinks().map(([n, d, u]) => `<a class="svc" href="${esc(u)}" target="_blank" rel="noopener noreferrer"><div class="svc-ic">${n[0]}</div><div class="svc-t"><b>${n}</b><span>${d}</span></div>${svg('ext')}</a>`).join('')}</div><div class="foot" style="margin-top:8px">${t('bookNote')}</div></div>`;
+}
+function wireAp(id, did, key) {
+  const inp = $(id), dr = $(did);
+  const show = q => { q = q.trim().toLowerCase(); const arr = q ? Object.values(AP).filter(a => a.i.toLowerCase().startsWith(q) || a.c.toLowerCase().includes(q) || a.n.toLowerCase().includes(q)).slice(0, 6) : POP.map(c => AP[c]);
+    dr.innerHTML = arr.length ? arr.map(a => `<div class="row" data-c="${a.i}">${svg('pin', 'pn')}<div class="row-t"><b>${esc(a.c)} (${a.i})</b><span>${esc(a.n)} · ${a.cc}</span></div></div>`).join('') : `<div class="drop-t">${t('noAp')}</div>`; dr.classList.add('show'); };
+  inp.addEventListener('focus', () => { inp.select(); show(''); });
+  inp.addEventListener('input', () => show(inp.value));
+  inp.addEventListener('blur', () => { dr.classList.remove('show'); inp.value = apLabel(S.trip[key]); });
+  dr.addEventListener('pointerdown', e => { const r = e.target.closest('[data-c]'); if (!r) return; e.preventDefault(); S.trip[key] = r.dataset.c; persist(); inp.value = apLabel(r.dataset.c); dr.classList.remove('show'); inp.blur(); updateBook(); });
+}
+function renderBook() {
+  fixDates(); const tr = S.trip, td = todayStr();
+  $('bookPage').innerHTML = `<div class="card bk"><div class="seg"><button type="button" data-rt="1" class="${tr.rt ? 'on' : ''}">${t('rt')}</button><button type="button" data-rt="0" class="${tr.rt ? '' : 'on'}">${t('ow')}</button></div>
+   <div class="bk-route"><div class="sb"><label for="aF">${t('from')}</label><input class="fi" id="aF" autocomplete="off" placeholder="${t('apHint')}" value="${esc(apLabel(tr.from))}"><div class="drop" id="dF"></div></div>
+    <button class="icon-btn swap" id="swap" type="button" aria-label="Swap">${svg('swap')}</button>
+    <div class="sb"><label for="aT">${t('to')}</label><input class="fi" id="aT" autocomplete="off" placeholder="${t('apHint')}" value="${esc(apLabel(tr.to))}"><div class="drop" id="dT"></div></div></div>
+   <div class="bk-dates"><div class="${tr.rt ? '' : 'one'}"><label for="dDep">${t('depart')}</label><input class="fi" id="dDep" type="date" min="${td}" value="${tr.dep}"></div>${tr.rt ? `<div><label for="dRet">${t('ret')}</label><input class="fi" id="dRet" type="date" min="${tr.dep}" value="${tr.ret}"></div>` : ''}</div>
+   <div class="bk-pax"><span>${t('pax')}</span><div class="step"><button class="icon-btn" type="button" data-step="-1" aria-label="-">${svg('minus')}</button><b id="paxN">${tr.pax}</b><button class="icon-btn" type="button" data-step="1" aria-label="+">${svg('plus')}</button></div></div></div><div id="bookOut" style="display:contents"></div>`;
+  wireAp('aF', 'dF', 'from'); wireAp('aT', 'dT', 'to');
+  $('dDep').onchange = e => { tr.dep = e.target.value || tr.dep; if (tr.ret < tr.dep) tr.ret = addDays(tr.dep, 3); persist(); renderBook(); };
+  if ($('dRet')) $('dRet').onchange = e => { tr.ret = e.target.value || tr.ret; persist(); updateBook(); };
+  $('swap').onclick = () => { [tr.from, tr.to] = [tr.to, tr.from]; persist(); $('aF').value = apLabel(tr.from); $('aT').value = apLabel(tr.to); updateBook(); };
+  document.querySelectorAll('#bookPage [data-rt]').forEach(b => b.onclick = () => { tr.rt = b.dataset.rt === '1'; persist(); renderBook(); });
+  document.querySelectorAll('#bookPage [data-step]').forEach(b => b.onclick = () => { tr.pax = Math.min(9, Math.max(1, tr.pax + +b.dataset.step)); persist(); $('paxN').textContent = tr.pax; updateBook(); });
+  updateBook();
+}
 
 // ---- Pengaturan ----
 function renderSettings() {
@@ -338,7 +413,7 @@ function locate() {
 }
 $('locBtn').addEventListener('click', locate);
 $('saveBtn').addEventListener('click', toggleSave);
-i18n(); syncLoc(); renderSaved(); renderSettings(); load();
+i18n(); syncLoc(); renderSaved(); renderSettings(); renderBook(); load();
 })();
 </script>
 </body>
