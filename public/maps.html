@@ -570,14 +570,17 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>windo
 
 let userCoords=DEFAULT.slice(),located=false,currentPlace=null,mode='explore',catReq=0,searchTimer=null,searchAbort=null;
 const map=L.map('map',{zoomControl:false,attributionControl:false,rotate:true,touchRotate:true,rotateControl:false,bearing:0,center:DEFAULT,zoom:10,renderer:L.svg({padding:1})});
-const TILE='/api/tiles';
-const roadmap=L.tileLayer(TILE+'/streets/{z}/{x}/{y}',{className:'tiles-road',maxZoom:20,maxNativeZoom:20});
-const satellite=L.tileLayer(TILE+'/hybrid/{z}/{x}/{y}',{maxZoom:20,maxNativeZoom:18});
+const MT_KEY='DApLdUwuJ7D0eHtNDNSZ'; // key publik: kunci ke domainmu di dashboard MapTiler (Allowed HTTP origins)
+const MT={streets:'maps/streets-v2/256/{z}/{x}/{y}.png',outdoor:'maps/outdoor-v2/256/{z}/{x}/{y}.png',hybrid:'maps/hybrid/256/{z}/{x}/{y}.jpg',satellite:'tiles/satellite-v2/{z}/{x}/{y}.jpg'};
+const TURL=st=>`https://api.maptiler.com/${MT[st]}?key=${MT_KEY}`;
+const TILE=(st,z,x,y)=>TURL(st).replace('{z}',z).replace('{x}',x).replace('{y}',y);
+const roadmap=L.tileLayer(TURL('streets'),{className:'tiles-road',maxZoom:20,maxNativeZoom:20});
+const satellite=L.tileLayer(TURL('hybrid'),{maxZoom:20,maxNativeZoom:18});
 roadmap.addTo(map);
 const markers=L.layerGroup().addTo(map),routeLayer=L.layerGroup().addTo(map),markerIndex=new Map();
 
 const SUB=['mt0','mt1','mt2','mt3'];
-const terrain=L.tileLayer(TILE+'/outdoor/{z}/{x}/{y}',{className:'tiles-road',maxZoom:20,maxNativeZoom:20});
+const terrain=L.tileLayer(TURL('outdoor'),{className:'tiles-road',maxZoom:20,maxNativeZoom:20});
 const traffic=null;
 const BASES={Default:roadmap,Satelit:satellite,Medan:terrain};
 let routeReq=0,gesturing=false,gTimer=0,lpT=0,lpX=0,lpY=0;
@@ -657,7 +660,7 @@ function tileView(p,z){
   const px=(Number(p.lon)+180)/360*n*256,py=(1-Math.log(Math.tan(la)+1/Math.cos(la))/Math.PI)/2*n*256;
   const tx=Math.floor((px-128)/256),ty=Math.floor((py-128)/256);
   let h='';
-  for(let i=0;i<2;i++)for(let j=0;j<2;j++)h+=`<img src="${TILE}/streets/${z}/${tx+j}/${ty+i}" alt="" draggable="false" loading="lazy" style="left:${j*256}px;top:${i*256}px">`;
+  for(let i=0;i<2;i++)for(let j=0;j<2;j++)h+=`<img src="${TILE('streets',z,tx+j,ty+i)}" alt="" draggable="false" loading="lazy" style="left:${j*256}px;top:${i*256}px">`;
   return`<div class="mp" style="margin-left:${(tx*256-px).toFixed(1)}px;margin-top:${(ty*256-py).toFixed(1)}px">${h}</div>`;
 }
 const photoLabel=u=>/wikimedia|wikipedia/i.test(u)?'Foto · Wikimedia':'Foto lokasi';
@@ -1643,7 +1646,7 @@ function voiceGuide(n,nx){
 const earthUrl=p=>`https://earth.google.com/web/@${p.lat},${p.lon},30a,350d,35y,0h,60t,0r`;
 function tile3d(p,z){
   const n=2**z,la=Math.max(-85,Math.min(85,+p.lat))*Math.PI/180,px=(+p.lon+180)/360*n*256,py=(1-Math.log(Math.tan(la)+1/Math.cos(la))/Math.PI)/2*n*256,tx=Math.floor(px/256),ty=Math.floor(py/256);let h='';
-  for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++)h+=`<img src="${TILE}/satellite/${z}/${tx+j}/${ty+i}" alt="" draggable="false" loading="lazy" style="left:${((tx+j)*256-px).toFixed(1)}px;top:${((ty+i)*256-py).toFixed(1)}px">`;
+  for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++)h+=`<img src="${TILE('satellite',z,tx+j,ty+i)}" alt="" draggable="false" loading="lazy" style="left:${((tx+j)*256-px).toFixed(1)}px;top:${((ty+i)*256-py).toFixed(1)}px">`;
   return h;
 }
 const svSlide=p=>`<a class="pd-slide d3" target="_blank" rel="noopener" href="${earthUrl(p)}"><div class="d3-stage"><div class="d3-plane">${tile3d(p,19)}</div></div><span class="d3-pin">${ic('pin')}</span><div class="photo-badge">Tampilan 3D · ketuk untuk buka</div></a>`;
@@ -1651,7 +1654,7 @@ document.addEventListener('click',e=>{const v=e.target.closest('.sv');if(v&&!v.c
 const lp=document.createElement('div');lp.className='layer-pop';
 const lpBack=document.createElement('div');lpBack.className='lp-back';
 let activeBase='Default';
-const tileAt=(l,z,lat,lon)=>{const n=2**z,r=Math.max(-85,Math.min(85,lat))*Math.PI/180;return`${TILE}/${{m:'streets',s:'hybrid',p:'outdoor'}[l]||'streets'}/${z}/${Math.floor((lon+180)/360*n)}/${Math.floor((1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*n)}`};
+const tileAt=(l,z,lat,lon)=>{const n=2**z,r=Math.max(-85,Math.min(85,lat))*Math.PI/180;return TILE({m:'streets',s:'hybrid',p:'outdoor'}[l]||'streets',z,Math.floor((lon+180)/360*n),Math.floor((1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*n))};
 const BASE_META=[['Default','Default','m',1],['Satelit','Satelit','s',0],['Medan','Medan','p',1]];
 const sv=(bg,b)=>`<svg viewBox="0 0 56 56"><rect width="56" height="56" rx="10" fill="${bg}"/>${b}</svg>`;
 const fireDay=n=>new Date(Date.now()-n*864e5).toISOString().slice(0,10);
