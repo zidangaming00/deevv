@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Deevv Flight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@100..1000&display=swap" rel="stylesheet">
+<style>
+/* ===== STANDAR DEEVV (jangan diubah): token, header, burger, bottom/desktop nav ===== */
+:root{--primary:#1a73e8;--bg:#f8f9fa;--surface:#ffffff;--text-main:#1f1f1f;--text-muted:#5f6368;--border-color:rgba(0,0,0,0.08);--hover:rgba(0,0,0,0.04);--line:rgba(0,0,0,0.08);--accent:#1b6ef3;--accent-soft:#eef4ff;--text:#1a1d20;--muted:#4f5862;--pill-active:rgba(26,115,232,0.12);--press:rgba(128,128,128,0.1)}
+body.dark,:root.dark{--primary:#8ab4f8;--bg:#121418;--surface:#1b1e24;--text-main:#e8eaed;--text-muted:#9aa0a6;--border-color:rgba(255,255,255,0.12);--hover:rgba(255,255,255,0.06);--line:#2b2f38;--accent:#7baaf7;--accent-soft:rgba(138,180,248,0.12);--text:#f1f3f7;--muted:#b0b8c1;--pill-active:rgba(138,180,248,0.18);--press:rgba(128,128,128,0.14)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--text);font-family:'Google Sans Flex',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:20px 0 calc(84px + env(safe-area-inset-bottom,0px));transition:background .2s,color .2s;font-size:14px;display:flex;flex-direction:column}
+button,input,select{font:inherit}button{color:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+svg{display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.app{width:min(100%,980px);margin:0 auto;padding:0 16px;display:flex;flex-direction:column;flex:1}
+.topbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:44px;margin-bottom:20px}
+.topbar-left{display:flex;align-items:center}.topbar-right{display:flex;align-items:center;justify-content:flex-end;gap:6px}
+.brand-name{font-size:20px;font-weight:700;letter-spacing:-.5px;text-align:center}.brand-name span{color:var(--accent)}
+.burger-btn{width:38px;height:38px;border:none;background:rgba(26,115,232,.1);border-radius:10px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;transition:background .2s}
+body.dark .burger-btn{background:rgba(138,180,248,.12)}.burger-btn:hover{background:rgba(26,115,232,.18)}
+.burger-btn span{display:block;height:2px;width:16px;background:var(--primary);border-radius:2px;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .2s}
+.burger-btn span:nth-child(2){width:10px;align-self:flex-start;margin-left:11px}
+header:has(.popup-menu.active) .burger-btn span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+header:has(.popup-menu.active) .burger-btn span:nth-child(2){opacity:0;transform:translateX(-6px)}
+header:has(.popup-menu.active) .burger-btn span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.desktop-nav{display:none;gap:6px}
+.desktop-nav-btn{border:none;background:transparent;padding:8px 14px;border-radius:10px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:background .15s,color .15s}
+.desktop-nav-btn:hover{background:var(--hover);color:var(--text)}.desktop-nav-btn.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(66px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:var(--surface);border-top:1px solid var(--line);display:flex;z-index:200}
+.bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:transparent;border:none;cursor:pointer}
+.bottom-nav-pill{width:56px;height:30px;border-radius:15px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:background .2s,color .2s}
+.bottom-nav-pill svg{width:22px;height:22px}
+.bottom-nav-item.active .bottom-nav-pill{background:var(--pill-active);color:var(--accent)}.bottom-nav-item.active svg{stroke-width:2.2}
+.bottom-nav-label{font-size:11px;line-height:1;font-weight:500;color:var(--muted)}.bottom-nav-item.active .bottom-nav-label{color:var(--accent);font-weight:650}
+.page{display:none;flex-direction:column;gap:14px;animation:appear .18s ease}.page.active{display:flex}
+@keyframes appear{from{opacity:.4;transform:translateY(2px)}to{opacity:1;transform:none}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px}
+.icon-btn{width:36px;height:36px;border:0;border-radius:10px;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer;flex-shrink:0;transition:background .15s,color .15s}
+.icon-btn:hover{background:var(--hover);color:var(--text)}.icon-btn svg{width:20px;height:20px}.icon-btn.on{color:var(--accent)}.icon-btn.on svg{fill:currentColor}
+.sec-title{font-size:15px;font-weight:650;margin-bottom:10px}
+/* ===== Konten khas Flight ===== */
+.search-wrap{position:relative;z-index:30}.sb{position:relative}
+.search-box{display:flex;align-items:center;gap:4px;height:48px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:0 6px 0 18px}.search-box:focus-within{border-color:var(--accent)}
+.search-box>svg{width:18px;height:18px;color:var(--muted);flex-shrink:0;margin-right:4px}.search-box input{flex:1;min-width:0;border:0;background:transparent;color:var(--text);outline:0;height:100%}.search-box input::placeholder{color:var(--text);opacity:.9;font-weight:600}.search-box .icon-btn{color:var(--accent)}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-top:10px}.chips::-webkit-scrollbar{display:none}.chips:empty{display:none}
+.chip{display:flex;align-items:center;gap:6px;flex-shrink:0;padding:6px 6px 6px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap}.chip:hover{background:var(--hover)}.chip.on{background:var(--accent-soft);color:var(--accent);border-color:transparent;font-weight:600}
+.chip .pn{width:14px;height:14px;color:var(--accent)}.chip button{border:0;background:transparent;width:20px;height:20px;display:grid;place-items:center;border-radius:50%;color:var(--muted);cursor:pointer}.chip button:hover{background:var(--press)}.chip button svg{width:12px;height:12px}
+.drop{display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:0 12px 32px rgba(0,0,0,.14);padding:6px;max-height:340px;overflow-y:auto}.drop.show{display:block}
+.drop-t{padding:10px 12px 4px;font-size:12px;color:var(--muted)}.row .pn{width:18px;height:18px;color:var(--accent);flex-shrink:0}
+.row{display:flex;align-items:center;gap:8px;padding:11px 4px 11px 12px;border-radius:14px;cursor:pointer}.row:hover{background:var(--hover)}
+.row-t{flex:1;min-width:0}.row-t b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row-t span{font-size:12px;color:var(--muted)}
+.empty,.msg{text-align:center;color:var(--muted);padding:28px 12px;line-height:1.6}.btn,.msg button{margin-top:10px;border:0;background:var(--accent);color:#fff;padding:9px 18px;border-radius:12px;font-weight:600;cursor:pointer}
+.skel{height:180px;border-radius:28px;background:linear-gradient(90deg,var(--hover),transparent,var(--hover));background-size:200% 100%;animation:sh 1.2s infinite}@keyframes sh{to{background-position:-200% 0}}
+.set{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line)}.set>div{min-width:0}.set>div b{font-weight:600}.set>div span{display:block;font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px}
+.sel{height:38px;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:12px;padding:0 10px;max-width:50%}
+.sw{width:44px;height:26px;border-radius:13px;background:var(--line);border:0;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}.sw::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}.sw.on{background:var(--accent)}.sw.on::after{transform:translateX(18px)}
+[data-page=places],[data-page=radar]{max-width:640px;width:100%;margin:0 auto}
+.hero{border-radius:28px;padding:18px 16px 14px;background:radial-gradient(130% 90% at 50% 0%,color-mix(in srgb,var(--accent) 24%,transparent),transparent 72%),var(--surface)}
+.hh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.hh b{font-size:17px;font-weight:650;display:block}.hh span{font-size:12.5px;color:var(--muted)}
+.hn{text-align:center;margin:12px 0}.hn h2{font-size:56px;font-weight:300;letter-spacing:-2px;line-height:1;font-variant-numeric:tabular-nums}.hn span{font-size:13px;color:var(--muted)}
+.hs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.st{--c:var(--accent);display:flex;flex-direction:column;align-items:center;gap:1px;padding:9px 4px;border-radius:16px;background:color-mix(in srgb,var(--surface) 70%,transparent);border:1px solid var(--line)}.st b{font-size:18px;font-weight:650;color:var(--c);font-variant-numeric:tabular-nums}.st span{font-size:11px;color:var(--muted);text-align:center}
+.st[data-s=climb],.fl[data-s=climb]{--c:#1fa971}.st[data-s=desc],.fl[data-s=desc]{--c:#f2843f}.st[data-s=gnd],.fl[data-s=gnd]{--c:#8a93a0}
+.near{margin-top:10px;padding:10px 12px;border-radius:16px;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:600;text-align:center}
+.foot{font-size:12px;color:var(--muted);text-align:center;line-height:1.6;padding:4px 8px}
+.listcol{display:flex;flex-direction:column;gap:12px;min-width:0}
+.fchips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}.fchips::-webkit-scrollbar{display:none}
+.fc{flex-shrink:0;padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:13px;font-weight:500;cursor:pointer}.fc.on{background:var(--accent-soft);color:var(--accent);border-color:transparent;font-weight:650}
+.flist{display:flex;flex-direction:column;gap:8px}
+.fl{--c:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:12px;cursor:pointer;transition:border-color .2s}.fl.sel{border-color:var(--c)}
+.fl-m{display:flex;align-items:center;gap:14px}
+.fl-ic{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;flex-shrink:0;color:var(--c);background:color-mix(in srgb,var(--c) 15%,transparent)}.fl-ic svg{width:24px;height:24px;transform:rotate(var(--r,0deg))}
+.pl{fill:currentColor;stroke:none}
+.fl-t{flex:1;min-width:0}.fl-t b{font-size:17px;font-weight:650;display:block;letter-spacing:.2px}.fl-t span{font-size:13px;color:var(--muted);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fl-r{text-align:right;flex-shrink:0}.fl-r strong{display:block;font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}.fl-r small{font-size:12px;font-weight:650;color:var(--c)}
+.fl-d{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 16px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}.fl-d span{display:block;font-size:12px;color:var(--muted)}.fl-d b{font-weight:600;font-variant-numeric:tabular-nums}
+.rdr{display:block;width:min(100%,440px);margin:0 auto}.rdr text{stroke:none}
+.ring{fill:none;stroke:var(--line);stroke-width:1}.axis{stroke:var(--line);stroke-width:1}.rl{fill:var(--muted);font-size:8.5px;text-anchor:middle}
+.cn{fill:var(--text);font-size:11px;font-weight:600;text-anchor:middle;dominant-baseline:central}.cn.n{fill:#e53935}
+.sweep{transform-origin:150px 150px;animation:spin 7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.sweep{animation:none}}
+.rdr .pl.s-climb{fill:#1fa971}.rdr .pl.s-desc{fill:#f2843f}.rdr .pl.s-gnd{fill:#8a93a0}.rdr .pl.s-cruise{fill:var(--accent)}.me{fill:var(--text)}.pick{fill:none;stroke:var(--accent);stroke-width:1.5}.dot{cursor:pointer}
+@media(min-width:768px){#nearPage.active{display:grid;grid-template-columns:minmax(300px,380px) minmax(0,1fr);grid-template-areas:"s s" "r l";gap:16px;align-items:start}
+.search-wrap{grid-area:s}.hero{grid-area:r;position:sticky;top:16px}.listcol{grid-area:l}}
+@media(min-width:768px){body{padding:28px 0 30px}.app{padding:0 40px}.bottom-nav{display:none}.desktop-nav{display:flex}}
+</style>
+<script>(()=>{try{const e=document.cookie.match(/(?:^|;)\s*settings=([^;]*)/);if(e){const t=JSON.parse(decodeURIComponent(e[1]));("dark"===t.theme||"system"===t.theme&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.documentElement.classList.add("dark"),document.documentElement.lang=t.lang&&"en"!==t.lang?"id":"en"}}catch(e){}})();</script>
+
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="burger-btn" id="menu_btn" type="button" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+  <div class="brand"><div class="brand-name">Deevv <span>Flight</span></div></div>
+  <div class="topbar-right">
+    <nav class="desktop-nav">
+      <button class="desktop-nav-btn active" data-target="near" type="button" data-i18n="navNear"></button>
+      <button class="desktop-nav-btn" data-target="radar" type="button" data-i18n="navRadar"></button>
+      <button class="desktop-nav-btn" data-target="places" type="button" data-i18n="navPlaces"></button>
+    </nav>
+  </div>
+</header>
+<main>
+  <section class="page active" data-page="near" id="nearPage">
+    <div class="search-wrap" id="searchWrap"><div class="sb"><div class="search-box"><svg viewBox="0 0 24 24"><path d="M20 10c0 5-5.5 10.2-7.4 11.8a1 1 0 0 1-1.2 0C9.5 20.2 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg><input id="q" type="search" autocomplete="off"><button class="icon-btn" id="locBtn" type="button" aria-label="My location"><svg viewBox="0 0 24 24"><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/></svg></button><button class="icon-btn" id="saveBtn" type="button"><svg viewBox="0 0 24 24"><path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button></div><div class="drop" id="drop"></div></div><div class="chips" id="chips"></div></div>
+    <div id="nearBody" style="display:contents"></div>
+  </section>
+  <section class="page" data-page="radar" id="radarPage"></section>
+  <section class="page" data-page="places">
+    <div class="card"><div class="sec-title" data-i18n="savedPlaces"></div><div id="savedList"></div></div>
+    <div class="card" id="setCard"></div>
+  </section>
+</main>
+</div>
+<nav class="bottom-nav">
+  <button class="bottom-nav-item active" data-target="near" type="button"><div class="bottom-nav-pill"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div><span class="bottom-nav-label" data-i18n="navNear"></span></button>
+  <button class="bottom-nav-item" data-target="radar" type="button"><div class="bottom-nav-pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="5"/><path d="M12 12 18 6"/></svg></div><span class="bottom-nav-label" data-i18n="navRadar"></span></button>
+  <button class="bottom-nav-item" data-target="places" type="button"><div class="bottom-nav-pill"><svg viewBox="0 0 24 24"><path d="M20 10c0 5-5.5 10.2-7.4 11.8a1 1 0 0 1-1.2 0C9.5 20.2 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></div><span class="bottom-nav-label" data-i18n="navPlaces"></span></button>
+</nav>
+
+<script src="cookie.js"></script>
+<script src="ui-modal.js"></script>
+<script>
+(() => {
+'use strict';
+const cfg = typeof getData === 'function' ? getData() : {};
+const ID = cfg.lang !== 'en', LOC = ID ? 'id-ID' : 'en-US';
+const T = {
+  en:{navNear:'Nearby',navRadar:'Radar',navPlaces:'Places',savedPlaces:'Saved places',noSaved:'No saved places yet. Tap the bookmark next to the search bar to add one.',noResult:'No places found.',myLoc:'My location',err:'Could not load flights.',errLimit:'Free data limit reached. Try again in a few minutes.',retry:'Try again',save:'Save place',unsave:'Remove place',saved:'Place saved',removed:'Place removed',locating:'Finding your location...',geoFail:'Location unavailable. Check permission.',here:'My location',delAsk:'Remove this place from saved?',settings:'Settings',sRadius:'Search radius',sRadiusD:'Larger areas show more aircraft but can be slower.',sUnits:'Units',sUnitsD:'Aviation uses feet, knots and nautical miles.',uAv:'Aviation',uMet:'Metric',sAuto:'Auto refresh',sAutoD:'Updates every 30 seconds while this page is open.',inRange:'aircraft nearby',all:'All',climb:'Climbing',desc:'Descending',cruise:'Level',gnd:'On ground',closest:'Closest',empty:'No aircraft in range. Try a larger radius in Places.',tap:'Tap an aircraft to see details.',alt:'Altitude',spd:'Speed',hdg:'Heading',vrt:'Vertical rate',sq:'Squawk',icao:'ICAO24',typ:'Aircraft',seen:'Last signal',upd1:'Updated ',upd2:' ago',s:'s',m:'m',now:'Updated just now',src:'Live data from adsb.lol, with airplanes.live and OpenSky as backups. Coverage depends on volunteer receivers.',ground:'Ground',dirs:['N','NE','E','SE','S','SW','W','NW'],more:'Showing the closest 60.'},
+  id:{navNear:'Sekitar',navRadar:'Radar',navPlaces:'Lokasi',savedPlaces:'Lokasi tersimpan',noSaved:'Belum ada lokasi tersimpan. Ketuk ikon bookmark di samping kolom pencarian untuk menambah.',noResult:'Lokasi tidak ditemukan.',myLoc:'Lokasi saya',err:'Gagal memuat data penerbangan.',errLimit:'Batas data gratis tercapai. Coba lagi beberapa menit lagi.',retry:'Coba lagi',save:'Simpan lokasi',unsave:'Hapus lokasi',saved:'Lokasi disimpan',removed:'Lokasi dihapus',locating:'Mencari lokasimu...',geoFail:'Lokasi tidak tersedia. Periksa izin.',here:'Lokasi saya',delAsk:'Hapus lokasi ini dari daftar tersimpan?',settings:'Pengaturan',sRadius:'Radius pencarian',sRadiusD:'Area lebih luas menampilkan lebih banyak pesawat tetapi bisa lebih lambat.',sUnits:'Satuan',sUnitsD:'Penerbangan memakai kaki, knot, dan mil laut.',uAv:'Penerbangan',uMet:'Metrik',sAuto:'Perbarui otomatis',sAutoD:'Diperbarui tiap 30 detik selama halaman ini terbuka.',inRange:'pesawat di sekitar',all:'Semua',climb:'Naik',desc:'Turun',cruise:'Datar',gnd:'Di darat',closest:'Terdekat',empty:'Tidak ada pesawat di jangkauan. Coba radius lebih besar di Lokasi.',tap:'Ketuk pesawat untuk melihat detail.',alt:'Ketinggian',spd:'Kecepatan',hdg:'Arah',vrt:'Laju vertikal',sq:'Squawk',icao:'ICAO24',typ:'Pesawat',seen:'Sinyal terakhir',upd1:'Diperbarui ',upd2:' lalu',s:'dtk',m:'mnt',now:'Baru diperbarui',src:'Data langsung dari adsb.lol, dengan airplanes.live dan OpenSky sebagai cadangan. Cakupan bergantung pada penerima sukarelawan.',ground:'Darat',dirs:['U','TL','T','TG','S','BD','B','BL'],more:'Menampilkan 60 terdekat.'}
+};
+const L = ID ? T.id : T.en, t = k => L[k] ?? T.en[k];
+const AL = Object.fromEntries('GIA:Garuda Indonesia,LNI:Lion Air,BTK:Batik Air,AWQ:Indonesia AirAsia,CTV:Citilink,SJY:Sriwijaya Air,SIA:Singapore Airlines,SQC:Singapore Airlines Cargo,TGW:Scoot,MAS:Malaysia Airlines,AXM:AirAsia,XAX:AirAsia X,THA:Thai Airways,AIQ:Thai AirAsia,VJC:VietJet,HVN:Vietnam Airlines,PAL:Philippine Airlines,CEB:Cebu Pacific,CPA:Cathay Pacific,UAE:Emirates,QTR:Qatar Airways,ETD:Etihad,SVA:Saudia,THY:Turkish Airlines,KLM:KLM,DLH:Lufthansa,BAW:British Airways,AFR:Air France,UAL:United,DAL:Delta,AAL:American,SWA:Southwest,ACA:Air Canada,JBU:JetBlue,RYR:Ryanair,EZY:easyJet,WZZ:Wizz Air,ANA:ANA,JAL:Japan Airlines,KAL:Korean Air,AAR:Asiana,CCA:Air China,CES:China Eastern,CSN:China Southern,EVA:EVA Air,CAL:China Airlines,QFA:Qantas,JST:Jetstar,VOZ:Virgin Australia,ANZ:Air New Zealand,AIC:Air India,IGO:IndiGo,FDX:FedEx,UPS:UPS,DHK:DHL Air,GTI:Atlas Air'.split(',').map(x => x.split(':')));
+const P = {
+ pin:'<path d="M20 10c0 5-5.5 10.2-7.4 11.8a1 1 0 0 1-1.2 0C9.5 20.2 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
+ x:'<path d="M18 6 6 18M6 6l12 12"/>', locate:'<path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/>',
+ refresh:'<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>'
+};
+const svg = (k, c='') => `<svg viewBox="0 0 24 24" class="${c}" aria-hidden="true">${P[k]}</svg>`;
+const PLANE = 'M12 2l1.6 6.5L21 13v2l-7.4-2-.4 4.5 2.3 1.7V21L12 20l-3.5 1v-1.8l2.3-1.7-.4-4.5L3 15v-2l7.4-4.5z';
+const plane = (r = 0) => `<svg viewBox="0 0 24 24" style="--r:${r}deg" aria-hidden="true"><path class="pl" d="${PLANE}"/></svg>`;
+
+const KEY = 'deevv-flight-v1', $ = id => document.getElementById(id);
+let S = { places:[], cur:{ n:'Jakarta', c:'Indonesia', cc:'ID', lat:-6.2088, lon:106.8456 }, radius:100, units:'av', auto:true };
+try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (_) {}
+let A = null, err = null, errInfo = '', srcN = '', sel = null, flt = 'all', upd = 0, busy = false, pauseUntil = 0;
+const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) {} };
+const esc = v => String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isSaved = p => S.places.some(x => x.lat === p.lat && x.lon === p.lon);
+
+// Konfirmasi memakai ui-modal.js bila tersedia. Sesuaikan pola pemanggilan di sini jika API-nya berbeda.
+const ask = msg => new Promise(res => {
+  if (typeof showConfirm !== 'function') return res(confirm(msg));
+  try { const r = showConfirm(msg, () => res(true), () => res(false)); if (r && r.then) r.then(v => res(!!v)); } catch (_) { res(confirm(msg)); }
+});
+
+
+// ---- Format ----
+const AV = () => S.units === 'av', rad = x => x * Math.PI / 180, nf = n => Math.round(n).toLocaleString(LOC);
+const altF = a => a.g ? t('ground') : a.alt == null ? '—' : AV() ? nf(Math.round(a.alt * 3.281 / 100) * 100) + ' ft' : nf(Math.round(a.alt / 10) * 10) + ' m';
+const spdF = a => a.v == null ? '—' : AV() ? nf(a.v * 1.944) + ' kt' : nf(a.v * 3.6) + ' km/h';
+const vrF = a => a.vr == null ? '—' : AV() ? nf(Math.round(a.vr * 196.85 / 10) * 10) + ' ft/min' : a.vr.toFixed(1) + ' m/s';
+const distF = km => AV() ? (km / 1.852).toFixed(km < 20 ? 1 : 0) + ' nm' : km.toFixed(km < 20 ? 1 : 0) + ' km';
+const radF = r => AV() ? Math.round(r / 1.852) + ' nm' : r + ' km';
+const dirF = b => t('dirs')[Math.round(b / 45) % 8];
+const sOf = a => a.g ? 'gnd' : a.vr > 1.5 ? 'climb' : a.vr < -1.5 ? 'desc' : 'cruise';
+const nameF = a => a.cs || a.id.toUpperCase();
+const airF = a => (/^[A-Z]{3}\d/.test(a.cs) && AL[a.cs.slice(0, 3)]) || a.ty || a.cty || '—';
+const ago = () => { const s = Math.round((Date.now() - upd) / 1000); return s < 5 ? t('now') : t('upd1') + (s < 60 ? s + t('s') : Math.floor(s / 60) + t('m')) + t('upd2'); };
+function geo(lat, lon) {
+  const f1 = rad(S.cur.lat), f2 = rad(lat), dl = rad(lon - S.cur.lon);
+  const a = Math.sin((f2 - f1) / 2) ** 2 + Math.cos(f1) * Math.cos(f2) * Math.sin(dl / 2) ** 2;
+  return { d:2 * 6371 * Math.asin(Math.sqrt(a)), b:(Math.atan2(Math.sin(dl) * Math.cos(f2), Math.cos(f1) * Math.sin(f2) - Math.sin(f1) * Math.cos(f2) * Math.cos(dl)) * 180 / Math.PI + 360) % 360 };
+}
+function i18n() { document.querySelectorAll('[data-i18n]').forEach(e => e.textContent = t(e.dataset.i18n)); document.documentElement.lang = ID ? 'id' : 'en'; }
+function syncLoc() {
+  $('q').placeholder = S.cur.n + (S.cur.c ? ', ' + S.cur.c : '');
+  const b = $('saveBtn'); b.classList.toggle('on', isSaved(S.cur)); b.setAttribute('aria-label', isSaved(S.cur) ? t('unsave') : t('save'));
+}
+function tab(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.dataset.page === name));
+  document.querySelectorAll('.bottom-nav-item,.desktop-nav-btn').forEach(b => b.classList.toggle('active', b.dataset.target === name));
+  window.scrollTo(0, 0); if (name === 'radar') renderRadar();
+}
+document.querySelectorAll('.bottom-nav-item,.desktop-nav-btn').forEach(b => b.addEventListener('click', () => tab(b.dataset.target)));
+
+// ---- Data ----
+const norm = o => { const ft = typeof o.alt_baro === 'number' ? o.alt_baro : typeof o.alt_geom === 'number' ? o.alt_geom : null, vr = o.baro_rate ?? o.geom_rate;
+  return { id:o.hex, cs:(o.flight || '').trim(), cty:'', reg:o.r || '', ty:o.t || '', lat:o.lat, lon:o.lon, g:o.alt_baro === 'ground', alt:ft == null ? null : ft * .3048, v:o.gs != null ? o.gs / 1.944 : null, trk:o.track ?? 0, vr:typeof vr === 'number' ? vr / 196.85 : null, sq:o.squawk, t:Date.now() / 1000 - (o.seen_pos ?? o.seen ?? 0) }; };
+const pt = host => (la, lo, r) => `https://${host}/v2/point/${la}/${lo}/${Math.min(250, Math.ceil(r / 1.852))}`;
+const SRC = [
+  { n:'adsb.lol', u:pt('api.adsb.lol'), p:j => (j.ac || []).map(norm) },
+  { n:'airplanes.live', u:pt('api.airplanes.live'), p:j => (j.ac || j.aircraft || []).map(norm) },
+  { n:'OpenSky', u:(la, lo, r) => { const dla = r / 111, dlo = r / (111 * Math.max(.2, Math.cos(rad(la)))); return `https://opensky-network.org/api/states/all?lamin=${Math.max(-90, la - dla).toFixed(3)}&lomin=${Math.max(-180, lo - dlo).toFixed(3)}&lamax=${Math.min(90, la + dla).toFixed(3)}&lomax=${Math.min(180, lo + dlo).toFixed(3)}`; },
+    p:j => (j.states || []).map(s => ({ id:s[0], cs:(s[1] || '').trim(), cty:s[2], reg:'', ty:'', t:s[4], lon:s[5], lat:s[6], alt:s[7] ?? s[13], g:!!s[8], v:s[9], trk:s[10] || 0, vr:s[11], sq:s[14] })) }
+];
+async function load(manual) {
+  if (busy || (manual && Date.now() - upd < 5000)) return;
+  busy = true; if (!A) renderAll();
+  const r = S.radius, c = S.cur, why = []; let ok = false, all429 = true;
+  for (const s of SRC) {
+    try {
+      const res = await fetch(s.u(+c.lat.toFixed(3), +c.lon.toFixed(3), r), { signal:AbortSignal.timeout(10000) });
+      if (!res.ok) throw 'HTTP ' + res.status;
+      A = s.p(await res.json()).filter(a => a.lat != null && a.lon != null).map(a => ({ ...a, ...geo(a.lat, a.lon) })).filter(a => a.d <= r).sort((x, y) => x.d - y.d);
+      err = null; errInfo = ''; srcN = s.n; upd = Date.now(); ok = true; break;
+    } catch (e) {
+      if (e !== 'HTTP 429') all429 = false;
+      why.push(s.n + ': ' + (typeof e === 'string' ? e : e && e.name === 'TimeoutError' ? 'timeout' : 'network or CORS blocked'));
+    }
+  }
+  if (!ok) {
+    err = all429 ? 'errLimit' : 'err'; errInfo = why.join(' · '); if (all429) pauseUntil = Date.now() + 600000;
+    if (A) { showToast(t(err)); err = null; }
+  }
+  busy = false; renderAll();
+}
+setInterval(() => {
+  document.querySelectorAll('.updl').forEach(e => e.textContent = ago());
+  if (S.auto && !document.hidden && !busy && upd && Date.now() - upd >= 30000 && Date.now() > pauseUntil) load();
+}, 1000);
+
+// ---- Render ----
+const det = a => `<div class="fl-d">${[[t('alt'), altF(a)], [t('spd'), spdF(a)], [t('hdg'), Math.round(a.trk) + '°'], [t('vrt'), vrF(a)], [t('sq'), a.sq || '—'], [t('icao'), a.id.toUpperCase()], [t('typ'), [a.ty, a.reg].filter(Boolean).join(' · ') || a.cty || '—'], [t('seen'), Math.max(0, Math.round(Date.now() / 1000 - a.t)) + t('s')]].map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>`;
+const errBox = id => `<div class="card msg" style="grid-column:1/-1">${t(err)}<br><small style="font-size:12px">${esc(errInfo)}</small><br><button id="${id}" type="button">${t('retry')}</button></div>`;
+function renderNear() {
+  const box = $('nearBody');
+  if (err && !A) { box.innerHTML = errBox('retry'); $('retry').onclick = () => { err = null; load(); }; return; }
+  if (!A) { box.innerHTML = '<div class="skel" style="grid-area:r;height:300px"></div><div class="skel" style="grid-area:l;height:300px"></div>'; return; }
+  const cnt = { climb:0, cruise:0, desc:0, gnd:0 }; A.forEach(a => cnt[sOf(a)]++);
+  const shown = A.filter(a => flt === 'all' || sOf(a) === flt), n0 = A[0];
+  box.innerHTML = `<div class="card hero"><div class="hh"><div><b>${esc(S.cur.n)}</b><span>${S.cur.c ? esc(S.cur.c) + ' · ' : ''}${radF(S.radius)}</span></div><button class="icon-btn" id="rf" type="button" aria-label="Refresh">${svg('refresh')}</button></div>
+    <div class="hn"><h2>${A.length}</h2><span>${t('inRange')}</span></div>
+    <div class="hs">${['climb', 'cruise', 'desc', 'gnd'].map(k => `<div class="st" data-s="${k}"><b>${cnt[k]}</b><span>${t(k)}</span></div>`).join('')}</div>
+    ${n0 ? `<div class="near">${t('closest')}: ${esc(nameF(n0))} · ${distF(n0.d)} ${dirF(n0.b)} · ${altF(n0)}</div>` : ''}
+    <div class="foot updl">${ago()}</div></div>
+   <div class="listcol"><div class="fchips">${['all', 'climb', 'cruise', 'desc', 'gnd'].map(k => `<button class="fc${flt === k ? ' on' : ''}" data-f="${k}" type="button">${t(k)} ${k === 'all' ? A.length : cnt[k]}</button>`).join('')}</div>
+   ${shown.length ? `<div class="flist">${shown.slice(0, 60).map(a => { const s = sOf(a); return `<div class="fl${sel === a.id ? ' sel' : ''}" data-s="${s}" data-id="${a.id}"><div class="fl-m"><div class="fl-ic">${plane(a.g ? 0 : a.trk)}</div><div class="fl-t"><b>${esc(nameF(a))}</b><span>${esc(airF(a))} · ${distF(a.d)} ${dirF(a.b)}</span></div><div class="fl-r"><strong>${altF(a)}</strong><small>${t(s)}${a.g ? '' : ' · ' + spdF(a)}</small></div></div>${sel === a.id ? det(a) : ''}</div>`; }).join('')}</div>` : `<div class="empty">${t('empty')}</div>`}
+   <div class="foot">${shown.length > 60 ? t('more') + '<br>' : ''}${t('src')}${srcN ? ' (' + srcN + ')' : ''}</div></div>`;
+}
+function renderRadar() {
+  const p = $('radarPage');
+  if (err && !A) { p.innerHTML = errBox('retryR'); $('retryR').onclick = () => { err = null; load(); }; return; }
+  if (!A) { p.innerHTML = '<div class="skel" style="height:380px"></div>'; return; }
+  const R = S.radius, k = 130 / R, a0 = A.find(a => a.id === sel);
+  const rings = [1 / 3, 2 / 3, 1].map(f => `<circle class="ring" cx="150" cy="150" r="${(130 * f).toFixed(1)}"/><text class="rl" x="150" y="${(150 - 130 * f - 3).toFixed(1)}">${radF(R * f)}</text>`).join('');
+  const dots = A.map(a => { const x = 150 + a.d * k * Math.sin(rad(a.b)), y = 150 - a.d * k * Math.cos(rad(a.b));
+    return `<g class="dot" data-id="${a.id}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="12" fill="transparent"/>${sel === a.id ? `<circle class="pick" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="10"/>` : ''}<path class="pl s-${sOf(a)}" d="${PLANE}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${a.g ? 0 : Math.round(a.trk)}) scale(.5) translate(-12 -12)"/></g>`; }).join('');
+  p.innerHTML = `<div class="card"><div class="sec-title">${t('navRadar')} · ${esc(S.cur.n)}</div>
+   <svg class="rdr" viewBox="0 0 300 300" aria-hidden="false"><g class="sweep"><path d="M150 150L150 20A130 130 0 0 0 ${(150 - 130 * Math.sin(rad(35))).toFixed(1)} ${(150 - 130 * Math.cos(rad(35))).toFixed(1)}Z" fill="var(--accent)" opacity=".12" stroke="none"/><line x1="150" y1="150" x2="150" y2="20" stroke="var(--accent)" stroke-width="1.5" opacity=".6"/></g>
+   ${rings}<line class="axis" x1="150" y1="20" x2="150" y2="280"/><line class="axis" x1="20" y1="150" x2="280" y2="150"/>
+   <text class="cn n" x="150" y="9">N</text><text class="cn" x="292" y="150">E</text><text class="cn" x="150" y="291">S</text><text class="cn" x="8" y="150">W</text>${dots}<circle class="me" cx="150" cy="150" r="3.5"/></svg>
+   <div class="foot updl">${ago()}</div></div>
+   <div class="card">${a0 ? `<div class="fl" data-s="${sOf(a0)}" style="border:0;padding:0;cursor:default"><div class="fl-m"><div class="fl-ic">${plane(a0.g ? 0 : a0.trk)}</div><div class="fl-t"><b>${esc(nameF(a0))}</b><span>${esc(airF(a0))} · ${distF(a0.d)} ${dirF(a0.b)}</span></div><div class="fl-r"><strong>${altF(a0)}</strong><small>${t(sOf(a0))}</small></div></div>${det(a0)}</div>` : `<div class="empty" style="padding:12px">${A.length ? t('tap') : t('empty')}</div>`}</div>`;
+}
+const renderAll = () => { renderNear(); renderRadar(); };
+$('nearBody').addEventListener('click', e => {
+  if (e.target.closest('#rf')) return load(true);
+  const f = e.target.closest('[data-f]'); if (f) { flt = f.dataset.f; return renderNear(); }
+  const r = e.target.closest('.fl'); if (r) { sel = sel === r.dataset.id ? null : r.dataset.id; renderNear(); }
+});
+$('radarPage').addEventListener('click', e => { const d = e.target.closest('.dot'); if (d) { sel = sel === d.dataset.id ? null : d.dataset.id; renderRadar(); renderNear(); } });
+
+// ---- Pengaturan ----
+function renderSettings() {
+  const ro = [50, 100, 150, 250].map(r => `<option value="${r}"${S.radius === r ? ' selected' : ''}>${radF(r)}</option>`).join('');
+  $('setCard').innerHTML = `<div class="sec-title">${t('settings')}</div>
+   <div class="set"><div><b>${t('sRadius')}</b><span>${t('sRadiusD')}</span></div><select class="sel" id="selR">${ro}</select></div>
+   <div class="set"><div><b>${t('sUnits')}</b><span>${t('sUnitsD')}</span></div><select class="sel" id="selU"><option value="av"${AV() ? ' selected' : ''}>${t('uAv')}</option><option value="met"${AV() ? '' : ' selected'}>${t('uMet')}</option></select></div>
+   <div class="set"><div><b>${t('sAuto')}</b><span>${t('sAutoD')}</span></div><button class="sw${S.auto ? ' on' : ''}" id="swA" type="button" role="switch" aria-checked="${!!S.auto}" aria-label="${t('sAuto')}"></button></div>`;
+  $('selR').onchange = e => { S.radius = +e.target.value; persist(); A = null; upd = 0; load(); };
+  $('selU').onchange = e => { S.units = e.target.value; persist(); renderSettings(); renderAll(); };
+  $('swA').onclick = () => { S.auto = !S.auto; persist(); renderSettings(); };
+}
+
+// ---- Lokasi tersimpan, pencarian, GPS ----
+function toggleSave() {
+  if (isSaved(S.cur)) { S.places = S.places.filter(x => !(x.lat === S.cur.lat && x.lon === S.cur.lon)); showToast(t('removed')); }
+  else { S.places.unshift({ ...S.cur }); showToast(t('saved')); }
+  persist(); syncLoc(); renderSaved();
+}
+function pick(p) { S.cur = { n:p.n, c:p.c, cc:p.cc || '', lat:p.lat, lon:p.lon }; persist(); A = null; err = null; sel = null; $('q').value = ''; $('drop').classList.remove('show'); $('q').blur(); syncLoc(); renderSaved(); tab('near'); load(); }
+async function del(i) {
+  if (!(await ask(t('delAsk')))) return;
+  S.places.splice(i, 1); persist(); syncLoc(); renderSaved(); showToast(t('removed'));
+}
+function renderSaved() {
+  const act = (e, i) => { const d = e.target.closest('[data-del]'); if (d) { del(+d.dataset.del); return; } pick(S.places[i]); };
+  $('chips').innerHTML = S.places.map((p, i) => `<div class="chip${p.lat === S.cur.lat && p.lon === S.cur.lon ? ' on' : ''}" data-i="${i}">${svg('pin', 'pn')}<span>${esc(p.n)}</span><button type="button" data-del="${i}" aria-label="${t('unsave')}">${svg('x')}</button></div>`).join('');
+  $('savedList').innerHTML = S.places.length ? S.places.map((p, i) => `<div class="row" data-i="${i}">${svg('pin', 'pn')}<div class="row-t"><b>${esc(p.n)}</b><span>${esc(p.c || '')}</span></div><button class="icon-btn" data-del="${i}" type="button" aria-label="${t('unsave')}">${svg('x')}</button></div>`).join('') : `<div class="empty">${t('noSaved')}</div>`;
+  document.querySelectorAll('.chip,#savedList .row').forEach(r => r.onclick = e => act(e, +r.dataset.i));
+}
+let timer, list = [];
+const drop = $('drop'), q = $('q');
+function showDrop(items, label, empty) {
+  list = items;
+  drop.innerHTML = `<div class="row" id="rowLoc">${svg('locate', 'pn')}<div class="row-t"><b>${t('myLoc')}</b></div></div>` + (label ? `<div class="drop-t">${label}</div>` : '')
+    + items.map((p, i) => `<div class="row" data-i="${i}">${svg('pin', 'pn')}<div class="row-t"><b>${esc(p.n)}</b><span>${esc(p.c || '')}</span></div></div>`).join('') + (empty ? `<div class="drop-t">${empty}</div>` : '');
+  drop.classList.add('show');
+  $('rowLoc').onclick = locate;
+  drop.querySelectorAll('[data-i]').forEach(r => r.onclick = () => pick(list[+r.dataset.i]));
+}
+const showSaved = () => showDrop(S.places, S.places.length ? t('savedPlaces') : '');
+q.addEventListener('focus', () => { if (q.value.trim().length < 2) showSaved(); });
+q.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { drop.classList.remove('show'); q.blur(); }
+  if (e.key === 'Enter' && list[0] && q.value.trim().length >= 2) pick(list[0]);
+});
+document.addEventListener('click', e => { if (!$('searchWrap').contains(e.target)) drop.classList.remove('show'); });
+q.addEventListener('input', e => {
+  clearTimeout(timer); const v = e.target.value.trim();
+  if (v.length < 2) { showSaved(); return; }
+  timer = setTimeout(async () => {
+    try {
+      const r = await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(v)}&count=6&language=${ID ? 'id' : 'en'}&format=json`)).json();
+      const res = (r.results || []).map(x => ({ n:x.name, c:[x.admin1, x.country].filter(Boolean).join(', '), cc:x.country_code, lat:x.latitude, lon:x.longitude }));
+      showDrop(res, '', res.length ? '' : t('noResult'));
+    } catch (_) { showDrop([], '', t('err')); }
+  }, 350);
+});
+function locate() {
+  if (!navigator.geolocation) return showToast(t('geoFail'));
+  drop.classList.remove('show'); showToast(t('locating'));
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const lat = +pos.coords.latitude.toFixed(4), lon = +pos.coords.longitude.toFixed(4); let n = t('here'), c = '', cc = '';
+    try {
+      const g = await (await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=${ID ? 'id' : 'en'}`)).json();
+      n = g.city || g.locality || n; c = g.countryName || ''; cc = g.countryCode || '';
+    } catch (_) {}
+    pick({ n, c, cc, lat, lon });
+  }, () => showToast(t('geoFail')), { enableHighAccuracy:true, timeout:12000, maximumAge:120000 });
+}
+$('locBtn').addEventListener('click', locate);
+$('saveBtn').addEventListener('click', toggleSave);
+i18n(); syncLoc(); renderSaved(); renderSettings(); load();
+})();
+</script>
+</body>
+</html>
