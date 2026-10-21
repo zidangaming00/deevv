@@ -1319,40 +1319,44 @@ function popularList(){
   const[lat,lon]=origin();
   return l.map(p=>({...p,d:map.distance([lat,lon],[p.lat,p.lon])})).sort((a,b)=>a.d-b.d);
 }
-const WT=(fallback)=>located&&!fallback?tx('Tempat terdekat','Nearby places'):tx('Lokasi populer','Popular places');
-let nearCache=null;
+const WT=(fb,last)=>last?tx('Dekat posisi terakhirmu','Near your last position'):(located&&!fb?tx('Tempat terdekat','Nearby places'):tx('Lokasi populer','Popular places'));
+let nearCache=null;const NEAR_KEY='deevv_nearby_v1',nearKey=(la,lo)=>la.toFixed(2)+','+lo.toFixed(2);
+function readNear(key){const c=store.get(NEAR_KEY,null);return c&&c.key===key&&Array.isArray(c.list)&&c.list.length?c:null}
+function fastOverpass(q,ms=9000){return Promise.any(OVERPASS.map(async ep=>{const r=await fetchWithTimeout(ep,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:'data='+encodeURIComponent(q)},ms);if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();if(!Array.isArray(d.elements))throw new Error('bad');return d.elements})).catch(e=>{throw e.errors?.[0]||e})}
 async function fetchNearby(lat,lon){
-  const key=lat.toFixed(2)+','+lon.toFixed(2);
+  const key=nearKey(lat,lon);
   if(nearCache&&nearCache.key===key)return nearCache.list;
-  let list=[];
-  for(const R of [4000,15000]){
-    try{
-      const a=`(around:${R},${lat},${lon})`;
-      const q=`[out:json][timeout:20];(nwr["tourism"~"attraction|museum|zoo|theme_park|gallery|viewpoint"]["name"]${a};nwr["leisure"~"park|garden|stadium"]["name"]${a};nwr["shop"="mall"]["name"]${a};nwr["amenity"="place_of_worship"]["name"]["wikidata"]${a};);out center tags 80;`;
-      list=preparePlaces((await fetchOverpass(q)).map(fromOverpass).filter(Boolean).map(p=>({...p,tags:{...p.tags,category:p.tags.tourism||p.tags.leisure||p.tags.shop||p.tags.amenity}})),lat,lon);
-    }catch(_){list=[]}
-    if(list.length>=4)break;
-  }
-  if(!list.length){
-    const r=await Promise.allSettled(['restoran','kedai kopi','minimarket'].map(k=>fetchPlacesAPI(k,lat,lon)));
-    list=preparePlaces(r.flatMap(x=>x.status==='fulfilled'?x.value:[]),lat,lon);
-  }
+  const ov=async R=>{
+    const a=`(around:${R},${lat},${lon})`;
+    const q=`[out:json][timeout:10];(nwr["tourism"~"attraction|museum|zoo|theme_park|gallery|viewpoint"]["name"]${a};nwr["leisure"~"park|garden|stadium"]["name"]${a};nwr["shop"="mall"]["name"]${a};nwr["amenity"="place_of_worship"]["name"]["wikidata"]${a};);out center tags 60;`;
+    return preparePlaces((await fastOverpass(q)).map(fromOverpass).filter(Boolean).map(p=>({...p,tags:{...p.tags,category:p.tags.tourism||p.tags.leisure||p.tags.shop||p.tags.amenity}})),lat,lon);
+  };
+  const api=async()=>{const r=await Promise.allSettled(['restoran','kedai kopi','minimarket'].map(k=>fetchPlacesAPI(k,lat,lon)));return preparePlaces(r.flatMap(x=>x.status==='fulfilled'?x.value:[]),lat,lon)};
+  const p1=ov(5000).catch(()=>[]),p2=api().catch(()=>[]);
+  let list=await Promise.race([p1,new Promise(r=>setTimeout(()=>r(null),4500))]);
+  if(!list||list.length<3){const x=await p2;list=x.length?x:(list&&list.length?list:await p1)}
+  if(!list.length)list=await ov(15000).catch(()=>[]);
   list=list.sort((a,b)=>((a.d||0)-(a.tags&&a.tags.wikidata?1500:0))-((b.d||0)-(b.tags&&b.tags.wikidata?1500:0))).slice(0,10);
-  if(list.length)nearCache={key,list};
+  if(list.length){nearCache={key,list};store.set(NEAR_KEY,{key,t:Date.now(),list})}
   return list;
 }
 function renderPopular(){
   const w=$('pop-wrap');if(!w)return;
-  const head=fb=>{const t=WT(fb);if($('pop-t'))$('pop-t').textContent=t;if(view&&view.kind==='welcome'&&mode==='explore'&&!nav)$('sheet-title').textContent=t};
-  const paint=(items,fb)=>{
-    if($('pop-wrap')!==w)return;head(fb);popItems=items;
-    w.innerHTML=`<div class="pop-row">${popItems.map((p,i)=>`<div class="pop" data-i="${i}">${phHTML(p,'',17)}<div class="pop-t ellipsis">${esc(p.name)}</div><div class="pop-s ellipsis">${esc([placeType(p),located?fmtDist(p.d):''].filter(Boolean).join(' · '))}</div></div>`).join('')}</div>`;
+  const head=(fb,last)=>{const t=WT(fb,last);if($('pop-t'))$('pop-t').textContent=t;if(view&&view.kind==='welcome'&&mode==='explore'&&!nav)$('sheet-title').textContent=t};
+  const paint=(items,fb,last)=>{
+    if($('pop-wrap')!==w)return;head(fb,last);
+    popItems=located?items.map(p=>({...p,d:map.distance(origin(),[p.lat,p.lon])})):items;
+    w.innerHTML=`<div class="pop-row">${popItems.map((p,i)=>`<div class="pop" data-i="${i}">${phHTML(p,'',17)}<div class="pop-t ellipsis">${esc(p.name)}</div><div class="pop-s ellipsis">${esc([placeType(p),located&&Number.isFinite(p.d)?fmtDist(p.d):''].filter(Boolean).join(' · '))}</div></div>`).join('')}</div>`;
     w.querySelectorAll('.pop').forEach(el=>el.onclick=()=>pickPlace(popItems[+el.dataset.i]));hydratePhotos(w);
   };
-  if(!located){paint(popularList());return}
-  head();w.innerHTML='<div class="pop-row">'+'<div class="pop sk"></div>'.repeat(4)+'</div>';
-  const[lat,lon]=origin();
-  fetchNearby(lat,lon).then(l=>l.length?paint(l):paint(popularList(),true)).catch(()=>paint(popularList(),true));
+  if(!located){
+    const lp=store.get('deevv_last_pos',null),c=lp&&readNear(nearKey(lp.lat,lp.lon));
+    c?paint(c.list,false,true):paint(popularList(),true);return;
+  }
+  const[lat,lon]=origin(),c=readNear(nearKey(lat,lon));
+  if(c){paint(c.list);if(Date.now()-c.t<1800e3)return}
+  else{head();w.innerHTML='<div class="pop-row">'+'<div class="pop sk"></div>'.repeat(4)+'</div>'}
+  fetchNearby(lat,lon).then(l=>{if(l.length)paint(l);else if(!c)paint(popularList(),true)}).catch(()=>{if(!c)paint(popularList(),true)});
 }
 function welcomeHTML(){
   const rec=getRecent().slice(0,3);
@@ -1373,7 +1377,10 @@ async function fillWelcome(){
   if(!$('w-loc')||!located)return;
   const[lat,lon]=origin();
   try{
+    const ck=lat.toFixed(2)+','+lon.toFixed(2),cn=store.get('deevv_loc_name',null);
+    if(cn&&cn.k===ck&&$('w-loc'))$('w-loc').querySelector('span').textContent='Dekat '+cn.n;
     const n=await getPlaceName(lat,lon);
+    if(n)store.set('deevv_loc_name',{k:ck,n});
     if($('w-loc'))$('w-loc').querySelector('span').textContent=n?'Dekat '+n:'Lokasi saat ini';
   }catch(_){
     if($('w-loc'))$('w-loc').querySelector('span').textContent='Lokasi saat ini';
@@ -1940,7 +1947,7 @@ map.on('zoomend',()=>{if(!nav)return;vrBusy=true;try{map.fire('viewreset')}catch
 /* ===== Cari tempat sepanjang rute (layar penuh) ===== */
 const rsEl=document.createElement('div');rsEl.className='rs';rsEl.id='rs';document.body.appendChild(rsEl);
 const rsLayer=L.layerGroup().addTo(map);
-let rsRes=[],rsKey=null,rsTerm='',rsR=800,rsSt='idle',rsReq=0;
+let rsRes=[],rsKey=null,rsTerm='',rsR=800,rsSt='idle',rsReq=0,rsLoading=false;
 const RS_KEYS=['spbu','restoran','kedai kopi','minimarket','atm','apotek','parkir','rumah sakit'];
 const RS_BACK='<svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>';
 function rsClose(){rsEl.classList.remove('show')}
@@ -1967,7 +1974,7 @@ function rsPaint(){
   if(rsSt==='loading'){l.innerHTML='<div class="rs-sk"></div>'.repeat(6);return}
   if(rsSt==='err'){l.innerHTML=empty('close',tx('Pencarian belum berhasil','Search did not work'),tx('Layanan data tempat sedang tidak merespons. Periksa koneksi lalu coba lagi.','The places service is not responding. Check your connection and try again.'),`<button class="rs-btn" id="rs-retry" type="button">${tx('Coba lagi','Try again')}</button>`);return}
   if(rsSt==='empty'){l.innerHTML=empty('pin',tx('Tidak ada tempat ditemukan','No places found'),tx(`Tidak ada hasil dalam ${rsR/1000} km dari jalur rutemu.`,`Nothing within ${rsR/1000} km of your route.`),rsR<2000?`<button class="rs-btn" id="rs-wide" type="button">${tx('Cari sampai 2 km dari jalur','Search up to 2 km away')}</button>`:'');return}
-  l.innerHTML=`<div class="rs-sum">${rsRes.length} ${tx('tempat di sepanjang rute · maks. ','places along the route · within ')}${rsR/1000} km</div>`+rsRes.map((p,i)=>{
+  l.innerHTML=`<div class="rs-sum">${rsRes.length} ${tx('tempat di sepanjang rute · maks. ','places along the route · within ')}${rsR/1000} km${rsLoading?' · '+tx('mencari lebih banyak…','finding more…'):''}</div>`+rsRes.map((p,i)=>{
     const secs=n?n.dur*(p.ahead/(n.dist||1)):0;
     return`<div class="rs-i" data-i="${i}"><div class="rs-ic">${ic('pin')}</div><div class="r-info"><div class="t1 ellipsis">${esc(p.name)}</div><div class="t2 ellipsis">${esc(placeType(p)||p.addr||'')}</div><div class="rs-m">${fmtDist(p.ahead)} ${tx('di depan','ahead')} · ${fmtDur(secs)}</div></div><div class="rs-act"><button class="rs-go" data-go="${i}" type="button">${tx('Singgah','Add stop')}</button><button class="rs-map" data-map="${i}" type="button">${tx('Peta','Map')}</button></div></div>`}).join('');
 }
@@ -1981,38 +1988,46 @@ function rsNear(n,lat,lon){
   for(let k=n.i;k<n.coords.length;k++){const c=n.coords[k],dy=c[0]-lat,dx=(c[1]-lon)*k0,d=dx*dx+dy*dy;if(d<bd){bd=d;best=k}}
   return[best,Math.sqrt(bd)*111320];
 }
-async function rsFetch(key,term){
+async function rsFetch(key,term,onPart){
   const n=nav;if(!n)return[];
   const pts=rsSample(n),line=pts.map(p=>p[0].toFixed(5)+','+p[1].toFixed(5)).join(',');
   const six=pts.length<=6?pts:Array.from({length:6},(_,i)=>pts[Math.round(i*(pts.length-1)/5)]);
   const tasks=[];
   if(key){
-    tasks.push(fetchOverpass(`[out:json][timeout:25];(${CATS[key].filters.map(f=>`nwr${f}(around:${rsR},${line});`).join('')});out center tags 120;`).then(a=>a.map(fromOverpass).filter(Boolean)));
     six.forEach(p=>tasks.push(fetchPlacesAPI(key,p[0],p[1])));
+    tasks.push(fastOverpass(`[out:json][timeout:10];(${CATS[key].filters.map(f=>`nwr${f}(around:${rsR},${line});`).join('')});out center tags 120;`).then(a=>a.map(fromOverpass).filter(Boolean)));
   }else{
     const t=term.replace(/[^\p{L}\p{N} ]/gu,'').trim();
-    if(t)tasks.push(fetchOverpass(`[out:json][timeout:25];(nwr["name"~"${t}",i](around:${rsR},${line}););out center tags 80;`).then(a=>a.map(fromOverpass).filter(Boolean)));
-    six.slice(0,5).forEach(p=>tasks.push(fetchJSON(`${PHOTON}/api/?q=${encodeURIComponent(term)}&limit=10&lat=${p[0].toFixed(4)}&lon=${p[1].toFixed(4)}&location_bias_scale=0.5&bbox=${ID_BBOX}`,{},12000).then(d=>(d.features||[]).map(fromPhoton).filter(Boolean))));
+    six.slice(0,5).forEach(p=>tasks.push(fetchJSON(`${PHOTON}/api/?q=${encodeURIComponent(term)}&limit=10&lat=${p[0].toFixed(4)}&lon=${p[1].toFixed(4)}&location_bias_scale=0.5&bbox=${ID_BBOX}`,{},8000).then(d=>(d.features||[]).map(fromPhoton).filter(Boolean))));
+    if(t)tasks.push(fastOverpass(`[out:json][timeout:10];(nwr["name"~"${t}",i](around:${rsR},${line}););out center tags 80;`).then(a=>a.map(fromOverpass).filter(Boolean)));
   }
-  const res=await Promise.allSettled(tasks);
-  if(!res.some(r=>r.status==='fulfilled'))throw new Error('all failed');
-  const lim=key?rsR*1.15:rsR*2,seen=new Set(),out=[];
-  res.forEach(r=>{if(r.status!=='fulfilled')return;r.value.forEach(p=>{
-    if(!p||!p.name||!validateCoord(p.lat,p.lon))return;
-    const[idx,off]=rsNear(n,p.lat,p.lon);if(off>lim)return;
-    const k=p.name.toLowerCase()+'|'+p.lat.toFixed(3)+p.lon.toFixed(3);if(seen.has(k))return;seen.add(k);
-    out.push({...p,ahead:Math.max(0,n.cum[idx]-n.cum[n.i]),off});
-  })});
-  return out.sort((a,b)=>a.ahead-b.ahead).slice(0,40);
+  const lim=key?rsR*1.15:rsR*2,seen=new Set(),out=[];let okc=0;
+  const sorted=()=>out.slice().sort((a,b)=>a.ahead-b.ahead).slice(0,40);
+  const add=arr=>{
+    let ch=false;
+    arr.forEach(p=>{
+      if(!p||!p.name||!validateCoord(p.lat,p.lon))return;
+      const[idx,off]=rsNear(n,p.lat,p.lon);if(off>lim)return;
+      const k=p.name.toLowerCase()+'|'+p.lat.toFixed(3)+p.lon.toFixed(3);if(seen.has(k))return;seen.add(k);
+      out.push({...p,ahead:Math.max(0,n.cum[idx]-n.cum[n.i]),off});ch=true;
+    });
+    if(ch&&onPart)onPart(sorted());
+  };
+  const all=Promise.all(tasks.map(t=>t.then(a=>{okc++;add(a)}).catch(()=>{})));
+  await Promise.race([all,new Promise(r=>setTimeout(r,9000))]);
+  if(!okc&&!out.length)throw new Error('all failed');
+  return sorted();
 }
 async function rsRun(key,term){
-  const id=++rsReq;rsKey=key;rsTerm=key?'':(term||'');rsSt='loading';rsRes=[];rsLayer.clearLayers();
+  const id=++rsReq;rsKey=key;rsTerm=key?'':(term||'');rsSt='loading';rsRes=[];rsLoading=true;rsLayer.clearLayers();
   const q=$('rs-q');if(q)q.value=rsTerm;
   rsEl.querySelectorAll('.rs-c').forEach(c=>c.classList.toggle('on',c.dataset.k===key));rsPaint();
-  try{const r=await rsFetch(key,term);if(id!==rsReq||!nav)return;rsRes=r;rsSt=r.length?'ok':'empty'}
-  catch(_){if(id!==rsReq)return;rsSt='err'}
-  rsPaint();
-  rsRes.forEach((p,i)=>L.marker([p.lat,p.lon],{icon:pinIcon}).addTo(rsLayer).on('click',()=>{rsOpen();rsFocus(i)}));
+  const marks=()=>{rsLayer.clearLayers();rsRes.forEach((p,i)=>L.marker([p.lat,p.lon],{icon:pinIcon}).addTo(rsLayer).on('click',()=>{rsOpen();rsFocus(i)}))};
+  try{
+    const r=await rsFetch(key,term,l=>{if(id!==rsReq||!nav)return;rsRes=l;rsSt='ok';rsPaint();marks()});
+    if(id!==rsReq||!nav)return;rsRes=r;rsSt=r.length?'ok':'empty';
+  }catch(_){if(id!==rsReq)return;rsSt='err'}
+  rsLoading=false;rsPaint();marks();
 }
 function rsFocus(i){
   rsEl.querySelectorAll('.rs-i').forEach(x=>x.classList.toggle('sel',+x.dataset.i===i));
@@ -2036,7 +2051,9 @@ async function rsVia(p){
   }catch(_){showToast(tx('Perhentian tidak dapat ditambahkan','Could not add stop'))}
 }
 $('btn-route-search').onclick=rsOpen;
-const rsReset=()=>{document.body.classList.remove('nav-free');rsClose();rsLayer.clearLayers();rsRes=[];rsKey=null;rsTerm='';rsR=800;rsSt='idle';rsReq++};
+let lpSaved=null;
+onFix=(o=>function(p){try{const c=p&&p.coords;if(c&&(!lpSaved||map.distance(lpSaved,[c.latitude,c.longitude])>300)){lpSaved=[c.latitude,c.longitude];store.set('deevv_last_pos',{lat:c.latitude,lon:c.longitude})}}catch(_){}return o.apply(this,arguments)})(onFix);
+const rsReset=()=>{document.body.classList.remove('nav-free');rsClose();rsLayer.clearLayers();rsRes=[];rsKey=null;rsTerm='';rsR=800;rsSt='idle';rsLoading=false;rsReq++};
 const _startNav2=startNav;startNav=function(){rsReset();return _startNav2.apply(this,arguments)};
 const _endNav2=endNav;endNav=function(){rsReset();return _endNav2.apply(this,arguments)};
 </script>
