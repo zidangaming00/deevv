@@ -434,7 +434,7 @@ const TRD={
 'Mencari…':'Searching…','Tempat tidak ditemukan di Indonesia. Deevv Maps saat ini hanya menyediakan pencarian dan peta untuk wilayah Indonesia.':'No places found in Indonesia. Deevv Maps currently only supports search and maps for Indonesia.','Gagal terhubung ke layanan pencarian.':'Could not connect to the search service.',
 'Terakhir dilihat':'Recently viewed','Hapus riwayat':'Clear history','Riwayat dihapus':'History cleared','Ketuk kategori di atas atau telusuri nama tempat untuk mulai menjelajah.':'Tap a category above or search for a place to start exploring.',
 'Rute':'Directions','Mulai':'Start','Telepon':'Call','Situs':'Website','Tampilan 3D':'3D view','Sekitar':'Nearby','Tentang':'About','Salin':'Copy','Simpan':'Save','Bagikan':'Share','Buka':'Open',
-'Peta © MapTiler · Data tempat © OpenStreetMap contributors · Photon · Foto dari Wikipedia/Wikimedia':'Map © MapTiler · Place data © OpenStreetMap contributors · Photon · Photos from Wikipedia/Wikimedia',
+'Peta © Mapbox · Data tempat © OpenStreetMap contributors · Photon · Foto dari Wikipedia/Wikimedia':'Map © Mapbox · Place data © OpenStreetMap contributors · Photon · Photos from Wikipedia/Wikimedia',
 'Koordinat disalin':'Coordinates copied','Tidak bisa menyalin':'Could not copy','Menghitung rute…':'Calculating route…','Rute tidak dapat dihitung saat ini':'Route cannot be calculated right now','Tempat disimpan':'Place saved','Dihapus dari simpanan':'Removed from saved','Tautan lokasi disalin':'Location link copied','Tidak bisa membagikan lokasi':'Could not share location',
 'Belum ada tempat disimpan':'No saved places yet','Simpan tempat yang ingin kamu lihat lagi agar mudah ditemukan di sini.':'Save places you want to revisit so they are easy to find here.',
 'Hapus lokasi?':'Delete place?','Hapus':'Delete','Lokasi dihapus':'Place deleted','Hapus alamat?':'Delete address?','Alamat dihapus':'Address deleted','Ubah':'Edit',
@@ -570,17 +570,18 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>windo
 
 let userCoords=DEFAULT.slice(),located=false,currentPlace=null,mode='explore',catReq=0,searchTimer=null,searchAbort=null;
 const map=L.map('map',{zoomControl:false,attributionControl:false,rotate:true,touchRotate:true,rotateControl:false,bearing:0,center:DEFAULT,zoom:10,renderer:L.svg({padding:1})});
-const MT_KEY='DApLdUwuJ7D0eHtNDNSZ'; // key publik: kunci ke domainmu di dashboard MapTiler (Allowed HTTP origins)
-const MT={streets:'maps/streets-v2/256/{z}/{x}/{y}.png',outdoor:'maps/outdoor-v2/256/{z}/{x}/{y}.png',hybrid:'maps/hybrid/256/{z}/{x}/{y}.jpg',satellite:'tiles/satellite-v2/{z}/{x}/{y}.jpg'};
-const TURL=st=>`https://api.maptiler.com/${MT[st]}?key=${MT_KEY}`;
-const TILE=(st,z,x,y)=>TURL(st).replace('{z}',z).replace('{x}',x).replace('{y}',y);
-const roadmap=L.tileLayer(TURL('streets'),{className:'tiles-road',maxZoom:20,maxNativeZoom:20});
-const satellite=L.tileLayer(TURL('hybrid'),{maxZoom:20,maxNativeZoom:18});
+const MAPBOX_TOKEN='pk.eyJ1IjoicmFhaWhhbnoiLCJhIjoiY212aHN0bTBtMDFvbjJ5b2sxMGI2dnk0cyJ9.XvtcL9sQcoySAue_gAkdAA'; // token publik pk.… ; batasi URL ke domainmu di dashboard Mapbox
+const MB={streets:'streets-v12',outdoor:'outdoors-v12',hybrid:'satellite-streets-v12',satellite:'satellite-v9'};
+const TURL=st=>`https://api.mapbox.com/styles/v1/mapbox/${MB[st]}/tiles/{z}/{x}/{y}?access_token=${MAPBOX_TOKEN}`;
+const TOPT={tileSize:512,zoomOffset:-1,maxZoom:20};
+const TILE=(st,z,x,y)=>`https://api.mapbox.com/styles/v1/mapbox/${MB[st]}/tiles/256/${z}/${x}/${y}?access_token=${MAPBOX_TOKEN}`;
+const roadmap=L.tileLayer(TURL('streets'),{...TOPT,className:'tiles-road'});
+const satellite=L.tileLayer(TURL('hybrid'),TOPT);
 roadmap.addTo(map);
 const markers=L.layerGroup().addTo(map),routeLayer=L.layerGroup().addTo(map),markerIndex=new Map();
 
 const SUB=['mt0','mt1','mt2','mt3'];
-const terrain=L.tileLayer(TURL('outdoor'),{className:'tiles-road',maxZoom:20,maxNativeZoom:20});
+const terrain=L.tileLayer(TURL('outdoor'),{...TOPT,className:'tiles-road'});
 const traffic=null;
 const BASES={Default:roadmap,Satelit:satellite,Medan:terrain};
 let routeReq=0,gesturing=false,gTimer=0,lpT=0,lpX=0,lpY=0;
@@ -1095,7 +1096,7 @@ function detailDyn(p){
   if(hasWeb)rows+=row('globe',tx('Situs web','Website'),`<a href="${safeUrl(web)}" target="_blank" rel="noopener">${esc(webTxt)}</a>`);
   if(oh)rows+=row('clock',tx('Jam buka','Opening hours'),wk?`<details class="wkd"><summary>${open||esc(oh)}</summary>${wk}</details>`:`${open?`<div>${open}</div>`:''}<div class="t2">${esc(oh)}</div>`);
   rows+=row('locate',tx('Koordinat','Coordinates'),`${(+p.lat).toFixed(6)}, ${(+p.lon).toFixed(6)}`);
-  let info=`<div class="pd-sec"><span>Tentang</span></div><div class="ab">${rows}</div>`+facHTML(t)+`<div class="credit">Peta © MapTiler · Data tempat © OpenStreetMap contributors · Photon · Foto dari Wikipedia/Wikimedia Commons</div>`;
+  let info=`<div class="pd-sec"><span>Tentang</span></div><div class="ab">${rows}</div>`+facHTML(t)+`<div class="credit">Peta © Mapbox · Data tempat © OpenStreetMap contributors · Photon · Foto dari Wikipedia/Wikimedia Commons</div>`;
   return{open,pills,info};
 }
 function paintDyn(p){
@@ -1366,7 +1367,7 @@ function welcomeHTML(){
     return `<div class="result-item" data-r="${i}">${phHTML(p,'result-thumb')}<div class="r-info"><div class="t1 ellipsis">${esc(p.name)}</div><div class="t2 ellipsis">${esc(p.addr||placeType(p))}</div></div><button class="recent-remove" data-key="${esc(key)}" title="Hapus riwayat" type="button">${ic('trash')}</button></div>`;
   }).join(''):''}
   <div class="hint" style="margin-top:10px">Ketuk kategori di atas atau telusuri nama tempat untuk mulai menjelajah.</div>
-  <div class="credit">Peta © MapTiler · Data tempat © OpenStreetMap contributors · Photon · Foto dari Wikipedia/Wikimedia</div>`;
+  <div class="credit">Peta © Mapbox · Data tempat © OpenStreetMap contributors · Photon · Foto dari Wikipedia/Wikimedia</div>`;
 }
 async function fillWelcome(){
   renderPopular();try{renderExtras()}catch(_){}
