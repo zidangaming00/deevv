@@ -324,18 +324,30 @@ body.navigating.nav-free #btn-recenter{display:flex}
 .nav-recenter{height:40px;padding:0 16px 0 12px;border:0;border-radius:22px;background:#1a73e8;color:#fff;font-size:14px;font-weight:650;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.3);animation:rcIn .2s ease}
 .nav-recenter svg{width:20px;height:20px;fill:#fff}
 @keyframes rcIn{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
-.rs{position:fixed;left:12px;right:12px;bottom:0;z-index:1002;background:var(--surface);color:var(--text);border-radius:20px;box-shadow:0 4px 22px rgba(0,0,0,.28);padding:12px;max-height:46vh;display:none;flex-direction:column;gap:10px}
-.rs.show{display:flex}
-.rs-h{display:flex;gap:8px;align-items:center;flex-shrink:0}
-.rs-q{flex:1;min-width:0;height:40px;border:1px solid var(--line);border-radius:20px;padding:0 14px;background:var(--bg);color:var(--text);font-size:14px;font-family:inherit}
-.rs-x{width:36px;height:36px;border:0;border-radius:50%;background:var(--hover);color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0}.rs-x svg{width:18px;height:18px}
-.rs-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;flex-shrink:0}.rs-chips::-webkit-scrollbar{display:none}
-.rs-c{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:18px;padding:7px 13px;font-size:13px;font-weight:550;white-space:nowrap;flex-shrink:0}
+.rs{position:fixed;inset:0;z-index:1500;background:var(--bg);color:var(--text);display:flex;flex-direction:column;transform:translateY(100%);visibility:hidden;transition:transform .28s cubic-bezier(.2,.8,.2,1),visibility .28s}
+.rs.show{transform:none;visibility:visible}
+.rs-bar{background:var(--surface);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px);flex-shrink:0}
+.rs-top{display:flex;align-items:center;gap:8px;padding:12px 12px 8px}
+.rs-back{width:40px;height:40px;border:0;border-radius:50%;background:var(--hover);color:var(--text);display:flex;align-items:center;justify-content:center;flex-shrink:0}.rs-back svg{width:22px;height:22px;fill:currentColor}
+.rs-q{flex:1;min-width:0;height:44px;border:1px solid var(--line);border-radius:22px;padding:0 16px;background:var(--bg);color:var(--text);font-size:15px;font-family:inherit}
+.rs-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 12px 12px}.rs-chips::-webkit-scrollbar{display:none}
+.rs-c{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:18px;padding:8px 14px;font-size:13.5px;font-weight:550;white-space:nowrap;flex-shrink:0}
 .rs-c.on{background:var(--accent-soft);color:var(--accent);border-color:transparent}
-.rs-list{overflow-y:auto;min-height:0;overscroll-behavior:contain}
-.rs-i{display:flex;align-items:center;gap:10px;padding:9px 4px;border-top:1px solid var(--line)}.rs-i.sel{background:var(--accent-soft);border-radius:10px}
-.rs-go{border:0;background:#1a73e8;color:#fff;border-radius:16px;height:32px;padding:0 14px;font-size:13px;font-weight:650;flex-shrink:0}
-@media (min-width:768px){.rs{left:16px;right:auto;width:412px}}
+.rs-list{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:4px 12px calc(20px + env(safe-area-inset-bottom,0px))}
+.rs-sum{font-size:12.5px;color:var(--muted);padding:10px 4px 2px}
+.rs-i{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;margin:8px 0}.rs-i.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.rs-ic{width:42px;height:42px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}.rs-ic svg{width:22px;height:22px;fill:currentColor}
+.rs-m{font-size:12.5px;color:var(--accent);font-weight:600;margin-top:4px}
+.rs-act{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.rs-go{border:0;background:#1a73e8;color:#fff;border-radius:16px;height:32px;padding:0 14px;font-size:13px;font-weight:650}
+.rs-map{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:16px;height:30px;padding:0 12px;font-size:12.5px;font-weight:550}
+.rs-empty{text-align:center;padding:56px 28px;color:var(--muted)}.rs-empty .ic{width:64px;height:64px;border-radius:50%;background:var(--hover);display:flex;align-items:center;justify-content:center;margin:0 auto 14px}.rs-empty .ic svg{width:30px;height:30px;fill:currentColor}
+.rs-empty b{display:block;font-size:16px;color:var(--text);margin-bottom:6px}.rs-empty p{font-size:13.5px;line-height:1.5;margin:0 0 16px}
+.rs-btn{border:0;background:#1a73e8;color:#fff;border-radius:20px;height:40px;padding:0 22px;font-size:14px;font-weight:650}
+.rs-sk{height:72px;border-radius:16px;margin:8px 0;background:var(--hover);animation:rsSh 1.1s ease-in-out infinite}
+.pop.sk{min-width:140px;min-height:150px;border-radius:14px;background:var(--hover);animation:rsSh 1.1s ease-in-out infinite}
+@keyframes rsSh{50%{opacity:.45}}
+@media (min-width:768px){.rs{inset:16px auto 16px 16px;width:412px;border-radius:20px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.3)}.rs-bar{padding-top:0}}
 </style>
 </head>
 <body>
@@ -1307,19 +1319,47 @@ function popularList(){
   const[lat,lon]=origin();
   return l.map(p=>({...p,d:map.distance([lat,lon],[p.lat,p.lon])})).sort((a,b)=>a.d-b.d);
 }
+const WT=(fallback)=>located&&!fallback?tx('Tempat terdekat','Nearby places'):tx('Lokasi populer','Popular places');
+let nearCache=null;
+async function fetchNearby(lat,lon){
+  const key=lat.toFixed(2)+','+lon.toFixed(2);
+  if(nearCache&&nearCache.key===key)return nearCache.list;
+  let list=[];
+  for(const R of [4000,15000]){
+    try{
+      const a=`(around:${R},${lat},${lon})`;
+      const q=`[out:json][timeout:20];(nwr["tourism"~"attraction|museum|zoo|theme_park|gallery|viewpoint"]["name"]${a};nwr["leisure"~"park|garden|stadium"]["name"]${a};nwr["shop"="mall"]["name"]${a};nwr["amenity"="place_of_worship"]["name"]["wikidata"]${a};);out center tags 80;`;
+      list=preparePlaces((await fetchOverpass(q)).map(fromOverpass).filter(Boolean).map(p=>({...p,tags:{...p.tags,category:p.tags.tourism||p.tags.leisure||p.tags.shop||p.tags.amenity}})),lat,lon);
+    }catch(_){list=[]}
+    if(list.length>=4)break;
+  }
+  if(!list.length){
+    const r=await Promise.allSettled(['restoran','kedai kopi','minimarket'].map(k=>fetchPlacesAPI(k,lat,lon)));
+    list=preparePlaces(r.flatMap(x=>x.status==='fulfilled'?x.value:[]),lat,lon);
+  }
+  list=list.sort((a,b)=>((a.d||0)-(a.tags&&a.tags.wikidata?1500:0))-((b.d||0)-(b.tags&&b.tags.wikidata?1500:0))).slice(0,10);
+  if(list.length)nearCache={key,list};
+  return list;
+}
 function renderPopular(){
   const w=$('pop-wrap');if(!w)return;
-  popItems=popularList();
-  w.innerHTML=`<div class="pop-row">${popItems.map((p,i)=>`<div class="pop" data-i="${i}">${phHTML(p,'',17)}<div class="pop-t ellipsis">${esc(p.name)}</div><div class="pop-s ellipsis">${esc([placeType(p),located?fmtDist(p.d):''].filter(Boolean).join(' · '))}</div></div>`).join('')}</div>`;
-  w.querySelectorAll('.pop').forEach(el=>el.onclick=()=>pickPlace(popItems[+el.dataset.i]));
-  hydratePhotos(w);
+  const head=fb=>{const t=WT(fb);if($('pop-t'))$('pop-t').textContent=t;if(view&&view.kind==='welcome'&&mode==='explore'&&!nav)$('sheet-title').textContent=t};
+  const paint=(items,fb)=>{
+    if($('pop-wrap')!==w)return;head(fb);popItems=items;
+    w.innerHTML=`<div class="pop-row">${popItems.map((p,i)=>`<div class="pop" data-i="${i}">${phHTML(p,'',17)}<div class="pop-t ellipsis">${esc(p.name)}</div><div class="pop-s ellipsis">${esc([placeType(p),located?fmtDist(p.d):''].filter(Boolean).join(' · '))}</div></div>`).join('')}</div>`;
+    w.querySelectorAll('.pop').forEach(el=>el.onclick=()=>pickPlace(popItems[+el.dataset.i]));hydratePhotos(w);
+  };
+  if(!located){paint(popularList());return}
+  head();w.innerHTML='<div class="pop-row">'+'<div class="pop sk"></div>'.repeat(4)+'</div>';
+  const[lat,lon]=origin();
+  fetchNearby(lat,lon).then(l=>l.length?paint(l):paint(popularList(),true)).catch(()=>paint(popularList(),true));
 }
 function welcomeHTML(){
   const rec=getRecent().slice(0,3);
   return`<div class="w-loc" id="w-loc">${ic('pin')}<span>${located?'Mencari nama lokasi…':'Menampilkan area Jabodetabek'}</span></div>
   ${located?'':locationFallbackHTML()}
   <div id="home-wrap"></div>
-  <div class="sec-t">${tx('Lokasi populer','Popular places')}</div>
+  <div class="sec-t" id="pop-t">${WT()}</div>
   <div id="pop-wrap"></div>
   ${rec.length?`<div class="sec-t">Terakhir dilihat</div>`+rec.map((p,i)=>{
     const key=placeKey(p);
@@ -1342,7 +1382,7 @@ async function fillWelcome(){
 function resetToWelcome(){
   catReq++;if(nav)endNav(true);view={kind:'welcome'};lastList=null;currentPlace=null;clearMarkers();routeLayer.clearLayers();setChip('');
   searchInput.value='';updateClear();
-  $('panel-close').style.display='none';$('sheet-title').textContent='Lokasi populer';$('sheet-detail').innerHTML=welcomeHTML();fillWelcome();hydratePhotos($('sheet-detail'));bindFallback();
+  $('panel-close').style.display='none';$('sheet-title').textContent=WT();$('sheet-detail').innerHTML=welcomeHTML();fillWelcome();hydratePhotos($('sheet-detail'));bindFallback();
   
   $('sheet-detail').querySelectorAll('[data-r]').forEach(el=>{ el.onclick=(e)=>{ if(e.target.closest('.recent-remove'))return; pickPlace(getRecent()[+el.dataset.r]); }; });$('sheet-detail').querySelectorAll('.recent-remove').forEach(btn=>{
     btn.onclick=(e)=>{
@@ -1891,56 +1931,97 @@ function fitSheet(cb){
   });
 }
 
-/* ===== Cari tempat sepanjang rute ===== */
+/* ===== Garis rute tetap sinkron saat peta dicubit/diputar ===== */
+let vrBusy=false;
+const vrSync=()=>{if(vrBusy||!nav||!gesturing)return;vrBusy=true;try{map.fire('viewreset')}catch(_){}vrBusy=false};
+map.on('zoom rotate',vrSync);
+map.on('zoomend',()=>{if(!nav)return;vrBusy=true;try{map.fire('viewreset')}catch(_){}vrBusy=false});
+
+/* ===== Cari tempat sepanjang rute (layar penuh) ===== */
 const rsEl=document.createElement('div');rsEl.className='rs';rsEl.id='rs';document.body.appendChild(rsEl);
-const rsLayer=L.layerGroup().addTo(map);let rsRes=[],rsKey=null;
+const rsLayer=L.layerGroup().addTo(map);
+let rsRes=[],rsKey=null,rsTerm='',rsR=800,rsSt='idle',rsReq=0;
 const RS_KEYS=['spbu','restoran','kedai kopi','minimarket','atm','apotek','parkir','rumah sakit'];
-function rsPos(){rsEl.style.bottom=((isDesk()?24:0)+sheet.offsetHeight+12)+'px'}
+const RS_BACK='<svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>';
 function rsClose(){rsEl.classList.remove('show')}
 function rsOpen(){
-  if(!nav)return;rsPos();
-  rsEl.innerHTML=`<div class="rs-h"><input class="rs-q" id="rs-q" type="text" placeholder="${tx('Cari tempat sepanjang rute','Search along your route')}" enterkeyhint="search" autocomplete="off"><button class="rs-x" id="rs-x" type="button" aria-label="Tutup">${ic('close')}</button></div>
-  <div class="rs-chips">${RS_KEYS.map(k=>`<button class="rs-c${rsKey===k?' on':''}" data-k="${k}" type="button">${tr(CATS[k].label)}</button>`).join('')}</div><div class="rs-list" id="rs-list"></div>`;
-  rsEl.classList.add('show');
-  $('rs-x').onclick=rsClose;
+  if(!nav)return;
+  rsEl.innerHTML=`<div class="rs-bar"><div class="rs-top"><button class="rs-back" id="rs-back" type="button" aria-label="${tx('Kembali','Back')}">${RS_BACK}</button><input class="rs-q" id="rs-q" type="search" placeholder="${tx('Cari tempat sepanjang rute','Search along your route')}" value="${esc(rsTerm)}" enterkeyhint="search" autocomplete="off"></div>
+  <div class="rs-chips">${RS_KEYS.map(k=>`<button class="rs-c${rsKey===k?' on':''}" data-k="${k}" type="button">${tr(CATS[k].label)}</button>`).join('')}</div></div><div class="rs-list" id="rs-list"></div>`;
+  $('rs-back').onclick=rsClose;
   $('rs-q').onkeydown=e=>{if(e.key==='Enter'&&e.target.value.trim()){e.target.blur();rsRun(null,e.target.value.trim())}};
-  rsEl.querySelector('.rs-chips').onclick=e=>{const b=e.target.closest('[data-k]');if(b)rsRun(b.dataset.k)};
-  if(rsRes.length)rsDraw();
+  rsEl.querySelector('.rs-chips').onclick=e=>{const c=e.target.closest('[data-k]');if(c)rsRun(c.dataset.k)};
+  $('rs-list').onclick=rsClick;rsPaint();rsEl.classList.add('show');
+}
+function rsClick(e){
+  const g=e.target.closest('[data-go]');if(g)return rsVia(rsRes[+g.dataset.go]);
+  const m=e.target.closest('[data-map]');if(m)return rsShowMap(+m.dataset.map);
+  if(e.target.closest('#rs-retry'))return rsRun(rsKey,rsTerm);
+  if(e.target.closest('#rs-wide')){rsR=2000;return rsRun(rsKey,rsTerm)}
+  const it=e.target.closest('[data-i]');if(it)rsFocus(+it.dataset.i);
+}
+function rsPaint(){
+  const l=$('rs-list');if(!l)return;const n=nav;
+  const empty=(ic_,t,p,btn)=>`<div class="rs-empty"><div class="ic">${ic(ic_)}</div><b>${t}</b><p>${p}</p>${btn||''}</div>`;
+  if(rsSt==='idle'){l.innerHTML=empty('pin',tx('Cari di sepanjang rute','Search along your route'),tx('Pilih kategori di atas atau ketik nama tempat. Yang ditampilkan hanya tempat di dekat jalur yang akan kamu lewati.','Pick a category above or type a place name. Only places close to the road ahead are shown.'));return}
+  if(rsSt==='loading'){l.innerHTML='<div class="rs-sk"></div>'.repeat(6);return}
+  if(rsSt==='err'){l.innerHTML=empty('close',tx('Pencarian belum berhasil','Search did not work'),tx('Layanan data tempat sedang tidak merespons. Periksa koneksi lalu coba lagi.','The places service is not responding. Check your connection and try again.'),`<button class="rs-btn" id="rs-retry" type="button">${tx('Coba lagi','Try again')}</button>`);return}
+  if(rsSt==='empty'){l.innerHTML=empty('pin',tx('Tidak ada tempat ditemukan','No places found'),tx(`Tidak ada hasil dalam ${rsR/1000} km dari jalur rutemu.`,`Nothing within ${rsR/1000} km of your route.`),rsR<2000?`<button class="rs-btn" id="rs-wide" type="button">${tx('Cari sampai 2 km dari jalur','Search up to 2 km away')}</button>`:'');return}
+  l.innerHTML=`<div class="rs-sum">${rsRes.length} ${tx('tempat di sepanjang rute · maks. ','places along the route · within ')}${rsR/1000} km</div>`+rsRes.map((p,i)=>{
+    const secs=n?n.dur*(p.ahead/(n.dist||1)):0;
+    return`<div class="rs-i" data-i="${i}"><div class="rs-ic">${ic('pin')}</div><div class="r-info"><div class="t1 ellipsis">${esc(p.name)}</div><div class="t2 ellipsis">${esc(placeType(p)||p.addr||'')}</div><div class="rs-m">${fmtDist(p.ahead)} ${tx('di depan','ahead')} · ${fmtDur(secs)}</div></div><div class="rs-act"><button class="rs-go" data-go="${i}" type="button">${tx('Singgah','Add stop')}</button><button class="rs-map" data-map="${i}" type="button">${tx('Peta','Map')}</button></div></div>`}).join('');
 }
 function rsSample(n){
-  const rem=n.cum[n.cum.length-1]-n.cum[n.i],gap=Math.max(800,rem/36),pts=[];let last=-Infinity;
+  const rem=n.cum[n.cum.length-1]-n.cum[n.i],gap=Math.max(1500,rem/14),pts=[];let last=-Infinity;
   for(let k=n.i;k<n.coords.length;k++){if(n.cum[k]-last>=gap||k===n.coords.length-1){pts.push(n.coords[k]);last=n.cum[k]}}
   return pts;
 }
+function rsNear(n,lat,lon){
+  const k0=Math.cos(lat*Math.PI/180);let best=n.i,bd=1e18;
+  for(let k=n.i;k<n.coords.length;k++){const c=n.coords[k],dy=c[0]-lat,dx=(c[1]-lon)*k0,d=dx*dx+dy*dy;if(d<bd){bd=d;best=k}}
+  return[best,Math.sqrt(bd)*111320];
+}
 async function rsFetch(key,term){
   const n=nav;if(!n)return[];
-  const line=rsSample(n).map(p=>p[0].toFixed(5)+','+p[1].toFixed(5)).join(',');
-  const filt=key?CATS[key].filters:[`["name"~"${term.replace(/[^\p{L}\p{N} ]/gu,'')}",i]`];
-  const els=(await fetchOverpass(`[out:json][timeout:25];(${filt.map(f=>`nwr${f}(around:600,${line});`).join('')});out center tags 80;`)).map(fromOverpass).filter(Boolean);
-  const seen=new Set();
-  return els.map(p=>{let best=n.i,bd=Infinity;for(let k=n.i;k<n.coords.length;k++){const d=L.latLng(p.lat,p.lon).distanceTo(n.coords[k]);if(d<bd){bd=d;best=k}}return{...p,ahead:n.cum[best]-n.cum[n.i]}})
-    .filter(p=>{const k=p.name+p.lat.toFixed(4);if(seen.has(k))return false;seen.add(k);return p.ahead>=0}).sort((a,b)=>a.ahead-b.ahead).slice(0,25);
+  const pts=rsSample(n),line=pts.map(p=>p[0].toFixed(5)+','+p[1].toFixed(5)).join(',');
+  const six=pts.length<=6?pts:Array.from({length:6},(_,i)=>pts[Math.round(i*(pts.length-1)/5)]);
+  const tasks=[];
+  if(key){
+    tasks.push(fetchOverpass(`[out:json][timeout:25];(${CATS[key].filters.map(f=>`nwr${f}(around:${rsR},${line});`).join('')});out center tags 120;`).then(a=>a.map(fromOverpass).filter(Boolean)));
+    six.forEach(p=>tasks.push(fetchPlacesAPI(key,p[0],p[1])));
+  }else{
+    const t=term.replace(/[^\p{L}\p{N} ]/gu,'').trim();
+    if(t)tasks.push(fetchOverpass(`[out:json][timeout:25];(nwr["name"~"${t}",i](around:${rsR},${line}););out center tags 80;`).then(a=>a.map(fromOverpass).filter(Boolean)));
+    six.slice(0,5).forEach(p=>tasks.push(fetchJSON(`${PHOTON}/api/?q=${encodeURIComponent(term)}&limit=10&lat=${p[0].toFixed(4)}&lon=${p[1].toFixed(4)}&location_bias_scale=0.5&bbox=${ID_BBOX}`,{},12000).then(d=>(d.features||[]).map(fromPhoton).filter(Boolean))));
+  }
+  const res=await Promise.allSettled(tasks);
+  if(!res.some(r=>r.status==='fulfilled'))throw new Error('all failed');
+  const lim=key?rsR*1.15:rsR*2,seen=new Set(),out=[];
+  res.forEach(r=>{if(r.status!=='fulfilled')return;r.value.forEach(p=>{
+    if(!p||!p.name||!validateCoord(p.lat,p.lon))return;
+    const[idx,off]=rsNear(n,p.lat,p.lon);if(off>lim)return;
+    const k=p.name.toLowerCase()+'|'+p.lat.toFixed(3)+p.lon.toFixed(3);if(seen.has(k))return;seen.add(k);
+    out.push({...p,ahead:Math.max(0,n.cum[idx]-n.cum[n.i]),off});
+  })});
+  return out.sort((a,b)=>a.ahead-b.ahead).slice(0,40);
 }
 async function rsRun(key,term){
-  rsKey=key;rsEl.querySelectorAll('.rs-c').forEach(c=>c.classList.toggle('on',c.dataset.k===key));
-  const list=$('rs-list');list.innerHTML=`<div class="hint">${tx('Mencari sepanjang rute…','Searching along your route…')}</div>`;rsLayer.clearLayers();rsRes=[];
-  try{rsRes=await rsFetch(key,term)}catch(_){list.innerHTML=`<div class="hint" style="color:#d93025">${tx('Pencarian sedang tidak merespons.','Search is not responding.')}</div>`;return}
-  if(!nav)return;
-  if(!rsRes.length){list.innerHTML=`<div class="hint">${tx('Tidak ada hasil di sepanjang rute.','No results along your route.')}</div>`;return}
-  rsDraw();rsRes.forEach((p,i)=>L.marker([p.lat,p.lon],{icon:pinIcon}).addTo(rsLayer).on('click',()=>rsFocus(i,true)));
-  following=false;document.body.classList.add('nav-free');
-  const b=L.latLngBounds(rsRes.map(p=>[p.lat,p.lon]).concat([userCoords]));
-  map.fitBounds(b,{paddingTopLeft:[24,170],paddingBottomRight:[24,rsEl.offsetHeight+sheet.offsetHeight+30],maxZoom:16});
+  const id=++rsReq;rsKey=key;rsTerm=key?'':(term||'');rsSt='loading';rsRes=[];rsLayer.clearLayers();
+  const q=$('rs-q');if(q)q.value=rsTerm;
+  rsEl.querySelectorAll('.rs-c').forEach(c=>c.classList.toggle('on',c.dataset.k===key));rsPaint();
+  try{const r=await rsFetch(key,term);if(id!==rsReq||!nav)return;rsRes=r;rsSt=r.length?'ok':'empty'}
+  catch(_){if(id!==rsReq)return;rsSt='err'}
+  rsPaint();
+  rsRes.forEach((p,i)=>L.marker([p.lat,p.lon],{icon:pinIcon}).addTo(rsLayer).on('click',()=>{rsOpen();rsFocus(i)}));
 }
-function rsDraw(){
-  $('rs-list').innerHTML=rsRes.map((p,i)=>`<div class="rs-i" data-i="${i}"><div class="r-info"><div class="t1 ellipsis">${esc(p.name)}</div><div class="t2 ellipsis">${esc([placeType(p),fmtDist(p.ahead)+tx(' di depan',' ahead')].filter(Boolean).join(' · '))}</div></div><button class="rs-go" data-go="${i}" type="button">${tx('Singgah','Add stop')}</button></div>`).join('');
-  $('rs-list').onclick=e=>{const g=e.target.closest('[data-go]');if(g){rsVia(rsRes[+g.dataset.go]);return}const it=e.target.closest('[data-i]');if(it)rsFocus(+it.dataset.i)};
-}
-function rsFocus(i,scroll){
-  const p=rsRes[i];if(!p)return;
+function rsFocus(i){
   rsEl.querySelectorAll('.rs-i').forEach(x=>x.classList.toggle('sel',+x.dataset.i===i));
-  if(scroll)rsEl.querySelector(`.rs-i[data-i="${i}"]`)?.scrollIntoView({block:'nearest'});
-  following=false;document.body.classList.add('nav-free');map.flyTo([p.lat,p.lon],Math.max(map.getZoom(),16),{duration:.6});
+  rsEl.querySelector(`.rs-i[data-i="${i}"]`)?.scrollIntoView({block:'center'});
+}
+function rsShowMap(i){
+  const p=rsRes[i];if(!p)return;rsClose();
+  following=false;document.body.classList.add('nav-free');
+  map.fitBounds(L.latLngBounds([[p.lat,p.lon],userCoords]),{paddingTopLeft:[40,170],paddingBottomRight:[40,sheet.offsetHeight+60],maxZoom:17});
 }
 async function rsVia(p){
   const n=nav;if(!n||!p)return;rsClose();showToast(tx('Menambah perhentian…','Adding stop…'));
@@ -1949,14 +2030,15 @@ async function rsVia(p){
     const r=routes[0];routeLayer.clearLayers();
     r.line=L.polyline(r.coords,{color:'#1a73e8',weight:7,opacity:.95,noClip:true,lineCap:'round',lineJoin:'round'}).addTo(routeLayer);
     L.marker([p.lat,p.lon],{icon:pinIcon}).addTo(routeLayer);
-    rsLayer.clearLayers();rsRes=[];nav=r;following=true;document.body.classList.remove('nav-free');
-    $('sheet-detail').querySelector('#ns-dist')&&navUpdate(userCoords);map.setZoom(18);kick();
+    rsLayer.clearLayers();rsRes=[];rsSt='idle';nav=r;following=true;document.body.classList.remove('nav-free');
+    navUpdate(userCoords);map.setZoom(18);kick();
     showToast(tx('Perhentian ditambahkan: ','Stop added: ')+p.name);
   }catch(_){showToast(tx('Perhentian tidak dapat ditambahkan','Could not add stop'))}
 }
-$('btn-route-search').onclick=()=>{rsEl.classList.contains('show')?rsClose():rsOpen()};
-const _startNav2=startNav;startNav=function(r){document.body.classList.remove('nav-free');rsClose();rsLayer.clearLayers();rsRes=[];rsKey=null;return _startNav2.apply(this,arguments)};
-const _endNav2=endNav;endNav=function(){document.body.classList.remove('nav-free');rsClose();rsLayer.clearLayers();rsRes=[];return _endNav2.apply(this,arguments)};
+$('btn-route-search').onclick=rsOpen;
+const rsReset=()=>{document.body.classList.remove('nav-free');rsClose();rsLayer.clearLayers();rsRes=[];rsKey=null;rsTerm='';rsR=800;rsSt='idle';rsReq++};
+const _startNav2=startNav;startNav=function(){rsReset();return _startNav2.apply(this,arguments)};
+const _endNav2=endNav;endNav=function(){rsReset();return _endNav2.apply(this,arguments)};
 </script>
 <script src="/ui-modal.js"></script>
 </body>
